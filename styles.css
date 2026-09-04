@@ -190,7 +190,7 @@
 .log-custom-row button{border:0;border-radius:12px;background:var(--amber);color:#1b2a25;font-weight:700;padding:0 18px;cursor:pointer}
 .log-cancel{align-self:flex-start;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;text-decoration:underline;cursor:pointer;padding:0}
 .log-confirm{min-height:20px;margin:16px 0 0;font-size:13.5px;font-weight:700;color:var(--pine2)}
-.log-calendar-wrap{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:26px}
+.log-calendar-wrap{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.35fr) minmax(0,1fr);gap:24px;align-items:stretch;margin-top:26px}
 .cal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
 .cal-head h3{margin:0;font:700 21px Fraunces,serif;color:var(--pine)}
 .cal-head button{border:0;background:#eef2f6;width:36px;height:36px;border-radius:999px;font-size:19px;line-height:1;cursor:pointer;color:var(--pine)}
@@ -211,6 +211,8 @@
 .log-donate-link{display:block;border-radius:18px;overflow:hidden;box-shadow:0 16px 40px #0002;transition:transform .2s ease}
 .log-donate-link:hover{transform:translateY(-3px)}
 .log-donate-link img{display:block;width:100%;height:auto;max-width:100%;border-radius:18px}
+.log-donate-link--calendar{height:100%;min-height:220px}
+.log-donate-link--calendar img{height:100%;width:100%;object-fit:cover}
 .log-day-detail{min-height:220px;display:flex;flex-direction:column}
 .log-day-detail-title{margin:0 0 4px;font:700 19px Fraunces,serif;color:var(--pine)}
 .log-day-detail-empty{color:var(--muted);font-size:13.5px;line-height:1.6;margin:auto 0}
@@ -224,6 +226,10 @@
 @media(max-width:900px){
   .log-section{padding:64px 18px}
   .log-calendar-wrap{grid-template-columns:1fr}
+  .log-donate-link--calendar{order:2;height:auto;min-height:0;max-height:220px}
+  .log-donate-link--calendar img{height:100%;max-height:220px;object-fit:cover}
+  .log-calendar{order:1}
+  .log-day-col{order:3}
   .duration-custom{flex-wrap:wrap}
   .duration-custom input{flex:1}
 }

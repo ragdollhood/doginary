@@ -104,6 +104,7 @@ const STR = {
     heroTagline: "Know what your dog needs before every walk.",
     heroTitle: "{name} best day — every day!",
     heroTitleDefaultName: "Your dog's",
+    logTitleDefaultName: "your dog",
     heroSubtitle: "Weather guidance designed for dogs — check the conditions where you are and get gentle walk advice tailored to today.",
     searchLabel: "Search location",
     searchPlaceholder: "Search for a place, e.g. Umeå",
@@ -222,7 +223,7 @@ const STR = {
 
     navLog: "Log",
     logKicker: "DAILY LOG",
-    logTitle: "Log your dog's day",
+    logTitle: "Log {name}'s day",
     logSubtitle: "Walks, bathroom breaks and grooming — logged in one calm, tappable calendar.",
     logQuickHeading: "Log something",
     logDateLabel: "Date",
@@ -313,6 +314,7 @@ const STR = {
     heroTagline: "Veta vad din hund behöver inför varje promenad.",
     heroTitle: "{name} bästa dag — varje dag!",
     heroTitleDefaultName: "Din hunds",
+    logTitleDefaultName: "hunden",
     heroSubtitle: "Väderguidning gjord för hundar — se förhållandena där du är och få varsamma promenadråd anpassade för dagen.",
     searchLabel: "Sök ort",
     searchPlaceholder: "Sök ort, till exempel Umeå",
@@ -431,7 +433,7 @@ const STR = {
 
     navLog: "Logga",
     logKicker: "DAGBOK",
-    logTitle: "Logga hundens dag",
+    logTitle: "Logga {name}s dag",
     logSubtitle: "Promenader, uteliv och pälsvård — loggat i en lugn, klickbar kalender.",
     logQuickHeading: "Logga något",
     logDateLabel: "Datum",
@@ -585,6 +587,7 @@ function applyStaticTranslations() {
   if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';
 
   updateHeroTitle();
+  updateLogTitle();
   renderDailyDogFact();
   renderKnowledgeHub();
 }
@@ -595,6 +598,14 @@ function updateHeroTitle() {
   const dogName = dogProfile && dogProfile.name && dogProfile.name.trim();
   const namePart = dogName ? escapeHtml(dogName) : t('heroTitleDefaultName');
   heroTitleEl.innerHTML = t('heroTitle', { name: namePart });
+}
+
+function updateLogTitle() {
+  const logTitleEl = document.querySelector('[data-i18n="logTitle"]');
+  if (!logTitleEl) return;
+  const dogName = dogProfile && dogProfile.name && dogProfile.name.trim();
+  const namePart = dogName ? escapeHtml(dogName) : t('logTitleDefaultName');
+  logTitleEl.innerHTML = t('logTitle', { name: namePart });
 }
 
 function setLang(newLang) {
@@ -1556,6 +1567,7 @@ dogProfileForm?.addEventListener('submit', e => {
   });
   renderDogProfileUI();
   updateHeroTitle();
+  updateLogTitle();
   statusEl.textContent = t('profileSavedConfirm');
   if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
 });
@@ -1570,6 +1582,7 @@ dogProfileClearBtn?.addEventListener('click', () => {
   dogProfileForm.reset();
   renderDogProfileUI();
   updateHeroTitle();
+  updateLogTitle();
   statusEl.textContent = t('profileClearedConfirm');
   if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
 });

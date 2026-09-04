@@ -302,3 +302,18 @@ footer{flex-wrap:wrap}
 .legal-page .back-link:hover{text-decoration:underline}
 .topbar .back-link{color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
 .topbar .back-link:hover{color:var(--pine)}
+
+/* Donation prompts */
+.donate-banner{background:var(--cream);border:1px solid var(--line);border-radius:20px;padding:22px 26px;margin:24px max(24px,6vw);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.donate-banner p{margin:0;color:var(--ink);line-height:1.6;max-width:640px}
+.donate-banner p b{color:var(--pine)}
+.donate-btn{background:var(--amber);color:#1b2a25;font-weight:700;padding:12px 22px;border-radius:12px;text-decoration:none;white-space:nowrap}
+.donate-btn:hover{opacity:.92}
+.donate-image-block{max-width:1400px;margin:0 auto;padding:0 max(24px,6vw) 50px;text-align:center}
+.donate-image-block a{display:inline-block}
+.donate-image-block img{max-width:360px;width:100%;border-radius:20px;box-shadow:0 16px 40px #0002;transition:transform .2s ease;display:block;margin:0 auto}
+.donate-image-block img:hover{transform:translateY(-3px)}
+.donate-note{color:var(--muted);font-size:13px;margin-top:12px}
+.donate-inline{color:var(--pine2);font-weight:700;text-decoration:none}
+.donate-inline:hover{text-decoration:underline}
+@media(max-width:520px){.donate-banner{padding:20px}}

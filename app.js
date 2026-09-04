@@ -71,8 +71,8 @@ let lang = (() => {
    and reused by the JS-rendered dynamic content below. */
 const STR = {
   en: {
-    pageTitle: "DOGINARY | The walk forecast for you and your dog",
-    metaDescription: "Local weather forecast from your dog's perspective, using open forecast data from SMHI.",
+    pageTitle: "Doginary — Dog Walk Weather, Comfort Index & Daily Dog Care",
+    metaDescription: "Check today's Dog Comfort Index, find the best walk window and get weather-based dog care tips — powered by open SMHI forecast data. Free, no app required.",
     skipLink: "Skip to content",
     navAriaLabel: "Main menu",
     navForecast: "Today",
@@ -271,8 +271,8 @@ const STR = {
     sourceAkc: "American Kennel Club"
   },
   sv: {
-    pageTitle: "DOGINARY | Promenadprognosen för dig och din hund",
-    metaDescription: "Lokal väderprognos ur hundens perspektiv med öppna prognosdata från SMHI.",
+    pageTitle: "Doginary — Väder för hundpromenader, komfortindex & hundvård",
+    metaDescription: "Se dagens hundkomfortindex, hitta bästa promenadtiden och få väderbaserade skötselråd för din hund — baserat på öppna prognosdata från SMHI. Gratis, ingen app krävs.",
     skipLink: "Hoppa till innehållet",
     navAriaLabel: "Huvudmeny",
     navForecast: "Idag",

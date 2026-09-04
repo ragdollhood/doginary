@@ -17,5 +17,18 @@
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <url>
+    <loc>https://doginary.com/knowledge/safety</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+<url>
+    <loc>https://doginary.com/knowledge/seniors</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
   
 </urlset>

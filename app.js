@@ -1423,7 +1423,9 @@ function renderDaily(weatherData, unit) {
       ${comfortPill}
       ${hint}
     </article>`;
-  }).join('');
+  }).join('') + `<a class="day donate-day-card" href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener" aria-label="Support Doginary with a $2.99 donation" data-i18n-aria-label="donateImageAriaLabel">
+      <img src="assets/donate.jpg" alt="Support Doginary — donate $2.99 to help keep it free" loading="lazy" decoding="async" data-i18n-alt="donateImageAlt">
+    </a>`;
 }
 
 function hideDayHours() {

@@ -31,4 +31,11 @@
   </url>
   
   
+<url>
+    <loc>https://doginary.com/knowledge/puppies</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  
 </urlset>

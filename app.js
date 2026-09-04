@@ -312,7 +312,7 @@ const STR = {
     profileSummaryPrefix: "Anpassat för",
     heroEyebrow: "VÄDER FÖR FYRA TASSAR",
     heroTagline: "Veta vad din hund behöver inför varje promenad.",
-    heroTitle: "{name} bästa dag — varje dag!",
+    heroTitle: "{name}s bästa dag — varje dag!",
     heroTitleDefaultName: "Din hunds",
     logTitleDefaultName: "hunden",
     heroSubtitle: "Väderguidning gjord för hundar — se förhållandena där du är och få varsamma promenadråd anpassade för dagen.",

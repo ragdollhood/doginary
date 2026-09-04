@@ -207,6 +207,10 @@
 .cal-icons{display:flex;flex-wrap:wrap;gap:2px;line-height:1;font-size:11px}
 .cal-icons span{filter:grayscale(0)}
 .cal-more{font-size:10px;font-weight:700;color:var(--muted)}
+.log-day-col{display:flex;flex-direction:column;gap:24px}
+.log-donate-link{display:block;border-radius:18px;overflow:hidden;box-shadow:0 16px 40px #0002;transition:transform .2s ease}
+.log-donate-link:hover{transform:translateY(-3px)}
+.log-donate-link img{display:block;width:100%;height:auto;border-radius:18px}
 .log-day-detail{min-height:220px;display:flex;flex-direction:column}
 .log-day-detail-title{margin:0 0 4px;font:700 19px Fraunces,serif;color:var(--pine)}
 .log-day-detail-empty{color:var(--muted);font-size:13.5px;line-height:1.6;margin:auto 0}

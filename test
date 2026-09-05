@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f3b57">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Doginary">
+<meta name="description" id="metaDescriptionTag" content="Allt du behöver veta innan och efter att valpen flyttar hem: förberedelser, hemkomst, socialisering, tandbyte, promenader, varningstecken och träning. Källbaserad valpguide från Doginary.">
+<title id="pageTitleTag">Valpguide: Allt du behöver veta om att skaffa valp | Doginary</title>
+<link rel="canonical" href="https://doginary.com/knowledge/valp/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Doginary">
+<meta property="og:title" content="Valpguide: Allt du behöver veta om att skaffa valp">
+<meta property="og:description" content="Förberedelser, hemkomst, socialisering, tandbyte, promenader, varningstecken och träning — en källbaserad guide till valpens första tid.">
+<meta property="og:image" content="https://doginary.com/assets/og-doginary.jpg">
+<meta property="og:image:alt" content="Doginary — valpguide">
+<meta property="og:url" content="https://doginary.com/knowledge/valp/">
+<meta property="og:locale" content="sv_SE">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Valpguide: Allt du behöver veta om att skaffa valp">
+<meta name="twitter:description" content="Förberedelser, hemkomst, socialisering, tandbyte, promenader, varningstecken och träning — en källbaserad guide till valpens första tid.">
+<meta name="twitter:image" content="https://doginary.com/assets/og-doginary.jpg">
+<link rel="alternate" hreflang="sv" href="https://doginary.com/knowledge/valp/">
+<link rel="alternate" hreflang="en" href="https://doginary.com/knowledge/valp/">
+<link rel="alternate" hreflang="x-default" href="https://doginary.com/knowledge/valp/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Valpguide: Att skaffa valp — förberedelser, hemkomst och de första månaderna",
+  "description": "En källbaserad guide till att skaffa valp: förberedelser, hemkomst, socialisering, tandbyte, promenader, varningstecken, avvänjning, kost och träning.",
+  "author": { "@type": "Organization", "name": "Doginary" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Doginary",
+    "logo": { "@type": "ImageObject", "url": "https://doginary.com/assets/title-doginary.png" }
+  },
+  "mainEntityOfPage": "https://doginary.com/knowledge/valp/",
+  "inLanguage": ["sv", "en"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Doginary", "item": "https://doginary.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Dog Knowledge", "item": "https://doginary.com/#kunskap" },
+    { "@type": "ListItem", "position": 3, "name": "Valp", "item": "https://doginary.com/knowledge/valp/" }
+  ]
+}
+</script>
+<link rel="icon" type="image/png" href="/assets/title-doginary.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Page-specific additions — reuse the site's design tokens, add only what the article template needs */
+  .article-hero{padding:70px max(24px,6vw) 10px;max-width:1400px;margin:auto}
+  .breadcrumb{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;color:var(--muted);margin-bottom:18px}
+  .breadcrumb a{color:var(--pine2);text-decoration:none;font-weight:600}
+  .breadcrumb a:hover{text-decoration:underline}
+  .article-hero h1{font:700 clamp(34px,5vw,56px)/1.08 Fraunces,serif;margin:14px 0 16px;max-width:900px;color:var(--pine)}
+  .article-lead{max-width:760px;color:var(--muted);font-size:18px;line-height:1.7;margin:0 0 8px}
+  .article-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .article-meta span{background:var(--cream);color:#8a5a1c;font-size:12px;font-weight:700;letter-spacing:.04em;padding:7px 13px;border-radius:999px;text-transform:uppercase}
+  .article-wrap{max-width:1400px;margin:auto;padding:10px max(24px,6vw) 20px}
+  .article-prose{max-width:760px;margin:0 auto;padding:36px 0}
+  .article-prose h2{font:700 clamp(26px,3.4vw,34px)/1.2 Fraunces,serif;margin:0 0 14px;color:var(--pine)}
+  .article-prose h3{font:700 19px Fraunces,serif;margin:22px 0 10px;color:var(--pine)}
+  .article-prose p{color:var(--ink);line-height:1.75;font-size:16.5px;margin:0 0 16px}
+  .article-prose ul{margin:0 0 16px;padding-left:22px;color:var(--ink);line-height:1.75;font-size:16.5px}
+  .article-prose li{margin-bottom:6px}
+  .article-prose li b{color:var(--pine)}
+  .article-figure{max-width:760px;margin:8px auto 28px}
+  .article-figure img{width:100%;height:auto;border-radius:20px;display:block}
+  .article-figure figcaption{font-size:13px;color:var(--muted);margin-top:8px;text-align:center}
+  .callout{background:#f4e7c9;color:var(--ink);padding:26px 28px;border-radius:20px;margin:22px 0}
+  .callout h3{font:700 21px Fraunces,serif;margin:0 0 10px;color:#5c3d10}
+  .callout p,.callout li{margin:0 0 8px;line-height:1.6}
+  .callout ol{margin:0;padding-left:20px}
+  .callout-danger{background:#fff0dc;border-left:4px solid #d67f20;padding:24px 26px;border-radius:14px;margin:22px 0}
+  .callout-danger h3{font:700 19px Fraunces,serif;margin:0 0 10px;color:#8a4a0d}
+  .callout-danger ul{margin:0;padding-left:20px;line-height:1.7}
+  .source-note{background:#f4f8f5;border:1px dashed var(--line);border-radius:14px;padding:14px 18px;margin:0 0 20px;font-size:14px;color:var(--muted);line-height:1.6}
+  .source-note b{color:var(--pine2)}
+  .article-toc{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px 28px;max-width:760px;margin:26px auto 0}
+  .article-toc h2{font:700 15px Fraunces,serif;letter-spacing:.04em;margin:0 0 12px;color:var(--pine2);text-transform:uppercase}
+  .article-toc ol{margin:0;padding-left:20px;columns:2;column-gap:24px}
+  .article-toc li{margin-bottom:8px;break-inside:avoid}
+  .article-toc a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14.5px}
+  .article-toc a:hover{color:var(--pine2);text-decoration:underline}
+  .panel .article-prose{padding:0}
+  .panel-inner{position:relative;color:#fff;max-width:640px}
+  .panel-inner span{font-size:12px;letter-spacing:.16em;font-weight:700;color:#f5c472;text-transform:uppercase}
+  .panel-inner h2{font:700 clamp(24px,3vw,32px)/1.2 Fraunces,serif;margin:10px 0 12px}
+  .panel-inner p{line-height:1.7;color:#eef4f7;margin:0}
+  .cta-panel{max-width:1400px;margin:52px auto 0;padding:0 max(24px,6vw)}
+  .cta-inner{background:var(--pine);border-radius:var(--radius);padding:44px clamp(24px,5vw,56px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;color:#fff}
+  .cta-inner h2{font:700 clamp(24px,3vw,32px)/1.2 Fraunces,serif;margin:0 0 8px}
+  .cta-inner p{color:#c9dbe8;margin:0;max-width:480px;line-height:1.6}
+  .cta-inner a.cta-btn{background:var(--amber);color:#1b2a25;font-weight:700;text-decoration:none;padding:15px 26px;border-radius:12px;white-space:nowrap}
+  .back-to-top{max-width:760px;margin:0 auto;padding:0 0 10px}
+  .back-to-top a{color:var(--pine2);font-weight:700;text-decoration:none;font-size:14px}
+  .back-to-top a:hover{text-decoration:underline}
+  @media(max-width:700px){.article-toc ol{columns:1}.cta-inner{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skipLink">Hoppa till innehållet</a>
+<header class="topbar">
+  <a class="brand" href="/"><img class="brand-logo" src="/assets/title-doginary.png" alt="DOGINARY"></a>
+  <div class="topbar-right">
+    <nav aria-label="Huvudmeny">
+      <a href="/#prognos" data-i18n="navForecast">Idag</a>
+      <a href="/#logg" data-i18n="navLog">Logg</a>
+      <a href="/#hundrad" data-i18n="navDogAdvice">Hälsa &amp; päls</a>
+      <a href="/#kunskap" data-i18n="navKnowledge">Kunskap</a>
+    </nav>
+    <div class="lang-switch">
+      <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="22" height="14" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
+      <button type="button" id="langBtnEn" class="lang-btn" aria-label="Show the page in English" title="English"><svg class="flag-icon" viewBox="0 0 60 30" width="22" height="14" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-clip4)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="uk-clip4"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="article-hero">
+  <p class="breadcrumb">
+    <a href="/" data-i18n="crumbHome">Doginary</a><span>/</span>
+    <a href="/#kunskap" data-i18n="crumbKnowledge">Hundkunskap</a><span>/</span>
+    <span data-i18n="crumbPuppy">Valp</span>
+  </p>
+  <h1 data-i18n="h1">Att skaffa valp — allt du behöver veta</h1>
+  <p class="article-lead" data-i18n="lead">Att få hem en valp är en av de finaste sakerna som finns — och ett stort ansvar. Den här guiden går igenom allt från förberedelser och hemkomst till socialisering, tandbyte, promenader, varningstecken och träning. Varje avsnitt bygger på råd från Svenska Kennelklubben (SKK), Jordbruksverket, veterinärmedicinska källor och etologer.</p>
+  <div class="article-meta">
+    <span data-i18n="tagPuppy">Skaffa valp</span>
+    <span data-i18n="tagGuide">Valpguide</span>
+    <span data-i18n="tagSources">Källbaserad</span>
+  </div>
+</section>
+
+<nav class="article-toc" aria-label="Innehållsförteckning" data-i18n-aria-label="tocAriaLabel">
+  <h2 data-i18n="tocHeading">I den här guiden</h2>
+  <ol>
+    <li><a href="#intro" data-i18n="tocIntro">1. Att skaffa valp</a></li>
+    <li><a href="#forberedelser" data-i18n="tocPrep">2. Förberedelser innan valpen kommer hem</a></li>
+    <li><a href="#hemkomst" data-i18n="tocHome">3. Hemkomsten — valpens första dagar</a></li>
+    <li><a href="#forstaveckorna" data-i18n="tocWeeks">4. Valpens första veckor</a></li>
+    <li><a href="#tander" data-i18n="tocTeeth">5. När valpen får tänder</a></li>
+    <li><a href="#gaut" data-i18n="tocWalks">6. Att gå ut med valpen</a></li>
+    <li><a href="#varningstecken" data-i18n="tocWarning">7. När något är fel</a></li>
+    <li><a href="#vanja" data-i18n="tocHabituate">8. Avvänjning och vanor</a></li>
+    <li><a href="#mat" data-i18n="tocFood">9. Mat, kost och utfodring</a></li>
+    <li><a href="#traning" data-i18n="tocTraining">10. Träning och mental stimulans</a></li>
+    <li><a href="#sammanfattning" data-i18n="tocSummary">11. Sammanfattning</a></li>
+    <li><a href="#sources" data-i18n="tocSources">Källor</a></li>
+  </ol>
+</nav>
+
+<div class="article-wrap">
+
+  <!-- 1. INTRODUKTION -->
+  <article class="article-prose" id="intro">
+    <h2 data-i18n="introHeading">1. Att skaffa valp</h2>
+    <p data-i18n="introText1">Att välkomna en valp till familjen är fantastiskt roligt — men det är också ett åtagande som varar i tio, femton år eller längre. De första veckorna lägger grunden för hur hunden kommer att må och bete sig resten av livet.</p>
+    <p data-i18n="introText2">Förberedelse är det som gör skillnad. Ju bättre rustad du är innan valpen flyttar hem, desto tryggare blir övergången — för valpen, för eventuella andra husdjur och för dig själv.</p>
+    <p data-i18n="introText3">Som valpägare ansvarar du för valpens fysiska hälsa, mentala välmående, socialisering, säkerhet och juridiska registrering. Det är ett ansvar som enligt Svenska Kennelklubben börjar redan innan valpen sätter tassarna i sitt nya hem.</p>
+    <div class="source-note" data-i18n="introSources"><b>Källor:</b> Svenska Kennelklubben (SKK), Jordbruksverket</div>
+  </article>
+
+  <!-- 2. FÖRBEREDELSER -->
+  <div class="panel panel--hero-hot" id="forberedelser">
+    <div class="panel-inner">
+      <span data-i18n="prepKicker">FÖRE HEMKOMST</span>
+      <h2 data-i18n="prepHeading">2. Förberedelser innan valpen kommer hem</h2>
+      <p data-i18n="prepPanelText">Ett valpsäkrat hem gör de första dagarna lugnare för alla.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <h3 data-i18n="prepChecklistTitle">Checklista för hemmet</h3>
+    <ul data-i18n="prepChecklistList">
+      <li>Matskål och vattenskål</li>
+      <li>Valpfoder anpassat efter ras och storlek</li>
+      <li>Mysig sovplats eller bur/box</li>
+      <li>Halsband, sele och koppel</li>
+      <li>ID-bricka med kontaktuppgifter</li>
+      <li>Tuggleksaker och aktiveringsleksaker</li>
+      <li>Städmaterial för olyckor under toalettträningen</li>
+    </ul>
+    <h3 data-i18n="prepSafetyTitle">Valpsäkring av hemmet</h3>
+    <p data-i18n="prepSafetyText">Valpar utforskar världen med munnen, vilket gör hemmet till en potentiell riskmiljö. Plocka undan elsladdar, giftiga växter, kemikalier och små föremål som kan sväljas. Blockera trappor och riskfyllda utrymmen med grindar.</p>
+    <h3 data-i18n="prepSpacesTitle">Sovplats, matplats och leksaker</h3>
+    <p data-i18n="prepSpacesText">Skapa en lugn, avskild sovplats där valpen kan dra sig undan och vila ostört. Placera matplatsen på ett fast, städbart underlag, gärna en bit ifrån sovplatsen.</p>
+    <h3 data-i18n="prepFirstDayTitle">Rekommenderade rutiner det första dygnet</h3>
+    <p data-i18n="prepFirstDayText">Håll det första dygnet lugnt. Undvik stora folksamlingar, högljudda hälsningar och långa bilresor om det går. Låt valpen utforska hemmet i sin egen takt och erbjud regelbundna toalettpauser.</p>
+    <div class="source-note" data-i18n="prepSources"><b>Källor:</b> Svenska Kennelklubben (SKK), veterinärmedicinsk rådgivning (AniCura, Evidensia)</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy1.jpg" alt="Valp i sitt nya, förberedda hem" data-i18n-alt="prepImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 3. HEMKOMSTEN -->
+  <div class="panel panel--hero-snow" id="hemkomst">
+    <div class="panel-inner">
+      <span data-i18n="homeKicker">DAG ETT</span>
+      <h2 data-i18n="homeHeading">3. Hemkomsten — valpens första dagar</h2>
+      <p data-i18n="homePanelText">Trygghet, lugn och tydliga rutiner gör den första tiden lättare.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <h3 data-i18n="homeCalmTitle">Att skapa trygghet</h3>
+    <p data-i18n="homeCalmText">Valpen har precis lämnat sin tik och sina kullsyskon, vilket i sig är en stor omställning. Ett lugnt tonläge, förutsägbara rutiner och en fast viloplats hjälper valpen att känna sig trygg snabbare.</p>
+    <h3 data-i18n="homeFamilyTitle">Introduktion till familjen</h3>
+    <p data-i18n="homeFamilyText">Låt familjemedlemmar hälsa på valpen en i taget, lugnt och utan att trycka på. Barn bör alltid ha vuxentillsyn i mötet med en ny valp.</p>
+    <h3 data-i18n="homeNightTitle">Första natten</h3>
+    <p data-i18n="homeNightText">Det är vanligt att valpen gnyr eller är orolig den första natten, eftersom den är van vid sina kullsyskons värme och närhet. En sovplats nära dig, gärna med en filt som doftar av kullen, kan underlätta.</p>
+    <h3 data-i18n="homeMealsTitle">De första måltiderna</h3>
+    <p data-i18n="homeMealsText">Fortsätt gärna med samma foder som uppfödaren använt de första dagarna, för att undvika magbesvär, och byt sedan gradvis om det behövs.</p>
+    <h3 data-i18n="homeStressTitle">Stress, oro och hur man hanterar det</h3>
+    <p data-i18n="homeStressText">Gäspningar, slickande och undanglidning är vanliga stressignaler. Ge valpen möjlighet att dra sig undan till sin trygga plats och undvik att tvinga fram kontakt.</p>
+    <div class="source-note" data-i18n="homeSources"><b>Källor:</b> Svenska Kennelklubben (SKK), etologisk forskning, veterinärmedicinsk rådgivning</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy2.jpg" alt="Valp som vilar tryggt hemma första dagen" data-i18n-alt="homeImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 4. FÖRSTA VECKORNA -->
+  <div class="panel panel--hero-rain" id="forstaveckorna">
+    <div class="panel-inner">
+      <span data-i18n="weeksKicker">DE FÖRSTA VECKORNA</span>
+      <h2 data-i18n="weeksHeading">4. Valpens första veckor</h2>
+      <p data-i18n="weeksPanelText">Rutiner, toalettträning och socialisering lägger grunden för resten av livet.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <h3 data-i18n="weeksRoutineTitle">Rutiner</h3>
+    <p data-i18n="weeksRoutineText">Fasta tider för mat, promenader, lek och vila gör det lättare för valpen att förstå vad som förväntas och skapar en känsla av trygghet.</p>
+    <h3 data-i18n="weeksToiletTitle">Toalettträning</h3>
+    <p data-i18n="weeksToiletText">Ta ut valpen ofta — efter sömn, lek och måltider — och belöna direkt när den gör sina behov på rätt plats. Olyckor inomhus är en normal del av inlärningen och ska aldrig bestraffas.</p>
+    <h3 data-i18n="weeksSocialTitle">Socialisering</h3>
+    <p data-i18n="weeksSocialText">Perioden mellan cirka tre och tolv–fjorton veckors ålder räknas som valpens känsliga socialiseringsfönster, då hjärnan är extra mottaglig för nya intryck. Positiva möten med människor, ljud, miljöer och andra djur under den här perioden bidrar till en tryggare vuxen hund.</p>
+    <h3 data-i18n="weeksHandlingTitle">Hanteringsträning</h3>
+    <p data-i18n="weeksHandlingText">Vänj valpen vid att bli hanterad över hela kroppen — tassar, öron, mun och svans — i korta, positiva pass. Det gör framtida veterinärbesök och pälsvård betydligt enklare.</p>
+    <h3 data-i18n="weeksAloneTitle">Ensamhetsträning</h3>
+    <p data-i18n="weeksAloneText">Börja med mycket korta stunder ensam i ett annat rum och öka gradvis. Att lämna valpen ensam för länge, för tidigt, ökar risken för separationsrelaterad stress.</p>
+    <h3 data-i18n="weeksEnvTitle">Miljöträning</h3>
+    <p data-i18n="weeksEnvText">Introducera nya miljöer, underlag och ljud i lugnt tempo och låt valpen själv välja hur nära den vill komma. Backa om valpen visar tecken på obehag och försök igen senare.</p>
+    <div class="source-note" data-i18n="weeksSources"><b>Källor:</b> Svenska Kennelklubben (SKK), etologisk forskning om valpars socialiseringsperiod, veterinärmedicinsk rådgivning</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy3.jpg" alt="Valp som socialiseras och möter nya intryck" data-i18n-alt="weeksImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 5. TÄNDER -->
+  <div class="panel panel--hero-evening" id="tander">
+    <div class="panel-inner">
+      <span data-i18n="teethKicker">TANDBYTE</span>
+      <h2 data-i18n="teethHeading">5. När valpen får tänder</h2>
+      <p data-i18n="teethPanelText">Ett ökat tuggbehov är helt normalt under tandväxlingen.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <h3 data-i18n="teethNeedTitle">Tuggbehov</h3>
+    <p data-i18n="teethNeedText">Valpens 28 mjölktänder börjar bytas mot 42 permanenta tänder vid ungefär tre till fyra månaders ålder, och tandväxlingen är i regel klar vid sex till sju månader. Under den här tiden ökar tuggbehovet märkbart eftersom tandköttet kliar.</p>
+    <h3 data-i18n="teethNormalTitle">Vad som är normalt</h3>
+    <p data-i18n="teethNormalText">Ökat tuggande, lätt dregel och att tappade mjölktänder hittas (eller sväljs, vilket sällan är farligt) är normala delar av tandväxlingen.</p>
+    <div class="callout-danger">
+      <h3 data-i18n="teethWarnTitle">Varningstecken — kontakta veterinär</h3>
+      <ul data-i18n="teethWarnList">
+        <li>Mjölktand som sitter kvar sida vid sida med en permanent tand i mer än ett par veckor</li>
+        <li>Trasig eller avbruten mjölktand</li>
+        <li>Kraftig smärta, ovilja att äta eller svullnad i munnen</li>
+        <li>Inga permanenta tänder trots att valpen är sex till sju månader</li>
+      </ul>
+    </div>
+    <h3 data-i18n="teethToysTitle">Rekommenderade tuggleksaker</h3>
+    <p data-i18n="teethToysText">Välj mjukare tuggleksaker anpassade för valpar — hårda ben och horn kan skada de känsliga mjölktänderna. Kalla, fuktade tygbitar kan lugna irriterat tandkött.</p>
+    <h3 data-i18n="teethBehaviorTitle">Undvika felaktigt beteende</h3>
+    <p data-i18n="teethBehaviorText">Styr om bitandet till en tuggleksak istället för händer eller möbler, och var konsekvent — hela familjen bör hantera bitandet på samma sätt.</p>
+    <div class="source-note" data-i18n="teethSources"><b>Källor:</b> veterinärmedicinsk forskning och rådgivning (Agria, AniCura, FirstVet), Svenska Kennelklubben (SKK)</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy4.jpg" alt="Valp som tuggar på en tuggleksak under tandbytet" data-i18n-alt="teethImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 6. ATT GÅ UT -->
+  <div class="panel panel--hero-hot" id="gaut">
+    <div class="panel-inner">
+      <span data-i18n="walksKicker">UTOMHUS</span>
+      <h2 data-i18n="walksHeading">6. Att gå ut med valpen</h2>
+      <p data-i18n="walksPanelText">Vaccinationsskydd, koppelträning och trygga möten går hand i hand.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <h3 data-i18n="walksWhenTitle">När valpen får börja gå ut</h3>
+    <p data-i18n="walksWhenText">Många veterinärkliniker rekommenderar att vänta med promenader på allmänna platser tills valpen fått sin andra vaccination, vid cirka tolv till tretton veckors ålder, för att minska smittrisken. I väntan på detta kan valpen med fördel bäras eller vistas i egen trädgård för miljöträning.</p>
+    <h3 data-i18n="walksLeashTitle">Koppelträning</h3>
+    <p data-i18n="walksLeashText">Börja koppelträningen inomhus eller i en lugn, trygg miljö. Belöna valpen för att gå med löst koppel och undvik att dra i kopplet.</p>
+    <h3 data-i18n="walksSafetyTitle">Säkerhet utomhus</h3>
+    <p data-i18n="walksSafetyText">I Sverige gäller enligt lagen om tillsyn över hundar och katter att hundar ska hållas under sådan uppsikt att de inte kan springa lösa i marker med vilt mellan den 1 mars och den 20 augusti, för att skydda djurens ungar under den känsliga perioden. I många naturreservat gäller koppeltvång året runt.</p>
+    <h3 data-i18n="walksSocialTitle">Socialisering med andra hundar</h3>
+    <p data-i18n="walksSocialText">Låt valpen möta vuxna, stabila hundar i kontrollerade former. Undvik okontrollerade möten med okända hundar tills valpen har grundläggande social erfarenhet.</p>
+    <h3 data-i18n="walksVaccTitle">Vaccinationsregler</h3>
+    <p data-i18n="walksVaccText">Grundvaccination mot valpsjuka, parvovirus och smittsam leverinflammation ges i regel vid åtta veckors ålder (ofta av uppfödaren) och följs av en andra dos vid tolv veckor samt en tredje vid sex till tolv månaders ålder. Vaccination mot rabies krävs endast för hundar som ska resa utomlands, och alla hundar i Sverige ska enligt lag id-märkas och registreras i Jordbruksverkets hundregister innan de är fyra månader gamla.</p>
+    <div class="source-note" data-i18n="walksSources"><b>Källor:</b> Jordbruksverket, Svenska Kennelklubben (SKK), veterinärmedicinsk rådgivning (AniCura, Evidensia)</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy5.jpg" alt="Valp på promenad i koppel" data-i18n-alt="walksImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 7. VARNINGSTECKEN -->
+  <div class="panel panel--hero-snow" id="varningstecken">
+    <div class="panel-inner">
+      <span data-i18n="warnKicker">VAR UPPMÄRKSAM</span>
+      <h2 data-i18n="warnHeading">7. När man ska vara uppmärksam på att något är fel</h2>
+      <p data-i18n="warnPanelText">Tidig upptäckt gör stor skillnad för valpens hälsa.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <div class="callout-danger">
+      <h3 data-i18n="warnHealthTitle">Vanliga hälsosymtom att uppmärksamma</h3>
+      <ul data-i18n="warnHealthList">
+        <li>Kräkningar eller diarré, särskilt om det upprepas</li>
+        <li>Ovilja att äta i mer än ett dygn</li>
+        <li>Slöhet eller ovanligt låg energinivå</li>
+        <li>Hosta, snuva eller andningssvårigheter</li>
+        <li>Hälta eller ovilja att gå</li>
+      </ul>
+    </div>
+    <h3 data-i18n="warnBehaviorTitle">Beteendeförändringar</h3>
+    <p data-i18n="warnBehaviorText">Plötslig tillbakadragenhet, ökad rädsla, aggression eller förändrade sömnmönster kan vara tecken på obehag, smärta eller otillräcklig socialisering och bör tas på allvar.</p>
+    <h3 data-i18n="warnVetTitle">När man ska kontakta veterinär</h3>
+    <p data-i18n="warnVetText">Kontakta veterinär samma dag vid kraftiga eller upprepade symtom, misstänkt förgiftning, andningssvårigheter eller om valpen verkar ha ont. Vid osäkerhet är det alltid bättre att fråga en gång för mycket än en gång för lite.</p>
+    <div class="source-note" data-i18n="warnSources"><b>Källor:</b> veterinärmedicinsk rådgivning (AniCura, Evidensia, FirstVet), Svenska Kennelklubben (SKK)</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy6.jpg" alt="Ägare undersöker valpen försiktigt" data-i18n-alt="warnImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 8. AVVÄNJNING -->
+  <div class="panel panel--hero-rain" id="vanja">
+    <div class="panel-inner">
+      <span data-i18n="habitKicker">VANOR</span>
+      <h2 data-i18n="habitHeading">8. Att vänja valpen av och vid olika saker</h2>
+      <p data-i18n="habitPanelText">Tålamod och konsekvens vinner över tvång.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <h3 data-i18n="habitBiteTitle">Avvänjning från bitande</h3>
+    <p data-i18n="habitBiteText">Avbryt leken lugnt och kortvarigt när valpen biter för hårt, och belöna mjuk munanvändning. Konsekvens från alla i hushållet ger snabbast resultat.</p>
+    <h3 data-i18n="habitStressTitle">Avvänjning från separationsstress</h3>
+    <p data-i18n="habitStressText">Bygg upp ensamhetsträningen stegvis och undvik känslosamma avsked. Lämna valpen med något tryggt, exempelvis en tuggleksak, i en trygg miljö.</p>
+    <h3 data-i18n="habitBarkTitle">Avvänjning från överdrivet skällande</h3>
+    <p data-i18n="habitBarkText">Ta reda på vad som utlöser skällandet — rädsla, uppmärksamhetssökande eller understimulans — och arbeta med orsaken snarare än enbart symtomet.</p>
+    <h3 data-i18n="habitNailsTitle">Vänja vid kloklippning</h3>
+    <p data-i18n="habitNailsText">Låt valpen vänja sig vid att tassarna hålls och vidrörs innan klipparen ens visas. Klipp gärna en tass i taget och avsluta alltid positivt.</p>
+    <h3 data-i18n="habitCarTitle">Vänja vid bil</h3>
+    <p data-i18n="habitCarText">Börja med korta stunder i stillastående bil innan de första korta körturerna. Säkra alltid valpen med bur, bälte eller skyddsgaller.</p>
+    <h3 data-i18n="habitAloneTitle">Vänja vid ensamhet</h3>
+    <p data-i18n="habitAloneText">Öka tiden gradvis och lämna alltid rummet lugnt, utan dramatik — både vid avsked och återkomst.</p>
+    <div class="source-note" data-i18n="habitSources"><b>Källor:</b> etologisk forskning, Svenska Kennelklubben (SKK), veterinärmedicinsk rådgivning</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy7.jpg" alt="Valp som vänjer sig vid hantering och nya rutiner" data-i18n-alt="habitImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 9. MAT -->
+  <div class="panel panel--hero-evening" id="mat">
+    <div class="panel-inner">
+      <span data-i18n="foodKicker">KOST</span>
+      <h2 data-i18n="foodHeading">9. Mat, kost och utfodring</h2>
+      <p data-i18n="foodPanelText">Rätt foder i rätt mängd lägger grunden för en frisk uppväxt.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <h3 data-i18n="foodTypeTitle">Rekommenderat valpfoder</h3>
+    <p data-i18n="foodTypeText">Välj ett komplett foder anpassat för valpar av rätt storlekskategori — foder för stora raser är utformat för att stödja en långsammare skeletttillväxt än foder för mindre raser.</p>
+    <h3 data-i18n="foodPortionTitle">Portionsstorlek</h3>
+    <p data-i18n="foodPortionText">Följ foderpaketets rekommendationer utifrån valpens vikt och ålder som utgångspunkt, och justera efter hull snarare än efter ögonmått.</p>
+    <h3 data-i18n="foodRoutineTitle">Utfodringsrutiner</h3>
+    <p data-i18n="foodRoutineText">Små valpar äter i regel tre till fyra gånger om dagen, vilket successivt kan minskas till två gånger när valpen blir äldre.</p>
+    <h3 data-i18n="foodMistakesTitle">Vanliga misstag</h3>
+    <ul data-i18n="foodMistakesList">
+      <li>Överutfodring och för mycket mellanmål</li>
+      <li>Att byta foder för snabbt utan infasning</li>
+      <li>Att ge vuxenfoder för tidigt</li>
+      <li>Att använda för mycket mänsklig mat som belöning</li>
+    </ul>
+    <div class="source-note" data-i18n="foodSources"><b>Källor:</b> WSAVA:s nutritionsriktlinjer, Svenska Kennelklubben (SKK), veterinärmedicinsk rådgivning</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy8.jpg" alt="Valp som äter ur sin matskål" data-i18n-alt="foodImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 10. TRÄNING -->
+  <div class="panel panel--hero-hot" id="traning">
+    <div class="panel-inner">
+      <span data-i18n="trainKicker">TRÄNING</span>
+      <h2 data-i18n="trainHeading">10. Träning och mental stimulans</h2>
+      <p data-i18n="trainPanelText">Korta, roliga pass ger bäst resultat.</p>
+    </div>
+  </div>
+  <article class="article-prose">
+    <h3 data-i18n="trainPlayTitle">Lek</h3>
+    <p data-i18n="trainPlayText">Lek är en av valpens viktigaste inlärningskanaler och bygger både relation och impulskontroll.</p>
+    <h3 data-i18n="trainBasicTitle">Grundläggande lydnad</h3>
+    <p data-i18n="trainBasicText">Enkla kommandon som sitt, hitkomst och kontakt ger en bra grund att bygga vidare på.</p>
+    <h3 data-i18n="trainRewardTitle">Belöningsbaserad träning</h3>
+    <p data-i18n="trainRewardText">Belöningsbaserad träning, där önskat beteende förstärks positivt, rekommenderas av moderna etologer och hundorganisationer som ett skonsamt och effektivt sätt att träna valpar.</p>
+    <h3 data-i18n="trainAmountTitle">Hur mycket träning en valp ska ha</h3>
+    <p data-i18n="trainAmountText">Korta pass om några minuter, flera gånger om dagen, fungerar bättre än långa träningspass — valpens koncentrationsförmåga är fortfarande under utveckling.</p>
+    <div class="source-note" data-i18n="trainSources"><b>Källor:</b> Svenska Kennelklubben (SKK), etologisk forskning om belöningsbaserad inlärning</div>
+  </article>
+  <figure class="article-figure">
+    <img src="assets/puppy9.jpg" alt="Valp som tränar med sin ägare" data-i18n-alt="trainImgAlt" loading="lazy" decoding="async">
+  </figure>
+
+  <!-- 11. SAMMANFATTNING -->
+  <article class="article-prose" id="sammanfattning">
+    <h2 data-i18n="summaryHeading">11. Sammanfattning</h2>
+    <p data-i18n="summaryText">Att skaffa valp handlar om förberedelse, tålamod och konsekvens. Genom att valpsäkra hemmet, skapa trygghet från dag ett, socialisera under det känsliga fönstret, hålla koll på tandbyte och hälsa, följa gällande regler för promenader och vaccination, samt träna med belöning istället för tvång, ger du din valp bästa möjliga start i livet.</p>
+    <div class="source-note" data-i18n="summarySources"><b>Källor:</b> Svenska Kennelklubben (SKK), Jordbruksverket, veterinärmedicinsk forskning, etologer</div>
+  </article>
+
+  <div class="cta-panel">
+    <div class="cta-inner">
+      <div>
+        <h2 data-i18n="ctaHeading">Håll koll på valpens vardag med Doginary</h2>
+        <p data-i18n="ctaText">Logga promenader, väder och rutiner på ett ställe — gratis, ingen app krävs.</p>
+      </div>
+      <a class="cta-btn" href="/#logg" data-i18n="ctaButton">Starta din logg →</a>
+    </div>
+  </div>
+
+  <section class="sources" id="sources" style="padding-top:70px">
+    <h2 data-i18n="sourcesHeading">Källor</h2>
+    <div class="source-grid">
+      <a href="https://www.skk.se/aga-hund/halsa-och-skotsel/vaccination/" target="_blank" rel="noopener"><b>SKK</b><span data-i18n="srcSkk">Vaccination och hälsa</span></a>
+      <a href="https://jordbruksverket.se/djur/hundar-katter-och-smadjur/hundar/mark-och-registrera-hundar" target="_blank" rel="noopener"><b>Jordbruksverket</b><span data-i18n="srcJbv">Märkning och registrering av hundar</span></a>
+      <a href="https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/lag-20071150-om-tillsyn-over-hundar-och_sfs-2007-1150/" target="_blank" rel="noopener"><b>Sveriges riksdag</b><span data-i18n="srcLaw">Lagen om tillsyn över hundar och katter</span></a>
+      <a href="https://www.anicura.se/for-djuragare/hund/fakta-och-rad/" target="_blank" rel="noopener"><b>AniCura</b><span data-i18n="srcAnicura">Valpens utveckling och vaccination</span></a>
+      <a href="https://evidensia.se/hundvalp/" target="_blank" rel="noopener"><b>Evidensia</b><span data-i18n="srcEvidensia">Vägledning för valpägare</span></a>
+      <a href="https://www.agria.se/hund/artiklar/sjukdomar-och-skador/kvarsittande-mjolktander/" target="_blank" rel="noopener"><b>Agria</b><span data-i18n="srcAgria">Valpens tandbyte</span></a>
+      <a href="https://wsava.org/" target="_blank" rel="noopener"><b>WSAVA</b><span data-i18n="srcWsava">Nutritionsriktlinjer för hund och katt</span></a>
+    </div>
+    <p class="fine" data-i18n="sourcesFine">Den här guiden sammanfattar allmänna, offentligt tillgängliga råd från Svenska Kennelklubben, Jordbruksverket, veterinärmedicinska källor och etologer. Regler för vaccination, id-märkning och koppeltvång kan ändras — kontrollera alltid aktuell information hos Jordbruksverket och din veterinär. Det här är pedagogisk information och ersätter aldrig bedömning från veterinär eller uppfödare.</p>
+  </section>
+
+  <p class="back-to-top"><a href="#main" data-i18n="backToTop">↑ Till toppen</a></p>
+
+</div>
+</main>
+
+<footer>
+  <div class="brand"><img class="brand-logo" src="/assets/title-doginary.png" alt="DOGINARY" loading="lazy" decoding="async"></div>
+  <div class="footer-taglines">
+    <p data-i18n="footerTagline">Gjord med omtanke för våta nosar och trygga starter i livet.</p>
+    <p class="footer-brand-line" data-i18n="footerBrandLine">Vet vad din valp behöver, varje dag.</p>
+  </div>
+  <p data-i18n="footerSource">Väderdata: © SMHI, öppna data.</p>
+</footer>
+
+<script>
+/* ==================================================================================
+   Language / i18n — mirrors the main site (same localStorage key, same lang buttons)
+   Default language for this page is Swedish, since the legal/regulatory content is
+   Sweden-specific (Jordbruksverket, SKK, svensk lag).
+   ================================================================================== */
+const STR = {
+  sv: {
+    pageTitle: "Valpguide: Allt du behöver veta om att skaffa valp | Doginary",
+    metaDescription: "Allt du behöver veta innan och efter att valpen flyttar hem: förberedelser, hemkomst, socialisering, tandbyte, promenader, varningstecken och träning. Källbaserad valpguide från Doginary.",
+    skipLink: "Hoppa till innehållet",
+    navForecast: "Idag", navLog: "Logg", navDogAdvice: "Hälsa & päls", navKnowledge: "Kunskap",
+    crumbHome: "Doginary", crumbKnowledge: "Hundkunskap", crumbPuppy: "Valp",
+    h1: "Att skaffa valp — allt du behöver veta",
+    lead: "Att få hem en valp är en av de finaste sakerna som finns — och ett stort ansvar. Den här guiden går igenom allt från förberedelser och hemkomst till socialisering, tandbyte, promenader, varningstecken och träning. Varje avsnitt bygger på råd från Svenska Kennelklubben (SKK), Jordbruksverket, veterinärmedicinska källor och etologer.",
+    tagPuppy: "Skaffa valp", tagGuide: "Valpguide", tagSources: "Källbaserad",
+    tocAriaLabel: "Innehållsförteckning", tocHeading: "I den här guiden",
+    tocIntro: "1. Att skaffa valp", tocPrep: "2. Förberedelser innan valpen kommer hem", tocHome: "3. Hemkomsten — valpens första dagar",
+    tocWeeks: "4. Valpens första veckor", tocTeeth: "5. När valpen får tänder", tocWalks: "6. Att gå ut med valpen",
+    tocWarning: "7. När något är fel", tocHabituate: "8. Avvänjning och vanor", tocFood: "9. Mat, kost och utfodring",
+    tocTraining: "10. Träning och mental stimulans", tocSummary: "11. Sammanfattning", tocSources: "Källor",
+    introHeading: "1. Att skaffa valp",
+    introText1: "Att välkomna en valp till familjen är fantastiskt roligt — men det är också ett åtagande som varar i tio, femton år eller längre. De första veckorna lägger grunden för hur hunden kommer att må och bete sig resten av livet.",
+    introText2: "Förberedelse är det som gör skillnad. Ju bättre rustad du är innan valpen flyttar hem, desto tryggare blir övergången — för valpen, för eventuella andra husdjur och för dig själv.",
+    introText3: "Som valpägare ansvarar du för valpens fysiska hälsa, mentala välmående, socialisering, säkerhet och juridiska registrering. Det är ett ansvar som enligt Svenska Kennelklubben börjar redan innan valpen sätter tassarna i sitt nya hem.",
+    introSources: "<b>Källor:</b> Svenska Kennelklubben (SKK), Jordbruksverket",
+    prepKicker: "FÖRE HEMKOMST", prepHeading: "2. Förberedelser innan valpen kommer hem",
+    prepPanelText: "Ett valpsäkrat hem gör de första dagarna lugnare för alla.",
+    prepChecklistTitle: "Checklista för hemmet",
+    prepChecklistList: "<li>Matskål och vattenskål</li><li>Valpfoder anpassat efter ras och storlek</li><li>Mysig sovplats eller bur/box</li><li>Halsband, sele och koppel</li><li>ID-bricka med kontaktuppgifter</li><li>Tuggleksaker och aktiveringsleksaker</li><li>Städmaterial för olyckor under toalettträningen</li>",
+    prepSafetyTitle: "Valpsäkring av hemmet",
+    prepSafetyText: "Valpar utforskar världen med munnen, vilket gör hemmet till en potentiell riskmiljö. Plocka undan elsladdar, giftiga växter, kemikalier och små föremål som kan sväljas. Blockera trappor och riskfyllda utrymmen med grindar.",
+    prepSpacesTitle: "Sovplats, matplats och leksaker",
+    prepSpacesText: "Skapa en lugn, avskild sovplats där valpen kan dra sig undan och vila ostört. Placera matplatsen på ett fast, städbart underlag, gärna en bit ifrån sovplatsen.",
+    prepFirstDayTitle: "Rekommenderade rutiner det första dygnet",
+    prepFirstDayText: "Håll det första dygnet lugnt. Undvik stora folksamlingar, högljudda hälsningar och långa bilresor om det går. Låt valpen utforska hemmet i sin egen takt och erbjud regelbundna toalettpauser.",
+    prepSources: "<b>Källor:</b> Svenska Kennelklubben (SKK), veterinärmedicinsk rådgivning (AniCura, Evidensia)",
+    prepImgAlt: "Valp i sitt nya, förberedda hem",
+    homeKicker: "DAG ETT", homeHeading: "3. Hemkomsten — valpens första dagar",
+    homePanelText: "Trygghet, lugn och tydliga rutiner gör den första tiden lättare.",
+    homeCalmTitle: "Att skapa trygghet",
+    homeCalmText: "Valpen har precis lämnat sin tik och sina kullsyskon, vilket i sig är en stor omställning. Ett lugnt tonläge, förutsägbara rutiner och en fast viloplats hjälper valpen att känna sig trygg snabbare.",
+    homeFamilyTitle: "Introduktion till familjen",
+    homeFamilyText: "Låt familjemedlemmar hälsa på valpen en i taget, lugnt och utan att trycka på. Barn bör alltid ha vuxentillsyn i mötet med en ny valp.",
+    homeNightTitle: "Första natten",
+    homeNightText: "Det är vanligt att valpen gnyr eller är orolig den första natten, eftersom den är van vid sina kullsyskons värme och närhet. En sovplats nära dig, gärna med en filt som doftar av kullen, kan underlätta.",
+    homeMealsTitle: "De första måltiderna",
+    homeMealsText: "Fortsätt gärna med samma foder som uppfödaren använt de första dagarna, för att undvika magbesvär, och byt sedan gradvis om det behövs.",
+    homeStressTitle: "Stress, oro och hur man hanterar det",
+    homeStressText: "Gäspningar, slickande och undanglidning är vanliga stressignaler. Ge valpen möjlighet att dra sig undan till sin trygga plats och undvik att tvinga fram kontakt.",
+    homeSources: "<b>Källor:</b> Svenska Kennelklubben (SKK), etologisk forskning, veterinärmedicinsk rådgivning",
+    homeImgAlt: "Valp som vilar tryggt hemma första dagen",
+    weeksKicker: "DE FÖRSTA VECKORNA", weeksHeading: "4. Valpens första veckor",
+    weeksPanelText: "Rutiner, toalettträning och socialisering lägger grunden för resten av livet.",
+    weeksRoutineTitle: "Rutiner",
+    weeksRoutineText: "Fasta tider för mat, promenader, lek och vila gör det lättare för valpen att förstå vad som förväntas och skapar en känsla av trygghet.",
+    weeksToiletTitle: "Toalettträning",
+    weeksToiletText: "Ta ut valpen ofta — efter sömn, lek och måltider — och belöna direkt när den gör sina behov på rätt plats. Olyckor inomhus är en normal del av inlärningen och ska aldrig bestraffas.",
+    weeksSocialTitle: "Socialisering",
+    weeksSocialText: "Perioden mellan cirka tre och tolv–fjorton veckors ålder räknas som valpens känsliga socialiseringsfönster, då hjärnan är extra mottaglig för nya intryck. Positiva möten med människor, ljud, miljöer och andra djur under den här perioden bidrar till en tryggare vuxen hund.",
+    weeksHandlingTitle: "Hanteringsträning",
+    weeksHandlingText: "Vänj valpen vid att bli hanterad över hela kroppen — tassar, öron, mun och svans — i korta, positiva pass. Det gör framtida veterinärbesök och pälsvård betydligt enklare.",
+    weeksAloneTitle: "Ensamhetsträning",
+    weeksAloneText: "Börja med mycket korta stunder ensam i ett annat rum och öka gradvis. Att lämna valpen ensam för länge, för tidigt, ökar risken för separationsrelaterad stress.",
+    weeksEnvTitle: "Miljöträning",
+    weeksEnvText: "Introducera nya miljöer, underlag och ljud i lugnt tempo och låt valpen själv välja hur nära den vill komma. Backa om valpen visar tecken på obehag och försök igen senare.",
+    weeksSources: "<b>Källor:</b> Svenska Kennelklubben (SKK), etologisk forskning om valpars socialiseringsperiod, veterinärmedicinsk rådgivning",
+    weeksImgAlt: "Valp som socialiseras och möter nya intryck",
+    teethKicker: "TANDBYTE", teethHeading: "5. När valpen får tänder",
+    teethPanelText: "Ett ökat tuggbehov är helt normalt under tandväxlingen.",
+    teethNeedTitle: "Tuggbehov",
+    teethNeedText: "Valpens 28 mjölktänder börjar bytas mot 42 permanenta tänder vid ungefär tre till fyra månaders ålder, och tandväxlingen är i regel klar vid sex till sju månader. Under den här tiden ökar tuggbehovet märkbart eftersom tandköttet kliar.",
+    teethNormalTitle: "Vad som är normalt",
+    teethNormalText: "Ökat tuggande, lätt dregel och att tappade mjölktänder hittas (eller sväljs, vilket sällan är farligt) är normala delar av tandväxlingen.",
+    teethWarnTitle: "Varningstecken — kontakta veterinär",
+    teethWarnList: "<li>Mjölktand som sitter kvar sida vid sida med en permanent tand i mer än ett par veckor</li><li>Trasig eller avbruten mjölktand</li><li>Kraftig smärta, ovilja att äta eller svullnad i munnen</li><li>Inga permanenta tänder trots att valpen är sex till sju månader</li>",
+    teethToysTitle: "Rekommenderade tuggleksaker",
+    teethToysText: "Välj mjukare tuggleksaker anpassade för valpar — hårda ben och horn kan skada de känsliga mjölktänderna. Kalla, fuktade tygbitar kan lugna irriterat tandkött.",
+    teethBehaviorTitle: "Undvika felaktigt beteende",
+    teethBehaviorText: "Styr om bitandet till en tuggleksak istället för händer eller möbler, och var konsekvent — hela familjen bör hantera bitandet på samma sätt.",
+    teethSources: "<b>Källor:</b> veterinärmedicinsk forskning och rådgivning (Agria, AniCura, FirstVet), Svenska Kennelklubben (SKK)",
+    teethImgAlt: "Valp som tuggar på en tuggleksak under tandbytet",
+    walksKicker: "UTOMHUS", walksHeading: "6. Att gå ut med valpen",
+    walksPanelText: "Vaccinationsskydd, koppelträning och trygga möten går hand i hand.",
+    walksWhenTitle: "När valpen får börja gå ut",
+    walksWhenText: "Många veterinärkliniker rekommenderar att vänta med promenader på allmänna platser tills valpen fått sin andra vaccination, vid cirka tolv till tretton veckors ålder, för att minska smittrisken. I väntan på detta kan valpen med fördel bäras eller vistas i egen trädgård för miljöträning.",
+    walksLeashTitle: "Koppelträning",
+    walksLeashText: "Börja koppelträningen inomhus eller i en lugn, trygg miljö. Belöna valpen för att gå med löst koppel och undvik att dra i kopplet.",
+    walksSafetyTitle: "Säkerhet utomhus",
+    walksSafetyText: "I Sverige gäller enligt lagen om tillsyn över hundar och katter att hundar ska hållas under sådan uppsikt att de inte kan springa lösa i marker med vilt mellan den 1 mars och den 20 augusti, för att skydda djurens ungar under den känsliga perioden. I många naturreservat gäller koppeltvång året runt.",
+    walksSocialTitle: "Socialisering med andra hundar",
+    walksSocialText: "Låt valpen möta vuxna, stabila hundar i kontrollerade former. Undvik okontrollerade möten med okända hundar tills valpen har grundläggande social erfarenhet.",
+    walksVaccTitle: "Vaccinationsregler",
+    walksVaccText: "Grundvaccination mot valpsjuka, parvovirus och smittsam leverinflammation ges i regel vid åtta veckors ålder (ofta av uppfödaren) och följs av en andra dos vid tolv veckor samt en tredje vid sex till tolv månaders ålder. Vaccination mot rabies krävs endast för hundar som ska resa utomlands, och alla hundar i Sverige ska enligt lag id-märkas och registreras i Jordbruksverkets hundregister innan de är fyra månader gamla.",
+    walksSources: "<b>Källor:</b> Jordbruksverket, Svenska Kennelklubben (SKK), veterinärmedicinsk rådgivning (AniCura, Evidensia)",
+    walksImgAlt: "Valp på promenad i koppel",
+    warnKicker: "VAR UPPMÄRKSAM", warnHeading: "7. När man ska vara uppmärksam på att något är fel",
+    warnPanelText: "Tidig upptäckt gör stor skillnad för valpens hälsa.",
+    warnHealthTitle: "Vanliga hälsosymtom att uppmärksamma",
+    warnHealthList: "<li>Kräkningar eller diarré, särskilt om det upprepas</li><li>Ovilja att äta i mer än ett dygn</li><li>Slöhet eller ovanligt låg energinivå</li><li>Hosta, snuva eller andningssvårigheter</li><li>Hälta eller ovilja att gå</li>",
+    warnBehaviorTitle: "Beteendeförändringar",
+    warnBehaviorText: "Plötslig tillbakadragenhet, ökad rädsla, aggression eller förändrade sömnmönster kan vara tecken på obehag, smärta eller otillräcklig socialisering och bör tas på allvar.",
+    warnVetTitle: "När man ska kontakta veterinär",
+    warnVetText: "Kontakta veterinär samma dag vid kraftiga eller upprepade symtom, misstänkt förgiftning, andningssvårigheter eller om valpen verkar ha ont. Vid osäkerhet är det alltid bättre att fråga en gång för mycket än en gång för lite.",
+    warnSources: "<b>Källor:</b> veterinärmedicinsk rådgivning (AniCura, Evidensia, FirstVet), Svenska Kennelklubben (SKK)",
+    warnImgAlt: "Ägare undersöker valpen försiktigt",
+    habitKicker: "VANOR", habitHeading: "8. Att vänja valpen av och vid olika saker",
+    habitPanelText: "Tålamod och konsekvens vinner över tvång.",
+    habitBiteTitle: "Avvänjning från bitande",
+    habitBiteText: "Avbryt leken lugnt och kortvarigt när valpen biter för hårt, och belöna mjuk munanvändning. Konsekvens från alla i hushållet ger snabbast resultat.",
+    habitStressTitle: "Avvänjning från separationsstress",
+    habitStressText: "Bygg upp ensamhetsträningen stegvis och undvik känslosamma avsked. Lämna valpen med något tryggt, exempelvis en tuggleksak, i en trygg miljö.",
+    habitBarkTitle: "Avvänjning från överdrivet skällande",
+    habitBarkText: "Ta reda på vad som utlöser skällandet — rädsla, uppmärksamhetssökande eller understimulans — och arbeta med orsaken snarare än enbart symtomet.",
+    habitNailsTitle: "Vänja vid kloklippning",
+    habitNailsText: "Låt valpen vänja sig vid att tassarna hålls och vidrörs innan klipparen ens visas. Klipp gärna en tass i taget och avsluta alltid positivt.",
+    habitCarTitle: "Vänja vid bil",
+    habitCarText: "Börja med korta stunder i stillastående bil innan de första korta körturerna. Säkra alltid valpen med bur, bälte eller skyddsgaller.",
+    habitAloneTitle: "Vänja vid ensamhet",
+    habitAloneText: "Öka tiden gradvis och lämna alltid rummet lugnt, utan dramatik — både vid avsked och återkomst.",
+    habitSources: "<b>Källor:</b> etologisk forskning, Svenska Kennelklubben (SKK), veterinärmedicinsk rådgivning",
+    habitImgAlt: "Valp som vänjer sig vid hantering och nya rutiner",
+    foodKicker: "KOST", foodHeading: "9. Mat, kost och utfodring",
+    foodPanelText: "Rätt foder i rätt mängd lägger grunden för en frisk uppväxt.",
+    foodTypeTitle: "Rekommenderat valpfoder",
+    foodTypeText: "Välj ett komplett foder anpassat för valpar av rätt storlekskategori — foder för stora raser är utformat för att stödja en långsammare skeletttillväxt än foder för mindre raser.",
+    foodPortionTitle: "Portionsstorlek",
+    foodPortionText: "Följ foderpaketets rekommendationer utifrån valpens vikt och ålder som utgångspunkt, och justera efter hull snarare än efter ögonmått.",
+    foodRoutineTitle: "Utfodringsrutiner",
+    foodRoutineText: "Små valpar äter i regel tre till fyra gånger om dagen, vilket successivt kan minskas till två gånger när valpen blir äldre.",
+    foodMistakesTitle: "Vanliga misstag",
+    foodMistakesList: "<li>Överutfodring och för mycket mellanmål</li><li>Att byta foder för snabbt utan infasning</li><li>Att ge vuxenfoder för tidigt</li><li>Att använda för mycket mänsklig mat som belöning</li>",
+    foodSources: "<b>Källor:</b> WSAVA:s nutritionsriktlinjer, Svenska Kennelklubben (SKK), veterinärmedicinsk rådgivning",
+    foodImgAlt: "Valp som äter ur sin matskål",
+    trainKicker: "TRÄNING", trainHeading: "10. Träning och mental stimulans",
+    trainPanelText: "Korta, roliga pass ger bäst resultat.",
+    trainPlayTitle: "Lek",
+    trainPlayText: "Lek är en av valpens viktigaste inlärningskanaler och bygger både relation och impulskontroll.",
+    trainBasicTitle: "Grundläggande lydnad",
+    trainBasicText: "Enkla kommandon som sitt, hitkomst och kontakt ger en bra grund att bygga vidare på.",
+    trainRewardTitle: "Belöningsbaserad träning",
+    trainRewardText: "Belöningsbaserad träning, där önskat beteende förstärks positivt, rekommenderas av moderna etologer och hundorganisationer som ett skonsamt och effektivt sätt att träna valpar.",
+    trainAmountTitle: "Hur mycket träning en valp ska ha",
+    trainAmountText: "Korta pass om några minuter, flera gånger om dagen, fungerar bättre än långa träningspass — valpens koncentrationsförmåga är fortfarande under utveckling.",
+    trainSources: "<b>Källor:</b> Svenska Kennelklubben (SKK), etologisk forskning om belöningsbaserad inlärning",
+    trainImgAlt: "Valp som tränar med sin ägare",
+    summaryHeading: "11. Sammanfattning",
+    summaryText: "Att skaffa valp handlar om förberedelse, tålamod och konsekvens. Genom att valpsäkra hemmet, skapa trygghet från dag ett, socialisera under det känsliga fönstret, hålla koll på tandbyte och hälsa, följa gällande regler för promenader och vaccination, samt träna med belöning istället för tvång, ger du din valp bästa möjliga start i livet.",
+    summarySources: "<b>Källor:</b> Svenska Kennelklubben (SKK), Jordbruksverket, veterinärmedicinsk forskning, etologer",
+    ctaHeading: "Håll koll på valpens vardag med Doginary",
+    ctaText: "Logga promenader, väder och rutiner på ett ställe — gratis, ingen app krävs.",
+    ctaButton: "Starta din logg →",
+    sourcesHeading: "Källor",
+    srcSkk: "Vaccination och hälsa", srcJbv: "Märkning och registrering av hundar", srcLaw: "Lagen om tillsyn över hundar och katter",
+    srcAnicura: "Valpens utveckling och vaccination", srcEvidensia: "Vägledning för valpägare", srcAgria: "Valpens tandbyte",
+    srcWsava: "Nutritionsriktlinjer för hund och katt",
+    sourcesFine: "Den här guiden sammanfattar allmänna, offentligt tillgängliga råd från Svenska Kennelklubben, Jordbruksverket, veterinärmedicinska källor och etologer. Regler för vaccination, id-märkning och koppeltvång kan ändras — kontrollera alltid aktuell information hos Jordbruksverket och din veterinär. Det här är pedagogisk information och ersätter aldrig bedömning från veterinär eller uppfödare.",
+    backToTop: "↑ Till toppen",
+    footerTagline: "Gjord med omtanke för våta nosar och trygga starter i livet.",
+    footerBrandLine: "Vet vad din valp behöver, varje dag.",
+    footerSource: "Väderdata: © SMHI, öppna data."
+  },
+  en: {
+    pageTitle: "Puppy Guide: Everything You Need to Know About Getting a Puppy | Doginary",
+    metaDescription: "Everything you need before and after your puppy comes home: preparation, homecoming, socialization, teething, walks, warning signs and training. A source-based puppy guide from Doginary.",
+    skipLink: "Skip to content",
+    navForecast: "Today", navLog: "Log", navDogAdvice: "Health & coat", navKnowledge: "Knowledge",
+    crumbHome: "Doginary", crumbKnowledge: "Dog Knowledge", crumbPuppy: "Puppy",
+    h1: "Getting a puppy — everything you need to know",
+    lead: "Bringing home a puppy is one of the best things there is — and a big responsibility. This guide covers everything from preparation and homecoming to socialization, teething, walks, warning signs and training. Every section draws on guidance from the Swedish Kennel Club (SKK), the Swedish Board of Agriculture (Jordbruksverket), veterinary sources and ethologists.",
+    tagPuppy: "Getting a puppy", tagGuide: "Puppy guide", tagSources: "Source-based",
+    tocAriaLabel: "Table of contents", tocHeading: "In this guide",
+    tocIntro: "1. Getting a puppy", tocPrep: "2. Preparing before the puppy comes home", tocHome: "3. Homecoming — the puppy's first days",
+    tocWeeks: "4. The puppy's first weeks", tocTeeth: "5. When the puppy gets its teeth", tocWalks: "6. Walking your puppy",
+    tocWarning: "7. When something is wrong", tocHabituate: "8. Habituation and unlearning habits", tocFood: "9. Food, diet and feeding",
+    tocTraining: "10. Training and mental stimulation", tocSummary: "11. Final thoughts", tocSources: "Sources",
+    introHeading: "1. Getting a puppy",
+    introText1: "Welcoming a puppy into the family is wonderful — but it's also a commitment that lasts ten, fifteen years or more. The first weeks lay the foundation for how the dog will feel and behave for the rest of its life.",
+    introText2: "Preparation makes the difference. The better prepared you are before the puppy moves in, the smoother the transition — for the puppy, for any other pets, and for you.",
+    introText3: "As a puppy owner you're responsible for the puppy's physical health, mental wellbeing, socialization, safety and legal registration — a responsibility that, according to the Swedish Kennel Club, begins even before the puppy sets paw in its new home.",
+    introSources: "<b>Sources:</b> Swedish Kennel Club (SKK), Swedish Board of Agriculture (Jordbruksverket)",
+    prepKicker: "BEFORE HOMECOMING", prepHeading: "2. Preparing before the puppy comes home",
+    prepPanelText: "A puppy-proofed home makes the first days calmer for everyone.",
+    prepChecklistTitle: "Home checklist",
+    prepChecklistList: "<li>Food and water bowls</li><li>Puppy food suited to breed and size</li><li>A cozy sleeping spot or crate</li><li>Collar, harness and leash</li><li>ID tag with contact details</li><li>Chew toys and enrichment toys</li><li>Cleaning supplies for house-training accidents</li>",
+    prepSafetyTitle: "Puppy-proofing the home",
+    prepSafetyText: "Puppies explore the world with their mouths, which makes the home a potential hazard zone. Remove electrical cords, toxic plants, chemicals and small objects that could be swallowed. Block off stairs and risky areas with gates.",
+    prepSpacesTitle: "Sleeping spot, feeding spot and toys",
+    prepSpacesText: "Create a calm, separate sleeping spot where the puppy can retreat and rest undisturbed. Place the feeding spot on a solid, easy-to-clean surface, ideally away from the sleeping area.",
+    prepFirstDayTitle: "Recommended routines for the first 24 hours",
+    prepFirstDayText: "Keep the first day calm. Avoid large gatherings, loud greetings and long car rides if possible. Let the puppy explore the home at its own pace and offer regular bathroom breaks.",
+    prepSources: "<b>Sources:</b> Swedish Kennel Club (SKK), veterinary guidance (AniCura, Evidensia)",
+    prepImgAlt: "Puppy in its new, prepared home",
+    homeKicker: "DAY ONE", homeHeading: "3. Homecoming — the puppy's first days",
+    homePanelText: "Security, calm and clear routines make the first period easier.",
+    homeCalmTitle: "Creating a sense of security",
+    homeCalmText: "The puppy has just left its mother and littermates, which is a big change in itself. A calm tone of voice, predictable routines and a fixed resting spot help the puppy feel secure faster.",
+    homeFamilyTitle: "Introducing the family",
+    homeFamilyText: "Let family members greet the puppy one at a time, calmly and without crowding it. Children should always be supervised by an adult when meeting a new puppy.",
+    homeNightTitle: "The first night",
+    homeNightText: "It's common for a puppy to whine or feel unsettled the first night, since it's used to the warmth and closeness of its littermates. A sleeping spot near you, ideally with a blanket that smells of the litter, can help.",
+    homeMealsTitle: "The first meals",
+    homeMealsText: "It's a good idea to continue with the same food the breeder used for the first few days, to avoid stomach upset, then gradually transition if needed.",
+    homeStressTitle: "Stress, anxiety and how to handle it",
+    homeStressText: "Yawning, lip-licking and moving away are common stress signals. Give the puppy the chance to retreat to its safe spot, and avoid forcing contact.",
+    homeSources: "<b>Sources:</b> Swedish Kennel Club (SKK), ethological research, veterinary guidance",
+    homeImgAlt: "Puppy resting safely at home on its first day",
+    weeksKicker: "THE FIRST WEEKS", weeksHeading: "4. The puppy's first weeks",
+    weeksPanelText: "Routines, house-training and socialization lay the foundation for life.",
+    weeksRoutineTitle: "Routines",
+    weeksRoutineText: "Fixed times for food, walks, play and rest make it easier for the puppy to understand what's expected and build a sense of security.",
+    weeksToiletTitle: "House-training",
+    weeksToiletText: "Take the puppy out often — after sleeping, playing and eating — and reward it immediately for going in the right spot. Accidents indoors are a normal part of learning and should never be punished.",
+    weeksSocialTitle: "Socialization",
+    weeksSocialText: "The period between roughly three and twelve to fourteen weeks of age is considered the puppy's sensitive socialization window, when the brain is especially receptive to new impressions. Positive encounters with people, sounds, environments and other animals during this period contribute to a more confident adult dog.",
+    weeksHandlingTitle: "Handling training",
+    weeksHandlingText: "Get the puppy used to being handled all over — paws, ears, mouth and tail — in short, positive sessions. This makes future vet visits and grooming much easier.",
+    weeksAloneTitle: "Alone-time training",
+    weeksAloneText: "Start with very short periods alone in another room and increase gradually. Leaving a puppy alone too long, too soon, increases the risk of separation-related stress.",
+    weeksEnvTitle: "Environmental training",
+    weeksEnvText: "Introduce new environments, surfaces and sounds at a calm pace and let the puppy decide how close it wants to get. Back off if the puppy shows signs of discomfort and try again later.",
+    weeksSources: "<b>Sources:</b> Swedish Kennel Club (SKK), ethological research on the puppy socialization period, veterinary guidance",
+    weeksImgAlt: "Puppy being socialized and meeting new impressions",
+    teethKicker: "TEETHING", teethHeading: "5. When the puppy gets its teeth",
+    teethPanelText: "An increased need to chew is completely normal during teething.",
+    teethNeedTitle: "The need to chew",
+    teethNeedText: "The puppy's 28 baby teeth start being replaced by 42 permanent teeth at around three to four months of age, and teething is usually complete by six to seven months. During this time the urge to chew increases noticeably because the gums are itchy.",
+    teethNormalTitle: "What's normal",
+    teethNormalText: "Increased chewing, mild drooling, and finding (or swallowing, which is rarely dangerous) lost baby teeth are all normal parts of teething.",
+    teethWarnTitle: "Warning signs — contact a vet",
+    teethWarnList: "<li>A baby tooth still in place alongside a permanent tooth for more than a couple of weeks</li><li>A broken or fractured baby tooth</li><li>Severe pain, reluctance to eat, or swelling in the mouth</li><li>No permanent teeth despite the puppy being six to seven months old</li>",
+    teethToysTitle: "Recommended chew toys",
+    teethToysText: "Choose softer chew toys designed for puppies — hard bones and antlers can damage the delicate baby teeth. Cold, dampened cloths can soothe irritated gums.",
+    teethBehaviorTitle: "Avoiding unwanted behavior",
+    teethBehaviorText: "Redirect biting toward a chew toy instead of hands or furniture, and be consistent — everyone in the household should handle biting the same way.",
+    teethSources: "<b>Sources:</b> veterinary research and guidance (Agria, AniCura, FirstVet), Swedish Kennel Club (SKK)",
+    teethImgAlt: "Puppy chewing on a chew toy during teething",
+    walksKicker: "OUTDOORS", walksHeading: "6. Walking your puppy",
+    walksPanelText: "Vaccination protection, leash training and safe encounters go hand in hand.",
+    walksWhenTitle: "When the puppy can start going outside",
+    walksWhenText: "Many veterinary clinics recommend waiting to walk in public places until the puppy has had its second vaccination, at around twelve to thirteen weeks of age, to reduce the risk of infection. In the meantime, the puppy can be carried or spend time in your own garden for environmental training.",
+    walksLeashTitle: "Leash training",
+    walksLeashText: "Start leash training indoors or in a calm, safe environment. Reward the puppy for walking on a loose leash and avoid pulling on the lead.",
+    walksSafetyTitle: "Outdoor safety",
+    walksSafetyText: "In Sweden, the Act on the Supervision of Dogs and Cats requires dogs to be supervised closely enough that they cannot run loose in areas with wildlife between 1 March and 20 August, to protect young wild animals during this sensitive period. In many nature reserves, leash requirements apply year-round.",
+    walksSocialTitle: "Socializing with other dogs",
+    walksSocialText: "Let the puppy meet calm, stable adult dogs in controlled settings. Avoid uncontrolled encounters with unfamiliar dogs until the puppy has some basic social experience.",
+    walksVaccTitle: "Vaccination rules",
+    walksVaccText: "Core vaccination against distemper, parvovirus and infectious canine hepatitis is usually given at around eight weeks of age (often by the breeder), followed by a second dose at twelve weeks and a third between six and twelve months. Rabies vaccination is only required for dogs travelling abroad, and by law every dog in Sweden must be microchipped and registered in Jordbruksverket's dog register before it is four months old.",
+    walksSources: "<b>Sources:</b> Swedish Board of Agriculture (Jordbruksverket), Swedish Kennel Club (SKK), veterinary guidance (AniCura, Evidensia)",
+    walksImgAlt: "Puppy on a leash walk",
+    warnKicker: "STAY ALERT", warnHeading: "7. When to be alert that something is wrong",
+    warnPanelText: "Early detection makes a big difference to a puppy's health.",
+    warnHealthTitle: "Common health symptoms to watch for",
+    warnHealthList: "<li>Vomiting or diarrhea, especially if repeated</li><li>Refusing to eat for more than 24 hours</li><li>Lethargy or unusually low energy</li><li>Coughing, a runny nose, or difficulty breathing</li><li>Limping or reluctance to walk</li>",
+    warnBehaviorTitle: "Behavioral changes",
+    warnBehaviorText: "Sudden withdrawal, increased fearfulness, aggression or changed sleep patterns can be signs of discomfort, pain or insufficient socialization, and should be taken seriously.",
+    warnVetTitle: "When to contact a vet",
+    warnVetText: "Contact a vet the same day for severe or repeated symptoms, suspected poisoning, difficulty breathing, or if the puppy seems to be in pain. When in doubt, it's always better to ask once too often than not enough.",
+    warnSources: "<b>Sources:</b> veterinary guidance (AniCura, Evidensia, FirstVet), Swedish Kennel Club (SKK)",
+    warnImgAlt: "Owner gently examining the puppy",
+    habitKicker: "HABITS", habitHeading: "8. Unlearning habits and getting used to new things",
+    habitPanelText: "Patience and consistency beat force.",
+    habitBiteTitle: "Unlearning biting",
+    habitBiteText: "Calmly and briefly pause play when the puppy bites too hard, and reward gentle mouth use. Consistency from everyone in the household gives the fastest results.",
+    habitStressTitle: "Unlearning separation stress",
+    habitStressText: "Build up alone-time training gradually and avoid emotional goodbyes. Leave the puppy with something comforting, such as a chew toy, in a safe environment.",
+    habitBarkTitle: "Unlearning excessive barking",
+    habitBarkText: "Figure out what triggers the barking — fear, attention-seeking or understimulation — and address the cause rather than just the symptom.",
+    habitNailsTitle: "Getting used to nail trimming",
+    habitNailsText: "Get the puppy used to having its paws held and touched before the clippers are even introduced. Trim one paw at a time and always end on a positive note.",
+    habitCarTitle: "Getting used to the car",
+    habitCarText: "Start with short periods in a parked car before the first short drives. Always secure the puppy with a crate, harness or barrier.",
+    habitAloneTitle: "Getting used to being alone",
+    habitAloneText: "Increase the time gradually and always leave the room calmly, without drama — both when leaving and returning.",
+    habitSources: "<b>Sources:</b> ethological research, Swedish Kennel Club (SKK), veterinary guidance",
+    habitImgAlt: "Puppy getting used to handling and new routines",
+    foodKicker: "DIET", foodHeading: "9. Food, diet and feeding",
+    foodPanelText: "The right food in the right amount builds the foundation for a healthy upbringing.",
+    foodTypeTitle: "Recommended puppy food",
+    foodTypeText: "Choose a complete food suited to the right size category — food for large breeds is formulated to support slower skeletal growth than food for smaller breeds.",
+    foodPortionTitle: "Portion size",
+    foodPortionText: "Use the food packaging's recommendations based on the puppy's weight and age as a starting point, and adjust based on body condition rather than by eye.",
+    foodRoutineTitle: "Feeding routines",
+    foodRoutineText: "Young puppies typically eat three to four times a day, which can gradually be reduced to twice a day as the puppy gets older.",
+    foodMistakesTitle: "Common mistakes",
+    foodMistakesList: "<li>Overfeeding and too many snacks</li><li>Switching food too quickly without a transition period</li><li>Introducing adult food too early</li><li>Relying too heavily on human food as rewards</li>",
+    foodSources: "<b>Sources:</b> WSAVA nutritional guidelines, Swedish Kennel Club (SKK), veterinary guidance",
+    foodImgAlt: "Puppy eating from its food bowl",
+    trainKicker: "TRAINING", trainHeading: "10. Training and mental stimulation",
+    trainPanelText: "Short, fun sessions give the best results.",
+    trainPlayTitle: "Play",
+    trainPlayText: "Play is one of the puppy's most important learning channels and builds both relationship and impulse control.",
+    trainBasicTitle: "Basic obedience",
+    trainBasicText: "Simple cues like sit, recall and eye contact provide a solid foundation to build on.",
+    trainRewardTitle: "Reward-based training",
+    trainRewardText: "Reward-based training, where desired behavior is reinforced positively, is recommended by modern ethologists and dog organizations as a gentle and effective way to train puppies.",
+    trainAmountTitle: "How much training a puppy needs",
+    trainAmountText: "Short sessions of a few minutes, several times a day, work better than long training sessions — a puppy's attention span is still developing.",
+    trainSources: "<b>Sources:</b> Swedish Kennel Club (SKK), ethological research on reward-based learning",
+    trainImgAlt: "Puppy training with its owner",
+    summaryHeading: "11. Final thoughts",
+    summaryText: "Getting a puppy is about preparation, patience and consistency. By puppy-proofing your home, building security from day one, socializing during the sensitive window, keeping an eye on teething and health, following the rules for walks and vaccination, and training with rewards instead of force, you give your puppy the best possible start in life.",
+    summarySources: "<b>Sources:</b> Swedish Kennel Club (SKK), Swedish Board of Agriculture (Jordbruksverket), veterinary research, ethologists",
+    ctaHeading: "Keep track of your puppy's daily routine with Doginary",
+    ctaText: "Log walks, weather and routines in one place — free, no app required.",
+    ctaButton: "Start your log →",
+    sourcesHeading: "Sources",
+    srcSkk: "Vaccination and health", srcJbv: "Microchipping and registering dogs", srcLaw: "Act on the Supervision of Dogs and Cats",
+    srcAnicura: "Puppy development and vaccination", srcEvidensia: "Guidance for puppy owners", srcAgria: "Puppy teething",
+    srcWsava: "Nutritional guidelines for dogs and cats",
+    sourcesFine: "This guide summarises general, publicly available advice from the Swedish Kennel Club, the Swedish Board of Agriculture, veterinary sources and ethologists. Rules on vaccination, microchipping and leash requirements can change — always check current information with Jordbruksverket and your vet. This is educational information and never replaces the judgement of a veterinarian or breeder.",
+    backToTop: "↑ Back to top",
+    footerTagline: "Made with care for wet noses and safe starts in life.",
+    footerBrandLine: "Know what your puppy needs, every day.",
+    footerSource: "Weather data: © SMHI, open data."
+  }
+};
+
+const langBtnSvEl = document.getElementById('langBtnSv');
+const langBtnEnEl = document.getElementById('langBtnEn');
+
+let lang = (() => {
+  try {
+    const saved = localStorage.getItem('dogWeatherLang');
+    if (saved === 'en' || saved === 'sv') return saved;
+  } catch { /* localStorage may be unavailable */ }
+  return 'sv';
+})();
+
+function applyStaticTranslations() {
+  document.documentElement.lang = lang;
+  document.title = STR[lang].pageTitle;
+  const metaDesc = document.getElementById('metaDescriptionTag');
+  if (metaDesc) metaDesc.setAttribute('content', STR[lang].metaDescription);
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (STR[lang][key] != null) el.innerHTML = STR[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+    const key = el.getAttribute('data-i18n-aria-label');
+    if (STR[lang][key] != null) el.setAttribute('aria-label', STR[lang][key]);
+  });
+  document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+    const key = el.getAttribute('data-i18n-alt');
+    if (STR[lang][key] != null) el.setAttribute('alt', STR[lang][key]);
+  });
+
+  if (langBtnSvEl) langBtnSvEl.hidden = lang !== 'en';
+  if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';
+}
+
+function setLang(newLang) {
+  if ((newLang !== 'en' && newLang !== 'sv') || newLang === lang) return;
+  lang = newLang;
+  try { localStorage.setItem('dogWeatherLang', lang); } catch { /* ignore */ }
+  applyStaticTranslations();
+}
+
+langBtnSvEl?.addEventListener('click', () => setLang('sv'));
+langBtnEnEl?.addEventListener('click', () => setLang('en'));
+
+applyStaticTranslations();
+
+/* ==================================================================================
+   Visit counter — same Supabase project and table as the main site
+   ================================================================================== */
+const VISIT_SUPABASE_URL = "https://ibytawdimgthoqwtbtgv.supabase.co";
+const VISIT_SUPABASE_KEY = "sb_publishable_X4l9e5OPXE9Cq4XVc1jm_A_Hb6tbJUO";
+
+const EXCLUDED_VISITOR_IDS = [];
+
+function getVisitorId() {
+  let id = localStorage.getItem("visitor_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("visitor_id", id);
+  }
+  return id;
+}
+
+async function getVisitorCountry() {
+  try {
+    const response = await fetch("https://ipapi.co/json/");
+    const data = await response.json();
+    return data.country_name || "Unknown";
+  } catch (error) {
+    return "Unknown";
+  }
+}
+
+async function registerVisit() {
+  if (localStorage.getItem("site_owner") === "true") return;
+
+  const visitorId = getVisitorId();
+  if (EXCLUDED_VISITOR_IDS.includes(visitorId)) return;
+
+  try {
+    const country = await getVisitorCountry();
+    await fetch(`${VISIT_SUPABASE_URL}/rest/v1/visits`, {
+      method: "POST",
+      headers: {
+        apikey: VISIT_SUPABASE_KEY,
+        Authorization: `Bearer ${VISIT_SUPABASE_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify({
+        site: "doginary",
+        page: "knowledge-puppy",
+        page_url: window.location.pathname,
+        visitor_id: visitorId,
+        country: country
+      })
+    });
+  } catch (error) {
+    console.error("Visit registration failed:", error);
+  }
+}
+
+if (window.requestIdleCallback) requestIdleCallback(registerVisit, { timeout: 2000 });
+else setTimeout(registerVisit, 1200);
+</script>
+</body>
+</html>

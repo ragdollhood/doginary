@@ -549,7 +549,7 @@
 
   .quicklog-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 14px;
   }
 
@@ -578,19 +578,21 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    gap: 5px;
+    gap: 6px;
+    overflow: hidden;
+    box-sizing: border-box;
   }
 
   .quicklog-label{
     font-family: 'Fraunces', serif;
     font-weight: 500;
-    font-size: clamp(13px, 3.4vw, 17px);
+    font-size: clamp(15px, 4.6vw, 22px);
     line-height: 1.15;
     color: var(--ink);
   }
 
   .quicklog-count{
-    font-size: 11px;
+    font-size: 12px;
     color: var(--ink-soft);
   }
 
@@ -599,21 +601,27 @@
   .quicklog-opts{
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 6px;
     margin-top: 2px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .quicklog-opt{
     font-family: 'Inter', sans-serif;
-    font-size: clamp(10.5px, 2.5vw, 12.5px);
+    font-size: clamp(12px, 3.4vw, 15.5px);
     font-weight: 600;
     color: var(--surface);
     background: var(--teal);
     border: none;
     border-radius: 999px;
-    padding: 5px 10px;
+    padding: 6px 12px;
     cursor: pointer;
     line-height: 1.2;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: break-word;
+    text-align: center;
     transition: transform .12s ease, background .15s ease;
   }
   .quicklog-opt:hover{ background: #243b43; }
@@ -624,7 +632,7 @@
   .quicklog-logged{
     font-family: 'Fraunces', serif;
     font-weight: 600;
-    font-size: clamp(15px, 4vw, 19px);
+    font-size: clamp(16px, 4.6vw, 21px);
     color: var(--reward);
     letter-spacing: .04em;
   }
@@ -637,27 +645,32 @@
   }
   .quicklog-status.err{ color: var(--warn); }
 
-  /* ---------- Laptop: dubbelt så stora foto-kort ----------
+  /* ---------- Laptop: bredda snabbloggs-sektionen, fortfarande två
+     bilder per rad ----------
      Percentbaserad skylt-positionering nedan skalar automatiskt med
-     kortets storlek, så det räcker att bredda grid-kolumnerna. */
+     kortets storlek, så det räcker att bredda själva sektionen. */
   @media (min-width: 640px){
-    .quicklog-grid{
-      grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
-      gap: 18px;
+    .quicklog{
+      width: 100vw;
+      max-width: 960px;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      padding: 0 28px;
     }
-    .quicklog-opt{ padding: 7px 14px; }
+    .quicklog-grid{ gap: 22px; }
+    .quicklog-opt{ padding: 8px 16px; }
   }
 
   /* Skyltens läge per bild — tuned mot den vita ytan i respektive foto. */
-  .quicklog-card[data-type="sleep"] .quicklog-sign{ left: 7%;   top: 24.5%; width: 72%; height: 59%; }
-  .quicklog-card[data-type="bath"]  .quicklog-sign{ left: 9%;   top: 25%;   width: 48%; height: 57%; }
-  .quicklog-card[data-type="brush"] .quicklog-sign{ left: 7%;   top: 25%;   width: 55%; height: 58%; }
-  .quicklog-card[data-type="claw"]  .quicklog-sign{ left: 7%;   top: 25%;   width: 55%; height: 58%; }
-  .quicklog-card[data-type="eat"]   .quicklog-sign{ left: 10%;  top: 25%;   width: 70%; height: 62%; }
-  .quicklog-card[data-type="walk"]  .quicklog-sign{ left: 10%;  top: 25%;   width: 59%; height: 58%; }
-  .quicklog-card[data-type="learn"] .quicklog-sign{ left: 6.5%; top: 20%;   width: 64%; height: 68%; }
-  .quicklog-card[data-type="play"]  .quicklog-sign{ left: 7%;   top: 25%;   width: 61%; height: 59%; }
-  .quicklog-card[data-type="poop"]  .quicklog-sign{ left: 7.5%; top: 25%;   width: 55%; height: 58%; }
+  .quicklog-card[data-type="sleep"] .quicklog-sign{ left: 7%;   top: 22%;   width: 72%; height: 62%; }
+  .quicklog-card[data-type="bath"]  .quicklog-sign{ left: 8%;   top: 23%;   width: 54%; height: 61%; }
+  .quicklog-card[data-type="brush"] .quicklog-sign{ left: 6.5%; top: 23%;   width: 60%; height: 62%; }
+  .quicklog-card[data-type="claw"]  .quicklog-sign{ left: 6.5%; top: 23%;   width: 60%; height: 62%; }
+  .quicklog-card[data-type="eat"]   .quicklog-sign{ left: 9%;   top: 23%;   width: 72%; height: 65%; }
+  .quicklog-card[data-type="walk"]  .quicklog-sign{ left: 9%;   top: 23%;   width: 63%; height: 62%; }
+  .quicklog-card[data-type="learn"] .quicklog-sign{ left: 6%;   top: 18%;   width: 66%; height: 71%; }
+  .quicklog-card[data-type="play"]  .quicklog-sign{ left: 6.5%; top: 23%;   width: 65%; height: 62%; }
+  .quicklog-card[data-type="poop"]  .quicklog-sign{ left: 7%;   top: 23%;   width: 60%; height: 62%; }
 </style>
 <link rel="stylesheet" href="doginary-auth-ui.css">
 </head>

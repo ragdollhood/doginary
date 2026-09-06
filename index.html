@@ -124,56 +124,101 @@
       margin-left: 4px;
     }
 
-    /* Notisen om att spara profilen kräver konto, samt fälten för
-       mejl/lösenord som visas inbäddat i formuläret när man inte är
-       inloggad (styles.css har jag inte tillgång till, så samma
-       medvetet enkla ansats som ovan). */
-    .dog-profile-auth-note{
-      font-size: 13px;
-      line-height: 1.4;
-      opacity: .75;
-      margin: 10px 0 0;
-      font-style: italic;
+    /* Bekräftelsemodal som visas direkt efter att en gäst (ej inloggad
+       användare) sparat sin hundprofil lokalt (localStorage). Erbjuder
+       ett frivilligt, valfritt steg att skapa konto — se kommentaren
+       vid #profileSavedModal i body för hela flödet.
+       (styles.css har jag inte tillgång till, så samma medvetet enkla,
+       självbärande ansats som resten av de inline-stilarna här.) */
+    .profile-saved-modal{
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    .dog-profile-auth-fields{
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px dashed currentColor;
-      opacity: .9;
+    .profile-saved-modal[hidden]{ display: none; }
+    .profile-saved-backdrop{
+      position: absolute;
+      inset: 0;
+      background: rgba(15,59,87,.55);
+      backdrop-filter: blur(2px);
     }
-    .dog-profile-auth-fields label{
-      display: block;
-      margin-top: 8px;
-      font-size: 13px;
-    }
-    .dog-profile-auth-fields input{
-      display: block;
+    .profile-saved-card{
+      position: relative;
+      z-index: 1;
+      background: #fff;
+      color: #17323e;
+      border-radius: 20px;
+      max-width: 420px;
       width: 100%;
-      box-sizing: border-box;
-      margin-top: 4px;
-      padding: 8px 10px;
-      font: inherit;
-      font-size: 15px;
+      padding: 34px 28px 28px;
+      box-shadow: 0 24px 60px rgba(15,59,87,.28);
+      text-align: center;
+      animation: profileSavedPop .22s ease-out;
     }
-    .dog-profile-auth-message{
-      min-height: 16px;
-      font-size: 12.5px;
-      margin: 8px 0 0;
+    @keyframes profileSavedPop{
+      from{ transform: scale(.94); opacity: 0; }
+      to{ transform: scale(1); opacity: 1; }
     }
-    .dog-profile-auth-message.error{ color: var(--warn,#9C3B2C); }
-    .dog-profile-auth-message.success{ color: var(--reward,#4B6B3E); }
-    .dog-profile-auth-toggle{ margin: 6px 0 0; }
-    .dog-profile-auth-toggle button{
-      font: inherit;
-      font-size: 12.5px;
+    .profile-saved-close{
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      width: 34px;
+      height: 34px;
       background: none;
       border: none;
-      padding: 0;
-      color: var(--teal,#33505A);
-      text-decoration: underline;
-      text-underline-offset: 3px;
+      font-size: 22px;
+      line-height: 1;
       cursor: pointer;
+      color: var(--teal,#33505A);
+      opacity: .55;
     }
+    .profile-saved-close:hover{ opacity: 1; }
+    .profile-saved-card h3{
+      font-family: 'Fraunces', serif;
+      font-size: clamp(20px, 5vw, 23px);
+      line-height: 1.25;
+      margin: 4px 0 12px;
+      color: var(--teal,#0f3b57);
+    }
+    .profile-saved-card p{
+      font-size: 15px;
+      line-height: 1.55;
+      opacity: .82;
+      margin: 0 0 24px;
+    }
+    .profile-saved-actions{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .profile-saved-btn{
+      font: inherit;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 13px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    .profile-saved-btn:active{ transform: scale(.98); }
+    .profile-saved-btn--primary{
+      background: var(--teal,#0f3b57);
+      color: #fff;
+    }
+    .profile-saved-btn--primary:hover{ opacity: .92; }
+    .profile-saved-btn--secondary{
+      background: none;
+      border-color: currentColor;
+      color: var(--teal,#33505A);
+      opacity: .75;
+    }
+    .profile-saved-btn--secondary:hover{ opacity: 1; }
   </style>
 </head>
 <body>
@@ -264,19 +309,8 @@
           <input type="text" id="dogProfileName" maxlength="30" data-i18n-placeholder="profileNamePlaceholder" placeholder="E.g. Bella">
         </label>
         <label>
-          <span data-i18n="profileSizeLabel">Size</span>
-          <select id="dogProfileSize">
-            <option value="small" data-i18n="profileSizeSmall">Small</option>
-            <option value="medium" data-i18n="profileSizeMedium" selected>Medium</option>
-            <option value="large" data-i18n="profileSizeLarge">Large</option>
-          </select>
-        </label>
-        <label>
-          <span data-i18n="profileCoatLabel">Coat</span>
-          <select id="dogProfileCoat">
-            <option value="short" selected data-i18n="profileCoatShort">Short / smooth</option>
-            <option value="thick_double" data-i18n="profileCoatThick">Thick or double coat</option>
-          </select>
+          <span data-i18n="profileBreedLabel">Breed</span>
+          <input type="text" id="dogProfileBreed" maxlength="40" data-i18n-placeholder="profileBreedPlaceholder" placeholder="E.g. Golden retriever">
         </label>
         <label>
           <span data-i18n="profileAgeLabel">Age</span>
@@ -287,23 +321,31 @@
           </select>
         </label>
       </div>
-      <p class="dog-profile-auth-note" id="dogProfileAuthNote" data-i18n="profileAuthLead" hidden>Create a free account (or log in) below so the profile is saved and follows your dog to Log and Insights too.</p>
-      <div class="dog-profile-auth-fields" id="dogProfileAuthFields" hidden>
-        <label>
-          <span data-i18n="profileEmailLabel">Email address</span>
-          <input type="email" id="dogProfileEmail" autocomplete="email" required placeholder="din@mejl.se">
-        </label>
-        <label>
-          <span data-i18n="profilePasswordLabel">Password</span>
-          <input type="password" id="dogProfilePassword" autocomplete="new-password" required minlength="6" placeholder="Minst 6 tecken">
-        </label>
-        <p class="dog-profile-auth-message" id="dogProfileAuthMessage" role="alert"></p>
-        <p class="dog-profile-auth-toggle"><button type="button" id="dogProfileAuthToggle" data-i18n="profileAuthToggleToSignin">Already have an account? Log in</button></p>
-      </div>
       <div class="dog-profile-actions">
         <button type="submit" class="dog-profile-save-btn" id="dogProfileSaveBtn" data-i18n="profileSaveBtn">Save profile</button>
       </div>
     </form>
+  </div>
+
+  <!-- Bekräftelsemodal: visas direkt efter att en GÄST (ej inloggad) sparat
+       profilen lokalt i webbläsaren. Kontot är helt frivilligt — profilen
+       fungerar redan (localStorage) oavsett vad man väljer här.
+       "Skapa gratis konto" återanvänder appens delade inloggnings-/
+       registreringsruta (DoginaryAuthUI.open('signup'), samma som knappen
+       "Logga in" i menyn) — den lokala profilen migreras sedan automatiskt
+       upp till kontot av syncDogProfileWithAccount() i app.js så fort
+       inloggningen lyckas. -->
+  <div class="profile-saved-modal" id="profileSavedModal" hidden>
+    <div class="profile-saved-backdrop" id="profileSavedBackdrop"></div>
+    <div class="profile-saved-card" role="dialog" aria-modal="true" aria-labelledby="profileSavedTitle" aria-describedby="profileSavedText">
+      <button type="button" class="profile-saved-close" id="profileSavedClose" data-i18n-aria-label="profileSavedCloseAria" aria-label="Close">×</button>
+      <h3 id="profileSavedTitle" data-i18n="profileSavedTitle">🐶 Your dog's profile is ready!</h3>
+      <p id="profileSavedText" data-i18n="profileSavedText">We've saved the profile on this device. Create a free account to save it permanently and get access to log, history and insights on all your devices.</p>
+      <div class="profile-saved-actions">
+        <button type="button" class="profile-saved-btn profile-saved-btn--primary" id="profileSavedCreateAccountBtn" data-i18n="profileSavedCreateAccountBtn">Create free account</button>
+        <button type="button" class="profile-saved-btn profile-saved-btn--secondary" id="profileSavedContinueBtn" data-i18n="profileSavedContinueBtn">Continue without an account</button>
+      </div>
+    </div>
   </div>
   <div id="alerts" class="alerts" aria-live="polite"></div>
   <div id="dailyTip" class="daily-tip"><div class="skeleton" style="min-height:64px;border-radius:16px"></div></div>

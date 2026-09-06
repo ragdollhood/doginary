@@ -450,6 +450,61 @@
   }
   .quicklog-status.err{ color: var(--warn); }
 
+  /* Val-panel som visas när man tryckt "Logga" på ett foto-kort */
+  .quicklog-picker{
+    margin-top: 14px;
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px 18px;
+    animation: quicklogPickerIn .16s ease;
+  }
+  @keyframes quicklogPickerIn{
+    from{ opacity: 0; transform: translateY(-4px); }
+    to{ opacity: 1; transform: none; }
+  }
+  .quicklog-picker__head{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .quicklog-picker__title{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 16.5px;
+  }
+  .quicklog-picker__close{
+    font-size: 13px;
+    color: var(--ink-soft);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+  .quicklog-picker__options{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .quicklog-picker__option{
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    border-radius: 20px;
+    padding: 9px 14px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .quicklog-picker__option:hover{ background: var(--teal-soft); border-color: var(--teal); }
+  .quicklog-picker__option:disabled{ opacity: .6; cursor: default; }
+
   /* Skyltens läge per bild — tuned mot den vita ytan i respektive foto. */
   .quicklog-card[data-type="sleep"] .quicklog-sign{ left: 7%;   top: 24.5%; width: 72%; height: 59%; }
   .quicklog-card[data-type="bath"]  .quicklog-sign{ left: 9%;   top: 25%;   width: 48%; height: 57%; }
@@ -599,144 +654,17 @@
           </div>
         </div>
       </div>
+
+      <div class="quicklog-picker" id="quicklogPicker" hidden>
+        <div class="quicklog-picker__head">
+          <span class="quicklog-picker__title" id="quicklogPickerTitle"></span>
+          <button type="button" class="quicklog-picker__close" id="quicklogPickerClose">Avbryt</button>
+        </div>
+        <div class="quicklog-picker__options" id="quicklogPickerOptions"></div>
+      </div>
+
       <p class="quicklog-status" id="quicklogStatus" role="status" aria-live="polite"></p>
     </section>
-
-    <form id="logForm">
-
-      <fieldset class="food">
-        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11a8 8 0 0 1 16 0"/><path d="M3 11h18v2a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2z"/></svg></span>Mat</legend>
-        <div class="field-row">
-          <div class="field full">
-            <label class="field-label">Aptit</label>
-            <div class="segmented" data-name="aptit">
-              <input type="radio" name="aptit" id="aptit-dalig" value="Dålig"><label for="aptit-dalig">Dålig</label>
-              <input type="radio" name="aptit" id="aptit-normal" value="Normal" checked><label for="aptit-normal">Normal</label>
-              <input type="radio" name="aptit" id="aptit-stark" value="Stark"><label for="aptit-stark">Stark</label>
-            </div>
-          </div>
-          <div class="field full">
-            <label class="field-label" for="portion">Portion jämfört med vanligt</label>
-            <select id="portion">
-              <option>Som vanligt</option>
-              <option>Mindre än vanligt</option>
-              <option>Mer än vanligt</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="walk">
-        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2.4"/><circle cx="15" cy="4.5" r="2"/><circle cx="19" cy="9" r="1.8"/><ellipse cx="10.5" cy="15" rx="5.4" ry="4.3"/></svg></span>Promenad</legend>
-        <div class="field-row">
-          <div class="field">
-            <label class="field-label" for="walkLength">Längd (minuter)</label>
-            <input type="number" id="walkLength" min="0" step="5" placeholder="t.ex. 40">
-          </div>
-          <div class="field">
-            <label class="field-label" for="walkEnv">Miljö</label>
-            <select id="walkEnv">
-              <option>Skog</option>
-              <option>Park</option>
-              <option>Stad</option>
-              <option>Strand</option>
-              <option>Blandat</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="behavior">
-        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></span>Beteende</legend>
-        <div class="field-row">
-          <div class="field full">
-            <label class="field-label">Energinivå</label>
-            <div class="segmented" data-name="energi">
-              <input type="radio" name="energi" id="e-lag" value="Låg"><label for="e-lag">Låg</label>
-              <input type="radio" name="energi" id="e-normal" value="Normal" checked><label for="e-normal">Normal</label>
-              <input type="radio" name="energi" id="e-hog" value="Hög"><label for="e-hog">Hög</label>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label" for="play">Lekfrekvens</label>
-            <select id="play">
-              <option>Som vanligt</option>
-              <option>Mer än vanligt</option>
-              <option>Mindre än vanligt</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label" for="mood">Sinnesstämning</label>
-            <select id="mood">
-              <option>Trygg och lugn</option>
-              <option>Pigg</option>
-              <option>Orolig</option>
-              <option>Avvaktande</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="health">
-        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Hälsa</legend>
-        <div class="field-row">
-          <div class="field">
-            <label class="field-label" for="stool">Avföringskvalitet</label>
-            <select id="stool">
-              <option>Bra</option>
-              <option>Lös</option>
-              <option>Hård</option>
-              <option>Ovanlig</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label" for="weight">Vikt (kg)</label>
-            <input type="number" id="weight" min="0" step="0.1" placeholder="t.ex. 24.5">
-          </div>
-          <div class="field full">
-            <label class="field-label" for="symptoms">Symptom (valfritt)</label>
-            <input type="text" id="symptoms" placeholder="t.ex. kliar sig mer än vanligt">
-          </div>
-        </div>
-        <div class="checkline">
-          <input type="checkbox" id="medGiven">
-          <label for="medGiven">Medicin given idag</label>
-        </div>
-      </fieldset>
-
-      <fieldset class="sleep">
-        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></span>Sömn</legend>
-        <div class="field-row">
-          <div class="field">
-            <label class="field-label" for="sleepHours">Sömntimmar i natt</label>
-            <input type="number" id="sleepHours" min="0" step="0.5" placeholder="t.ex. 8">
-          </div>
-          <div class="field">
-            <label class="field-label" for="sleepQuality">Sömnkvalitet</label>
-            <select id="sleepQuality">
-              <option>Djup och lugn</option>
-              <option>Orolig</option>
-              <option>Avbruten</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="note">
-        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M14 4l6 6-9.5 9.5H4V15.5z"/></svg></span>Anteckning</legend>
-        <div class="field-row">
-          <div class="field full">
-            <label class="field-label" for="freeNote">Något mer värt att komma ihåg?</label>
-            <textarea id="freeNote" placeholder="Fritt att skriva här"></textarea>
-          </div>
-        </div>
-      </fieldset>
-
-      <div class="actions">
-        <button type="submit" class="save">Spara dagen</button>
-      </div>
-      <p class="status" id="status" role="status"></p>
-    </form>
 
     <div class="entries">
       <div class="entries__head">
@@ -761,16 +689,20 @@
   const dogEyebrow = document.getElementById('dogEyebrow');
   const editNameBtn = document.getElementById('editNameBtn');
 
-  const statusEl = document.getElementById('status');
   const entryList = document.getElementById('entryList');
   const entryCount = document.getElementById('entryCount');
-  const form = document.getElementById('logForm');
   const quicklogGrid = document.getElementById('quicklogGrid');
   const quicklogStatus = document.getElementById('quicklogStatus');
+  const quicklogPicker = document.getElementById('quicklogPicker');
+  const quicklogPickerTitle = document.getElementById('quicklogPickerTitle');
+  const quicklogPickerOptions = document.getElementById('quicklogPickerOptions');
+  const quicklogPickerClose = document.getElementById('quicklogPickerClose');
 
   let currentUser = null;
   let currentDog = null;
   let allEntries = [];
+  let activeType = null;
+  let activeBtn = null;
 
   // Etiketter för de nio snabbloggningskorten (bild + vit skylt) högst upp
   // på sidan — återanvänds även för att visa en kort typ-etikett i listan
@@ -787,10 +719,20 @@
     poop: '💩 Bajs'
   };
 
-  function radioValue(name){
-    const el = form.querySelector(`input[name="${name}"]:checked`);
-    return el ? el.value : '';
-  }
+  // Alternativ som visas i val-panelen för respektive område, när man
+  // tryckt på "Logga" i ett foto-kort. Ett tryck på ett alternativ sparar
+  // posten (typ + valt alternativ) och kortet visar sedan "LOGGAD".
+  const QUICKLOG_OPTIONS = {
+    sleep: ['Djup och lugn', 'Orolig', 'Avbruten'],
+    bath: ['Helbad', 'Snabbdusch', 'Torrschampo'],
+    brush: ['Kort borstning', 'Grundlig borstning'],
+    claw: ['Klippta', 'Filade'],
+    eat: ['Dålig aptit', 'Normal aptit', 'Stark aptit'],
+    walk: ['Kort (10–20 min)', 'Medel (20–40 min)', 'Lång (40+ min)'],
+    learn: ['Gick bra', 'Blandat', 'Utmanande'],
+    play: ['Mindre än vanligt', 'Som vanligt', 'Mer än vanligt'],
+    poop: ['Bra', 'Lös', 'Hård', 'Ovanlig']
+  };
 
   function dogLabel(){
     return (currentDog && currentDog.name) ? currentDog.name : DoginaryData.DEFAULT_NAME;
@@ -799,10 +741,7 @@
   function summarize(e){
     const bits = [];
     if(e.type && QUICKLOG_TYPES[e.type]) bits.push(QUICKLOG_TYPES[e.type]);
-    if(e.walkLength) bits.push(`${e.walkLength} min promenad`);
-    if(e.energi) bits.push(`energi: ${e.energi.toLowerCase()}`);
-    if(e.aptit) bits.push(`aptit: ${e.aptit.toLowerCase()}`);
-    if(e.sleepHours) bits.push(`${e.sleepHours} h sömn`);
+    if(e.detail) bits.push(e.detail);
     if(e.time) bits.push(e.time);
     return bits.join(' · ');
   }
@@ -834,8 +773,8 @@
           await DoginaryDB.removeEntry(btn.getAttribute('data-id'));
           await refreshEntries();
         } catch(e){
-          statusEl.textContent = 'Kunde inte ta bort just nu — försök igen.';
-          statusEl.classList.add('err');
+          quicklogStatus.textContent = 'Kunde inte ta bort just nu — försök igen.';
+          quicklogStatus.classList.add('err');
           btn.disabled = false;
         }
       });
@@ -873,37 +812,81 @@
     });
   }
 
-  async function quickLog(type, btn){
+  /* ---------- Val-panel: visas när man trycker "Logga" på ett kort ----------
+     Panelen visar alternativen för just det området (t.ex. sömnkvalitet för
+     Sömn, längd för Promenad). Ett val sparar posten direkt. */
+  function openPicker(type, btn){
+    if(!currentDog || !currentUser) return;
+    activeType = type;
+    activeBtn = btn;
+
+    quicklogPickerTitle.textContent = QUICKLOG_TYPES[type] || type;
+    quicklogPickerOptions.innerHTML = '';
+    (QUICKLOG_OPTIONS[type] || []).forEach(option => {
+      const optBtn = document.createElement('button');
+      optBtn.type = 'button';
+      optBtn.className = 'quicklog-picker__option';
+      optBtn.textContent = option;
+      optBtn.addEventListener('click', () => quickLog(type, option, btn));
+      quicklogPickerOptions.appendChild(optBtn);
+    });
+
+    quicklogPicker.hidden = false;
+    quicklogPicker.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function closePicker(){
+    quicklogPicker.hidden = true;
+    activeType = null;
+    activeBtn = null;
+  }
+
+  quicklogPickerClose?.addEventListener('click', closePicker);
+
+  async function quickLog(type, detail, btn){
     if(!currentDog || !currentUser) return;
     const label = QUICKLOG_TYPES[type] || type;
-    btn.disabled = true;
+    const optionButtons = quicklogPickerOptions.querySelectorAll('.quicklog-picker__option');
+    optionButtons.forEach(b => b.disabled = true);
     quicklogStatus.textContent = 'Loggar …';
     quicklogStatus.classList.remove('err');
 
     const entry = {
       date: todayLabel(),
       time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
-      type
+      type,
+      detail
     };
 
     try{
       await DoginaryDB.addEntry(currentDog.id, currentUser.id, entry);
       await refreshEntries();
+      closePicker();
+
+      const originalText = btn.textContent;
+      btn.textContent = 'LOGGAD';
       btn.classList.add('just-logged');
-      quicklogStatus.textContent = `${label} loggat kl ${entry.time}.`;
-      setTimeout(() => btn.classList.remove('just-logged'), 1400);
+      quicklogStatus.textContent = `${label} · ${detail} loggat kl ${entry.time}.`;
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.classList.remove('just-logged');
+      }, 1600);
     } catch(e){
       quicklogStatus.textContent = 'Kunde inte spara just nu — försök igen.';
       quicklogStatus.classList.add('err');
-    } finally {
-      btn.disabled = false;
+      optionButtons.forEach(b => b.disabled = false);
     }
   }
 
   quicklogGrid?.addEventListener('click', (ev) => {
     const btn = ev.target.closest('.quicklog-btn');
     if(!btn) return;
-    quickLog(btn.getAttribute('data-type'), btn);
+    const type = btn.getAttribute('data-type');
+    if(!quicklogPicker.hidden && activeType === type){
+      closePicker();
+    } else {
+      openPicker(type, btn);
+    }
   });
 
   function updateDogChrome(){
@@ -928,42 +911,6 @@
   // Den här knappen öppnar bara samma ruta som kontoikonen i crossnav.
   openAuthBtn.addEventListener('click', () => DoginaryAuthUI.open('signup'));
 
-  form.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    statusEl.textContent = 'Sparar …';
-    statusEl.classList.remove('err');
-
-    const entry = {
-      date: new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }),
-      aptit: radioValue('aptit'),
-      portion: document.getElementById('portion').value,
-      walkLength: document.getElementById('walkLength').value,
-      walkEnv: document.getElementById('walkEnv').value,
-      energi: radioValue('energi'),
-      play: document.getElementById('play').value,
-      mood: document.getElementById('mood').value,
-      stool: document.getElementById('stool').value,
-      weight: document.getElementById('weight').value,
-      symptoms: document.getElementById('symptoms').value,
-      medGiven: document.getElementById('medGiven').checked,
-      sleepHours: document.getElementById('sleepHours').value,
-      sleepQuality: document.getElementById('sleepQuality').value,
-      freeNote: document.getElementById('freeNote').value
-    };
-
-    try{
-      await DoginaryDB.addEntry(currentDog.id, currentUser.id, entry);
-      await refreshEntries();
-      statusEl.textContent = 'Dagen är sparad.';
-      form.reset();
-      document.getElementById('aptit-normal').checked = true;
-      document.getElementById('e-normal').checked = true;
-    } catch(e){
-      statusEl.textContent = 'Kunde inte spara just nu — försök igen.';
-      statusEl.classList.add('err');
-    }
-  });
-
   async function enterApp(session){
     currentUser = session.user;
     authScreen.hidden = true;
@@ -974,8 +921,8 @@
       updateDogChrome();
       await refreshEntries();
     } catch(e){
-      statusEl.textContent = 'Kunde inte hämta din hunds data just nu — ladda om sidan.';
-      statusEl.classList.add('err');
+      quicklogStatus.textContent = 'Kunde inte hämta din hunds data just nu — ladda om sidan.';
+      quicklogStatus.classList.add('err');
     }
   }
 
@@ -984,6 +931,7 @@
     currentDog = null;
     allEntries = [];
     quicklogStatus.textContent = '';
+    closePicker();
     authScreen.hidden = false;
     appScreen.hidden = true;
   }

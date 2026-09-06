@@ -49,6 +49,14 @@
     border: 1.5px solid currentColor;
     border-radius: 999px;
     padding: 4px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .crossnav-logo{
+    height: 15px;
+    width: auto;
+    display: block;
   }
 
   *{ box-sizing: border-box; }
@@ -81,23 +89,41 @@
     gap: 8px;
   }
 
-  header.top p.eyebrow button.namebtn{
-    font-size: 12.5px;
-    color: var(--teal);
-    background: var(--teal-soft);
-    border: none;
-    border-radius: 20px;
-    padding: 3px 10px;
-    cursor: pointer;
-    font-family: inherit;
-  }
-
   header.top h1{
     font-family: 'Fraunces', serif;
     font-weight: 500;
     font-size: clamp(24px, 6vw, 30px);
     margin: 0;
   }
+
+  .dogname-row{
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    max-width: 420px;
+  }
+
+  .dogname-row input{
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dogname-btn{
+    font-family: 'Inter', sans-serif;
+    background: var(--ink);
+    color: var(--surface);
+    border: none;
+    border-radius: 30px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .dogname-btn:hover{ background: #3A322A; }
+  .dogname-btn:disabled{ opacity: .6; cursor: default; }
 
   /* ---------- auth screen ---------- */
   .authcard{
@@ -693,7 +719,7 @@
 <div class="page">
 
   <nav class="crossnav">
-    <a href="index.html" class="crossnav-home">← Doginary</a>
+    <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/titel-doginary.png" alt="Doginary" class="crossnav-logo"></a>
     <a href="insikter.html">Se insikter →</a>
     <div id="doginaryAuthRoot"></div>
   </nav>
@@ -715,8 +741,11 @@
   <div id="appScreen" hidden>
 
     <header class="top">
-      <p class="eyebrow"><span id="dogEyebrow">din hund</span> · idag <button type="button" class="namebtn" id="editNameBtn">byt namn</button></p>
-      <h1>Logga dagen</h1>
+      <h1>Logga dagen för</h1>
+      <form class="dogname-row" id="dogNameForm" autocomplete="off">
+        <input type="text" id="dogNameInput" name="dogName" placeholder="Hundens namn">
+        <button type="submit" class="dogname-btn" id="dogNameBtn">Spara</button>
+      </form>
     </header>
 
     <section class="quicklog" aria-label="Snabblogga">
@@ -876,8 +905,9 @@
   const authScreen = document.getElementById('authScreen');
   const appScreen = document.getElementById('appScreen');
   const openAuthBtn = document.getElementById('openAuthBtn');
-  const dogEyebrow = document.getElementById('dogEyebrow');
-  const editNameBtn = document.getElementById('editNameBtn');
+  const dogNameForm = document.getElementById('dogNameForm');
+  const dogNameInput = document.getElementById('dogNameInput');
+  const dogNameBtn = document.getElementById('dogNameBtn');
 
   const calendarGrid = document.getElementById('calendarGrid');
   const calMonthLabel = document.getElementById('calMonthLabel');
@@ -1230,20 +1260,35 @@
   buildQuicklogOptions();
 
   function updateDogChrome(){
-    dogEyebrow.textContent = dogLabel();
+    const hasName = !!(currentDog && currentDog.name);
+    dogNameInput.value = hasName ? currentDog.name : '';
+    dogNameInput.readOnly = hasName;
+    dogNameBtn.textContent = hasName ? 'Byt namn' : 'Spara';
     document.title = `Doginary — Logga ${dogLabel() === DoginaryData.DEFAULT_NAME ? 'your dog' : dogLabel() + '\u2019s'} day`;
   }
 
-  editNameBtn.addEventListener('click', async () => {
-    const suggestion = (currentDog && currentDog.name) || '';
-    const name = window.prompt('Vad heter din hund?', suggestion);
-    if(name === null) return; // avbrutet
-    const trimmed = name.trim();
+  dogNameForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Läget "Byt namn": rutan visar redan sparat namn skrivskyddat.
+    // Första trycket låser bara upp rutan för redigering.
+    if(dogNameInput.readOnly){
+      dogNameInput.readOnly = false;
+      dogNameBtn.textContent = 'Spara';
+      dogNameInput.focus();
+      dogNameInput.select();
+      return;
+    }
+
+    const trimmed = dogNameInput.value.trim();
+    dogNameBtn.disabled = true;
     try{
       currentDog = await DoginaryDB.updateDogName(currentDog.id, trimmed || null);
       updateDogChrome();
     } catch(e){
       alert('Kunde inte spara namnet just nu — försök igen.');
+    } finally {
+      dogNameBtn.disabled = false;
     }
   });
 

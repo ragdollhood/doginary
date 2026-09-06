@@ -291,7 +291,7 @@ const STR = {
     navDogAdvice: "Hälsa & päls",
     navKnowledge: "Kunskap",
 
-    profileHeading: "Din hunds profil",
+    profileHeading: "Din hunds profil - THIS IS UNDER CONSTRUCTION!!!!",
     profileIntro: "Fyll i några detaljer så justeras komfortindexet och råden nedan efter just din hund — smartare promenadbeslut, anpassade för din hund.",
     profileNameLabel: "Namn (valfritt)",
     profileNamePlaceholder: "T.ex. Bella",
@@ -301,7 +301,7 @@ const STR = {
     profileAgePuppy: "Valp (under 1 år)",
     profileAgeAdult: "Vuxen",
     profileAgeSenior: "Senior (8+ år)",
-    profileSaveBtn: "Spara profil",
+    profileSaveBtn: "Spara profil - THIS IS UNDER CONSTRUCTION!!!",
     profileEditBtn: "Ändra profil",
     profileClearBtn: "Ta bort profil",
     profileSavedConfirm: "Sparat — komfortindexet är nu anpassat.",

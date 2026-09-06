@@ -1331,135 +1331,154 @@ async function syncDogProfileWithAccount(session) {
   if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
 }
 
+
+// =============================================================================
+// Breed and age personalization
+// =============================================================================
+// Breed matching is deliberately conservative. Only exact normalized names or
+// listed aliases are used. Unknown breeds and mixed breeds stay neutral.
+const MAX_PROFILE_PENALTY = 2.0; // Doginary product rule, not a clinical threshold.
+const DOGINARY_PROFILE_SOURCES = {
+  'rvc-brachycephalic-heat': {
+    organization: 'Royal Veterinary College / VetCompass',
+    title: 'Heat-related illness in dogs',
+    url: 'https://www.rvc.ac.uk/Media/Default/VetCompass/BWG%20Heat%20related%20illness%20in%20dogs.pdf',
+    supports: ['Brachycephalic dogs have an elevated risk of heat-related illness.']
+  },
+  'aaha-senior-care': {
+    organization: 'American Animal Hospital Association',
+    title: '2023 AAHA Senior Care Guidelines for Dogs and Cats',
+    url: 'https://www.aaha.org/resources/2023-aaha-senior-care-guidelines-for-dogs-and-cats/',
+    supports: ['Ageing should be assessed individually; old age is not itself a disease.']
+  }
+};
+
+window.DoginarySources = Object.assign(window.DoginarySources || {}, DOGINARY_PROFILE_SOURCES);
+
+const BREED_PROFILES = {
+  'french bulldog': { id: 'french-bulldog', brachycephalic: true, heatSensitivity: 'elevated', coatType: 'short', sourceIds: ['rvc-brachycephalic-heat'] },
+  'english bulldog': { id: 'english-bulldog', brachycephalic: true, heatSensitivity: 'elevated', coatType: 'short', sourceIds: ['rvc-brachycephalic-heat'] },
+  'pug': { id: 'pug', brachycephalic: true, heatSensitivity: 'elevated', coatType: 'short', sourceIds: ['rvc-brachycephalic-heat'] },
+  'boston terrier': { id: 'boston-terrier', brachycephalic: true, heatSensitivity: 'elevated', coatType: 'short', sourceIds: ['rvc-brachycephalic-heat'] },
+  'pekingese': { id: 'pekingese', brachycephalic: true, heatSensitivity: 'elevated', coatType: 'long', sourceIds: ['rvc-brachycephalic-heat'] },
+  'shih tzu': { id: 'shih-tzu', brachycephalic: true, heatSensitivity: 'elevated', coatType: 'long', sourceIds: ['rvc-brachycephalic-heat'] }
+};
+const BREED_ALIASES = {
+  'fransk bulldogg': 'french bulldog', 'fransk bulldog': 'french bulldog',
+  'french bulldog': 'french bulldog', 'engelsk bulldogg': 'english bulldog',
+  'engelsk bulldog': 'english bulldog', 'english bulldog': 'english bulldog',
+  'mops': 'pug', 'pug': 'pug', 'bostonterrier': 'boston terrier',
+  'boston terrier': 'boston terrier', 'pekingese': 'pekingese',
+  'pekingeser': 'pekingese', 'shih tzu': 'shih tzu'
+};
+
+function normalizeBreedName(value) {
+  return String(value || '').toLocaleLowerCase('sv-SE').trim()
+    .replace(/[–—-]+/g, ' ').replace(/\s+/g, ' ');
+}
+function normalizeDogProfile(profile) {
+  const age = ['puppy', 'adult', 'senior'].includes(profile?.age) ? profile.age : null;
+  return { name: String(profile?.name || '').trim(), breed: String(profile?.breed || '').trim(), age };
+}
+function getDogDisplayName(profile, language) {
+  return String(profile?.name || '').trim() || (language === 'sv' ? 'din hund' : 'your dog');
+}
+function resolveBreedProfile(breed) {
+  const normalized = normalizeBreedName(breed);
+  if (!normalized || ['blandras', 'mixed breed', 'okänd ras', 'unknown breed'].includes(normalized)) {
+    return { matched: false, matchType: 'unknown', breedId: null, traits: {}, sourceIds: [] };
+  }
+  const canonical = BREED_PROFILES[normalized] ? normalized : BREED_ALIASES[normalized];
+  const found = canonical && BREED_PROFILES[canonical];
+  if (!found) return { matched: false, matchType: 'unknown', breedId: null, traits: {}, sourceIds: [] };
+  return { matched: true, matchType: canonical === normalized ? 'exact' : 'alias', breedId: found.id,
+    traits: { brachycephalic: !!found.brachycephalic, heatSensitivity: found.heatSensitivity || null, coldSensitivity: found.coldSensitivity || null, coatType: found.coatType || null },
+    sourceIds: [...new Set(found.sourceIds || [])] };
+}
+function calculateProfileModifiers(profile, weather) {
+  const p = normalizeDogProfile(profile || {});
+  const breed = resolveBreedProfile(p.breed);
+  const apparent = Number(weather.apparentTemperature ?? weather.temperature ?? 0);
+  const humidity = Number(weather.humidity ?? 0);
+  const dog = getDogDisplayName(p, lang);
+  const reasons = [], recommendations = [], appliedModifiers = [], sourceIds = [];
+  let penalty = 0;
+  const add = (id, amount, basis, reason, recommendation, sources, productRule) => {
+    const remaining = MAX_PROFILE_PENALTY - penalty;
+    const actual = Math.max(0, Math.min(amount, remaining));
+    if (!actual) return;
+    penalty += actual;
+    reasons.push(reason); recommendations.push(recommendation);
+    appliedModifiers.push({ id, adjustment: -actual, basis, sourceIds: sources || [], isProductRule: !!productRule });
+    sourceIds.push(...(sources || []));
+  };
+  if ((p.age === 'puppy' || p.age === 'senior') && apparent <= -2) {
+    add('age-cold-caution', apparent <= -8 ? 1 : 0.5, 'age',
+      lang === 'sv' ? 'extra köldförsiktighet utifrån ålder' : 'extra cold caution based on age',
+      lang === 'sv' ? `${dog} kan behöva en kortare eller lugnare promenad i kylan.` : `${dog} may need a shorter or gentler walk in the cold.`,
+      p.age === 'senior' ? ['aaha-senior-care'] : [], true);
+  }
+  if ((p.age === 'puppy' || p.age === 'senior') && apparent >= 22) {
+    add('age-heat-caution', apparent >= 26 ? 1 : 0.5, 'age',
+      lang === 'sv' ? 'extra värmeförsiktighet utifrån ålder' : 'extra heat caution based on age',
+      lang === 'sv' ? `${dog} kan behöva lugnare tempo, skugga och tätare vattenpauser.` : `${dog} may need an easier pace, shade and more frequent water breaks.`,
+      p.age === 'senior' ? ['aaha-senior-care'] : [], true);
+  }
+  if (breed.matched && breed.traits.brachycephalic && apparent >= 20) {
+    add('brachycephalic-heat', apparent >= 26 || (apparent >= 22 && humidity >= 80) ? 1.5 : 0.75, 'breed',
+      lang === 'sv' ? 'extra värmeförsiktighet för kortnosig ras' : 'extra heat caution for a brachycephalic breed',
+      lang === 'sv' ? `${dog} är av en kortnosig ras. Välj en svalare tid, lugnt tempo, vatten och skugga.` : `${dog} is a brachycephalic breed. Choose a cooler time, an easy pace, water and shade.`,
+      breed.sourceIds, false);
+  }
+  return { scoreAdjustment: -Number(penalty.toFixed(1)), reasons: [...new Set(reasons)],
+    recommendations: [...new Set(recommendations)], appliedModifiers, sourceIds: [...new Set(sourceIds)], breedMatch: breed };
+}
+
 function calculateDogComfortIndex(weather) {
   const C = COMFORT_TEXT[lang];
   const temperature = Number(weather.temperature ?? 0);
-  const apparentTemperature = Number(
-    weather.apparentTemperature ?? temperature
-  );
+  const apparentTemperature = Number(weather.apparentTemperature ?? temperature);
   const humidity = Number(weather.humidity ?? 0);
   const precipitation = Number(weather.precipitation ?? 0);
   const windSpeed = Number(weather.windSpeed ?? 0);
   const windGusts = Number(weather.windGusts ?? windSpeed);
   const snowfall = Number(weather.snowfall ?? 0);
-
   let score = 10;
   const reasons = [];
   const recommendations = [];
 
-  if (apparentTemperature >= 30) {
-    score -= 7;
-    reasons.push(C.veryHighApparent);
-    recommendations.push(C.recVeryHighApparent);
-  } else if (apparentTemperature >= 26) {
-    score -= 5;
-    reasons.push(C.highApparent);
-    recommendations.push(C.recHighApparent);
-  } else if (apparentTemperature >= 22) {
-    score -= 2.5;
-    reasons.push(C.warmApparent);
-    recommendations.push(C.recWarmApparent);
-  } else if (apparentTemperature >= 18) {
-    score -= 1;
-    reasons.push(C.mildWarmApparent);
-  }
+  if (apparentTemperature >= 30) { score -= 7; reasons.push(C.veryHighApparent); recommendations.push(C.recVeryHighApparent); }
+  else if (apparentTemperature >= 26) { score -= 5; reasons.push(C.highApparent); recommendations.push(C.recHighApparent); }
+  else if (apparentTemperature >= 22) { score -= 2.5; reasons.push(C.warmApparent); recommendations.push(C.recWarmApparent); }
+  else if (apparentTemperature >= 18) { score -= 1; reasons.push(C.mildWarmApparent); }
 
-  if (apparentTemperature <= -15) {
-    score -= 6;
-    reasons.push(C.extremeCold);
-    recommendations.push(C.recExtremeCold);
-  } else if (apparentTemperature <= -8) {
-    score -= 4;
-    reasons.push(C.veryCold);
-    recommendations.push(C.recVeryCold);
-  } else if (apparentTemperature <= -2) {
-    score -= 2;
-    reasons.push(C.cold);
-    recommendations.push(C.recCold);
-  } else if (apparentTemperature <= 3) {
-    score -= 0.5;
-    reasons.push(C.cool);
-  }
+  if (apparentTemperature <= -15) { score -= 6; reasons.push(C.extremeCold); recommendations.push(C.recExtremeCold); }
+  else if (apparentTemperature <= -8) { score -= 4; reasons.push(C.veryCold); recommendations.push(C.recVeryCold); }
+  else if (apparentTemperature <= -2) { score -= 2; reasons.push(C.cold); recommendations.push(C.recCold); }
+  else if (apparentTemperature <= 3) { score -= 0.5; reasons.push(C.cool); }
 
-  if (humidity >= 80 && apparentTemperature >= 22) {
-    score -= 1.5;
-    reasons.push(C.humidHeat);
-    recommendations.push(C.recHumidHeat);
-  }
+  if (humidity >= 80 && apparentTemperature >= 22) { score -= 1.5; reasons.push(C.humidHeat); recommendations.push(C.recHumidHeat); }
+  if (precipitation >= 5) { score -= 2.5; reasons.push(C.heavyRain); recommendations.push(C.recHeavyRain); }
+  else if (precipitation >= 1) { score -= 1.5; reasons.push(C.rainOrWetSnow); recommendations.push(C.recRain); }
+  else if (precipitation > 0) { score -= 0.5; reasons.push(C.lightRain); }
+  if (snowfall >= 2) { score -= 1; reasons.push(C.snowfall); recommendations.push(C.recSnowfall); }
+  if (windGusts >= 20) { score -= 3.5; reasons.push(C.veryStrongGusts); recommendations.push(C.recVeryStrongGusts); }
+  else if (windGusts >= 15) { score -= 2; reasons.push(C.strongGusts); recommendations.push(C.recStrongGusts); }
+  else if (windSpeed >= 10) { score -= 1; reasons.push(C.windy); }
 
-  if (precipitation >= 5) {
-    score -= 2.5;
-    reasons.push(C.heavyRain);
-    recommendations.push(C.recHeavyRain);
-  } else if (precipitation >= 1) {
-    score -= 1.5;
-    reasons.push(C.rainOrWetSnow);
-    recommendations.push(C.recRain);
-  } else if (precipitation > 0) {
-    score -= 0.5;
-    reasons.push(C.lightRain);
-  }
-
-  if (snowfall >= 2) {
-    score -= 1;
-    reasons.push(C.snowfall);
-    recommendations.push(C.recSnowfall);
-  }
-
-  if (windGusts >= 20) {
-    score -= 3.5;
-    reasons.push(C.veryStrongGusts);
-    recommendations.push(C.recVeryStrongGusts);
-  } else if (windGusts >= 15) {
-    score -= 2;
-    reasons.push(C.strongGusts);
-    recommendations.push(C.recStrongGusts);
-  } else if (windSpeed >= 10) {
-    score -= 1;
-    reasons.push(C.windy);
-  }
-
-  // Personalisering: om användaren har sparat en hundprofil, nudgas indexet något
-  // för egenskaper som gör en hund mer köld- eller värmekänslig än genomsnittet.
-  // Basalgoritmen ovan är opåverkad – det här är ett tillägg, inte en ersättning.
-  // OBS: sedan storlek/päls togs bort ur profilen baseras detta bara på ålder
-  // (valpar och seniorer är känsligare för både kyla och värme).
-  if (dogProfile) {
-    const dogName = (dogProfile.name || '').trim() || (lang === 'sv' ? 'din hund' : 'your dog');
-    const coldSensitive = dogProfile.age === 'puppy' || dogProfile.age === 'senior';
-    const heatSensitive = dogProfile.age === 'puppy' || dogProfile.age === 'senior';
-
-    if (coldSensitive && apparentTemperature <= 3) {
-      score -= apparentTemperature <= -8 ? 1.5 : 1;
-      reasons.push(C.profileColdSensitive.replace('{dog}', dogName));
-      recommendations.unshift(C.recProfileCold.replace('{dog}', dogName));
-    }
-    if (heatSensitive && apparentTemperature >= 18) {
-      score -= apparentTemperature >= 26 ? 1.5 : 1;
-      reasons.push(C.profileHeatSensitive.replace('{dog}', dogName));
-      recommendations.unshift(C.recProfileHeat.replace('{dog}', dogName));
-    }
-  }
-
-  score = clamp(score, 0, 10);
+  const baseScore = clamp(score, 0, 10);
+  const profileResult = calculateProfileModifiers(dogProfile, { temperature, apparentTemperature, humidity, precipitation, windSpeed, windGusts, snowfall });
+  score = clamp(baseScore + profileResult.scoreAdjustment, 0, 10);
+  reasons.push(...profileResult.reasons);
+  recommendations.unshift(...profileResult.recommendations);
   const { level, label, color } = comfortTier(score);
-
-  if (reasons.length === 0) {
-    reasons.push(C.comfortable);
-  }
-
-  if (recommendations.length === 0) {
-    recommendations.push(C.recDefault);
-  }
-
-  return {
-    score: Number(score.toFixed(1)),
-    level,
-    label,
-    color,
-    reasons: [...new Set(reasons)],
-    recommendations: [...new Set(recommendations)]
-  };
+  if (!reasons.length) reasons.push(C.comfortable);
+  if (!recommendations.length) recommendations.push(C.recDefault);
+  return { score: Number(score.toFixed(1)), baseScore: Number(baseScore.toFixed(1)),
+    profileAdjustment: profileResult.scoreAdjustment, level, label, color,
+    reasons: [...new Set(reasons)], recommendations: [...new Set(recommendations)],
+    appliedModifiers: profileResult.appliedModifiers, sourceIds: profileResult.sourceIds,
+    breedMatch: profileResult.breedMatch };
 }
 
 /* ---------- Rendering ---------- */
@@ -2120,6 +2139,22 @@ function computeWalkAdvisories(cur, comfort, showTicks) {
     }
   }
 
+  // Profilbaserat råd: visas bara efter säker rasmatchning och vid faktisk värme.
+  const resolvedBreed = resolveBreedProfile(dogProfile?.breed);
+  const profileDogName = getDogDisplayName(dogProfile, lang);
+  if (resolvedBreed.matched && resolvedBreed.traits.brachycephalic && apparent != null && apparent >= 20) {
+    items.push({
+      icon: ICONS.sun,
+      title: lang === 'sv' ? 'Extra försiktighet i värmen' : 'Extra caution in warm conditions',
+      level: apparent >= 26 || (apparent >= 22 && (cur.humidity || 0) >= 80) ? 'risk' : 'caution',
+      text: lang === 'sv'
+        ? `Eftersom ${profileDogName} är av en kortnosig ras är rådet extra försiktigt i värmen. Välj en svalare tid, lugnt tempo, vatten och skugga.`
+        : `Because ${profileDogName} is a brachycephalic breed, the advice is extra cautious in warm conditions. Choose a cooler time, an easy pace, water and shade.`,
+      sourceIds: resolvedBreed.sourceIds,
+      appliedTraits: ['brachycephalic']
+    });
+  }
+
   // 7. Helhetsbedömning (bygger på samma Hundkomfortindex som visas ovan)
   const overallLevel = comfort.score >= 7 ? 'ok' : comfort.score >= 5 ? 'caution' : 'risk';
   items.push({ icon: ICONS.walk, title: A.goodWalkWeather.title, level: overallLevel,
@@ -2132,7 +2167,7 @@ function renderWalkAdvisories(cur, comfort, showTicks) {
   const items = computeWalkAdvisories(cur, comfort, showTicks);
   walkAdviceEl.innerHTML = items.map(item => {
     const lvl = LEVELS[lang][item.level];
-    return `<article class="advice-card">
+    return `<article class="advice-card" data-source-ids="${escapeHtml((item.sourceIds || []).join(','))}">
       <div class="advice-card-head">
         <span class="advice-icon">${item.icon}</span>
         <span class="advice-pill" style="color:${lvl.color};background:${lvl.color}1a">${lvl.label}</span>
@@ -2332,7 +2367,7 @@ function renderCoatAdvice(cur) {
     const sourcesHtml = item.sources.map((src, i) =>
       `${i > 0 ? '<span class="src-sep">·</span>' : ''}<a href="${src.url}" target="_blank" rel="noopener">${escapeHtml(t(src.key))} ↗</a>`
     ).join('');
-    return `<article class="advice-card">
+    return `<article class="advice-card" data-source-ids="${escapeHtml((item.sourceIds || []).join(','))}">
       <div class="advice-card-head">
         <span class="advice-icon">${item.icon}</span>
         <span class="advice-pill" style="color:${lvl.color};background:${lvl.color}1a">${lvl.label}</span>

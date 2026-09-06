@@ -547,18 +547,12 @@
     margin: 0;
   }
 
+  /* Mobil (standard): en bild per rad. Två per rad slås bara på från
+     640px och uppåt, se media-queryn längre ner. */
   .quicklog-grid{
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 14px;
-  }
-
-  /* Med 9 kort och två per rad blir det nionde ensamt på sista raden —
-     annars hamnar det klistrat till vänster. Centrera det istället. */
-  .quicklog-grid > .quicklog-card:last-child:nth-child(odd){
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: calc((100% - 14px) / 2);
   }
 
   .quicklog-card{
@@ -594,13 +588,13 @@
   .quicklog-label{
     font-family: 'Fraunces', serif;
     font-weight: 500;
-    font-size: clamp(15px, 4.6vw, 22px);
+    font-size: clamp(12px, 3.6vw, 15px);
     line-height: 1.15;
     color: var(--ink);
   }
 
   .quicklog-count{
-    font-size: 12px;
+    font-size: 10.5px;
     color: var(--ink-soft);
   }
 
@@ -617,13 +611,13 @@
 
   .quicklog-opt{
     font-family: 'Inter', sans-serif;
-    font-size: clamp(12px, 3.4vw, 15.5px);
+    font-size: clamp(10px, 2.8vw, 12.5px);
     font-weight: 600;
     color: var(--surface);
     background: var(--teal);
     border: none;
     border-radius: 999px;
-    padding: 6px 12px;
+    padding: 4px 9px;
     cursor: pointer;
     line-height: 1.2;
     max-width: 100%;
@@ -640,7 +634,7 @@
   .quicklog-logged{
     font-family: 'Fraunces', serif;
     font-weight: 600;
-    font-size: clamp(16px, 4.6vw, 21px);
+    font-size: clamp(13px, 3.6vw, 15px);
     color: var(--reward);
     letter-spacing: .04em;
   }
@@ -653,8 +647,8 @@
   }
   .quicklog-status.err{ color: var(--warn); }
 
-  /* ---------- Laptop: bredda snabbloggs-sektionen, fortfarande två
-     bilder per rad ----------
+  /* ---------- Laptop: bredda snabbloggs-sektionen och gå upp till
+     två bilder per rad, med större text och knappar än på mobilen ----------
      Percentbaserad skylt-positionering nedan skalar automatiskt med
      kortets storlek, så det räcker att bredda själva sektionen. */
   @media (min-width: 640px){
@@ -665,11 +659,21 @@
       margin-right: calc(50% - 50vw);
       padding: 0 28px;
     }
-    .quicklog-grid{ gap: 22px; }
+    .quicklog-grid{
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+    /* Med 9 kort och två per rad blir det nionde ensamt på sista raden —
+       annars hamnar det klistrat till vänster. Centrera det istället. */
     .quicklog-grid > .quicklog-card:last-child:nth-child(odd){
+      grid-column: 1 / -1;
+      justify-self: center;
       width: calc((100% - 22px) / 2);
     }
-    .quicklog-opt{ padding: 8px 16px; }
+    .quicklog-label{ font-size: clamp(15px, 2.4vw, 22px); }
+    .quicklog-count{ font-size: 12px; }
+    .quicklog-opt{ font-size: clamp(12px, 1.8vw, 15.5px); padding: 8px 16px; }
+    .quicklog-logged{ font-size: clamp(16px, 2.4vw, 21px); }
   }
 
   /* Skyltens läge per bild — tuned mot den vita ytan i respektive foto. */

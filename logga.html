@@ -462,44 +462,56 @@
   }
 
   .day-entry{
+    display: flex;
+    align-items: center;
+    gap: 9px;
     background: var(--surface);
     border: 1px solid var(--hair);
     border-radius: 10px;
-    padding: 9px 12px;
+    padding: 8px 10px;
     margin-bottom: 6px;
   }
   .day-entry:last-child{ margin-bottom: 0; }
 
-  .day-entry__row{
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .day-entry__icon{
+    font-size: 15px;
+    line-height: 1;
+    flex-shrink: 0;
   }
 
   .day-entry__time{
     font-size: 12.5px;
     font-weight: 600;
     color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .day-entry__choice{
+    font-size: 13.5px;
+    color: var(--ink);
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
   }
 
   .day-entry__remove{
     margin-left: auto;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 12px;
+    line-height: 1;
     color: var(--ink-soft);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    background: none;
-    border: none;
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    border-radius: 50%;
     cursor: pointer;
     font-family: inherit;
-    flex-shrink: 0;
   }
-
-  .day-entry__detail{
-    font-size: 13.5px;
-    color: var(--ink);
-    margin: 4px 0 0;
-  }
+  .day-entry__remove:hover{ background: var(--hair); color: var(--ink); }
 
   .empty{
     font-size: 14.5px;
@@ -572,32 +584,50 @@
   .quicklog-label{
     font-family: 'Fraunces', serif;
     font-weight: 500;
-    font-size: clamp(14px, 3.6vw, 18px);
+    font-size: clamp(13px, 3.4vw, 17px);
     line-height: 1.15;
     color: var(--ink);
   }
 
   .quicklog-count{
-    font-size: 12px;
+    font-size: 11px;
     color: var(--ink-soft);
   }
 
-  .quicklog-btn{
+  /* Alternativen visas direkt på bilden, som små knappval under rubriken —
+     inget separat "Logga"-tryck eller modal krävs längre. */
+  .quicklog-opts{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 2px;
+  }
+
+  .quicklog-opt{
     font-family: 'Inter', sans-serif;
-    font-size: clamp(12.5px, 2.9vw, 14.5px);
+    font-size: clamp(10.5px, 2.5vw, 12.5px);
     font-weight: 600;
     color: var(--surface);
     background: var(--teal);
     border: none;
     border-radius: 999px;
-    padding: 7px 16px;
+    padding: 5px 10px;
     cursor: pointer;
+    line-height: 1.2;
     transition: transform .12s ease, background .15s ease;
   }
-  .quicklog-btn:hover{ background: #243b43; }
-  .quicklog-btn:active{ transform: scale(.94); }
-  .quicklog-btn:disabled{ opacity: .7; cursor: default; }
-  .quicklog-btn.just-logged{ background: var(--reward); }
+  .quicklog-opt:hover{ background: #243b43; }
+  .quicklog-opt:active{ transform: scale(.94); }
+  .quicklog-opt:disabled{ opacity: .7; cursor: default; }
+
+  /* Bekräftelsen som ersätter knappvalen en stund efter tryck. */
+  .quicklog-logged{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(15px, 4vw, 19px);
+    color: var(--reward);
+    letter-spacing: .04em;
+  }
 
   .quicklog-status{
     font-size: 13px;
@@ -606,82 +636,17 @@
     margin: 10px 0 0;
   }
   .quicklog-status.err{ color: var(--warn); }
-  /* Val-modal som visas rakt framför användaren när man tryckt "Logga"
-     på ett foto-kort. Ligger ovanpå allt annat (overlay + centrerad ruta). */
-  .quicklog-modal-overlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(43, 36, 28, .55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 1000;
-    animation: quicklogOverlayIn .15s ease;
-  }
-  @keyframes quicklogOverlayIn{
-    from{ opacity: 0; }
-    to{ opacity: 1; }
-  }
-  .quicklog-modal{
-    position: relative;
-    width: 100%;
-    max-width: 380px;
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    padding: 26px 22px 22px;
-    box-shadow: 0 16px 44px rgba(43,36,28,.28);
-    animation: quicklogModalIn .18s ease;
-  }
-  @keyframes quicklogModalIn{
-    from{ opacity: 0; transform: scale(.94) translateY(8px); }
-    to{ opacity: 1; transform: none; }
-  }
-  .quicklog-modal__close{
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    background: var(--surface-2);
-    color: var(--ink);
-    font-size: 16px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .quicklog-modal__close:hover{ background: var(--hair); }
-  .quicklog-modal__title{
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 19px;
-    margin: 0 34px 18px 0;
-  }
-  .quicklog-modal__options{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .quicklog-modal__option{
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    color: var(--ink);
-    background: var(--surface-2);
-    border: 1px solid var(--hair);
-    border-radius: 14px;
-    padding: 13px 16px;
-    text-align: left;
-    cursor: pointer;
-    transition: background .15s ease, border-color .15s ease;
-  }
-  .quicklog-modal__option:hover{ background: var(--teal-soft); border-color: var(--teal); }
-  .quicklog-modal__option:disabled{ opacity: .6; cursor: default; }
 
-  body.modal-open{ overflow: hidden; }
+  /* ---------- Laptop: dubbelt så stora foto-kort ----------
+     Percentbaserad skylt-positionering nedan skalar automatiskt med
+     kortets storlek, så det räcker att bredda grid-kolumnerna. */
+  @media (min-width: 640px){
+    .quicklog-grid{
+      grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+      gap: 18px;
+    }
+    .quicklog-opt{ padding: 7px 14px; }
+  }
 
   /* Skyltens läge per bild — tuned mot den vita ytan i respektive foto. */
   .quicklog-card[data-type="sleep"] .quicklog-sign{ left: 7%;   top: 24.5%; width: 72%; height: 59%; }
@@ -740,7 +705,8 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">😴 Sömn</span>
             <span class="quicklog-count" id="qc-sleep" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="sleep">Logga</button>
+            <div class="quicklog-opts" data-type="sleep"></div>
+            <div class="quicklog-logged" id="ql-sleep" hidden>LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="bath">
@@ -751,7 +717,8 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">🛁 Bad</span>
             <span class="quicklog-count" id="qc-bath" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="bath">Logga</button>
+            <div class="quicklog-opts" data-type="bath"></div>
+            <div class="quicklog-logged" id="ql-bath" hidden>LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="brush">
@@ -762,7 +729,8 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">🪮 Borstning</span>
             <span class="quicklog-count" id="qc-brush" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="brush">Logga</button>
+            <div class="quicklog-opts" data-type="brush"></div>
+            <div class="quicklog-logged" id="ql-brush" hidden>LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="claw">
@@ -773,7 +741,8 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">💅 Klor</span>
             <span class="quicklog-count" id="qc-claw" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="claw">Logga</button>
+            <div class="quicklog-opts" data-type="claw"></div>
+            <div class="quicklog-logged" id="ql-claw" hidden>LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="eat">
@@ -784,7 +753,8 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">🍽️ Mat</span>
             <span class="quicklog-count" id="qc-eat" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="eat">Logga</button>
+            <div class="quicklog-opts" data-type="eat"></div>
+            <div class="quicklog-logged" id="ql-eat" hidden>LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="walk">
@@ -795,7 +765,8 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">🐾 Promenad</span>
             <span class="quicklog-count" id="qc-walk" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="walk">Logga</button>
+            <div class="quicklog-opts" data-type="walk"></div>
+            <div class="quicklog-logged" id="ql-walk" hidden>LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="learn">
@@ -806,7 +777,8 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">🎓 Träning</span>
             <span class="quicklog-count" id="qc-learn" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="learn">Logga</button>
+            <div class="quicklog-opts" data-type="learn"></div>
+            <div class="quicklog-logged" id="ql-learn" hidden>LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="play">
@@ -817,7 +789,8 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">🎾 Lek</span>
             <span class="quicklog-count" id="qc-play" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="play">Logga</button>
+            <div class="quicklog-opts" data-type="play"></div>
+            <div class="quicklog-logged" id="ql-play" hidden>LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="poop">
@@ -828,16 +801,9 @@
           <div class="quicklog-sign">
             <span class="quicklog-label">💩 Bajs</span>
             <span class="quicklog-count" id="qc-poop" hidden></span>
-            <button type="button" class="quicklog-btn" data-type="poop">Logga</button>
+            <div class="quicklog-opts" data-type="poop"></div>
+            <div class="quicklog-logged" id="ql-poop" hidden>LOGGAD</div>
           </div>
-        </div>
-      </div>
-
-      <div class="quicklog-modal-overlay" id="quicklogPicker" hidden>
-        <div class="quicklog-modal" role="dialog" aria-modal="true" aria-labelledby="quicklogPickerTitle">
-          <button type="button" class="quicklog-modal__close" id="quicklogPickerClose" aria-label="Stäng">✕</button>
-          <h3 class="quicklog-modal__title" id="quicklogPickerTitle"></h3>
-          <div class="quicklog-modal__options" id="quicklogPickerOptions"></div>
         </div>
       </div>
 
@@ -894,16 +860,10 @@
   const dayCardList = document.getElementById('dayCardList');
   const quicklogGrid = document.getElementById('quicklogGrid');
   const quicklogStatus = document.getElementById('quicklogStatus');
-  const quicklogPicker = document.getElementById('quicklogPicker');
-  const quicklogPickerTitle = document.getElementById('quicklogPickerTitle');
-  const quicklogPickerOptions = document.getElementById('quicklogPickerOptions');
-  const quicklogPickerClose = document.getElementById('quicklogPickerClose');
 
   let currentUser = null;
   let currentDog = null;
   let allEntries = [];
-  let activeType = null;
-  let activeBtn = null;
 
   const today = new Date();
   let calYear = today.getFullYear();
@@ -1115,11 +1075,10 @@
         const detail = detailFor(e);
         return `
           <div class="day-entry">
-            <div class="day-entry__row">
-              <span class="day-entry__time">${e.time || ''}</span>
-              <button type="button" class="day-entry__remove" data-id="${e.id}">Ta bort</button>
-            </div>
-            ${detail ? `<p class="day-entry__detail">${detail}</p>` : ''}
+            <span class="day-entry__icon">${icon}</span>
+            <span class="day-entry__time">${e.time || ''}</span>
+            <span class="day-entry__choice">${detail || '—'}</span>
+            <button type="button" class="day-entry__remove" data-id="${e.id}" aria-label="Stäng">✕</button>
           </div>
         `;
       }).join('');
@@ -1182,43 +1141,33 @@
     });
   }
 
-  /* ---------- Val-panel: visas när man trycker "Logga" på ett kort ----------
-     Rutan öppnas som en modal, centrerad rakt framför användaren (fixed
-     overlay). Den försvinner bara när man valt ett alternativ eller
-     tryckt på krysset i övre högra hörnet. */
-  function openPicker(type, btn){
-    if(!currentDog || !currentUser) return;
-    activeType = type;
-    activeBtn = btn;
-
-    quicklogPickerTitle.textContent = QUICKLOG_TYPES[type] || type;
-    quicklogPickerOptions.innerHTML = '';
-    (QUICKLOG_OPTIONS[type] || []).forEach(option => {
-      const optBtn = document.createElement('button');
-      optBtn.type = 'button';
-      optBtn.className = 'quicklog-modal__option';
-      optBtn.textContent = option;
-      optBtn.addEventListener('click', () => quickLog(type, option, btn));
-      quicklogPickerOptions.appendChild(optBtn);
+  /* ---------- Snabblogga: alternativen syns direkt på bilden ----------
+     Varje foto-kort byggs vid start med sina alternativ (från
+     QUICKLOG_OPTIONS) som knappar direkt i skylten — inget mellansteg
+     med en separat "Logga"-knapp eller modal. Ett tryck på ett
+     alternativ loggar direkt och visar "LOGGAD" en stund där
+     knapparna satt, innan de kommer tillbaka. */
+  function buildQuicklogOptions(){
+    document.querySelectorAll('.quicklog-opts').forEach(container => {
+      const type = container.getAttribute('data-type');
+      container.innerHTML = '';
+      (QUICKLOG_OPTIONS[type] || []).forEach(option => {
+        const optBtn = document.createElement('button');
+        optBtn.type = 'button';
+        optBtn.className = 'quicklog-opt';
+        optBtn.textContent = option;
+        optBtn.addEventListener('click', () => quickLog(type, option));
+        container.appendChild(optBtn);
+      });
     });
-
-    quicklogPicker.hidden = false;
-    document.body.classList.add('modal-open');
   }
 
-  function closePicker(){
-    quicklogPicker.hidden = true;
-    document.body.classList.remove('modal-open');
-    activeType = null;
-    activeBtn = null;
-  }
-
-  quicklogPickerClose?.addEventListener('click', closePicker);
-
-  async function quickLog(type, detail, btn){
+  async function quickLog(type, detail){
     if(!currentDog || !currentUser) return;
     const label = QUICKLOG_TYPES[type] || type;
-    const optionButtons = quicklogPickerOptions.querySelectorAll('.quicklog-modal__option');
+    const optsEl = document.querySelector(`.quicklog-opts[data-type="${type}"]`);
+    const loggedEl = document.getElementById(`ql-${type}`);
+    const optionButtons = optsEl ? optsEl.querySelectorAll('.quicklog-opt') : [];
     optionButtons.forEach(b => b.disabled = true);
     quicklogStatus.textContent = 'Loggar …';
     quicklogStatus.classList.remove('err');
@@ -1234,15 +1183,14 @@
     try{
       await DoginaryDB.addEntry(currentDog.id, currentUser.id, entry);
       await refreshEntries();
-      closePicker();
 
-      const originalText = btn.textContent;
-      btn.textContent = 'LOGGAD';
-      btn.classList.add('just-logged');
+      if(optsEl) optsEl.hidden = true;
+      if(loggedEl) loggedEl.hidden = false;
       quicklogStatus.textContent = `${label} · ${detail} loggat kl ${entry.time}.`;
       setTimeout(() => {
-        btn.textContent = originalText;
-        btn.classList.remove('just-logged');
+        if(loggedEl) loggedEl.hidden = true;
+        if(optsEl) optsEl.hidden = false;
+        optionButtons.forEach(b => b.disabled = false);
       }, 1600);
     } catch(e){
       quicklogStatus.textContent = 'Kunde inte spara just nu — försök igen.';
@@ -1251,11 +1199,7 @@
     }
   }
 
-  quicklogGrid?.addEventListener('click', (ev) => {
-    const btn = ev.target.closest('.quicklog-btn');
-    if(!btn) return;
-    openPicker(btn.getAttribute('data-type'), btn);
-  });
+  buildQuicklogOptions();
 
   function updateDogChrome(){
     dogEyebrow.textContent = dogLabel();
@@ -1304,7 +1248,6 @@
     currentDog = null;
     allEntries = [];
     quicklogStatus.textContent = '';
-    closePicker();
     authScreen.hidden = false;
     appScreen.hidden = true;
   }

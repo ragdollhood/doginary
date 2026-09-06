@@ -1168,10 +1168,30 @@ const COMFORT_TEXT = {
 
 /* ==================================================================================
    Hundprofil (personalisering av Hundkomfortindex)
-   ================================================================================== */
+   ----------------------------------------------------------------------------------
+   Profilen (namn, storlek, päls, ålder) sparas numera på det inloggade
+   Doginary-kontot (samma konto som "Logga en dag"/"Insikter" använder,
+   via doginary-auth.js + doginary-supabase.js — måste laddas FÖRE denna
+   fil, se <script>-taggarna i index.html) istället för att bara ligga i
+   webbläsarens localStorage.
+
+   Är man INTE inloggad fungerar allt som förut: profilen sparas lokalt i
+   den här webbläsaren (localStorage) så funktionen fortsätter jobba även
+   utan konto. Loggar man in migreras en sådan lokal profil automatiskt
+   upp till kontot EN gång (om kontot inte redan har en egen profil), och
+   därefter är kontot källan till sanningen.
+
+   OBS: bara storlek/päls/ålder räknas som "har en profil" här — hundens
+   namn delas med "Logga en dag"/"Insikter" (samma dogs-rad i Supabase)
+   och rensas därför INTE bort av "Ta bort profil" på den här sidan.
+   ================================================================== */
 const DOG_PROFILE_KEY = 'dogWeatherProfile';
 
-function loadDogProfile() {
+function isDoginaryLoggedIn() {
+  return !!(window.DoginaryAuthUI && DoginaryAuthUI.getSession());
+}
+
+function loadLocalDogProfile() {
   try {
     const raw = localStorage.getItem(DOG_PROFILE_KEY);
     if (!raw) return null;
@@ -1181,16 +1201,117 @@ function loadDogProfile() {
   return null;
 }
 
-let dogProfile = loadDogProfile();
-
-function saveDogProfile(profile) {
-  dogProfile = profile;
+function saveLocalDogProfile(profile) {
   try { localStorage.setItem(DOG_PROFILE_KEY, JSON.stringify(profile)); } catch { /* localStorage kan vara otillgängligt */ }
 }
 
-function clearDogProfile() {
-  dogProfile = null;
+function clearLocalDogProfile() {
   try { localStorage.removeItem(DOG_PROFILE_KEY); } catch { /* ignore */ }
+}
+
+// Bygger en profil (för formuläret/komfortindexet) utifrån kontots
+// dogs-rad. Bara storlek/päls/ålder räknas som en "satt" profil — se
+// kommentaren ovan om varför namnet hanteras separat.
+function dogProfileFromAccountDog(dog) {
+  if (!dog || !(dog.size || dog.coat || dog.age)) return null;
+  return {
+    name: dog.name || '',
+    size: dog.size || 'medium',
+    coat: dog.coat || 'short',
+    age: dog.age || 'adult'
+  };
+}
+
+let dogProfile = loadLocalDogProfile();
+
+// Sparar profilen på kontot om man är inloggad, annars i localStorage.
+// Uppdaterar alltid `dogProfile` direkt (optimistiskt) så gränssnittet
+// känns snabbt, och rättar till statusraden om kontot-sparningen
+// misslyckas.
+async function saveDogProfile(profile) {
+  dogProfile = profile;
+  if (isDoginaryLoggedIn()) {
+    try {
+      const dog = await DoginaryAuthUI.getCurrentDog();
+      await DoginaryDB.updateDogProfile(dog.id, profile);
+    } catch (e) {
+      statusEl.textContent = lang === 'sv'
+        ? 'Kunde inte spara profilen på kontot just nu — försök igen.'
+        : 'Could not save the profile to your account right now — please try again.';
+      return false;
+    }
+  } else {
+    saveLocalDogProfile(profile);
+  }
+  return true;
+}
+
+// Rensar storlek/päls/ålder. Är man inloggad rensas de på kontot (men
+// INTE hundens namn, se kommentaren ovan) — annars rensas den lokala
+// gästprofilen.
+async function clearDogProfile() {
+  dogProfile = null;
+  if (isDoginaryLoggedIn()) {
+    try {
+      const dog = await DoginaryAuthUI.getCurrentDog();
+      await DoginaryDB.updateDogProfile(dog.id, { size: null, coat: null, age: null });
+    } catch (e) {
+      statusEl.textContent = lang === 'sv'
+        ? 'Kunde inte ta bort profilen på kontot just nu — försök igen.'
+        : 'Could not remove the profile from your account right now — please try again.';
+    }
+  } else {
+    clearLocalDogProfile();
+  }
+}
+
+// Körs en gång när inloggningsstatusen först är känd, och sedan varje
+// gång man loggar in/ut (via "doginary:auth"-eventet från
+// doginary-auth.js). Hämtar/migrerar profilen till/från kontot.
+async function syncDogProfileWithAccount(session) {
+  if (session) {
+    let dog;
+    try {
+      dog = await DoginaryAuthUI.getCurrentDog();
+    } catch (e) {
+      return; // nätverksfel — behåll det som redan visas
+    }
+    const accountProfile = dogProfileFromAccountDog(dog);
+    if (accountProfile) {
+      dogProfile = accountProfile;
+    } else {
+      // Kontot saknar egen profil än — migrera upp en lokal gästprofil
+      // om det finns en, annars låt formuläret vara tomt (men förifyll
+      // gärna namnet om hunden redan har ett, satt via Logga/Insikter).
+      const localProfile = loadLocalDogProfile();
+      if (localProfile) {
+        try {
+          await DoginaryDB.updateDogProfile(dog.id, localProfile);
+          clearLocalDogProfile();
+          dogProfile = localProfile;
+        } catch (e) {
+          dogProfile = localProfile; // visa den ändå, försök spara nästa gång
+        }
+      } else {
+        dogProfile = null;
+        if (dog.name) dogProfileNameEl.value = dog.name;
+      }
+    }
+  } else {
+    // Utloggad: falla tillbaka till den lokala gästprofilen.
+    dogProfile = loadLocalDogProfile();
+  }
+
+  if (dogProfile) {
+    dogProfileNameEl.value = dogProfile.name || '';
+    dogProfileSizeEl.value = dogProfile.size || 'medium';
+    dogProfileCoatEl.value = dogProfile.coat || 'short';
+    dogProfileAgeEl.value = dogProfile.age || 'adult';
+  }
+  renderDogProfileUI();
+  updateHeroTitle();
+  updateLogTitle();
+  if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
 }
 
 function calculateDogComfortIndex(weather) {
@@ -1549,17 +1670,11 @@ function renderDogProfileUI() {
   }
 }
 
-if (dogProfile) {
-  dogProfileNameEl.value = dogProfile.name || '';
-  dogProfileSizeEl.value = dogProfile.size || 'medium';
-  dogProfileCoatEl.value = dogProfile.coat || 'short';
-  dogProfileAgeEl.value = dogProfile.age || 'adult';
-}
 renderDogProfileUI();
 
-dogProfileForm?.addEventListener('submit', e => {
+dogProfileForm?.addEventListener('submit', async e => {
   e.preventDefault();
-  saveDogProfile({
+  const ok = await saveDogProfile({
     name: dogProfileNameEl.value.trim().slice(0, 30),
     size: dogProfileSizeEl.value,
     coat: dogProfileCoatEl.value,
@@ -1568,7 +1683,7 @@ dogProfileForm?.addEventListener('submit', e => {
   renderDogProfileUI();
   updateHeroTitle();
   updateLogTitle();
-  statusEl.textContent = t('profileSavedConfirm');
+  if (ok) statusEl.textContent = t('profileSavedConfirm');
   if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
 });
 
@@ -1577,8 +1692,8 @@ dogProfileEditBtn?.addEventListener('click', () => {
   dogProfileForm.hidden = false;
 });
 
-dogProfileClearBtn?.addEventListener('click', () => {
-  clearDogProfile();
+dogProfileClearBtn?.addEventListener('click', async () => {
+  await clearDogProfile();
   dogProfileForm.reset();
   renderDogProfileUI();
   updateHeroTitle();
@@ -1586,6 +1701,18 @@ dogProfileClearBtn?.addEventListener('click', () => {
   statusEl.textContent = t('profileClearedConfirm');
   if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
 });
+
+// Koppla profilen till Doginary-kontot: vänta in den första kända
+// inloggningsstatusen (DoginaryAuthUI.ready, satt av doginary-auth.js),
+// och synka sedan om varje gång man loggar in/ut i den här fliken.
+if (window.DoginaryAuthUI) {
+  DoginaryAuthUI.ready.then(syncDogProfileWithAccount);
+  document.addEventListener('doginary:auth', e => syncDogProfileWithAccount(e.detail.session));
+} else {
+  // doginary-auth.js kunde inte laddas (t.ex. nätverksfel) — kör i
+  // rent gäst-läge mot localStorage, precis som tidigare.
+  syncDogProfileWithAccount(null);
+}
 
 /* ---------- Bästa promenadtiden: rankar de kommande timmarna efter Hundkomfortindex ---------- */
 

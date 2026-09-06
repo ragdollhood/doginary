@@ -52,6 +52,8 @@
 
   var currentSession = null;
   var currentDog = null; // hämtas lat, se getCurrentDog()
+  var _resolveReady;
+  var readyPromise = new Promise(function (resolve) { _resolveReady = resolve; });
 
   function fireAuthEvent() {
     document.dispatchEvent(new CustomEvent('doginary:auth', { detail: { session: currentSession } }));
@@ -243,7 +245,12 @@
     open: openModal,
     close: closeModal,
     getCurrentDog: getCurrentDog,
-    getSession: function () { return currentSession; }
+    getSession: function () { return currentSession; },
+    // Slår an EN gång med den allra första inloggningsstatusen (session
+    // eller null) så att andra script (t.ex. app.js) kan vänta in det
+    // säkert, istället för att chansa på om "doginary:auth" redan hunnit
+    // eldas innan de la till sin lyssnare.
+    ready: readyPromise
   };
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -253,10 +260,11 @@
   global.DoginaryAuth.getSession().then(function (session) {
     currentSession = session;
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function () { renderAccountChip(); fireAuthEvent(); });
+      document.addEventListener('DOMContentLoaded', function () { renderAccountChip(); fireAuthEvent(); _resolveReady(session); });
     } else {
       renderAccountChip();
       fireAuthEvent();
+      _resolveReady(session);
     }
   });
 

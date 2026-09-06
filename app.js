@@ -95,11 +95,15 @@ const STR = {
     profileAgeAdult: "Adult",
     profileAgeSenior: "Senior (8+)",
     profileSaveBtn: "Save profile",
+    profileSaveBtnLoggedOut: "Save & create account",
     profileEditBtn: "Edit profile",
     profileClearBtn: "Remove profile",
     profileSavedConfirm: "Saved — the comfort index is now personalized.",
     profileClearedConfirm: "Profile removed — showing the general comfort index again.",
     profileSummaryPrefix: "Personalized for",
+    profileAuthNote: "Create a free account (or log in) when you save, so your dog's profile follows you to Log and Insights too.",
+    profilePendingAuthMsg: "Almost there — finish creating your account so we can save the profile.",
+    profileFirstLoginPrompt: "You're in! Add your dog's details below to personalize everything.",
     heroEyebrow: "WEATHER FOR FOUR PAWS",
     heroTagline: "Know what your dog needs before every walk.",
     heroTitle: "{name} should have the best day — every day!",
@@ -305,11 +309,15 @@ const STR = {
     profileAgeAdult: "Vuxen",
     profileAgeSenior: "Senior (8+ år)",
     profileSaveBtn: "Spara profil",
+    profileSaveBtnLoggedOut: "Spara & skapa konto",
     profileEditBtn: "Ändra profil",
     profileClearBtn: "Ta bort profil",
     profileSavedConfirm: "Sparat — komfortindexet är nu anpassat.",
     profileClearedConfirm: "Profilen borttagen — visar det allmänna komfortindexet igen.",
     profileSummaryPrefix: "Anpassat för",
+    profileAuthNote: "Skapa ett gratis konto (eller logga in) när du sparar, så följer din hunds profil med till Logga och Insikter också.",
+    profilePendingAuthMsg: "Nästan klart — slutför ditt konto så sparar vi profilen.",
+    profileFirstLoginPrompt: "Inloggad! Fyll i din hunds uppgifter nedan för att anpassa allt.",
     heroEyebrow: "VÄDER FÖR FYRA TASSAR",
     heroTagline: "Veta vad din hund behöver inför varje promenad.",
     heroTitle: "{name} ska ha sin bästa dag — varje dag!",
@@ -1639,7 +1647,14 @@ dailyEl.addEventListener('keydown', e => {
 
 dayHoursCloseEl?.addEventListener('click', hideDayHours);
 
-/* ---------- Hundprofil: UI-koppling ---------- */
+/* ---------- Hundprofil: UI-koppling ----------
+   Profilen är inte längre något man kan spara som gäst i localStorage.
+   Fyller man i formuläret utan att vara inloggad sparas det INTE direkt
+   — istället kommer ihåg vi det ifyllda (pendingDogProfile) och öppnar
+   samma inloggnings/registreringsruta som resten av sajten använder.
+   Så fort kontot är klart (doginary:auth-eventet) sparas den ihågkomna
+   profilen automatiskt på kontot. Se saveDogProfile()/clearDogProfile()
+   längre upp, som fortfarande hanterar själva sparningen mot Supabase. */
 const dogProfileForm = $('#dogProfileForm');
 const dogProfileSummary = $('#dogProfileSummary');
 const dogProfileSummaryText = $('#dogProfileSummaryText');
@@ -1649,6 +1664,12 @@ const dogProfileNameEl = $('#dogProfileName');
 const dogProfileSizeEl = $('#dogProfileSize');
 const dogProfileCoatEl = $('#dogProfileCoat');
 const dogProfileAgeEl = $('#dogProfileAge');
+const dogProfileSaveBtn = $('#dogProfileSaveBtn');
+const dogProfileAuthNote = $('#dogProfileAuthNote');
+
+// Formulärdata som väntar på att ett konto ska bli klart (signup/login)
+// innan de faktiskt sparas. Null när inget väntar.
+let pendingDogProfile = null;
 
 function dogProfileSummaryLabel(profile) {
   const sizeKey = { small: 'profileSizeSmall', medium: 'profileSizeMedium', large: 'profileSizeLarge' }[profile.size];
@@ -1657,6 +1678,15 @@ function dogProfileSummaryLabel(profile) {
   const bits = [sizeKey, coatKey, ageKey].filter(Boolean).map(k => t(k).toLowerCase());
   const who = profile.name || (lang === 'sv' ? 'din hund' : 'your dog');
   return `${escapeHtml(t('profileSummaryPrefix'))} <b>${escapeHtml(who)}</b> — ${escapeHtml(bits.join(', '))}`;
+}
+
+// Uppdaterar Spara-knappens text och notisen om att ett konto krävs,
+// beroende på om man är inloggad eller inte just nu.
+function updateDogProfileFormCTA() {
+  if (!dogProfileSaveBtn) return;
+  const loggedIn = isDoginaryLoggedIn();
+  dogProfileSaveBtn.textContent = t(loggedIn ? 'profileSaveBtn' : 'profileSaveBtnLoggedOut');
+  if (dogProfileAuthNote) dogProfileAuthNote.hidden = loggedIn;
 }
 
 function renderDogProfileUI() {
@@ -1668,28 +1698,42 @@ function renderDogProfileUI() {
     dogProfileSummary.hidden = true;
     dogProfileForm.hidden = false;
   }
+  updateDogProfileFormCTA();
 }
 
 renderDogProfileUI();
 
 dogProfileForm?.addEventListener('submit', async e => {
   e.preventDefault();
-  const ok = await saveDogProfile({
+  const profile = {
     name: dogProfileNameEl.value.trim().slice(0, 30),
     size: dogProfileSizeEl.value,
     coat: dogProfileCoatEl.value,
     age: dogProfileAgeEl.value
-  });
-  renderDogProfileUI();
-  updateHeroTitle();
-  updateLogTitle();
-  if (ok) statusEl.textContent = t('profileSavedConfirm');
-  if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
+  };
+
+  if (isDoginaryLoggedIn()) {
+    const ok = await saveDogProfile(profile);
+    renderDogProfileUI();
+    updateHeroTitle();
+    updateLogTitle();
+    if (ok) statusEl.textContent = t('profileSavedConfirm');
+    if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
+    return;
+  }
+
+  // Inte inloggad: minns det ifyllda formuläret och öppna samma
+  // inloggnings-/registreringsruta som resten av sajten — profilen
+  // sparas automatiskt så fort kontot är klart, se auth-wiringen nedan.
+  pendingDogProfile = profile;
+  statusEl.textContent = t('profilePendingAuthMsg');
+  window.DoginaryAuthUI?.open('signup');
 });
 
 dogProfileEditBtn?.addEventListener('click', () => {
   dogProfileSummary.hidden = true;
   dogProfileForm.hidden = false;
+  updateDogProfileFormCTA();
 });
 
 dogProfileClearBtn?.addEventListener('click', async () => {
@@ -1705,12 +1749,67 @@ dogProfileClearBtn?.addEventListener('click', async () => {
 // Koppla profilen till Doginary-kontot: vänta in den första kända
 // inloggningsstatusen (DoginaryAuthUI.ready, satt av doginary-auth.js),
 // och synka sedan om varje gång man loggar in/ut i den här fliken.
+//
+// `authReady`/`wasLoggedIn` används för att skilja på två helt olika
+// lägen när ett doginary:auth-event kommer in:
+//  1. En riktig, färsk inloggning/registrering som sker medan sidan
+//     redan är öppen (t.ex. via kontoknappen, eller via profilformuläret
+//     ovan) — DÅ vill vi antingen spara en väntande profil, eller om
+//     ingen väntar, scrolla fram och fokusera formuläret så man direkt
+//     kan fylla i sin hunds uppgifter (kravet om att man ska "få fylla i
+//     namn, storlek, päls och ålder direkt efter" man loggat in).
+//  2. Den allra första statusen vid sidladdning (redan inloggad sedan
+//     tidigare) — då ska INGET av ovanstående hända, det vore bara
+//     störande att scrolla ner varje gång man öppnar sidan.
+let authReady = false;
+let wasLoggedIn = false;
+
+async function handleFreshLogin(session) {
+  // Om formuläret hade ifyllda uppgifter som väntade på inloggning/
+  // registrering: spara dem på det nya kontot nu.
+  if (pendingDogProfile) {
+    const profile = pendingDogProfile;
+    pendingDogProfile = null;
+    const ok = await saveDogProfile(profile);
+    renderDogProfileUI();
+    updateHeroTitle();
+    updateLogTitle();
+    statusEl.textContent = ok ? t('profileSavedConfirm') : statusEl.textContent;
+    if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
+    return;
+  }
+
+  // Annars: färsk inloggning men ingen väntande profil (kontot loggade
+  // in via t.ex. kontoknappen). Har kontot ännu ingen profil ifylld —
+  // scrolla fram formuläret och lägg fokus i namnfältet, samt visa en
+  // kort välkomsttext, så man kan fylla i det direkt.
+  if (!dogProfile && dogProfileForm) {
+    dogProfileForm.hidden = false;
+    dogProfileSummary.hidden = true;
+    statusEl.textContent = t('profileFirstLoginPrompt');
+    dogProfileForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => dogProfileNameEl?.focus(), 300);
+  }
+  void session;
+}
+
 if (window.DoginaryAuthUI) {
-  DoginaryAuthUI.ready.then(syncDogProfileWithAccount);
-  document.addEventListener('doginary:auth', e => syncDogProfileWithAccount(e.detail.session));
+  DoginaryAuthUI.ready.then(session => {
+    authReady = true;
+    wasLoggedIn = !!session;
+    syncDogProfileWithAccount(session);
+  });
+  document.addEventListener('doginary:auth', e => {
+    const session = e.detail.session;
+    const isFreshLogin = authReady && !wasLoggedIn && !!session;
+    wasLoggedIn = !!session;
+    syncDogProfileWithAccount(session).then(() => {
+      if (isFreshLogin) handleFreshLogin(session);
+    });
+  });
 } else {
-  // doginary-auth.js kunde inte laddas (t.ex. nätverksfel) — kör i
-  // rent gäst-läge mot localStorage, precis som tidigare.
+  // doginary-auth.js kunde inte laddas (t.ex. nätverksfel) — utan konto
+  // går det inte att spara någon profil alls just nu.
   syncDogProfileWithAccount(null);
 }
 

@@ -123,6 +123,16 @@
       padding: 6px 16px !important;
       margin-left: 4px;
     }
+
+    /* Notisen om att spara profilen kräver konto (styles.css har jag
+       inte tillgång till, så samma medvetet enkla ansats som ovan). */
+    .dog-profile-auth-note{
+      font-size: 13px;
+      line-height: 1.4;
+      opacity: .75;
+      margin: 10px 0 0;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -236,8 +246,9 @@
           </select>
         </label>
       </div>
+      <p class="dog-profile-auth-note" id="dogProfileAuthNote" data-i18n="profileAuthNote" hidden>Create a free account (or log in) when you save, so your dog's profile follows you to Log and Insights too.</p>
       <div class="dog-profile-actions">
-        <button type="submit" class="dog-profile-save-btn" data-i18n="profileSaveBtn">Save profile</button>
+        <button type="submit" class="dog-profile-save-btn" id="dogProfileSaveBtn" data-i18n="profileSaveBtn">Save profile</button>
       </div>
     </form>
   </div>

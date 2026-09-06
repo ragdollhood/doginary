@@ -688,8 +688,12 @@
 
     const todayGrid = document.getElementById('todayGrid');
     todayGrid.innerHTML = '';
-    const todayData = DoginaryData.computeToday(allEntries, dogName);
-
+    const todayData = 
+DoginaryData.computeToday(allEntries, dogName, {
+  name: dog.name,
+  breed: dog.breed,
+  age: dog.age
+});
     if (!todayData) {
       todayGrid.innerHTML = `<div class="emptycard" style="grid-column:1/-1">Ingen dag loggad än. <a href="logga.html">Logga ${esc(dogName)}s första dag</a> för att se insikter här.</div>`;
       document.getElementById('heroHeadline').textContent = `${dogName} väntar på sin första loggade dag.`;

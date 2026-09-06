@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doginary — Logga din hunds dag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ECE6D9;
+    --surface: #F8F5EC;
+    --surface-2: #F1ECDF;
+    --ink: #2B241C;
+    --ink-soft: #6E6455;
+    --hair: #DCD3BF;
+    --rust: #A15C38;
+    --rust-soft: #EADACB;
+    --teal: #33505A;
+    --teal-soft: #DDE6E5;
+    --warn: #9C3B2C;
+    --reward: #4B6B3E;
+    --radius-lg: 22px;
+    --radius-sm: 12px;
+  }
+
+  .crossnav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 12px;
+  }
+  .crossnav a, .crossnav button.linklike{
+    font-size: 13.5px;
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  .page{
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 28px 20px 90px;
+  }
+
+  header.top{
+    margin-bottom: 26px;
+  }
+
+  header.top p.eyebrow{
+    margin: 0 0 4px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  header.top p.eyebrow button.namebtn{
+    font-size: 12.5px;
+    color: var(--teal);
+    background: var(--teal-soft);
+    border: none;
+    border-radius: 20px;
+    padding: 3px 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  header.top h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(24px, 6vw, 30px);
+    margin: 0;
+  }
+
+  /* ---------- auth screen ---------- */
+  .authcard{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 26px 22px;
+    margin-top: 12px;
+  }
+  .authcard h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 21px;
+    margin: 0 0 6px;
+  }
+  .authcard p{
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+  }
+  .authcard form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .authcard button.save{ width: 100%; }
+  .authcard .status{ margin-top: 10px; }
+  .authcard .authswitch{
+    margin: 10px 0 0;
+    text-align: center;
+  }
+
+  form{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  fieldset{
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    padding: 18px 18px 20px;
+    margin: 0;
+  }
+
+  legend{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 16.5px;
+    padding: 0 4px;
+  }
+
+  legend .legend-icon{
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  legend .legend-icon svg{ width: 14px; height: 14px; }
+
+  fieldset.food legend .legend-icon{ background: var(--reward-soft, #DEE7D5); color: var(--reward); }
+  fieldset.walk legend .legend-icon{ background: var(--teal-soft); color: var(--teal); }
+  fieldset.behavior legend .legend-icon{ background: var(--rust-soft); color: var(--rust); }
+  fieldset.health legend .legend-icon{ background: #F1DCD5; color: var(--warn); }
+  fieldset.sleep legend .legend-icon{ background: #E2DEEF; color: #4E4272; }
+  fieldset.note legend .legend-icon{ background: var(--surface-2); color: var(--ink-soft); }
+
+  .field-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .field{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field.full{ grid-column: 1 / -1; }
+
+  label.field-label{
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  input, select, textarea{
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    border-radius: 10px;
+    padding: 10px 12px;
+    width: 100%;
+  }
+
+  textarea{
+    resize: vertical;
+    min-height: 64px;
+  }
+
+  input:focus-visible, select:focus-visible, textarea:focus-visible,
+  button:focus-visible{
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+  }
+
+  .segmented{
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .segmented input{
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .segmented label{
+    font-size: 13.5px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+
+  .segmented input:checked + label{
+    background: var(--ink);
+    color: var(--surface);
+    border-color: var(--ink);
+  }
+
+  .checkline{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+
+  .checkline input{ width: auto; }
+
+  .actions{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 4px;
+  }
+
+  button.save{
+    background: var(--ink);
+    color: var(--surface);
+    border-radius: 30px;
+    padding: 13px 26px;
+    font-size: 15px;
+    font-weight: 500;
+    flex: 1;
+    border: none;
+    cursor: pointer;
+  }
+
+  button.save:hover{ background: #3A322A; }
+  button.save:disabled{ opacity: 0.6; cursor: default; }
+
+  .status{
+    font-size: 13.5px;
+    color: var(--reward);
+    min-height: 18px;
+  }
+
+  .status.err{ color: var(--warn); }
+
+  /* ---------- saved entries ---------- */
+
+  .entries{
+    margin-top: 38px;
+  }
+
+  .entries__head{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+
+  .entries__head h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0;
+  }
+
+  .entries__head span{
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .entry{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .entry__date{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+
+  .entry__summary{
+    font-size: 14.5px;
+    margin: 0;
+  }
+
+  .entry__remove{
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .empty{
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+  }
+
+  [hidden]{ display: none !important; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="crossnav">
+    <a href="insikter.html">Se insikter →</a>
+    <button type="button" class="linklike" id="signOutBtn" hidden>Logga ut</button>
+  </nav>
+
+  <!-- ---------- Inloggning (visas tills en session finns) ---------- -->
+  <div id="authScreen">
+    <header class="top">
+      <p class="eyebrow">Doginary</p>
+      <h1>Logga in för att spara loggen</h1>
+    </header>
+    <div class="authcard">
+      <h2 id="authTitle">Skapa konto</h2>
+      <p id="authDesc">Skapa ett konto med mejl och lösenord så sparas din hunds dagbok på ditt konto och syncar mellan dina enheter.</p>
+      <form id="authForm">
+        <input type="email" id="authEmail" placeholder="din@mejl.se" required autocomplete="email">
+        <input type="password" id="authPassword" placeholder="Lösenord (minst 6 tecken)" required minlength="6" autocomplete="new-password">
+        <button type="submit" class="save" id="authSubmitBtn">Skapa konto</button>
+      </form>
+      <p class="status" id="authStatus" role="status"></p>
+      <p class="authswitch"><button type="button" class="linklike" id="authToggleBtn">Har du redan ett konto? Logga in</button></p>
+      <p class="authswitch"><button type="button" class="linklike" id="forgotBtn">Glömt lösenord?</button></p>
+    </div>
+  </div>
+
+  <!-- ---------- Appen (visas när man är inloggad) ---------- -->
+  <div id="appScreen" hidden>
+
+    <header class="top">
+      <p class="eyebrow"><span id="dogEyebrow">din hund</span> · idag <button type="button" class="namebtn" id="editNameBtn">byt namn</button></p>
+      <h1>Logga dagen</h1>
+    </header>
+
+    <form id="logForm">
+
+      <fieldset class="food">
+        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11a8 8 0 0 1 16 0"/><path d="M3 11h18v2a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2z"/></svg></span>Mat</legend>
+        <div class="field-row">
+          <div class="field full">
+            <label class="field-label">Aptit</label>
+            <div class="segmented" data-name="aptit">
+              <input type="radio" name="aptit" id="aptit-dalig" value="Dålig"><label for="aptit-dalig">Dålig</label>
+              <input type="radio" name="aptit" id="aptit-normal" value="Normal" checked><label for="aptit-normal">Normal</label>
+              <input type="radio" name="aptit" id="aptit-stark" value="Stark"><label for="aptit-stark">Stark</label>
+            </div>
+          </div>
+          <div class="field full">
+            <label class="field-label" for="portion">Portion jämfört med vanligt</label>
+            <select id="portion">
+              <option>Som vanligt</option>
+              <option>Mindre än vanligt</option>
+              <option>Mer än vanligt</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="walk">
+        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2.4"/><circle cx="15" cy="4.5" r="2"/><circle cx="19" cy="9" r="1.8"/><ellipse cx="10.5" cy="15" rx="5.4" ry="4.3"/></svg></span>Promenad</legend>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="walkLength">Längd (minuter)</label>
+            <input type="number" id="walkLength" min="0" step="5" placeholder="t.ex. 40">
+          </div>
+          <div class="field">
+            <label class="field-label" for="walkEnv">Miljö</label>
+            <select id="walkEnv">
+              <option>Skog</option>
+              <option>Park</option>
+              <option>Stad</option>
+              <option>Strand</option>
+              <option>Blandat</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="behavior">
+        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></span>Beteende</legend>
+        <div class="field-row">
+          <div class="field full">
+            <label class="field-label">Energinivå</label>
+            <div class="segmented" data-name="energi">
+              <input type="radio" name="energi" id="e-lag" value="Låg"><label for="e-lag">Låg</label>
+              <input type="radio" name="energi" id="e-normal" value="Normal" checked><label for="e-normal">Normal</label>
+              <input type="radio" name="energi" id="e-hog" value="Hög"><label for="e-hog">Hög</label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="play">Lekfrekvens</label>
+            <select id="play">
+              <option>Som vanligt</option>
+              <option>Mer än vanligt</option>
+              <option>Mindre än vanligt</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="mood">Sinnesstämning</label>
+            <select id="mood">
+              <option>Trygg och lugn</option>
+              <option>Pigg</option>
+              <option>Orolig</option>
+              <option>Avvaktande</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="health">
+        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Hälsa</legend>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="stool">Avföringskvalitet</label>
+            <select id="stool">
+              <option>Bra</option>
+              <option>Lös</option>
+              <option>Hård</option>
+              <option>Ovanlig</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="weight">Vikt (kg)</label>
+            <input type="number" id="weight" min="0" step="0.1" placeholder="t.ex. 24.5">
+          </div>
+          <div class="field full">
+            <label class="field-label" for="symptoms">Symptom (valfritt)</label>
+            <input type="text" id="symptoms" placeholder="t.ex. kliar sig mer än vanligt">
+          </div>
+        </div>
+        <div class="checkline">
+          <input type="checkbox" id="medGiven">
+          <label for="medGiven">Medicin given idag</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="sleep">
+        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></span>Sömn</legend>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="sleepHours">Sömntimmar i natt</label>
+            <input type="number" id="sleepHours" min="0" step="0.5" placeholder="t.ex. 8">
+          </div>
+          <div class="field">
+            <label class="field-label" for="sleepQuality">Sömnkvalitet</label>
+            <select id="sleepQuality">
+              <option>Djup och lugn</option>
+              <option>Orolig</option>
+              <option>Avbruten</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="note">
+        <legend><span class="legend-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M14 4l6 6-9.5 9.5H4V15.5z"/></svg></span>Anteckning</legend>
+        <div class="field-row">
+          <div class="field full">
+            <label class="field-label" for="freeNote">Något mer värt att komma ihåg?</label>
+            <textarea id="freeNote" placeholder="Fritt att skriva här"></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="save">Spara dagen</button>
+      </div>
+      <p class="status" id="status" role="status"></p>
+    </form>
+
+    <div class="entries">
+      <div class="entries__head">
+        <h2>Sparade dagar</h2>
+        <span id="entryCount"></span>
+      </div>
+      <div id="entryList"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="doginary-supabase.js"></script>
+<script src="doginary-data.js"></script>
+<script>
+  const authScreen = document.getElementById('authScreen');
+  const appScreen = document.getElementById('appScreen');
+  const authForm = document.getElementById('authForm');
+  const authStatus = document.getElementById('authStatus');
+  const signOutBtn = document.getElementById('signOutBtn');
+  const dogEyebrow = document.getElementById('dogEyebrow');
+  const editNameBtn = document.getElementById('editNameBtn');
+
+  const statusEl = document.getElementById('status');
+  const entryList = document.getElementById('entryList');
+  const entryCount = document.getElementById('entryCount');
+  const form = document.getElementById('logForm');
+
+  let currentUser = null;
+  let currentDog = null;
+
+  function radioValue(name){
+    const el = form.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : '';
+  }
+
+  function dogLabel(){
+    return (currentDog && currentDog.name) ? currentDog.name : DoginaryData.DEFAULT_NAME;
+  }
+
+  function summarize(e){
+    const bits = [];
+    if(e.walkLength) bits.push(`${e.walkLength} min promenad`);
+    if(e.energi) bits.push(`energi: ${e.energi.toLowerCase()}`);
+    if(e.aptit) bits.push(`aptit: ${e.aptit.toLowerCase()}`);
+    if(e.sleepHours) bits.push(`${e.sleepHours} h sömn`);
+    return bits.join(' · ');
+  }
+
+  function renderEntries(entries){
+    entryCount.textContent = entries.length ? `${entries.length} st` : '';
+    entryList.innerHTML = '';
+    if(!entries.length){
+      entryList.innerHTML = '<div class="empty">Inga sparade dagar än — fyll i formuläret ovan för att komma igång.</div>';
+      return;
+    }
+    entries.slice().reverse().forEach(e => {
+      const row = document.createElement('div');
+      row.className = 'entry';
+      row.innerHTML = `
+        <div>
+          <div class="entry__date">${e.date || e.isoDate || ''}</div>
+          <p class="entry__summary">${summarize(e)}</p>
+        </div>
+        <button type="button" class="entry__remove" data-id="${e.id}">Ta bort</button>
+      `;
+      entryList.appendChild(row);
+    });
+
+    entryList.querySelectorAll('.entry__remove').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try{
+          await DoginaryDB.removeEntry(btn.getAttribute('data-id'));
+          await refreshEntries();
+        } catch(e){
+          statusEl.textContent = 'Kunde inte ta bort just nu — försök igen.';
+          statusEl.classList.add('err');
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  async function refreshEntries(){
+    const entries = await DoginaryDB.loadEntries(currentDog.id);
+    renderEntries(entries);
+    return entries;
+  }
+
+  function updateDogChrome(){
+    dogEyebrow.textContent = dogLabel();
+    document.title = `Doginary — Logga ${dogLabel() === DoginaryData.DEFAULT_NAME ? 'your dog' : dogLabel() + '\u2019s'} day`;
+  }
+
+  editNameBtn.addEventListener('click', async () => {
+    const suggestion = (currentDog && currentDog.name) || '';
+    const name = window.prompt('Vad heter din hund?', suggestion);
+    if(name === null) return; // avbrutet
+    const trimmed = name.trim();
+    try{
+      currentDog = await DoginaryDB.updateDogName(currentDog.id, trimmed || null);
+      updateDogChrome();
+    } catch(e){
+      alert('Kunde inte spara namnet just nu — försök igen.');
+    }
+  });
+
+  const authTitle = document.getElementById('authTitle');
+  const authDesc = document.getElementById('authDesc');
+  const authSubmitBtn = document.getElementById('authSubmitBtn');
+  const authToggleBtn = document.getElementById('authToggleBtn');
+  const forgotBtn = document.getElementById('forgotBtn');
+  let authMode = 'signup';
+
+  function applyAuthMode(){
+    if(authMode === 'signup'){
+      authTitle.textContent = 'Skapa konto';
+      authDesc.textContent = 'Skapa ett konto med mejl och lösenord så sparas din hunds dagbok på ditt konto och syncar mellan dina enheter.';
+      authSubmitBtn.textContent = 'Skapa konto';
+      authToggleBtn.textContent = 'Har du redan ett konto? Logga in';
+    } else {
+      authTitle.textContent = 'Logga in';
+      authDesc.textContent = 'Logga in med din mejladress och ditt lösenord.';
+      authSubmitBtn.textContent = 'Logga in';
+      authToggleBtn.textContent = 'Inget konto än? Skapa ett';
+    }
+    authStatus.textContent = '';
+    authStatus.classList.remove('err');
+  }
+
+  authToggleBtn.addEventListener('click', () => {
+    authMode = authMode === 'signup' ? 'signin' : 'signup';
+    applyAuthMode();
+  });
+
+  forgotBtn.addEventListener('click', async () => {
+    const email = document.getElementById('authEmail').value.trim();
+    if(!email){
+      authStatus.textContent = 'Skriv din mejladress i fältet ovan först.';
+      authStatus.classList.add('err');
+      return;
+    }
+    try{
+      await DoginaryAuth.resetPassword(email);
+      authStatus.textContent = 'Vi har skickat en länk för att återställa lösenordet till ' + email + '.';
+      authStatus.classList.remove('err');
+    } catch(e){
+      authStatus.textContent = 'Kunde inte skicka återställningslänken just nu.';
+      authStatus.classList.add('err');
+    }
+  });
+
+  authForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    if(!email || !password) return;
+    authStatus.textContent = authMode === 'signup' ? 'Skapar konto …' : 'Loggar in …';
+    authStatus.classList.remove('err');
+    authSubmitBtn.disabled = true;
+    try{
+      if(authMode === 'signup'){
+        const result = await DoginaryAuth.signUp(email, password);
+        if(result.needsConfirmation){
+          authStatus.textContent = 'Kontot är skapat! Kolla din inkorg och klicka på bekräftelselänken, logga sedan in här.';
+          authMode = 'signin';
+          applyAuthMode();
+        }
+        // om ingen bekräftelse krävs loggar onAuthStateChange in användaren automatiskt
+      } else {
+        await DoginaryAuth.signIn(email, password);
+      }
+    } catch(e){
+      authStatus.textContent = e && e.message ? e.message : 'Något gick fel — försök igen.';
+      authStatus.classList.add('err');
+    } finally {
+      authSubmitBtn.disabled = false;
+    }
+  });
+
+  applyAuthMode();
+
+  signOutBtn.addEventListener('click', async () => {
+    await DoginaryAuth.signOut();
+    currentUser = null;
+    currentDog = null;
+    appScreen.hidden = true;
+    signOutBtn.hidden = true;
+    authScreen.hidden = false;
+  });
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    statusEl.textContent = 'Sparar …';
+    statusEl.classList.remove('err');
+
+    const entry = {
+      date: new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }),
+      aptit: radioValue('aptit'),
+      portion: document.getElementById('portion').value,
+      walkLength: document.getElementById('walkLength').value,
+      walkEnv: document.getElementById('walkEnv').value,
+      energi: radioValue('energi'),
+      play: document.getElementById('play').value,
+      mood: document.getElementById('mood').value,
+      stool: document.getElementById('stool').value,
+      weight: document.getElementById('weight').value,
+      symptoms: document.getElementById('symptoms').value,
+      medGiven: document.getElementById('medGiven').checked,
+      sleepHours: document.getElementById('sleepHours').value,
+      sleepQuality: document.getElementById('sleepQuality').value,
+      freeNote: document.getElementById('freeNote').value
+    };
+
+    try{
+      await DoginaryDB.addEntry(currentDog.id, currentUser.id, entry);
+      await refreshEntries();
+      statusEl.textContent = 'Dagen är sparad.';
+      form.reset();
+      document.getElementById('aptit-normal').checked = true;
+      document.getElementById('e-normal').checked = true;
+    } catch(e){
+      statusEl.textContent = 'Kunde inte spara just nu — försök igen.';
+      statusEl.classList.add('err');
+    }
+  });
+
+  async function enterApp(session){
+    currentUser = session.user;
+    authScreen.hidden = true;
+    appScreen.hidden = false;
+    signOutBtn.hidden = false;
+    try{
+      currentDog = await DoginaryDB.getOrCreateDog(currentUser.id);
+      updateDogChrome();
+      await refreshEntries();
+    } catch(e){
+      statusEl.textContent = 'Kunde inte hämta din hunds data just nu — ladda om sidan.';
+      statusEl.classList.add('err');
+    }
+  }
+
+  function showAuth(){
+    currentUser = null;
+    currentDog = null;
+    authScreen.hidden = false;
+    appScreen.hidden = true;
+    signOutBtn.hidden = true;
+  }
+
+  (async function init(){
+    if(!window.DoginaryAuth){
+      authStatus.textContent = 'Kunde inte ladda inloggningen — kontrollera internetuppkopplingen och ladda om sidan.';
+      authStatus.classList.add('err');
+      return;
+    }
+    const session = await DoginaryAuth.getSession();
+    if(session){ await enterApp(session); } else { showAuth(); }
+
+    DoginaryAuth.onAuthStateChange(async (session) => {
+      if(session && !currentUser){ await enterApp(session); }
+      else if(!session && currentUser){ showAuth(); }
+    });
+  })();
+</script>
+</body>
+</html>

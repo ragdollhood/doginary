@@ -94,6 +94,24 @@
       object-fit:cover;
       border-radius:inherit;
     }
+
+    /* Mobil: platsrutan (hero-text) ligger högst upp tills en plats är
+       vald och väderdata visas — då byter väderrutan (hero-weather)
+       plats med den och hamnar högst upp istället.
+       OBS: styles.css (den externa filen) är inte något jag har haft
+       tillgång till, så 720px nedan är mitt bästa antagande för var
+       mobilvyn börjar. Säg till om den brytpunkten inte stämmer med
+       resten av sidans mobilanpassning så justerar jag den. */
+    @media (max-width: 720px){
+      .hero-inner--split{
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      .hero-inner--split .hero-text{ order: 1 !important; }
+      .hero-inner--split .hero-weather{ order: 2 !important; }
+      .hero-inner--split.weather-ready .hero-text{ order: 2 !important; }
+      .hero-inner--split.weather-ready .hero-weather{ order: 1 !important; }
+    }
   </style>
 </head>
 <body>
@@ -261,6 +279,7 @@
     <div class="section-head-meta">
       <p data-i18n="logSubtitle">Walks, bathroom breaks and grooming — logged in one calm, tappable calendar.</p>
       <p id="logStreakLine" class="log-streak-line" hidden></p>
+      <p style="font-size:14px;margin-top:6px;"><a href="logga.html" style="color:inherit;text-decoration:underline;">Want a deeper daily journal (appetite, mood, sleep) with insights? Try it →</a></p>
     </div>
   </div>
 
@@ -366,8 +385,26 @@
 <footer><div class="brand"><img class="brand-logo" src="assets/title-doginary.png" alt="DOGINARY" loading="lazy" decoding="async"></div><div class="footer-taglines"><p data-i18n="footerTagline">Made with care for wet noses and safe walks.</p><p class="footer-brand-line" data-i18n="footerBrandLine">Know what your dog needs before every walk.</p></div><p data-i18n="footerSource">Weather data: © SMHI, open data.</p><div class="footer-links"><a href="terms.html" data-i18n="footerTerms">Terms &amp; Conditions</a><details class="footer-contact"><summary data-i18n="footerContactLabel">Contact</summary><a class="contact-email" href="mailto:holisticloader@gmail.com">holisticloader@gmail.com</a></details></div><p class="footer-copyright" data-i18n="footerCopyright">© 2026 Malin Larsson (Doginary)</p></footer>
 <script src="app.js" defer></script>
 <script>
-const VISIT_SUPABASE_URL = "https://ibytawdimgthoqwtbtgv.supabase.co";
-const VISIT_SUPABASE_KEY = "sb_publishable_X4l9e5OPXE9Cq4XVc1jm_A_Hb6tbJUO";
+  // Mobil: håll platsrutan/vädret i rätt ordning (se CSS-kommentaren i <head>).
+  // Lyssnar på #current — appens "empty"-klass talar om att ingen plats/väder
+  // är valt än, oavsett hur den datan hämtades (sökning, geolokalisering,
+  // eller en sparad plats som laddas automatiskt vid sidladdning).
+  (function(){
+    var heroSplit = document.querySelector('.hero-inner--split');
+    var currentBox = document.getElementById('current');
+    if(!heroSplit || !currentBox) return;
+
+    function sync(){
+      var hasWeather = !currentBox.classList.contains('empty');
+      heroSplit.classList.toggle('weather-ready', hasWeather);
+    }
+    sync();
+    new MutationObserver(sync).observe(currentBox, { attributes: true, attributeFilter: ['class'] });
+  })();
+</script>
+<script>
+const VISIT_SUPABASE_URL = "https://jjbziqsjapyiihdrlnsw.supabase.co";
+const VISIT_SUPABASE_KEY = "sb_publishable_94seiOtGg1rsEr2Vve6BoA_H1bv4zxo";
 
 /* owner's own visitor IDs — never counted as visits */
 const EXCLUDED_VISITOR_IDS = [];

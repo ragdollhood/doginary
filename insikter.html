@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doginary — Insikter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ECE6D9;
+    --surface: #F8F5EC;
+    --surface-2: #F1ECDF;
+    --ink: #2B241C;
+    --ink-soft: #6E6455;
+    --hair: #DCD3BF;
+    --rust: #A15C38;
+    --rust-soft: #EADACB;
+    --teal: #33505A;
+    --teal-soft: #DDE6E5;
+    --warn: #9C3B2C;
+    --warn-soft: #F1DCD5;
+    --reward: #4B6B3E;
+    --reward-soft: #DEE7D5;
+    --radius-lg: 22px;
+    --radius-sm: 12px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  .page{
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  a, button{ font-family: inherit; }
+
+  button{
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: inherit;
+  }
+
+  button:focus-visible,
+  a:focus-visible{
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero{
+    position: relative;
+    padding: 30px 26px 34px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, #3A2C22 0%, #2B241C 62%, #241E17 100%);
+    color: #F3ECDF;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+
+  .hero__trail{
+    position: absolute;
+    inset: 0;
+    opacity: 0.16;
+    pointer-events: none;
+  }
+
+  .hero__top{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 14px;
+    color: #C9BBA4;
+    margin-bottom: 22px;
+    position: relative;
+  }
+
+  .hero__date{ letter-spacing: 0.01em; }
+
+  .hero__name{
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+  }
+
+  .hero__headline{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(26px, 6vw, 34px);
+    line-height: 1.18;
+    max-width: 22ch;
+    margin: 0 0 16px;
+    position: relative;
+  }
+
+  .hero__sub{
+    color: #C9BBA4;
+    font-size: 15px;
+    max-width: 34ch;
+    margin: 0;
+    position: relative;
+  }
+
+  .hero__paw{
+    position: absolute;
+    right: 18px;
+    bottom: 14px;
+    width: 92px;
+    height: 92px;
+    opacity: 0.5;
+  }
+
+  /* ---------- Section shell ---------- */
+
+  section{ margin-bottom: 34px; }
+
+  .section__head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section__title{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 21px;
+    margin: 0;
+  }
+
+  .section__meta{
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Today: insight cards ---------- */
+
+  .cardgrid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .icard{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-sm);
+    padding: 16px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .icard__top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .icard__icon{
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .icard__icon svg{ width: 16px; height: 16px; }
+
+  .icard--energy .icard__icon{ background: var(--rust-soft); color: var(--rust); }
+  .icard--walk .icard__icon{ background: var(--teal-soft); color: var(--teal); }
+  .icard--food .icard__icon{ background: var(--reward-soft); color: var(--reward); }
+  .icard--sleep .icard__icon{ background: #E2DEEF; color: #4E4272; }
+
+  .trend{
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .trend--up{ color: var(--reward); background: var(--reward-soft); }
+  .trend--down{ color: var(--warn); background: var(--warn-soft); }
+  .trend--flat{ color: var(--ink-soft); background: var(--surface-2); }
+
+  .icard__label{
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .icard__text{
+    font-size: 14.5px;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* ---------- Week ---------- */
+
+  .weekcard{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+  }
+
+  .weekcard__summary{
+    font-size: 15px;
+    margin: 0 0 18px;
+    color: var(--ink);
+  }
+
+  .sparklines{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .spark{
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 12px 12px 10px;
+  }
+
+  .spark__label{
+    font-size: 12px;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .spark__value{ font-weight: 600; color: var(--ink); }
+
+  .spark svg{ display: block; width: 100%; height: 34px; }
+
+  .doginsight{
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding-top: 16px;
+    border-top: 1px dashed var(--hair);
+  }
+
+  .doginsight__mark{
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: var(--rust);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .doginsight p{
+    margin: 0;
+    font-size: 14.5px;
+    font-style: italic;
+    color: var(--ink);
+  }
+
+  /* ---------- Month ---------- */
+
+  .monthcard{
+    background: linear-gradient(155deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 24px 22px;
+  }
+
+  .monthcard__grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .monthcard__block h3{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 15.5px;
+    margin: 0 0 8px;
+  }
+
+  .monthcard__block ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .monthcard__block li{
+    font-size: 14.5px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--hair);
+    display: flex;
+    gap: 10px;
+  }
+
+  .monthcard__block li:last-child{ border-bottom: none; }
+
+  .dot{
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .dot--rust{ background: var(--rust); }
+  .dot--teal{ background: var(--teal); }
+  .dot--warn{ background: var(--warn); }
+
+  .monthchart{
+    margin-top: 4px;
+  }
+
+  .monthchart svg{ width: 100%; height: 64px; display: block; }
+
+  /* ---------- Warnings & rewards ---------- */
+
+  .noticecard{
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    border-radius: var(--radius-sm);
+    padding: 16px 16px;
+    border: 1px solid;
+  }
+
+  .noticecard + .noticecard{ margin-top: 10px; }
+
+  .noticecard--warn{
+    background: var(--warn-soft);
+    border-color: #E0BFB4;
+  }
+
+  .noticecard--reward{
+    background: var(--reward-soft);
+    border-color: #C4D3B7;
+  }
+
+  .noticecard__icon{
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .noticecard--warn .noticecard__icon{ background: #E4C3B8; color: var(--warn); }
+  .noticecard--reward .noticecard__icon{ background: #C9D9BC; color: var(--reward); }
+  .noticecard__icon svg{ width: 15px; height: 15px; }
+
+  .noticecard__text{
+    font-size: 14.5px;
+    margin: 0;
+  }
+
+  .noticecard__text strong{ display: block; font-size: 13px; margin-bottom: 2px; }
+
+  .noticecard--warn .noticecard__text strong{ color: var(--warn); }
+  .noticecard--reward .noticecard__text strong{ color: var(--reward); }
+
+  .more{
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 13.5px;
+    color: var(--teal);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--hair);
+  }
+
+  footer{
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    margin-top: 44px;
+  }
+
+  @media (max-width: 420px){
+    .cardgrid{ grid-template-columns: 1fr 1fr; gap: 8px; }
+    .sparklines{ grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+  }
+
+  .crossnav{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+  .crossnav a{
+    font-size: 13.5px;
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .emptycard{
+    background: var(--surface);
+    border: 1px dashed var(--hair);
+    border-radius: var(--radius-sm);
+    padding: 18px;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  .emptycard a{ color: var(--teal); font-weight: 500; }
+
+  .infobox{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .infobox p{ margin: 0 0 10px; }
+  .infobox ul{ margin: 0 0 12px; padding-left: 18px; }
+  .infobox li{ margin-bottom: 6px; }
+  .infobox__sources{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    border-top: 1px dashed var(--hair);
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+  .infobox__sources a{ color: var(--teal); }
+
+  [hidden]{ display: none !important; }
+
+  .crossnav{ justify-content: space-between; align-items: center; }
+  .crossnav button.linklike{
+    font-size: 13.5px;
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .authcard{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 26px 22px;
+    margin-top: 12px;
+  }
+  .authcard h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 24px;
+    margin: 0 0 6px;
+  }
+  .authcard p{
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+  }
+  .authcard form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .authcard input[type="email"]{
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .authcard button.save{
+    background: var(--ink);
+    color: var(--surface);
+    border-radius: 30px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+  .authcard .status{
+    font-size: 13.5px;
+    color: var(--reward);
+    min-height: 18px;
+    margin-top: 10px;
+  }
+  .authcard .status.err{ color: var(--warn); }
+  .authcard .authswitch{ margin: 10px 0 0; text-align: center; }
+  .authcard button.linklike{
+    font-size: 13.5px;
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="crossnav">
+    <a href="logga.html">← Logga en dag</a>
+    <button type="button" class="linklike" id="signOutBtn" hidden>Logga ut</button>
+  </nav>
+
+  <div id="authScreen">
+    <div class="authcard">
+      <h1 id="authTitle">Skapa konto</h1>
+      <p id="authDesc">Skapa ett konto med mejl och lösenord — samma konto som du loggar din hunds dagar på.</p>
+      <form id="authForm">
+        <input type="email" id="authEmail" placeholder="din@mejl.se" required autocomplete="email">
+        <input type="password" id="authPassword" placeholder="Lösenord (minst 6 tecken)" required minlength="6" autocomplete="new-password">
+        <button type="submit" class="save" id="authSubmitBtn">Skapa konto</button>
+      </form>
+      <p class="status" id="authStatus" role="status"></p>
+      <p class="authswitch"><button type="button" class="linklike" id="authToggleBtn">Har du redan ett konto? Logga in</button></p>
+      <p class="authswitch"><button type="button" class="linklike" id="forgotBtn">Glömt lösenord?</button></p>
+    </div>
+  </div>
+
+  <div id="appScreen" hidden>
+
+  <div class="hero">
+    <svg class="hero__paw" viewBox="0 0 100 100" fill="currentColor">
+      <circle cx="30" cy="30" r="9"/><circle cx="52" cy="20" r="8"/><circle cx="72" cy="30" r="8"/>
+      <ellipse cx="51" cy="55" rx="20" ry="16"/>
+    </svg>
+    <div class="hero__top">
+      <span class="hero__date" id="heroDate"></span>
+      <span class="hero__name" id="heroDogName">din hund</span>
+    </div>
+    <p class="hero__headline" id="heroHeadline">Bella har haft en lugn och fin dag idag.</p>
+    <p class="hero__sub" id="heroSub">Fem nya insikter väntar nedanför — inget att oroa sig för just nu.</p>
+  </div>
+
+  <section id="today">
+    <div class="section__head">
+      <h2 class="section__title">Dagens insikter</h2>
+      <span class="section__meta">4 sep</span>
+    </div>
+    <div class="cardgrid" id="todayGrid"></div>
+  </section>
+
+  <section id="week">
+    <div class="section__head">
+      <h2 class="section__title">Veckans insikter</h2>
+      <span class="section__meta" id="weekMeta"></span>
+    </div>
+    <div id="weekContent"></div>
+  </section>
+
+  <section id="month">
+    <div class="section__head">
+      <h2 class="section__title">Månadens rapport</h2>
+      <span class="section__meta" id="monthMeta"></span>
+    </div>
+    <div id="monthContent"></div>
+  </section>
+
+  <section id="warnings">
+    <div class="section__head">
+      <h2 class="section__title">Varningar</h2>
+    </div>
+    <div id="warningsContent"></div>
+  </section>
+
+  <section id="rewards">
+    <div class="section__head">
+      <h2 class="section__title">Belöningar</h2>
+    </div>
+    <div id="rewardsContent"></div>
+  </section>
+
+  <section id="om-insikterna">
+    <div class="section__head">
+      <h2 class="section__title">Så tolkas insikterna</h2>
+    </div>
+    <div class="infobox">
+      <p>Insikterna här är en egen, pedagogisk sammanställning av det du loggar om din hund — inte en klinisk bedömning och ersätter aldrig en veterinärs bedömning.</p>
+      <ul>
+        <li><strong>Trender och pilar</strong> jämför alltid hunden med sig själv: dagens värde mot snittet av dess egna senaste dagar. Ingen extern norm används här, eftersom det som är "normalt" varierar stort mellan individer.</li>
+        <li><strong>Sömn</strong> loggas som nattsömn, men vetenskapliga sömnsiffror (8–16 timmar/dygn för en vuxen hund) gäller hela dygnet inklusive tupplurar. Därför jämförs sömn mot hundens eget snitt istället för en fast gräns.</li>
+        <li><strong>Motion:</strong> de flesta hundar mår bäst av minst 1–2 timmars sammanlagd rörelse per dag. Eftersom bara en promenad loggas per dag är det ett riktmärke att ha i bakhuvudet, inte något appen räknar automatiskt på.</li>
+        <li><strong>Varningen om "3 dagar med låg energi"</strong> är en gräns vi satt själva som en försiktig påminnelse — inte ett medicinskt fastställt tal. Kontakta veterinär tidigare om tröttheten kommer plötsligt eller kraftigt, eller följs av t.ex. minskad aptit, kräkningar, diarré eller onormala törst-/kissvanor.</li>
+      </ul>
+      <p class="infobox__sources">Källor: <a href="https://www.agria.se/hund/artiklar/forskning/somn-har-stor-inverkan-pa-hundens-valbefinnande/" target="_blank" rel="noopener">Agria — hundens sömnbehov</a> · <a href="https://news.cision.com/se/agria-djurforsakring/r/hundar-far-for-lite-motion---allvarligt-halsohot,c3555427" target="_blank" rel="noopener">Agria Vårdguide — motionsbehov</a> · <a href="https://evidensia.se/djurvardguiden/" target="_blank" rel="noopener">Evidensia — djurvårdsguide</a></p>
+    </div>
+  </section>
+
+  <footer>Doginary · Insikter uppdateras varje kväll</footer>
+  </div><!-- /#appScreen -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="doginary-supabase.js"></script>
+<script src="doginary-data.js"></script>
+<script>
+  const authScreen = document.getElementById('authScreen');
+  const appScreen = document.getElementById('appScreen');
+  const authForm = document.getElementById('authForm');
+  const authStatus = document.getElementById('authStatus');
+  const signOutBtn = document.getElementById('signOutBtn');
+  const authTitle = document.getElementById('authTitle');
+  const authDesc = document.getElementById('authDesc');
+  const authSubmitBtn = document.getElementById('authSubmitBtn');
+  const authToggleBtn = document.getElementById('authToggleBtn');
+  const forgotBtn = document.getElementById('forgotBtn');
+  let authMode = 'signup';
+
+  function applyAuthMode(){
+    if(authMode === 'signup'){
+      authTitle.textContent = 'Skapa konto';
+      authDesc.textContent = 'Skapa ett konto med mejl och lösenord — samma konto som du loggar din hunds dagar på.';
+      authSubmitBtn.textContent = 'Skapa konto';
+      authToggleBtn.textContent = 'Har du redan ett konto? Logga in';
+    } else {
+      authTitle.textContent = 'Logga in';
+      authDesc.textContent = 'Logga in med din mejladress och ditt lösenord.';
+      authSubmitBtn.textContent = 'Logga in';
+      authToggleBtn.textContent = 'Inget konto än? Skapa ett';
+    }
+    authStatus.textContent = '';
+    authStatus.classList.remove('err');
+  }
+
+  authToggleBtn.addEventListener('click', () => {
+    authMode = authMode === 'signup' ? 'signin' : 'signup';
+    applyAuthMode();
+  });
+
+  forgotBtn.addEventListener('click', async () => {
+    const email = document.getElementById('authEmail').value.trim();
+    if(!email){
+      authStatus.textContent = 'Skriv din mejladress i fältet ovan först.';
+      authStatus.classList.add('err');
+      return;
+    }
+    try{
+      await DoginaryAuth.resetPassword(email);
+      authStatus.textContent = 'Vi har skickat en länk för att återställa lösenordet till ' + email + '.';
+      authStatus.classList.remove('err');
+    } catch(e){
+      authStatus.textContent = 'Kunde inte skicka återställningslänken just nu.';
+      authStatus.classList.add('err');
+    }
+  });
+
+  authForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    if(!email || !password) return;
+    authStatus.textContent = authMode === 'signup' ? 'Skapar konto …' : 'Loggar in …';
+    authStatus.classList.remove('err');
+    authSubmitBtn.disabled = true;
+    try{
+      if(authMode === 'signup'){
+        const result = await DoginaryAuth.signUp(email, password);
+        if(result.needsConfirmation){
+          authStatus.textContent = 'Kontot är skapat! Kolla din inkorg och klicka på bekräftelselänken, logga sedan in här.';
+          authMode = 'signin';
+          applyAuthMode();
+        }
+      } else {
+        await DoginaryAuth.signIn(email, password);
+      }
+    } catch(e){
+      authStatus.textContent = e && e.message ? e.message : 'Något gick fel — försök igen.';
+      authStatus.classList.add('err');
+    } finally {
+      authSubmitBtn.disabled = false;
+    }
+  });
+
+  applyAuthMode();
+
+  signOutBtn.addEventListener('click', async () => {
+    await DoginaryAuth.signOut();
+    appScreen.hidden = true;
+    signOutBtn.hidden = true;
+    authScreen.hidden = false;
+  });
+
+  const icons = {
+    energy: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>',
+    walk: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2.4"/><circle cx="15" cy="4.5" r="2"/><circle cx="19" cy="9" r="1.8"/><ellipse cx="10.5" cy="15" rx="5.4" ry="4.3"/></svg>',
+    food: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11a8 8 0 0 1 16 0"/><path d="M3 11h18v2a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2z"/></svg>',
+    sleep: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>'
+  };
+
+  function trendClass(dir){
+    return dir === 'up' ? 'trend--up' : dir === 'down' ? 'trend--down' : 'trend--flat';
+  }
+  function trendArrow(dir){
+    return dir === 'up' ? '↑' : dir === 'down' ? '↓' : '→';
+  }
+  function esc(s){
+    const d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+  function sparklinePath(values, w, h, pad = 4){
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = (max - min) || 1;
+    const step = (w - pad * 2) / (values.length - 1);
+    return values.map((v, i) => {
+      const x = pad + i * step;
+      const y = h - pad - ((v - min) / range) * (h - pad * 2);
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+  }
+  function renderSpark(container, label, values, unit, color){
+    const w = 140, h = 34;
+    const last = values[values.length - 1];
+    const first = values[0];
+    const delta = (((last - first) / (first || 1)) * 100).toFixed(0);
+    const sign = delta > 0 ? '+' : '';
+    const wrap = document.createElement('div');
+    wrap.className = 'spark';
+    wrap.innerHTML = `
+      <div class="spark__label"><span>${label}</span><span class="spark__value">${sign}${delta}%</span></div>
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <path d="${sparklinePath(values, w, h)}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+    container.appendChild(wrap);
+  }
+
+  async function renderInsights(dogName, allEntries){
+    document.getElementById('heroDate').textContent = new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
+    document.getElementById('heroDogName').textContent = dogName;
+
+    const todayGrid = document.getElementById('todayGrid');
+    todayGrid.innerHTML = '';
+    const todayData = DoginaryData.computeToday(allEntries, dogName);
+
+    if (!todayData) {
+      todayGrid.innerHTML = `<div class="emptycard" style="grid-column:1/-1">Ingen dag loggad än. <a href="logga.html">Logga ${esc(dogName)}s första dag</a> för att se insikter här.</div>`;
+      document.getElementById('heroHeadline').textContent = `${dogName} väntar på sin första loggade dag.`;
+      document.getElementById('heroSub').textContent = 'Så fort du loggat en dag dyker de första insikterna upp här.';
+    } else {
+      document.getElementById('heroHeadline').textContent = `${dogName} har haft en lugn och fin dag idag.`;
+      document.getElementById('heroSub').textContent = 'Insikterna nedan bygger på det du loggat hittills.';
+      todayData.cards.forEach(item => {
+        const el = document.createElement('div');
+        el.className = `icard icard--${item.type}`;
+        el.innerHTML = `
+          <div class="icard__top">
+            <span class="icard__icon">${icons[item.type]}</span>
+            <span class="trend ${trendClass(item.dir)}">${trendArrow(item.dir)} ${esc(item.trend)}</span>
+          </div>
+          <span class="icard__label">${esc(item.label)}</span>
+          <p class="icard__text">${esc(item.text)}</p>
+        `;
+        todayGrid.appendChild(el);
+      });
+    }
+
+    // ---- Vecka ----
+    const weekMeta = document.getElementById('weekMeta');
+    const weekContent = document.getElementById('weekContent');
+    const weekData = DoginaryData.computeWeek(allEntries, dogName);
+    const now = new Date();
+    const oneJan = new Date(now.getFullYear(), 0, 1);
+    const weekNumber = Math.ceil((((now - oneJan) / 86400000) + oneJan.getDay() + 1) / 7);
+    weekMeta.textContent = 'Vecka ' + weekNumber;
+
+    if (!weekData) {
+      weekContent.innerHTML = `<div class="emptycard">Logga några dagar i rad så samlas veckans mönster här.</div>`;
+    } else {
+      weekContent.innerHTML = `
+        <div class="weekcard">
+          <p class="weekcard__summary">${esc(weekData.summary)}</p>
+          <div class="sparklines" id="sparklineRow"></div>
+          <div class="doginsight">
+            <span class="doginsight__mark">”</span>
+            <p>${esc(weekData.highlight)}</p>
+          </div>
+        </div>
+      `;
+      const sparkRow = document.getElementById('sparklineRow');
+      if (weekData.sparklines.energy.length > 1) renderSpark(sparkRow, 'Energi', weekData.sparklines.energy, '', '#A15C38');
+      if (weekData.sparklines.walks.length > 1) renderSpark(sparkRow, 'Promenader', weekData.sparklines.walks, 'min', '#33505A');
+      if (weekData.sparklines.sleep.length > 1) renderSpark(sparkRow, 'Sömn', weekData.sparklines.sleep, 'h', '#4B6B3E');
+      if (!sparkRow.children.length) sparkRow.remove();
+    }
+
+    // ---- Månad ----
+    const monthMeta = document.getElementById('monthMeta');
+    const monthContent = document.getElementById('monthContent');
+    const monthData = DoginaryData.computeMonth(allEntries, dogName);
+    monthMeta.textContent = now.toLocaleDateString('sv-SE', { month: 'long' });
+
+    if (!monthData) {
+      monthContent.innerHTML = `<div class="emptycard">Månadsrapporten fylls på allt eftersom du loggar fler dagar.</div>`;
+    } else {
+      const list = (items, dotClass) => items.map(t => `<li><span class="dot ${dotClass}"></span>${esc(t)}</li>`).join('');
+      monthContent.innerHTML = `
+        <div class="monthcard">
+          <div class="monthcard__grid">
+            <div class="monthcard__block">
+              <h3>Höjdpunkter</h3>
+              <ul>${list(monthData.highlights, 'dot--rust')}</ul>
+            </div>
+            <div class="monthcard__block">
+              <h3>Att hålla ögonen på</h3>
+              <ul>${monthData.watch.length ? list(monthData.watch, 'dot--teal') : '<li><span class="dot dot--teal"></span>Inget särskilt att hålla ögonen på just nu.</li>'}</ul>
+            </div>
+            <div class="monthcard__block">
+              <h3>Rekommendation</h3>
+              <ul>${monthData.recommendations.length ? list(monthData.recommendations, 'dot--rust') : '<li><span class="dot dot--rust"></span>Fortsätt som vanligt — allt ser stabilt ut.</li>'}</ul>
+            </div>
+          </div>
+          <div class="monthchart" id="monthChart"></div>
+        </div>
+      `;
+      if (monthData.walkTrend.length > 1) {
+        const monthChart = document.getElementById('monthChart');
+        const mv = monthData.walkTrend;
+        const mw = 560, mh = 64, mpad = 6;
+        const linePath = sparklinePath(mv, mw, mh, mpad);
+        const areaPath = `${linePath} L${mw - mpad},${mh - mpad} L${mpad},${mh - mpad} Z`;
+        monthChart.innerHTML = `
+          <svg viewBox="0 0 ${mw} ${mh}" preserveAspectRatio="none">
+            <path d="${areaPath}" fill="#A15C38" opacity="0.12"/>
+            <path d="${linePath}" fill="none" stroke="#A15C38" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        `;
+      }
+    }
+
+    // ---- Varningar & belöningar ----
+    const warningsContent = document.getElementById('warningsContent');
+    const warnings = DoginaryData.computeWarnings(allEntries, dogName);
+    warningsContent.innerHTML = warnings.length
+      ? warnings.map(w => `
+          <div class="noticecard noticecard--warn">
+            <div class="noticecard__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <p class="noticecard__text"><strong>${esc(w.title)}</strong>${esc(w.text)}</p>
+          </div>`).join('')
+      : `<div class="emptycard">Inga varningar just nu.</div>`;
+
+    const rewardsContent = document.getElementById('rewardsContent');
+    const rewards = DoginaryData.computeRewards(allEntries, dogName);
+    rewardsContent.innerHTML = rewards.length
+      ? rewards.map(r => `
+          <div class="noticecard noticecard--reward">
+            <div class="noticecard__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.8-5 4.8 1.3 6.8L12 17.6 5.9 20.7l1.3-6.8-5-4.8 6.9-.8L12 2z"/></svg></div>
+            <p class="noticecard__text"><strong>${esc(r.title)}</strong>${esc(r.text)}</p>
+          </div>`).join('')
+      : `<div class="emptycard">Logga några dagar i rad för att börja samla belöningar.</div>`;
+  }
+
+  async function enterApp(session){
+    authScreen.hidden = true;
+    appScreen.hidden = false;
+    signOutBtn.hidden = false;
+    try{
+      const dog = await DoginaryDB.getOrCreateDog(session.user.id);
+      const dogName = dog.name || DoginaryData.DEFAULT_NAME;
+      const entries = await DoginaryDB.loadEntries(dog.id);
+      await renderInsights(dogName, entries);
+    } catch(e){
+      appScreen.innerHTML = '<div class="emptycard">Kunde inte hämta din hunds data just nu — ladda om sidan.</div>';
+    }
+  }
+
+  function showAuth(){
+    authScreen.hidden = false;
+    appScreen.hidden = true;
+    signOutBtn.hidden = true;
+  }
+
+  (async function init(){
+    if(!window.DoginaryAuth){
+      authStatus.textContent = 'Kunde inte ladda inloggningen — kontrollera internetuppkopplingen och ladda om sidan.';
+      authStatus.classList.add('err');
+      return;
+    }
+    const session = await DoginaryAuth.getSession();
+    if(session){ await enterApp(session); } else { showAuth(); }
+
+    let signedIn = !!session;
+    DoginaryAuth.onAuthStateChange(async (session) => {
+      if(session && !signedIn){ signedIn = true; await enterApp(session); }
+      else if(!session && signedIn){ signedIn = false; showAuth(); }
+    });
+  })();
+</script>
+</body>
+</html>

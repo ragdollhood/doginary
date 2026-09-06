@@ -29,8 +29,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
     gap: 12px;
+    height: 76px;
+    padding: 0 max(24px, 5vw);
+    background: var(--surface);
+    border-bottom: 1px solid var(--hair);
   }
   .crossnav a, .crossnav button.linklike{
     font-size: 13.5px;
@@ -953,13 +956,14 @@
 <link rel="stylesheet" href="doginary-auth-ui.css">
 </head>
 <body>
-<div class="page">
 
-  <nav class="crossnav">
-    <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
-    <a href="insikter.html">Se insikter →</a>
-    <div id="doginaryAuthRoot"></div>
-  </nav>
+<nav class="crossnav">
+  <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
+  <a href="insikter.html">Se insikter →</a>
+  <div id="doginaryAuthRoot"></div>
+</nav>
+
+<div class="page">
 
   <!-- ---------- Inloggning (visas tills en session finns) ---------- -->
   <div id="authScreen">

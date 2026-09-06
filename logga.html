@@ -565,8 +565,8 @@
     color: var(--ink-soft);
   }
   .cal-day.is-today{ border-color: var(--teal); }
-  .cal-day.is-selected{ background: var(--ink); }
-  .cal-day.is-selected .cal-day__num{ color: var(--surface); }
+  .cal-day.is-selected{ background: var(--teal-soft); border-color: var(--teal); }
+  .cal-day.is-selected .cal-day__num{ color: var(--teal); font-weight: 600; }
   .cal-day.has-entries:not(.is-selected){ background: var(--rust-soft); }
   .cal-day:hover:not(.cal-day--empty):not(.is-selected){ background: var(--teal-soft); }
 
@@ -625,9 +625,9 @@
   .week-day__more{ font-size: 9.5px; color: var(--ink-soft); }
 
   .week-day.is-today{ border-color: var(--teal); }
-  .week-day.is-selected{ background: var(--ink); }
+  .week-day.is-selected{ background: var(--teal-soft); border-color: var(--teal); }
   .week-day.is-selected .week-day__num,
-  .week-day.is-selected .week-day__dow{ color: var(--surface); }
+  .week-day.is-selected .week-day__dow{ color: var(--teal); }
   .week-day.has-entries:not(.is-selected){ background: var(--rust-soft); }
   .week-day:hover:not(.is-selected){ background: var(--teal-soft); }
 

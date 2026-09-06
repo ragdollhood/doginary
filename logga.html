@@ -528,6 +528,18 @@
   }
   .day-group:last-child{ margin-bottom: 0; }
 
+  /* Varje huvudaktivitet får sin egen bakgrundsfärg i "Sparade dagar",
+     så det går att skilja dem åt på ett ögonblick. */
+  .day-group[data-type="poop"]{  background: #E4D3BE; } /* bajs — ljusbrun */
+  .day-group[data-type="play"]{  background: #D6E3F5; } /* lek — blå */
+  .day-group[data-type="walk"]{  background: #D9E8D3; } /* promenad — grön */
+  .day-group[data-type="sleep"]{ background: #F5EBC7; } /* sömn — gul */
+  .day-group[data-type="bath"]{  background: #D9E7EA; } /* bad — ljusturkos */
+  .day-group[data-type="brush"]{ background: #E6DEEF; } /* borstning — lila */
+  .day-group[data-type="claw"]{  background: #F3DCE0; } /* klor — rosa */
+  .day-group[data-type="eat"]{   background: #F5DEC8; } /* mat — persika */
+  .day-group[data-type="learn"]{ background: #E3E6C9; } /* träning — olivgrön */
+
   .day-group__head{
     display: flex;
     align-items: center;
@@ -667,7 +679,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 6px;
     overflow: hidden;
     box-sizing: border-box;
@@ -1222,6 +1234,7 @@
 
       const group = document.createElement('div');
       group.className = 'day-group';
+      group.setAttribute('data-type', key);
 
       const rowsHTML = entries.map(e => {
         const detail = detailFor(e);

@@ -384,12 +384,32 @@
     margin-top: 38px;
   }
 
+  /* .entries-bleed breder ut kalendersektionen på samma sätt som
+     .quicklog-bleed gör för fotokorten ovanför — samma max-bredd (960px)
+     och samma sidopadding (28px) från 640px och uppåt, så att
+     veckokalenderns rad blir exakt lika bred som de två
+     loggningsbilderna tillsammans (inklusive mellanrummet mellan dem). */
+  @media (min-width: 640px){
+    .entries-bleed{
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+    }
+    .entries{
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 28px;
+    }
+  }
+
   .entries__head{
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
-    gap: 12px;
+    gap: 10px 12px;
   }
 
   .entries__head h2{
@@ -402,6 +422,43 @@
   .entries__head span{
     font-size: 13px;
     color: var(--ink-soft);
+  }
+
+  /* Vy-växlaren (Vecka / Månad) — segmenterad pill-knapp. */
+  .cal-view-toggle{
+    display: inline-flex;
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .cal-view-btn{
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    background: none;
+    border: none;
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+  }
+
+  .cal-view-btn.is-active{
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  .cal-view-btn:hover:not(.is-active){ background: var(--hair); }
+
+  .cal-controls{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
   }
 
   .cal-nav{
@@ -420,15 +477,31 @@
     font-size: 15px;
     line-height: 1;
     cursor: pointer;
+    flex-shrink: 0;
   }
   .cal-nav button:hover{ background: var(--surface-2); }
 
   #calMonthLabel{
     font-size: 14px;
     font-weight: 500;
-    min-width: 108px;
+    min-width: 128px;
     text-align: center;
+    white-space: nowrap;
   }
+
+  .cal-today-btn{
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal);
+    background: var(--teal-soft);
+    border: none;
+    border-radius: 999px;
+    padding: 7px 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .cal-today-btn:hover{ background: #cbdad8; }
 
   .calendar{
     background: var(--surface);
@@ -495,6 +568,76 @@
   .cal-day.is-selected .cal-day__num{ color: var(--surface); }
   .cal-day.has-entries:not(.is-selected){ background: var(--rust-soft); }
   .cal-day:hover:not(.cal-day--empty):not(.is-selected){ background: var(--teal-soft); }
+
+  /* ---------- Veckokalender (förstahandsvyn) ----------
+     Stora, breda dagsrutor sida vid sida — en rad med sju rutor som,
+     tack vare .entries-bleed ovan, blir lika bred som fotokorten. */
+  .calendar--week{ padding: 16px 10px; }
+
+  .calendar-week__grid{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .week-day{
+    aspect-ratio: 3 / 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 10px 4px 8px;
+    border-radius: 14px;
+    border: 1.5px solid transparent;
+    background: var(--surface-2);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .week-day__dow{
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .week-day__num{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(18px, 4.5vw, 24px);
+    line-height: 1;
+  }
+
+  .week-day__icons{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 13px;
+    line-height: 1;
+    min-height: 15px;
+  }
+
+  .week-day__more{ font-size: 9.5px; color: var(--ink-soft); }
+
+  .week-day.is-today{ border-color: var(--teal); }
+  .week-day.is-selected{ background: var(--ink); }
+  .week-day.is-selected .week-day__num,
+  .week-day.is-selected .week-day__dow{ color: var(--surface); }
+  .week-day.has-entries:not(.is-selected){ background: var(--rust-soft); }
+  .week-day:hover:not(.is-selected){ background: var(--teal-soft); }
+
+  @media (min-width: 640px){
+    .calendar--week{ padding: 26px 22px; }
+    .calendar-week__grid{ gap: 14px; }
+    .week-day{ padding: 18px 6px 14px; border-radius: 18px; }
+    .week-day__dow{ font-size: 12.5px; }
+    .week-day__num{ font-size: clamp(24px, 2.6vw, 34px); }
+    .week-day__icons{ font-size: 17px; gap: 4px; }
+  }
 
   .day-card{
     background: var(--surface);
@@ -973,17 +1116,30 @@
     </section>
     </div>
 
+    <div class="entries-bleed">
     <div class="entries">
       <div class="entries__head">
         <h2>Kalender</h2>
-        <div class="cal-nav">
-          <button type="button" id="calPrev" aria-label="Föregående månad">‹</button>
-          <span id="calMonthLabel"></span>
-          <button type="button" id="calNext" aria-label="Nästa månad">›</button>
+        <div class="cal-view-toggle" role="tablist" aria-label="Välj kalendervy">
+          <button type="button" class="cal-view-btn is-active" data-view="week" role="tab" aria-selected="true">Vecka</button>
+          <button type="button" class="cal-view-btn" data-view="month" role="tab" aria-selected="false">Månad</button>
         </div>
       </div>
 
-      <div class="calendar">
+      <div class="cal-controls">
+        <div class="cal-nav">
+          <button type="button" id="calPrev" aria-label="Föregående">‹</button>
+          <span id="calMonthLabel"></span>
+          <button type="button" id="calNext" aria-label="Nästa">›</button>
+        </div>
+        <button type="button" id="calToday" class="cal-today-btn" hidden>Idag</button>
+      </div>
+
+      <div class="calendar calendar--week" id="weekCalendar">
+        <div class="calendar-week__grid" id="weekGrid"></div>
+      </div>
+
+      <div class="calendar calendar--month" id="monthCalendar" hidden>
         <div class="calendar__weekdays">
           <span>Mån</span><span>Tis</span><span>Ons</span><span>Tor</span><span>Fre</span><span>Lör</span><span>Sön</span>
         </div>
@@ -997,6 +1153,7 @@
         </div>
         <div id="dayCardList"></div>
       </div>
+    </div>
     </div>
 
   </div>
@@ -1023,9 +1180,14 @@
   const dogNameModalSave = document.getElementById('dogNameModalSave');
 
   const calendarGrid = document.getElementById('calendarGrid');
+  const weekGrid = document.getElementById('weekGrid');
+  const weekCalendar = document.getElementById('weekCalendar');
+  const monthCalendar = document.getElementById('monthCalendar');
+  const calViewBtns = document.querySelectorAll('.cal-view-btn');
   const calMonthLabel = document.getElementById('calMonthLabel');
   const calPrev = document.getElementById('calPrev');
   const calNext = document.getElementById('calNext');
+  const calToday = document.getElementById('calToday');
   const dayCardTitle = document.getElementById('dayCardTitle');
   const dayCardCount = document.getElementById('dayCardCount');
   const dayCardList = document.getElementById('dayCardList');
@@ -1040,6 +1202,24 @@
   let calYear = today.getFullYear();
   let calMonth = today.getMonth(); // 0-indexerad
   let selectedISO = null; // sätts i enterApp()
+
+  // Veckokalendern (förstahandsvyn) håller reda på måndagen i den
+  // vecka som visas. Månadskalendern (alternativet) återanvänder
+  // calYear/calMonth ovan precis som tidigare.
+  let calView = 'week'; // 'week' | 'month'
+  let weekStart = null; // Date, sätts i enterApp()
+
+  function startOfWeek(d){
+    const date = new Date(d);
+    const dayIdx = (date.getDay() + 6) % 7; // 0 = måndag
+    date.setDate(date.getDate() - dayIdx);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  function isoOfDate(d){
+    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  }
 
   const SV_MONTHS = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
 
@@ -1122,7 +1302,14 @@
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
   }
 
+  // Dirigerar till rätt vy. Veckokalendern är förstahandsvyn; månadskalendern
+  // är alternativet man kan växla till via segmentknapparna i huvudet.
   function renderCalendar(){
+    if(calView === 'week') renderWeekCalendar();
+    else renderMonthCalendar();
+  }
+
+  function renderMonthCalendar(){
     const groups = groupByISO(allEntries);
     const first = new Date(calYear, calMonth, 1);
     const firstWeekdayIndex = (first.getDay() + 6) % 7; // 0 = måndag
@@ -1168,22 +1355,109 @@
     });
   }
 
+  const WEEK_DOW = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
+
+  function renderWeekCalendar(){
+    const groups = groupByISO(allEntries);
+    const todayIso = todayISO();
+
+    const days = [];
+    for(let i = 0; i < 7; i++){
+      const d = new Date(weekStart);
+      d.setDate(d.getDate() + i);
+      days.push(d);
+    }
+
+    const first = days[0], last = days[6];
+    const shortMonth = (d) => capitalize(d.toLocaleDateString('sv-SE', { month: 'short' })).replace(/\.$/, '');
+    calMonthLabel.textContent = (first.getMonth() === last.getMonth())
+      ? `${first.getDate()}–${last.getDate()} ${shortMonth(last)} ${last.getFullYear()}`
+      : `${first.getDate()} ${shortMonth(first)} – ${last.getDate()} ${shortMonth(last)} ${last.getFullYear()}`;
+
+    weekGrid.innerHTML = '';
+
+    days.forEach((d, idx) => {
+      const iso = isoOfDate(d);
+      const dayEntries = groups[iso] || [];
+      const uniqueTypes = [...new Set(dayEntries.map(e => e.type || '_note'))];
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'week-day';
+      if(iso === todayIso) btn.classList.add('is-today');
+      if(iso === selectedISO) btn.classList.add('is-selected');
+      if(dayEntries.length) btn.classList.add('has-entries');
+      btn.setAttribute('data-iso', iso);
+
+      const iconsHTML = uniqueTypes.slice(0, 4).map(t => `<span>${QUICKLOG_EMOJI[t] || '📝'}</span>`).join('');
+      const overflow = uniqueTypes.length > 4 ? `<span class="week-day__more">+${uniqueTypes.length - 4}</span>` : '';
+
+      btn.innerHTML = `
+        <span class="week-day__dow">${WEEK_DOW[idx]}</span>
+        <span class="week-day__num">${d.getDate()}</span>
+        <span class="week-day__icons">${iconsHTML}${overflow}</span>
+      `;
+      weekGrid.appendChild(btn);
+    });
+
+    weekGrid.querySelectorAll('.week-day').forEach(btn => {
+      btn.addEventListener('click', () => selectDay(btn.getAttribute('data-iso')));
+    });
+  }
+
   function selectDay(iso){
     selectedISO = iso;
     renderCalendar();
     renderDayCard();
   }
 
+  calViewBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.getAttribute('data-view');
+      if(view === calView) return;
+      calView = view;
+      calViewBtns.forEach(b => {
+        const active = b === btn;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      weekCalendar.hidden = calView !== 'week';
+      monthCalendar.hidden = calView !== 'month';
+      if(calToday) calToday.hidden = calView !== 'month';
+      renderCalendar();
+    });
+  });
+
   calPrev?.addEventListener('click', () => {
-    calMonth--;
-    if(calMonth < 0){ calMonth = 11; calYear--; }
+    if(calView === 'week'){
+      weekStart.setDate(weekStart.getDate() - 7);
+    } else {
+      calMonth--;
+      if(calMonth < 0){ calMonth = 11; calYear--; }
+    }
     renderCalendar();
   });
 
   calNext?.addEventListener('click', () => {
-    calMonth++;
-    if(calMonth > 11){ calMonth = 0; calYear++; }
+    if(calView === 'week'){
+      weekStart.setDate(weekStart.getDate() + 7);
+    } else {
+      calMonth++;
+      if(calMonth > 11){ calMonth = 0; calYear++; }
+    }
     renderCalendar();
+  });
+
+  // IDAG-knappen visas bara i månadsvyn (veckovyn börjar redan på
+  // innevarande vecka och nås enkelt via ‹ ›). Den hoppar tillbaka
+  // till dagens månad och markerar dagens datum.
+  calToday?.addEventListener('click', () => {
+    const now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth();
+    selectedISO = todayISO();
+    renderCalendar();
+    renderDayCard();
   });
 
   // Alla poster som sparats samma dag samlas i en och samma dagsruta.
@@ -1456,6 +1730,7 @@
     const now = new Date();
     calYear = now.getFullYear();
     calMonth = now.getMonth();
+    weekStart = startOfWeek(now);
     selectedISO = todayISO();
 
     try{

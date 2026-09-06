@@ -553,6 +553,14 @@
     gap: 14px;
   }
 
+  /* Med 9 kort och två per rad blir det nionde ensamt på sista raden —
+     annars hamnar det klistrat till vänster. Centrera det istället. */
+  .quicklog-grid > .quicklog-card:last-child:nth-child(odd){
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc((100% - 14px) / 2);
+  }
+
   .quicklog-card{
     position: relative;
     aspect-ratio: 4 / 3;
@@ -658,6 +666,9 @@
       padding: 0 28px;
     }
     .quicklog-grid{ gap: 22px; }
+    .quicklog-grid > .quicklog-card:last-child:nth-child(odd){
+      width: calc((100% - 22px) / 2);
+    }
     .quicklog-opt{ padding: 8px 16px; }
   }
 

@@ -33,6 +33,15 @@
        alter table public.dogs add column if not exists age text;
      Se updateDogProfile() längre ner i den här filen.
 
+  5. Snabbloggningen (foto-korten i logga.html) sparar `type`, `detail`
+     och `time` på varje post (typ av händelse, valt alternativ och
+     klockslag). Kör detta i SQL Editor INNAN ni lägger in den här
+     versionen av filen, annars kommer varje sparning att misslyckas
+     med ett fel (kolumnen finns inte):
+       alter table public.entries add column if not exists type text;
+       alter table public.entries add column if not exists detail text;
+       alter table public.entries add column if not exists time text;
+
   Datan är trygg trots att den publika nyckeln syns i webbläsaren, EFTERSOM
   Row Level Security (steg 1 ovan) ser till att varje användare bara kan
   läsa och skriva sina egna rader.
@@ -201,7 +210,10 @@
             medGiven: row.med_given,
             sleepHours: row.sleep_hours,
             sleepQuality: row.sleep_quality,
-            freeNote: row.free_note
+            freeNote: row.free_note,
+            type: row.type,
+            detail: row.detail,
+            time: row.time
           };
         });
       });
@@ -225,7 +237,10 @@
       med_given: !!entry.medGiven,
       sleep_hours: entry.sleepHours === '' || entry.sleepHours == null ? null : Number(entry.sleepHours),
       sleep_quality: entry.sleepQuality,
-      free_note: entry.freeNote
+      free_note: entry.freeNote,
+      type: entry.type || null,
+      detail: entry.detail || null,
+      time: entry.time || null
     };
     return client
       .from('entries')

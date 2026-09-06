@@ -125,6 +125,68 @@
   .dogname-btn:hover{ background: #3A322A; }
   .dogname-btn:disabled{ opacity: .6; cursor: default; }
 
+  header.top > .dogname-btn{
+    margin-top: 12px;
+    padding: 10px 20px;
+  }
+
+  .dogname-inline{
+    color: var(--rust);
+  }
+
+  /* ---------- Modal: byt hundens namn ---------- */
+  .dogname-modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 36, 28, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+
+  .dogname-modal-card{
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 24px 22px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 12px 40px rgba(43, 36, 28, 0.25);
+  }
+
+  .dogname-modal-card h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 20px;
+    margin: 0 0 14px;
+  }
+
+  .dogname-modal-card form{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dogname-modal-actions{
+    display: flex;
+    gap: 10px;
+  }
+
+  .dogname-modal-cancel{
+    font-family: 'Inter', sans-serif;
+    background: none;
+    color: var(--ink-soft);
+    border: 1px solid var(--hair);
+    border-radius: 30px;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .dogname-modal-cancel:hover{ background: var(--surface-2); }
+
   /* ---------- auth screen ---------- */
   .authcard{
     background: var(--surface);
@@ -675,14 +737,22 @@
 
   /* ---------- Laptop: bredda snabbloggs-sektionen och gå upp till
      två bilder per rad, med större text och knappar än på mobilen ----------
+     .quicklog-bleed bryter ut till full viewport-bredd (oberoende av
+     sidans 560px-container), och .quicklog centreras sedan INUTI den
+     ytan med margin:auto — annars klistrar sig den 960px-breda rutan
+     till vänsterkanten på breda skärmar istället för att hamna i mitten.
      Percentbaserad skylt-positionering nedan skalar automatiskt med
      kortets storlek, så det räcker att bredda själva sektionen. */
   @media (min-width: 640px){
-    .quicklog{
+    .quicklog-bleed{
       width: 100vw;
-      max-width: 960px;
       margin-left: calc(50% - 50vw);
       margin-right: calc(50% - 50vw);
+    }
+    .quicklog{
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
       padding: 0 28px;
     }
     .quicklog-grid{
@@ -741,13 +811,29 @@
   <div id="appScreen" hidden>
 
     <header class="top">
-      <h1>Logga dagen för</h1>
+      <h1>Logga dagen för <span class="dogname-inline" id="dogNameInline" hidden></span></h1>
       <form class="dogname-row" id="dogNameForm" autocomplete="off">
         <input type="text" id="dogNameInput" name="dogName" placeholder="Hundens namn">
         <button type="submit" class="dogname-btn" id="dogNameBtn">Spara</button>
       </form>
+      <button type="button" class="dogname-btn" id="changeNameBtn" hidden>Byt namn</button>
     </header>
 
+    <!-- ---------- Modal: byt hundens namn ---------- -->
+    <div class="dogname-modal-overlay" id="dogNameModal" hidden>
+      <div class="dogname-modal-card" role="dialog" aria-modal="true" aria-labelledby="dogNameModalTitle">
+        <h2 id="dogNameModalTitle">Byt hundens namn</h2>
+        <form id="dogNameModalForm" autocomplete="off">
+          <input type="text" id="dogNameModalInput" placeholder="Hundens namn">
+          <div class="dogname-modal-actions">
+            <button type="button" class="dogname-modal-cancel" id="dogNameModalCancel">Avbryt</button>
+            <button type="submit" class="save" id="dogNameModalSave">Spara</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="quicklog-bleed">
     <section class="quicklog" aria-label="Snabblogga">
       <div class="quicklog-head">
         <h2>Snabblogga</h2>
@@ -866,6 +952,7 @@
 
       <p class="quicklog-status" id="quicklogStatus" role="status" aria-live="polite"></p>
     </section>
+    </div>
 
     <div class="entries">
       <div class="entries__head">
@@ -905,9 +992,16 @@
   const authScreen = document.getElementById('authScreen');
   const appScreen = document.getElementById('appScreen');
   const openAuthBtn = document.getElementById('openAuthBtn');
+  const dogNameInline = document.getElementById('dogNameInline');
   const dogNameForm = document.getElementById('dogNameForm');
   const dogNameInput = document.getElementById('dogNameInput');
   const dogNameBtn = document.getElementById('dogNameBtn');
+  const changeNameBtn = document.getElementById('changeNameBtn');
+  const dogNameModal = document.getElementById('dogNameModal');
+  const dogNameModalForm = document.getElementById('dogNameModalForm');
+  const dogNameModalInput = document.getElementById('dogNameModalInput');
+  const dogNameModalCancel = document.getElementById('dogNameModalCancel');
+  const dogNameModalSave = document.getElementById('dogNameModalSave');
 
   const calendarGrid = document.getElementById('calendarGrid');
   const calMonthLabel = document.getElementById('calMonthLabel');
@@ -1261,34 +1355,72 @@
 
   function updateDogChrome(){
     const hasName = !!(currentDog && currentDog.name);
-    dogNameInput.value = hasName ? currentDog.name : '';
-    dogNameInput.readOnly = hasName;
-    dogNameBtn.textContent = hasName ? 'Byt namn' : 'Spara';
+    if(hasName){
+      dogNameInline.textContent = currentDog.name;
+      dogNameInline.hidden = false;
+      dogNameForm.hidden = true;
+      changeNameBtn.hidden = false;
+    } else {
+      dogNameInline.hidden = true;
+      dogNameForm.hidden = false;
+      changeNameBtn.hidden = true;
+      dogNameInput.value = '';
+    }
     document.title = `Doginary — Logga ${dogLabel() === DoginaryData.DEFAULT_NAME ? 'your dog' : dogLabel() + '\u2019s'} day`;
   }
 
+  // Formuläret syns bara innan hunden har fått ett namn — där sparas det
+  // direkt. När namnet väl är satt hanteras byte istället via modalen.
   dogNameForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    // Läget "Byt namn": rutan visar redan sparat namn skrivskyddat.
-    // Första trycket låser bara upp rutan för redigering.
-    if(dogNameInput.readOnly){
-      dogNameInput.readOnly = false;
-      dogNameBtn.textContent = 'Spara';
-      dogNameInput.focus();
-      dogNameInput.select();
-      return;
-    }
-
     const trimmed = dogNameInput.value.trim();
+    if(!trimmed) return;
     dogNameBtn.disabled = true;
     try{
-      currentDog = await DoginaryDB.updateDogName(currentDog.id, trimmed || null);
+      currentDog = await DoginaryDB.updateDogName(currentDog.id, trimmed);
       updateDogChrome();
-    } catch(e){
+    } catch(err){
       alert('Kunde inte spara namnet just nu — försök igen.');
     } finally {
       dogNameBtn.disabled = false;
+    }
+  });
+
+  function openDogNameModal(){
+    dogNameModalInput.value = (currentDog && currentDog.name) || '';
+    dogNameModal.hidden = false;
+    dogNameModalInput.focus();
+    dogNameModalInput.select();
+  }
+
+  function closeDogNameModal(){
+    dogNameModal.hidden = true;
+  }
+
+  changeNameBtn.addEventListener('click', openDogNameModal);
+  dogNameModalCancel.addEventListener('click', closeDogNameModal);
+
+  // Klick på den mörka bakgrunden (utanför själva rutan) stänger modalen.
+  dogNameModal.addEventListener('click', (e) => {
+    if(e.target === dogNameModal) closeDogNameModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && !dogNameModal.hidden) closeDogNameModal();
+  });
+
+  dogNameModalForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const trimmed = dogNameModalInput.value.trim();
+    dogNameModalSave.disabled = true;
+    try{
+      currentDog = await DoginaryDB.updateDogName(currentDog.id, trimmed || null);
+      updateDogChrome();
+      closeDogNameModal();
+    } catch(err){
+      alert('Kunde inte spara namnet just nu — försök igen.');
+    } finally {
+      dogNameModalSave.disabled = false;
     }
   });
 

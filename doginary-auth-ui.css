@@ -1,0 +1,127 @@
+/* =======================================================================
+   DOGINARY — DELAD INLOGGNINGSRUTA (modal + kontoknapp)
+   File: doginary-auth-ui.css
+   -----------------------------------------------------------------------
+   Fristående stilmall: rör inte sidans egna klasser, och funkar likadant
+   på index.html, logga.html och insikter.html oavsett vilka CSS-variabler
+   respektive sida redan har (fallbacks nedan matchar den varma
+   rust/teal/papper-paletten som logga.html/insikter.html använder).
+   ======================================================================= */
+
+#doginaryAuthModal{
+  position:fixed; inset:0; z-index:500; display:flex; align-items:center;
+  justify-content:center; padding:20px;
+  background:rgba(43,36,28,.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  opacity:0; pointer-events:none; transition:opacity .2s ease;
+}
+#doginaryAuthModal.show{ opacity:1; pointer-events:auto; }
+
+#doginaryAuthCard{
+  position:relative; width:min(380px,100%); max-height:88vh; overflow-y:auto;
+  background:var(--surface,#F8F5EC); border:1px solid var(--hair,#DCD3BF);
+  border-radius:var(--radius-lg,22px); padding:30px 24px 26px;
+  box-shadow:0 24px 60px rgba(0,0,0,.28);
+  transform:translateY(10px) scale(.98); transition:transform .2s ease;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--ink,#2B241C);
+}
+#doginaryAuthModal.show #doginaryAuthCard{ transform:translateY(0) scale(1); }
+
+#doginaryAuthClose{
+  position:absolute; top:14px; right:14px; width:28px; height:28px; padding:0;
+  border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+  font-size:19px; line-height:1; color:var(--ink-soft,#6E6455);
+  background:transparent; border:none; cursor:pointer;
+}
+#doginaryAuthClose:hover{ background:rgba(0,0,0,.06); color:var(--ink,#2B241C); }
+
+.doginaryAuthEyebrow{
+  margin:0 0 2px; font-size:12.5px; letter-spacing:.04em; color:var(--ink-soft,#6E6455);
+}
+#doginaryAuthTitle{
+  font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:22px;
+  margin:0 0 6px; color:var(--ink,#2B241C);
+}
+#doginaryAuthDesc{ font-size:14px; line-height:1.5; color:var(--ink-soft,#6E6455); margin:0 0 18px; }
+
+#doginaryAuthForm{ display:flex; flex-direction:column; gap:6px; }
+#doginaryAuthForm label{
+  font-size:12px; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--ink-soft,#6E6455); margin-top:10px;
+}
+#doginaryAuthForm input{
+  box-sizing:border-box; width:100%; font-family:inherit; font-size:15px;
+  color:var(--ink,#2B241C); background:var(--surface-2,#F1ECDF);
+  border:1px solid var(--hair,#DCD3BF); border-radius:10px; padding:11px 12px;
+  outline:none; transition:border-color .15s ease;
+}
+#doginaryAuthForm input:focus{ border-color:var(--teal,#33505A); }
+
+#doginaryAuthMessage{ min-height:16px; font-size:12.5px; margin:10px 0 0; line-height:1.4; }
+#doginaryAuthMessage.error{ color:var(--warn,#9C3B2C); }
+#doginaryAuthMessage.success{ color:var(--reward,#4B6B3E); }
+
+#doginaryAuthSubmit{
+  margin-top:16px; width:100%; font-family:inherit; font-size:15px; font-weight:500;
+  color:var(--surface,#F8F5EC); background:var(--ink,#2B241C); border:none;
+  border-radius:30px; padding:12px; cursor:pointer; transition:background .15s ease;
+}
+#doginaryAuthSubmit:hover{ background:#3A322A; }
+#doginaryAuthSubmit:disabled{ opacity:.6; cursor:default; }
+
+.doginaryAuthSwitch{ margin:10px 0 0; text-align:center; }
+.doginaryAuthSwitch button{
+  font-family:inherit; font-size:13px; color:var(--teal,#33505A);
+  background:none; border:none; padding:0; cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px;
+}
+.doginaryAuthSwitch button:hover{ color:var(--ink,#2B241C); }
+.doginaryAuthSwitch button:disabled{ opacity:.6; cursor:default; }
+
+/* ---------- Kontoknapp/chip (t.ex. i en crossnav eller header) ---------- */
+#doginaryAuthRoot{ display:inline-flex; align-items:center; }
+
+#doginaryLoginChipBtn{
+  font-family:inherit; font-size:13.5px; color:var(--teal,#33505A);
+  background:none; border:none; padding:0; cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px;
+}
+#doginaryLoginChipBtn:hover{ color:var(--ink,#2B241C); }
+
+#doginaryAccountChip{
+  display:inline-flex; align-items:center; gap:10px; font-size:13px;
+}
+#doginaryAccountEmail{
+  color:var(--ink-soft,#6E6455); max-width:180px; overflow:hidden;
+  text-overflow:ellipsis; white-space:nowrap;
+}
+#doginaryLogoutBtn{
+  font-family:inherit; font-size:13px; color:var(--ink-soft,#6E6455);
+  background:none; border:none; padding:0; cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px;
+}
+#doginaryLogoutBtn:hover{ color:var(--warn,#9C3B2C); }
+
+/* ---------- "Logga in för att fortsätta"-kort (logga.html / insikter.html) ---------- */
+.doginary-loggedout-card{
+  background:var(--surface,#F8F5EC); border:1px solid var(--hair,#DCD3BF);
+  border-radius:var(--radius-lg,22px); padding:30px 24px; margin-top:12px;
+  text-align:center;
+}
+.doginary-loggedout-card h2{
+  font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:21px;
+  margin:0 0 8px; color:var(--ink,#2B241C);
+}
+.doginary-loggedout-card p{
+  font-size:14.5px; color:var(--ink-soft,#6E6455); margin:0 0 18px; line-height:1.5;
+}
+.doginary-loggedout-card button{
+  font-family:inherit; font-size:15px; font-weight:500;
+  color:var(--surface,#F8F5EC); background:var(--ink,#2B241C); border:none;
+  border-radius:30px; padding:12px 26px; cursor:pointer;
+}
+.doginary-loggedout-card button:hover{ background:#3A322A; }
+
+@media (max-width:480px){
+  #doginaryAccountEmail{ max-width:110px; }
+}

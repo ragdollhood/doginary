@@ -19,10 +19,19 @@
      https://doginary.com/insikter.html) under "Redirect URLs", annars
      nekar Supabase att skicka tillbaka användaren efter bekräftelse-
      eller återställningslänken i mejlet.
-  3. Under Authentication -> Providers -> Email: bestäm om "Confirm
-     email" ska vara på (standard, säkrast — användaren måste klicka en
-     länk i mejlet innan kontot är aktivt) eller av (enklare, kontot är
-     klart direkt efter registrering). Koden här hanterar båda lägena.
+  3. Under Authentication -> Sign In / Providers -> Email: stäng AV
+     "Confirm email" om ni vill att registrering + inloggning ska gå
+     direkt utan att användaren behöver klicka en länk i ett mejl först
+     (det är det här som gör inloggningen snabb). Koden här hanterar
+     båda lägena, men bara detta Supabase-projekt-steg tar bort
+     mejlkravet helt — det går inte att stänga av från klientkoden.
+
+  4. Om ni vill knyta hela hundprofilen (namn, storlek, päls, ålder) till
+     kontot — inte bara namnet — kör även:
+       alter table public.dogs add column if not exists size text;
+       alter table public.dogs add column if not exists coat text;
+       alter table public.dogs add column if not exists age text;
+     Se updateDogProfile() längre ner i den här filen.
 
   Datan är trygg trots att den publika nyckeln syns i webbläsaren, EFTERSOM
   Row Level Security (steg 1 ovan) ser till att varje användare bara kan
@@ -131,6 +140,38 @@
       });
   }
 
+  // Sparar hela hundprofilen (namn, storlek, päls, ålder) på det inloggade
+  // kontots hund-rad. Används av index.html:s "Din hunds profil"-formulär,
+  // som tidigare bara sparade i webbläsarens localStorage — nu ligger den
+  // datan istället på kontot, precis som namnet redan gjorde, och följer
+  // med mellan enheter och till Logga/Insikter.
+  //
+  // KRÄVER dessa kolumner på tabellen `dogs` (kör en gång i SQL Editor
+  // om de inte redan finns):
+  //   alter table public.dogs add column if not exists size text;
+  //   alter table public.dogs add column if not exists coat text;
+  //   alter table public.dogs add column if not exists age text;
+  //
+  // `fields` kan innehålla valfri kombination av { name, size, coat, age }
+  // — bara de fälten som skickas in uppdateras.
+  function updateDogProfile(dogId, fields) {
+    var patch = {};
+    if (Object.prototype.hasOwnProperty.call(fields, 'name')) patch.name = fields.name || null;
+    if (Object.prototype.hasOwnProperty.call(fields, 'size')) patch.size = fields.size || null;
+    if (Object.prototype.hasOwnProperty.call(fields, 'coat')) patch.coat = fields.coat || null;
+    if (Object.prototype.hasOwnProperty.call(fields, 'age')) patch.age = fields.age || null;
+    return client
+      .from('dogs')
+      .update(patch)
+      .eq('id', dogId)
+      .select()
+      .single()
+      .then(function (res) {
+        if (res.error) throw res.error;
+        return res.data;
+      });
+  }
+
   // ---------- Dagboksrader ----------
 
   function loadEntries(dogId) {
@@ -221,6 +262,7 @@
   global.DoginaryDB = {
     getOrCreateDog: getOrCreateDog,
     updateDogName: updateDogName,
+    updateDogProfile: updateDogProfile,
     loadEntries: loadEntries,
     addEntry: addEntry,
     removeEntry: removeEntry

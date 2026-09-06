@@ -78,6 +78,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="doginary-auth-ui.css">
   <style>
     #daily .donate-day-card{
       display:block;
@@ -401,15 +402,18 @@
 <script src="app.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="doginary-supabase.js"></script>
+<script src="doginary-auth.js"></script>
 <script>
   // Logga in / mina sidor-knappen i menyn (desktop + mobil tabbar).
-  // Kollar om man redan är inloggad (samma konto som på logga.html/
-  // insikter.html) och pekar då till Insikter med hundens namn istället.
-  (async function(){
+  // Utloggad: klick öppnar den delade inloggningsrutan direkt på den här
+  // sidan (istället för att navigera bort till logga.html) och skickar
+  // sedan vidare till Insikter så snart inloggningen lyckas. Inloggad:
+  // knappen pekar till Insikter direkt, med hundens namn istället för
+  // "Logga in" (samma konto som på logga.html/insikter.html).
+  (function(){
     const navBtn = document.getElementById('navLoginBtn');
     const tabBtn = document.getElementById('tabbarLoginBtn');
     const tabLabel = document.getElementById('tabbarLoginLabel');
-    if(!window.DoginaryAuth) return;
 
     function setLoggedOut(){
       navBtn.textContent = 'Logga in';
@@ -430,11 +434,30 @@
       tabBtn.href = 'insikter.html';
     }
 
-    const session = await DoginaryAuth.getSession();
-    if(session){ await setLoggedIn(session); } else { setLoggedOut(); }
+    function openLoginModal(ev){
+      ev.preventDefault();
+      DoginaryAuthUI.open('signup');
+    }
 
-    DoginaryAuth.onAuthStateChange(async (session) => {
-      if(session){ await setLoggedIn(session); } else { setLoggedOut(); }
+    document.addEventListener('doginary:auth', async (ev) => {
+      const session = ev.detail.session;
+      if(session){
+        await setLoggedIn(session);
+        navBtn.removeEventListener('click', openLoginModal);
+        tabBtn.removeEventListener('click', openLoginModal);
+      } else {
+        setLoggedOut();
+        navBtn.addEventListener('click', openLoginModal);
+        tabBtn.addEventListener('click', openLoginModal);
+      }
+    });
+
+    // Efter lyckad inloggning från den här sidan: gå direkt till
+    // Insikter, precis som om man klickat den inloggade "Mina sidor"-knappen.
+    let firstAuthSeen = false;
+    document.addEventListener('doginary:auth', (ev) => {
+      if(!firstAuthSeen){ firstAuthSeen = true; return; } // ignorera statusen vid sidladdning
+      if(ev.detail.session) window.location.href = 'insikter.html';
     });
   })();
 </script>

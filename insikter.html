@@ -523,28 +523,23 @@
     cursor: pointer;
     font-family: inherit;
   }
+  .crossnav #doginaryAuthRoot{ font-size: 13.5px; }
 </style>
+<link rel="stylesheet" href="doginary-auth-ui.css">
 </head>
 <body>
 <div class="page">
 
   <nav class="crossnav">
     <a href="logga.html">← Logga en dag</a>
-    <button type="button" class="linklike" id="signOutBtn" hidden>Logga ut</button>
+    <div id="doginaryAuthRoot"></div>
   </nav>
 
   <div id="authScreen">
-    <div class="authcard">
-      <h1 id="authTitle">Skapa konto</h1>
-      <p id="authDesc">Skapa ett konto med mejl och lösenord — samma konto som du loggar din hunds dagar på.</p>
-      <form id="authForm">
-        <input type="email" id="authEmail" placeholder="din@mejl.se" required autocomplete="email">
-        <input type="password" id="authPassword" placeholder="Lösenord (minst 6 tecken)" required minlength="6" autocomplete="new-password">
-        <button type="submit" class="save" id="authSubmitBtn">Skapa konto</button>
-      </form>
-      <p class="status" id="authStatus" role="status"></p>
-      <p class="authswitch"><button type="button" class="linklike" id="authToggleBtn">Har du redan ett konto? Logga in</button></p>
-      <p class="authswitch"><button type="button" class="linklike" id="forgotBtn">Glömt lösenord?</button></p>
+    <div class="doginary-loggedout-card">
+      <h2>Skapa konto eller logga in</h2>
+      <p>Samma konto som du loggar din hunds dagar på — logga in för att se insikterna.</p>
+      <button type="button" id="openAuthBtn">Skapa konto / Logga in</button>
     </div>
   </div>
 
@@ -623,93 +618,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="doginary-supabase.js"></script>
+<script src="doginary-auth.js"></script>
 <script src="doginary-data.js"></script>
 <script>
   const authScreen = document.getElementById('authScreen');
   const appScreen = document.getElementById('appScreen');
-  const authForm = document.getElementById('authForm');
-  const authStatus = document.getElementById('authStatus');
-  const signOutBtn = document.getElementById('signOutBtn');
-  const authTitle = document.getElementById('authTitle');
-  const authDesc = document.getElementById('authDesc');
-  const authSubmitBtn = document.getElementById('authSubmitBtn');
-  const authToggleBtn = document.getElementById('authToggleBtn');
-  const forgotBtn = document.getElementById('forgotBtn');
-  let authMode = 'signup';
+  const openAuthBtn = document.getElementById('openAuthBtn');
 
-  function applyAuthMode(){
-    if(authMode === 'signup'){
-      authTitle.textContent = 'Skapa konto';
-      authDesc.textContent = 'Skapa ett konto med mejl och lösenord — samma konto som du loggar din hunds dagar på.';
-      authSubmitBtn.textContent = 'Skapa konto';
-      authToggleBtn.textContent = 'Har du redan ett konto? Logga in';
-    } else {
-      authTitle.textContent = 'Logga in';
-      authDesc.textContent = 'Logga in med din mejladress och ditt lösenord.';
-      authSubmitBtn.textContent = 'Logga in';
-      authToggleBtn.textContent = 'Inget konto än? Skapa ett';
-    }
-    authStatus.textContent = '';
-    authStatus.classList.remove('err');
-  }
-
-  authToggleBtn.addEventListener('click', () => {
-    authMode = authMode === 'signup' ? 'signin' : 'signup';
-    applyAuthMode();
-  });
-
-  forgotBtn.addEventListener('click', async () => {
-    const email = document.getElementById('authEmail').value.trim();
-    if(!email){
-      authStatus.textContent = 'Skriv din mejladress i fältet ovan först.';
-      authStatus.classList.add('err');
-      return;
-    }
-    try{
-      await DoginaryAuth.resetPassword(email);
-      authStatus.textContent = 'Vi har skickat en länk för att återställa lösenordet till ' + email + '.';
-      authStatus.classList.remove('err');
-    } catch(e){
-      authStatus.textContent = 'Kunde inte skicka återställningslänken just nu.';
-      authStatus.classList.add('err');
-    }
-  });
-
-  authForm.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value;
-    if(!email || !password) return;
-    authStatus.textContent = authMode === 'signup' ? 'Skapar konto …' : 'Loggar in …';
-    authStatus.classList.remove('err');
-    authSubmitBtn.disabled = true;
-    try{
-      if(authMode === 'signup'){
-        const result = await DoginaryAuth.signUp(email, password);
-        if(result.needsConfirmation){
-          authStatus.textContent = 'Kontot är skapat! Kolla din inkorg och klicka på bekräftelselänken, logga sedan in här.';
-          authMode = 'signin';
-          applyAuthMode();
-        }
-      } else {
-        await DoginaryAuth.signIn(email, password);
-      }
-    } catch(e){
-      authStatus.textContent = e && e.message ? e.message : 'Något gick fel — försök igen.';
-      authStatus.classList.add('err');
-    } finally {
-      authSubmitBtn.disabled = false;
-    }
-  });
-
-  applyAuthMode();
-
-  signOutBtn.addEventListener('click', async () => {
-    await DoginaryAuth.signOut();
-    appScreen.hidden = true;
-    signOutBtn.hidden = true;
-    authScreen.hidden = false;
-  });
+  // Inloggningen sköts av den delade modalen (doginary-auth.js). Den här
+  // knappen öppnar bara samma ruta som kontoikonen i crossnav.
+  openAuthBtn.addEventListener('click', () => DoginaryAuthUI.open('signup'));
 
   const icons = {
     energy: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>',
@@ -884,7 +802,6 @@
   async function enterApp(session){
     authScreen.hidden = true;
     appScreen.hidden = false;
-    signOutBtn.hidden = false;
     try{
       const dog = await DoginaryDB.getOrCreateDog(session.user.id);
       const dogName = dog.name || DoginaryData.DEFAULT_NAME;
@@ -898,24 +815,17 @@
   function showAuth(){
     authScreen.hidden = false;
     appScreen.hidden = true;
-    signOutBtn.hidden = true;
   }
 
-  (async function init(){
-    if(!window.DoginaryAuth){
-      authStatus.textContent = 'Kunde inte ladda inloggningen — kontrollera internetuppkopplingen och ladda om sidan.';
-      authStatus.classList.add('err');
-      return;
-    }
-    const session = await DoginaryAuth.getSession();
-    if(session){ await enterApp(session); } else { showAuth(); }
-
-    let signedIn = !!session;
-    DoginaryAuth.onAuthStateChange(async (session) => {
-      if(session && !signedIn){ signedIn = true; await enterApp(session); }
-      else if(!session && signedIn){ signedIn = false; showAuth(); }
-    });
-  })();
+  // doginary-auth.js sköter själva inloggningen/modalen. Den här sidan
+  // lyssnar bara på "doginary:auth" och växlar mellan auth-kortet och
+  // insikterna utifrån om det finns en session eller inte.
+  let signedIn = false;
+  document.addEventListener('doginary:auth', async (ev) => {
+    const session = ev.detail.session;
+    if(session && !signedIn){ signedIn = true; await enterApp(session); }
+    else if(!session && signedIn){ signedIn = false; showAuth(); }
+  });
 </script>
 </body>
 </html>

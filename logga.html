@@ -284,7 +284,7 @@
 
   .status.err{ color: var(--warn); }
 
-  /* ---------- saved entries ---------- */
+  /* ---------- saved entries: kalender + dagens ruta ---------- */
 
   .entries{
     margin-top: 38px;
@@ -293,8 +293,9 @@
   .entries__head{
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     margin-bottom: 12px;
+    gap: 12px;
   }
 
   .entries__head h2{
@@ -309,35 +310,174 @@
     color: var(--ink-soft);
   }
 
-  .entry{
+  .cal-nav{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cal-nav button{
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--hair);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .cal-nav button:hover{ background: var(--surface-2); }
+
+  #calMonthLabel{
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 108px;
+    text-align: center;
+  }
+
+  .calendar{
     background: var(--surface);
     border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .calendar__weekdays{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 6px;
+  }
+  .calendar__weekdays span{
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  .calendar__grid{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .cal-day{
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: var(--surface-2);
+    cursor: pointer;
+    padding: 2px;
+    font-family: inherit;
+  }
+  .cal-day--empty{
+    background: none;
+    cursor: default;
+  }
+  .cal-day__num{
+    font-size: 12.5px;
+    color: var(--ink);
+  }
+  .cal-day__icons{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    font-size: 10px;
+    line-height: 1;
+    min-height: 11px;
+  }
+  .cal-day__more{
+    font-size: 8.5px;
+    color: var(--ink-soft);
+  }
+  .cal-day.is-today{ border-color: var(--teal); }
+  .cal-day.is-selected{ background: var(--ink); }
+  .cal-day.is-selected .cal-day__num{ color: var(--surface); }
+  .cal-day.has-entries:not(.is-selected){ background: var(--rust-soft); }
+  .cal-day:hover:not(.cal-day--empty):not(.is-selected){ background: var(--teal-soft); }
+
+  .day-card{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px 18px;
+  }
+
+  .day-card__head{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+
+  .day-card__head h3{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 16.5px;
+    margin: 0;
+    text-transform: capitalize;
+  }
+
+  .day-card__head span{
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .day-item{
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
     border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    margin-bottom: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    align-items: flex-start;
+    align-items: center;
+  }
+  .day-item:last-child{ margin-bottom: 0; }
+
+  .day-item__main{
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
-  .entry__date{
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-bottom: 4px;
-  }
+  .day-item__icon{ font-size: 18px; flex-shrink: 0; }
 
-  .entry__summary{
+  .day-item__label{
     font-size: 14.5px;
     margin: 0;
   }
 
-  .entry__remove{
+  .day-item__detail{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 2px 0 0;
+  }
+
+  .day-item__side{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .day-item__time{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+
+  .day-item__remove{
     font-size: 13px;
     color: var(--ink-soft);
     text-decoration: underline;
     text-underline-offset: 2px;
-    flex-shrink: 0;
     background: none;
     border: none;
     cursor: pointer;
@@ -668,10 +808,28 @@
 
     <div class="entries">
       <div class="entries__head">
-        <h2>Sparade dagar</h2>
-        <span id="entryCount"></span>
+        <h2>Kalender</h2>
+        <div class="cal-nav">
+          <button type="button" id="calPrev" aria-label="Föregående månad">‹</button>
+          <span id="calMonthLabel"></span>
+          <button type="button" id="calNext" aria-label="Nästa månad">›</button>
+        </div>
       </div>
-      <div id="entryList"></div>
+
+      <div class="calendar">
+        <div class="calendar__weekdays">
+          <span>Mån</span><span>Tis</span><span>Ons</span><span>Tor</span><span>Fre</span><span>Lör</span><span>Sön</span>
+        </div>
+        <div class="calendar__grid" id="calendarGrid"></div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-card__head">
+          <h3 id="dayCardTitle"></h3>
+          <span id="dayCardCount"></span>
+        </div>
+        <div id="dayCardList"></div>
+      </div>
     </div>
 
   </div>
@@ -689,8 +847,13 @@
   const dogEyebrow = document.getElementById('dogEyebrow');
   const editNameBtn = document.getElementById('editNameBtn');
 
-  const entryList = document.getElementById('entryList');
-  const entryCount = document.getElementById('entryCount');
+  const calendarGrid = document.getElementById('calendarGrid');
+  const calMonthLabel = document.getElementById('calMonthLabel');
+  const calPrev = document.getElementById('calPrev');
+  const calNext = document.getElementById('calNext');
+  const dayCardTitle = document.getElementById('dayCardTitle');
+  const dayCardCount = document.getElementById('dayCardCount');
+  const dayCardList = document.getElementById('dayCardList');
   const quicklogGrid = document.getElementById('quicklogGrid');
   const quicklogStatus = document.getElementById('quicklogStatus');
   const quicklogPicker = document.getElementById('quicklogPicker');
@@ -703,6 +866,13 @@
   let allEntries = [];
   let activeType = null;
   let activeBtn = null;
+
+  const today = new Date();
+  let calYear = today.getFullYear();
+  let calMonth = today.getMonth(); // 0-indexerad
+  let selectedISO = null; // sätts i enterApp()
+
+  const SV_MONTHS = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
 
   // Etiketter för de nio snabbloggningskorten (bild + vit skylt) högst upp
   // på sidan — återanvänds även för att visa en kort typ-etikett i listan
@@ -734,45 +904,173 @@
     poop: ['Bra', 'Lös', 'Hård', 'Ovanlig']
   };
 
+  // Samma händelser fast bara emoji — används som ikoner i kalendern.
+  const QUICKLOG_EMOJI = {
+    sleep: '😴', bath: '🛁', brush: '🪮', claw: '💅', eat: '🍽️',
+    walk: '🐾', learn: '🎓', play: '🎾', poop: '💩'
+  };
+
   function dogLabel(){
     return (currentDog && currentDog.name) ? currentDog.name : DoginaryData.DEFAULT_NAME;
   }
 
-  function summarize(e){
-    const bits = [];
-    if(e.type && QUICKLOG_TYPES[e.type]) bits.push(QUICKLOG_TYPES[e.type]);
-    if(e.detail) bits.push(e.detail);
-    if(e.time) bits.push(e.time);
-    return bits.join(' · ');
+  function pad2(n){ return String(n).padStart(2, '0'); }
+
+  function todayISO(){
+    return new Date().toLocaleDateString('sv-SE'); // ger "ÅÅÅÅ-MM-DD"
   }
 
-  function renderEntries(entries){
-    entryCount.textContent = entries.length ? `${entries.length} st` : '';
-    entryList.innerHTML = '';
-    if(!entries.length){
-      entryList.innerHTML = '<div class="empty">Inga sparade dagar än — fyll i formuläret ovan för att komma igång.</div>';
+  // Ger tillbaka datumet i "ÅÅÅÅ-MM-DD"-format för en post, så att den kan
+  // placeras rätt i kalendern. Nya poster får isoDate direkt när de sparas;
+  // äldre poster (utan isoDate) tolkas i bästa mån från den svenska
+  // datumtexten (t.ex. "söndag 6 september"), med antagande om innevarande år.
+  function entryISO(e){
+    if(e.isoDate) return e.isoDate;
+    if(e.date){
+      const m = e.date.match(/(\d{1,2})\s+([a-zA-ZåäöÅÄÖ]+)/);
+      if(m){
+        const day = parseInt(m[1], 10);
+        const monthIdx = SV_MONTHS.indexOf(m[2].toLowerCase());
+        if(monthIdx >= 0 && day >= 1 && day <= 31){
+          return `${new Date().getFullYear()}-${pad2(monthIdx + 1)}-${pad2(day)}`;
+        }
+      }
+    }
+    return null;
+  }
+
+  function groupByISO(entries){
+    const map = {};
+    entries.forEach(e => {
+      const iso = entryISO(e) || 'okänt';
+      if(!map[iso]) map[iso] = [];
+      map[iso].push(e);
+    });
+    return map;
+  }
+
+  function capitalize(s){
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  }
+
+  function renderCalendar(){
+    const groups = groupByISO(allEntries);
+    const first = new Date(calYear, calMonth, 1);
+    const firstWeekdayIndex = (first.getDay() + 6) % 7; // 0 = måndag
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+    calMonthLabel.textContent = capitalize(first.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' }));
+
+    calendarGrid.innerHTML = '';
+
+    for(let i = 0; i < firstWeekdayIndex; i++){
+      const empty = document.createElement('div');
+      empty.className = 'cal-day cal-day--empty';
+      calendarGrid.appendChild(empty);
+    }
+
+    const todayIso = todayISO();
+
+    for(let day = 1; day <= daysInMonth; day++){
+      const iso = `${calYear}-${pad2(calMonth + 1)}-${pad2(day)}`;
+      const dayEntries = groups[iso] || [];
+      const uniqueTypes = [...new Set(dayEntries.map(e => e.type || '_note'))];
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cal-day';
+      if(iso === todayIso) btn.classList.add('is-today');
+      if(iso === selectedISO) btn.classList.add('is-selected');
+      if(dayEntries.length) btn.classList.add('has-entries');
+      btn.setAttribute('data-iso', iso);
+
+      const iconsHTML = uniqueTypes.slice(0, 3).map(t => `<span>${QUICKLOG_EMOJI[t] || '📝'}</span>`).join('');
+      const overflow = uniqueTypes.length > 3 ? `<span class="cal-day__more">+${uniqueTypes.length - 3}</span>` : '';
+
+      btn.innerHTML = `
+        <span class="cal-day__num">${day}</span>
+        <span class="cal-day__icons">${iconsHTML}${overflow}</span>
+      `;
+      calendarGrid.appendChild(btn);
+    }
+
+    calendarGrid.querySelectorAll('.cal-day:not(.cal-day--empty)').forEach(btn => {
+      btn.addEventListener('click', () => selectDay(btn.getAttribute('data-iso')));
+    });
+  }
+
+  function selectDay(iso){
+    selectedISO = iso;
+    renderCalendar();
+    renderDayCard();
+  }
+
+  calPrev?.addEventListener('click', () => {
+    calMonth--;
+    if(calMonth < 0){ calMonth = 11; calYear--; }
+    renderCalendar();
+  });
+
+  calNext?.addEventListener('click', () => {
+    calMonth++;
+    if(calMonth > 11){ calMonth = 0; calYear++; }
+    renderCalendar();
+  });
+
+  // Alla poster som sparats samma dag samlas i en och samma ruta, sorterade
+  // efter klockslag — istället för en separat ruta per post som tidigare.
+  function renderDayCard(){
+    const iso = selectedISO;
+    const [y, m, d] = iso.split('-').map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    dayCardTitle.textContent = capitalize(dateObj.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }));
+
+    const groups = groupByISO(allEntries);
+    const dayEntries = (groups[iso] || []).slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+    dayCardCount.textContent = dayEntries.length ? `${dayEntries.length} st` : '';
+
+    if(!dayEntries.length){
+      dayCardList.innerHTML = '<div class="empty">Inga händelser denna dag.</div>';
       return;
     }
-    entries.slice().reverse().forEach(e => {
+
+    dayCardList.innerHTML = '';
+    dayEntries.forEach(e => {
+      const icon = QUICKLOG_EMOJI[e.type] || '📝';
+      const label = (e.type && QUICKLOG_TYPES[e.type]) ? QUICKLOG_TYPES[e.type].replace(/^\S+\s/, '') : 'Anteckning';
+
+      const detailBits = [];
+      if(e.detail) detailBits.push(e.detail);
+      if(e.energi) detailBits.push(`energi: ${String(e.energi).toLowerCase()}`);
+      if(e.aptit) detailBits.push(`aptit: ${String(e.aptit).toLowerCase()}`);
+      if(e.sleepHours) detailBits.push(`${e.sleepHours} h sömn`);
+
       const row = document.createElement('div');
-      row.className = 'entry';
+      row.className = 'day-item';
       row.innerHTML = `
-        <div>
-          <div class="entry__date">${e.date || e.isoDate || ''}</div>
-          <p class="entry__summary">${summarize(e)}</p>
+        <div class="day-item__main">
+          <span class="day-item__icon">${icon}</span>
+          <div>
+            <p class="day-item__label">${label}</p>
+            ${detailBits.length ? `<p class="day-item__detail">${detailBits.join(' · ')}</p>` : ''}
+          </div>
         </div>
-        <button type="button" class="entry__remove" data-id="${e.id}">Ta bort</button>
+        <div class="day-item__side">
+          ${e.time ? `<span class="day-item__time">${e.time}</span>` : ''}
+          <button type="button" class="day-item__remove" data-id="${e.id}">Ta bort</button>
+        </div>
       `;
-      entryList.appendChild(row);
+      dayCardList.appendChild(row);
     });
 
-    entryList.querySelectorAll('.entry__remove').forEach(btn => {
+    dayCardList.querySelectorAll('.day-item__remove').forEach(btn => {
       btn.addEventListener('click', async () => {
         btn.disabled = true;
         try{
           await DoginaryDB.removeEntry(btn.getAttribute('data-id'));
           await refreshEntries();
-        } catch(e){
+        } catch(err){
           quicklogStatus.textContent = 'Kunde inte ta bort just nu — försök igen.';
           quicklogStatus.classList.add('err');
           btn.disabled = false;
@@ -784,7 +1082,8 @@
   async function refreshEntries(){
     const entries = await DoginaryDB.loadEntries(currentDog.id);
     allEntries = entries;
-    renderEntries(entries);
+    renderCalendar();
+    renderDayCard();
     renderQuickCounts();
     return entries;
   }
@@ -853,6 +1152,7 @@
 
     const entry = {
       date: todayLabel(),
+      isoDate: todayISO(),
       time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
       type,
       detail
@@ -915,6 +1215,11 @@
     currentUser = session.user;
     authScreen.hidden = true;
     appScreen.hidden = false;
+
+    const now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth();
+    selectedISO = todayISO();
 
     try{
       currentDog = await DoginaryDB.getOrCreateDog(currentUser.id);

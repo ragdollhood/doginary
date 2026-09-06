@@ -429,52 +429,62 @@
     color: var(--ink-soft);
   }
 
-  .day-item{
+  /* En ruta per huvudaktivitet (t.ex. all bajsning samma dag hamnar i
+     samma grupp), med symbol i huvudet och en rad per tillfälle. */
+  .day-group{
     background: var(--surface-2);
     border: 1px solid var(--hair);
     border-radius: var(--radius-sm);
-    padding: 12px 14px;
+    padding: 12px 14px 10px;
+    margin-bottom: 10px;
+  }
+  .day-group:last-child{ margin-bottom: 0; }
+
+  .day-group__head{
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    align-items: center;
-  }
-  .day-item:last-child{ margin-bottom: 0; }
-
-  .day-item__main{
-    display: flex;
-    align-items: center;
-    gap: 10px;
   }
 
-  .day-item__icon{ font-size: 18px; flex-shrink: 0; }
+  .day-group__icon{ font-size: 19px; flex-shrink: 0; }
 
-  .day-item__label{
+  .day-group__label{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
     font-size: 14.5px;
-    margin: 0;
   }
 
-  .day-item__detail{
-    font-size: 12.5px;
+  .day-group__count{
+    font-size: 12px;
     color: var(--ink-soft);
-    margin: 2px 0 0;
+    margin-left: auto;
   }
 
-  .day-item__side{
+  .day-entry{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: 10px;
+    padding: 9px 12px;
+    margin-bottom: 6px;
+  }
+  .day-entry:last-child{ margin-bottom: 0; }
+
+  .day-entry__row{
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
+    gap: 8px;
   }
 
-  .day-item__time{
+  .day-entry__time{
     font-size: 12.5px;
-    color: var(--ink-soft);
+    font-weight: 600;
+    color: var(--ink);
   }
 
-  .day-item__remove{
-    font-size: 13px;
+  .day-entry__remove{
+    margin-left: auto;
+    font-size: 12px;
     color: var(--ink-soft);
     text-decoration: underline;
     text-underline-offset: 2px;
@@ -482,6 +492,13 @@
     border: none;
     cursor: pointer;
     font-family: inherit;
+    flex-shrink: 0;
+  }
+
+  .day-entry__detail{
+    font-size: 13.5px;
+    color: var(--ink);
+    margin: 4px 0 0;
   }
 
   .empty{
@@ -1038,8 +1055,20 @@
     renderCalendar();
   });
 
-  // Alla poster som sparats samma dag samlas i en och samma ruta, sorterade
-  // efter klockslag — istället för en separat ruta per post som tidigare.
+  // Alla poster som sparats samma dag samlas i en och samma dagsruta.
+  // Inom dagsrutan grupperas de i sin tur per huvudaktivitet (typ) — t.ex.
+  // hamnar alla tillfällen hunden bajsat den dagen i samma grupp-ruta,
+  // oavsett vilken konsistens som valdes. Varje tillfälle visas som
+  // [symbol] [klockslag] och sedan detaljen under.
+  function detailFor(e){
+    const bits = [];
+    if(e.detail) bits.push(e.detail);
+    if(e.energi) bits.push(`energi: ${String(e.energi).toLowerCase()}`);
+    if(e.aptit) bits.push(`aptit: ${String(e.aptit).toLowerCase()}`);
+    if(e.sleepHours) bits.push(`${e.sleepHours} h sömn`);
+    return bits.join(' · ');
+  }
+
   function renderDayCard(){
     const iso = selectedISO;
     const [y, m, d] = iso.split('-').map(Number);
@@ -1047,7 +1076,7 @@
     dayCardTitle.textContent = capitalize(dateObj.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }));
 
     const groups = groupByISO(allEntries);
-    const dayEntries = (groups[iso] || []).slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+    const dayEntries = groups[iso] || [];
 
     dayCardCount.textContent = dayEntries.length ? `${dayEntries.length} st` : '';
 
@@ -1056,36 +1085,57 @@
       return;
     }
 
-    dayCardList.innerHTML = '';
+    // Gruppera på huvudaktivitet (type). Poster utan type (äldre
+    // dagboksposter) hamnar i en gemensam "Anteckning"-grupp.
+    const byType = {};
     dayEntries.forEach(e => {
-      const icon = QUICKLOG_EMOJI[e.type] || '📝';
-      const label = (e.type && QUICKLOG_TYPES[e.type]) ? QUICKLOG_TYPES[e.type].replace(/^\S+\s/, '') : 'Anteckning';
-
-      const detailBits = [];
-      if(e.detail) detailBits.push(e.detail);
-      if(e.energi) detailBits.push(`energi: ${String(e.energi).toLowerCase()}`);
-      if(e.aptit) detailBits.push(`aptit: ${String(e.aptit).toLowerCase()}`);
-      if(e.sleepHours) detailBits.push(`${e.sleepHours} h sömn`);
-
-      const row = document.createElement('div');
-      row.className = 'day-item';
-      row.innerHTML = `
-        <div class="day-item__main">
-          <span class="day-item__icon">${icon}</span>
-          <div>
-            <p class="day-item__label">${label}</p>
-            ${detailBits.length ? `<p class="day-item__detail">${detailBits.join(' · ')}</p>` : ''}
-          </div>
-        </div>
-        <div class="day-item__side">
-          ${e.time ? `<span class="day-item__time">${e.time}</span>` : ''}
-          <button type="button" class="day-item__remove" data-id="${e.id}">Ta bort</button>
-        </div>
-      `;
-      dayCardList.appendChild(row);
+      const key = e.type || '_note';
+      if(!byType[key]) byType[key] = [];
+      byType[key].push(e);
     });
 
-    dayCardList.querySelectorAll('.day-item__remove').forEach(btn => {
+    // Grupperna ordnas efter det tidigaste klockslaget i respektive grupp.
+    const typeKeys = Object.keys(byType).sort((a, b) => {
+      const timeA = byType[a].map(e => e.time || '').sort()[0] || '';
+      const timeB = byType[b].map(e => e.time || '').sort()[0] || '';
+      return timeA.localeCompare(timeB);
+    });
+
+    dayCardList.innerHTML = '';
+
+    typeKeys.forEach(key => {
+      const entries = byType[key].slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+      const icon = QUICKLOG_EMOJI[key] || '📝';
+      const label = (key !== '_note' && QUICKLOG_TYPES[key]) ? QUICKLOG_TYPES[key].replace(/^\S+\s/, '') : 'Anteckning';
+
+      const group = document.createElement('div');
+      group.className = 'day-group';
+
+      const rowsHTML = entries.map(e => {
+        const detail = detailFor(e);
+        return `
+          <div class="day-entry">
+            <div class="day-entry__row">
+              <span class="day-entry__time">${e.time || ''}</span>
+              <button type="button" class="day-entry__remove" data-id="${e.id}">Ta bort</button>
+            </div>
+            ${detail ? `<p class="day-entry__detail">${detail}</p>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      group.innerHTML = `
+        <div class="day-group__head">
+          <span class="day-group__icon">${icon}</span>
+          <span class="day-group__label">${label}</span>
+          ${entries.length > 1 ? `<span class="day-group__count">${entries.length} ggr</span>` : ''}
+        </div>
+        ${rowsHTML}
+      `;
+      dayCardList.appendChild(group);
+    });
+
+    dayCardList.querySelectorAll('.day-entry__remove').forEach(btn => {
       btn.addEventListener('click', async () => {
         btn.disabled = true;
         try{

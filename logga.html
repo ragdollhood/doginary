@@ -48,15 +48,16 @@
     text-decoration: none !important;
     border: 1.5px solid currentColor;
     border-radius: 999px;
-    padding: 4px 12px;
+    padding: 6px 14px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
   }
   .crossnav-logo{
-    height: 15px;
+    height: 34px;
     width: auto;
     display: block;
+    border-radius: 8px;
   }
 
   *{ box-sizing: border-box; }
@@ -848,14 +849,17 @@
   }
 
   /* Alternativen visas direkt på bilden, som små knappval under rubriken —
-     inget separat "Logga"-tryck eller modal krävs längre. */
+     inget separat "Logga"-tryck eller modal krävs längre.
+     Grid med en (implicit) kolumn gör att kolumnens bredd blir precis
+     så bred som det bredaste alternativet i just den gruppen kräver —
+     alla knappar i samma "skylt" blir därmed lika breda som varandra,
+     men aldrig bredare än nödvändigt. Om det bredaste alternativet inte
+     får plats krymper kolumnen till tillgänglig bredd och texten radbryts. */
   .quicklog-opts{
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    display: grid;
+    justify-content: start;
     gap: 6px;
     margin-top: 2px;
-    width: 100%;
     max-width: 100%;
   }
 
@@ -870,6 +874,7 @@
     padding: 4px 9px;
     cursor: pointer;
     line-height: 1.2;
+    width: 100%;
     max-width: 100%;
     white-space: normal;
     overflow-wrap: break-word;

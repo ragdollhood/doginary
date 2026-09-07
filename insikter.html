@@ -1090,6 +1090,9 @@
       : `<div class="emptycard">Logga några dagar i rad för att börja samla belöningar.</div>`;
   }
 
+  let lastEntries = null;
+  let lastDogId = null;
+
   async function enterApp(session){
     authScreen.hidden = true;
     appScreen.hidden = false;
@@ -1104,7 +1107,9 @@
         breed: (dog && dog.breed) || '',
         age: (dog && dog.age) || null
       };
+      lastDogId = dog && dog.id;
       const entries = await DoginaryDB.loadEntries(dog.id);
+      lastEntries = entries;
       await renderInsights(dogName, entries, profile);
     } catch(e){
       appScreen.innerHTML = '<div class="emptycard">Kunde inte hämta din hunds data just nu — ladda om sidan.</div>';
@@ -1124,6 +1129,17 @@
     const session = ev.detail.session;
     if(session && !signedIn){ signedIn = true; await enterApp(session); }
     else if(!session && signedIn){ signedIn = false; showAuth(); }
+  });
+
+  // Hundens namn kan numera bytas i kontomenyn (kontoikonen högst upp till
+  // höger, se doginary-auth.js) — rita om insikterna med det nya namnet
+  // utan att behöva ladda om sidan eller hämta om dagboken igen.
+  document.addEventListener('doginary:dogupdate', async (ev) => {
+    if(!signedIn || !ev.detail || !ev.detail.dog || ev.detail.dog.id !== lastDogId || !lastEntries) return;
+    const dog = ev.detail.dog;
+    const dogName = dog.name || DoginaryData.DEFAULT_NAME;
+    const profile = { name: dog.name || '', breed: dog.breed || '', age: dog.age || null };
+    await renderInsights(dogName, lastEntries, profile);
   });
 </script>
 </body>

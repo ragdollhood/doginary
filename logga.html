@@ -135,67 +135,9 @@
   .dogname-btn:hover{ background: #3A322A; }
   .dogname-btn:disabled{ opacity: .6; cursor: default; }
 
-  header.top > .dogname-btn{
-    margin-top: 12px;
-    padding: 10px 20px;
-  }
-
   .dogname-inline{
     color: var(--rust);
   }
-
-  /* ---------- Modal: byt hundens namn ---------- */
-  .dogname-modal-overlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(43, 36, 28, 0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 100;
-  }
-
-  .dogname-modal-card{
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    padding: 24px 22px;
-    width: 100%;
-    max-width: 360px;
-    box-shadow: 0 12px 40px rgba(43, 36, 28, 0.25);
-  }
-
-  .dogname-modal-card h2{
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 20px;
-    margin: 0 0 14px;
-  }
-
-  .dogname-modal-card form{
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .dogname-modal-actions{
-    display: flex;
-    gap: 10px;
-  }
-
-  .dogname-modal-cancel{
-    font-family: 'Inter', sans-serif;
-    background: none;
-    color: var(--ink-soft);
-    border: 1px solid var(--hair);
-    border-radius: 30px;
-    padding: 13px 20px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-
-  .dogname-modal-cancel:hover{ background: var(--surface-2); }
 
   /* ---------- auth screen ---------- */
   .authcard{
@@ -1089,22 +1031,7 @@
         <input type="text" id="dogNameInput" name="dogName" placeholder="Hundens namn">
         <button type="submit" class="dogname-btn" id="dogNameBtn">Spara</button>
       </form>
-      <button type="button" class="dogname-btn" id="changeNameBtn" hidden>Byt namn</button>
     </header>
-
-    <!-- ---------- Modal: byt hundens namn ---------- -->
-    <div class="dogname-modal-overlay" id="dogNameModal" hidden>
-      <div class="dogname-modal-card" role="dialog" aria-modal="true" aria-labelledby="dogNameModalTitle">
-        <h2 id="dogNameModalTitle">Byt hundens namn</h2>
-        <form id="dogNameModalForm" autocomplete="off">
-          <input type="text" id="dogNameModalInput" placeholder="Hundens namn">
-          <div class="dogname-modal-actions">
-            <button type="button" class="dogname-modal-cancel" id="dogNameModalCancel">Avbryt</button>
-            <button type="submit" class="save" id="dogNameModalSave">Spara</button>
-          </div>
-        </form>
-      </div>
-    </div>
 
     <div class="quicklog-bleed">
     <section class="quicklog" aria-label="Snabblogga">
@@ -1322,12 +1249,6 @@
   const dogNameForm = document.getElementById('dogNameForm');
   const dogNameInput = document.getElementById('dogNameInput');
   const dogNameBtn = document.getElementById('dogNameBtn');
-  const changeNameBtn = document.getElementById('changeNameBtn');
-  const dogNameModal = document.getElementById('dogNameModal');
-  const dogNameModalForm = document.getElementById('dogNameModalForm');
-  const dogNameModalInput = document.getElementById('dogNameModalInput');
-  const dogNameModalCancel = document.getElementById('dogNameModalCancel');
-  const dogNameModalSave = document.getElementById('dogNameModalSave');
 
   const calendarGrid = document.getElementById('calendarGrid');
   const weekGrid = document.getElementById('weekGrid');
@@ -1891,18 +1812,18 @@
       dogNameInline.textContent = currentDog.name;
       dogNameInline.hidden = false;
       dogNameForm.hidden = true;
-      changeNameBtn.hidden = false;
     } else {
       dogNameInline.hidden = true;
       dogNameForm.hidden = false;
-      changeNameBtn.hidden = true;
       dogNameInput.value = '';
     }
     document.title = `Doginary — Logga ${dogLabel() === DoginaryData.DEFAULT_NAME ? 'your dog' : dogLabel() + '\u2019s'} day`;
   }
 
   // Formuläret syns bara innan hunden har fått ett namn — där sparas det
-  // direkt. När namnet väl är satt hanteras byte istället via modalen.
+  // direkt. När namnet väl är satt sker byte istället via kontomenyn
+  // (kontoikonen högst upp till höger, se doginary-auth.js), som skickar
+  // "doginary:dogupdate" nedan så att sidan här hålls i synk.
   dogNameForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const trimmed = dogNameInput.value.trim();
@@ -1918,42 +1839,14 @@
     }
   });
 
-  function openDogNameModal(){
-    dogNameModalInput.value = (currentDog && currentDog.name) || '';
-    dogNameModal.hidden = false;
-    dogNameModalInput.focus();
-    dogNameModalInput.select();
-  }
-
-  function closeDogNameModal(){
-    dogNameModal.hidden = true;
-  }
-
-  changeNameBtn.addEventListener('click', openDogNameModal);
-  dogNameModalCancel.addEventListener('click', closeDogNameModal);
-
-  // Klick på den mörka bakgrunden (utanför själva rutan) stänger modalen.
-  dogNameModal.addEventListener('click', (e) => {
-    if(e.target === dogNameModal) closeDogNameModal();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape' && !dogNameModal.hidden) closeDogNameModal();
-  });
-
-  dogNameModalForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const trimmed = dogNameModalInput.value.trim();
-    dogNameModalSave.disabled = true;
-    try{
-      currentDog = await DoginaryDB.updateDogName(currentDog.id, trimmed || null);
-      updateDogChrome();
-      closeDogNameModal();
-    } catch(err){
-      alert('Kunde inte spara namnet just nu — försök igen.');
-    } finally {
-      dogNameModalSave.disabled = false;
-    }
+  // Namnet kan nu även bytas i kontomenyn (delad över index.html, logga.html
+  // och insikter.html) — håll den här sidans egen kopia av hunden i synk
+  // utan att behöva ladda om sidan.
+  document.addEventListener('doginary:dogupdate', (e) => {
+    if(!currentDog || !e.detail || !e.detail.dog) return;
+    if(e.detail.dog.id !== currentDog.id) return;
+    currentDog = e.detail.dog;
+    updateDogChrome();
   });
 
   // Inloggningen sköts numera av den delade modalen (doginary-auth.js).

@@ -210,7 +210,68 @@
     if (modalEl) modalEl.classList.remove('show');
   }
 
-  // ---------- Liten kontoknapp/chip (för header/crossnav) ----------
+  // ---------- Liten kontoikon + meny (för header/crossnav) ----------
+
+  var ICON_PERSON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
+
+  var menuEl = null;
+  var menuOpen = false;
+  var dogNameMenuInput = null;
+  var dogNameMenuStatus = null;
+
+  function closeAccountMenu() {
+    if (menuEl) menuEl.classList.remove('show');
+    menuOpen = false;
+    var btn = document.getElementById('doginaryAccountIconBtn');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+
+  function openAccountMenu() {
+    if (!menuEl) return;
+    menuOpen = true;
+    menuEl.classList.add('show');
+    var btn = document.getElementById('doginaryAccountIconBtn');
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+    // Fyll i hundens nuvarande namn varje gång menyn öppnas, ifall den
+    // hunnit ändras (t.ex. på en annan flik) sedan sist.
+    getCurrentDog().then(function (dog) {
+      if (dogNameMenuInput) dogNameMenuInput.value = (dog && dog.name) || '';
+    });
+  }
+
+  function toggleAccountMenu() {
+    if (menuOpen) closeAccountMenu(); else openAccountMenu();
+  }
+
+  // Andra sidans egen kod (logga.html/insikter.html/index.html) lyssnar på
+  // det här för att uppdatera sin egen visning av hundens namn, eftersom
+  // namnbytet nu sker härifrån (den delade menyn) istället för på varje
+  // sida för sig.
+  function fireDogUpdateEvent(dog) {
+    document.dispatchEvent(new CustomEvent('doginary:dogupdate', { detail: { dog: dog } }));
+  }
+
+  function saveDogNameFromMenu() {
+    var saveBtn = document.getElementById('doginaryAccountDogNameSave');
+    var trimmed = dogNameMenuInput.value.trim();
+    saveBtn.disabled = true;
+    dogNameMenuStatus.className = '';
+    dogNameMenuStatus.textContent = 'Sparar …';
+    getCurrentDog().then(function (dog) {
+      if (!dog) throw new Error('Ingen hund att uppdatera.');
+      return global.DoginaryDB.updateDogName(dog.id, trimmed || null);
+    }).then(function (updatedDog) {
+      currentDog = updatedDog;
+      dogNameMenuStatus.className = '';
+      dogNameMenuStatus.textContent = 'Sparat.';
+      fireDogUpdateEvent(updatedDog);
+    }).catch(function () {
+      dogNameMenuStatus.className = 'error';
+      dogNameMenuStatus.textContent = 'Kunde inte spara just nu — försök igen.';
+    }).finally(function () {
+      saveBtn.disabled = false;
+    });
+  }
 
   function renderAccountChip() {
     var root = document.getElementById('doginaryAuthRoot');
@@ -218,20 +279,60 @@
 
     if (currentSession) {
       root.innerHTML =
-        '<div id="doginaryAccountChip">' +
-          '<span id="doginaryAccountEmail">' + escapeHtml(currentSession.user.email) + '</span>' +
-          '<button type="button" id="doginaryLogoutBtn">Logga ut</button>' +
+        '<button type="button" id="doginaryAccountIconBtn" aria-haspopup="true" aria-expanded="false" aria-label="Kontomeny">' + ICON_PERSON + '</button>' +
+        '<div id="doginaryAccountMenu" role="menu">' +
+          '<p id="doginaryAccountMenuEmail">' + escapeHtml(currentSession.user.email) + '</p>' +
+          '<div class="doginaryAccountMenu__divider"></div>' +
+          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogName">Hundens namn</label>' +
+          '<div class="doginaryAccountMenu__namerow">' +
+            '<input type="text" id="doginaryAccountDogName" placeholder="Hundens namn" maxlength="40">' +
+            '<button type="button" id="doginaryAccountDogNameSave">Spara</button>' +
+          '</div>' +
+          '<p id="doginaryAccountDogNameStatus" role="status" aria-live="polite"></p>' +
+          '<div class="doginaryAccountMenu__divider"></div>' +
+          '<button type="button" id="doginaryAccountLogout" class="doginaryAccountMenu__logout">Logga ut</button>' +
         '</div>';
-      document.getElementById('doginaryLogoutBtn').addEventListener('click', function () {
+
+      menuEl = document.getElementById('doginaryAccountMenu');
+      dogNameMenuInput = document.getElementById('doginaryAccountDogName');
+      dogNameMenuStatus = document.getElementById('doginaryAccountDogNameStatus');
+      menuOpen = false;
+
+      document.getElementById('doginaryAccountIconBtn').addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        toggleAccountMenu();
+      });
+      document.getElementById('doginaryAccountLogout').addEventListener('click', function () {
+        closeAccountMenu();
         global.DoginaryAuth.signOut();
       });
+      document.getElementById('doginaryAccountDogNameSave').addEventListener('click', saveDogNameFromMenu);
+      dogNameMenuInput.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') { ev.preventDefault(); saveDogNameFromMenu(); }
+      });
+
+      getCurrentDog().then(function (dog) {
+        if (dogNameMenuInput) dogNameMenuInput.value = (dog && dog.name) || '';
+      });
     } else {
-      root.innerHTML = '<button type="button" id="doginaryLoginChipBtn">Logga in</button>';
+      menuEl = null;
+      menuOpen = false;
+      root.innerHTML = '<button type="button" id="doginaryLoginChipBtn" aria-label="Logga in">' + ICON_PERSON + '</button>';
       document.getElementById('doginaryLoginChipBtn').addEventListener('click', function () {
         openModal('signup');
       });
     }
   }
+
+  // Stäng menyn vid klick utanför, eller Escape — samma mönster som modalen.
+  document.addEventListener('click', function (ev) {
+    if (!menuOpen) return;
+    var root = document.getElementById('doginaryAuthRoot');
+    if (root && !root.contains(ev.target)) closeAccountMenu();
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && menuOpen) closeAccountMenu();
+  });
 
   function escapeHtml(s) {
     var d = document.createElement('div');

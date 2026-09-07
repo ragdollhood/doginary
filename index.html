@@ -558,6 +558,15 @@
       }
     });
 
+    // Namnet kan bytas i kontomenyn (kontoikonen uppe till höger) — håll
+    // "Mina sidor"-knappens text i synk direkt, utan sidladdning.
+    document.addEventListener('doginary:dogupdate', (ev) => {
+      if(navBtn.href.indexOf('insikter.html') === -1) return; // inte inloggad just nu
+      const label = (ev.detail && ev.detail.dog && ev.detail.dog.name) || 'Mina sidor';
+      navBtn.textContent = label;
+      tabLabel.textContent = label;
+    });
+
     // Efter lyckad inloggning från den här sidan: gå direkt till
     // Insikter, precis som om man klickat den inloggade "Mina sidor"-knappen.
     let firstAuthSeen = false;

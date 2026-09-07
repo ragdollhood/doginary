@@ -123,30 +123,33 @@
 
 .doginaryAccountMenu__label{
   display:block; font-size:11.5px; letter-spacing:.03em; text-transform:uppercase;
-  color:var(--ink-soft,#6E6455); margin-bottom:6px;
+  color:var(--ink-soft,#6E6455); margin-bottom:6px; margin-top:10px;
 }
+.doginaryAccountMenu__label:first-of-type{ margin-top:0; }
 
-.doginaryAccountMenu__namerow{ display:flex; gap:6px; }
-.doginaryAccountMenu__namerow input{
-  flex:1; min-width:0; box-sizing:border-box; font-family:inherit; font-size:14px;
+#doginaryAccountMenu input[type="text"],
+#doginaryAccountMenu select{
+  width:100%; box-sizing:border-box; font-family:inherit; font-size:14px;
   color:var(--ink,#2B241C); background:var(--surface-2,#F1ECDF);
   border:1px solid var(--hair,#DCD3BF); border-radius:8px; padding:8px 10px;
   outline:none; transition:border-color .15s ease;
 }
-.doginaryAccountMenu__namerow input:focus{ border-color:var(--teal,#33505A); }
-.doginaryAccountMenu__namerow button{
-  font-family:inherit; font-size:13px; font-weight:500; flex-shrink:0;
-  color:var(--surface,#F8F5EC); background:var(--ink,#2B241C); border:none;
-  border-radius:8px; padding:0 14px; cursor:pointer;
-}
-.doginaryAccountMenu__namerow button:hover{ background:#3A322A; }
-.doginaryAccountMenu__namerow button:disabled{ opacity:.6; cursor:default; }
+#doginaryAccountMenu input[type="text"]:focus,
+#doginaryAccountMenu select:focus{ border-color:var(--teal,#33505A); }
 
-#doginaryAccountDogNameStatus{
+#doginaryAccountDogSave{
+  margin-top:12px; width:100%; font-family:inherit; font-size:13px; font-weight:500;
+  color:var(--surface,#F8F5EC); background:var(--ink,#2B241C); border:none;
+  border-radius:8px; padding:9px 14px; cursor:pointer;
+}
+#doginaryAccountDogSave:hover{ background:#3A322A; }
+#doginaryAccountDogSave:disabled{ opacity:.6; cursor:default; }
+
+#doginaryAccountDogStatus{
   min-height:14px; font-size:12px; margin:6px 0 0; line-height:1.4;
   color:var(--reward,#4B6B3E);
 }
-#doginaryAccountDogNameStatus.error{ color:var(--warn,#9C3B2C); }
+#doginaryAccountDogStatus.error{ color:var(--warn,#9C3B2C); }
 
 .doginaryAccountMenu__logout{
   display:block; width:100%; text-align:left; font-family:inherit; font-size:13.5px;

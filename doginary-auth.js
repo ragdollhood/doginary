@@ -92,7 +92,9 @@
       if (!dog) throw new Error('Ingen inloggad hund att uppdatera.');
       return global.DoginaryDB.updateDogProfile(dog.id, fields).then(function (updatedDog) {
         currentDog = updatedDog;
-        if (dogNameMenuInput) dogNameMenuInput.value = (updatedDog && updatedDog.name) || '';
+        // Om kontomenyn redan är byggd (öppen eller inte) håller vi dess
+        // fält i synk direkt, se fillDogFormFields() längre ner.
+        fillDogFormFields(updatedDog);
         fireDogUpdateEvent(updatedDog);
         return updatedDog;
       });
@@ -245,7 +247,9 @@
   var menuEl = null;
   var menuOpen = false;
   var dogNameMenuInput = null;
-  var dogNameMenuStatus = null;
+  var dogBreedMenuInput = null;
+  var dogAgeMenuInput = null;
+  var dogMenuStatus = null;
 
   function closeAccountMenu() {
     if (menuEl) menuEl.classList.remove('show');
@@ -254,17 +258,22 @@
     if (btn) btn.setAttribute('aria-expanded', 'false');
   }
 
+  // Fyller i namn/ras/ålder-fälten i kontomenyn utifrån en hund-rad.
+  function fillDogFormFields(dog) {
+    if (dogNameMenuInput) dogNameMenuInput.value = (dog && dog.name) || '';
+    if (dogBreedMenuInput) dogBreedMenuInput.value = (dog && dog.breed) || '';
+    if (dogAgeMenuInput) dogAgeMenuInput.value = (dog && dog.age) || 'adult';
+  }
+
   function openAccountMenu() {
     if (!menuEl) return;
     menuOpen = true;
     menuEl.classList.add('show');
     var btn = document.getElementById('doginaryAccountIconBtn');
     if (btn) btn.setAttribute('aria-expanded', 'true');
-    // Fyll i hundens nuvarande namn varje gång menyn öppnas, ifall den
-    // hunnit ändras (t.ex. på en annan flik) sedan sist.
-    getCurrentDog().then(function (dog) {
-      if (dogNameMenuInput) dogNameMenuInput.value = (dog && dog.name) || '';
-    });
+    // Fyll i hundens nuvarande uppgifter varje gång menyn öppnas, ifall de
+    // hunnit ändras (t.ex. på en annan flik/sida) sedan sist.
+    getCurrentDog().then(fillDogFormFields);
   }
 
   function toggleAccountMenu() {
@@ -272,28 +281,34 @@
   }
 
   // Andra sidans egen kod (logga.html/insikter.html/index.html) lyssnar på
-  // det här för att uppdatera sin egen visning av hundens namn, eftersom
-  // namnbytet nu sker härifrån (den delade menyn) istället för på varje
-  // sida för sig.
+  // det här för att uppdatera sin egen visning av hundens namn/ras/ålder,
+  // eftersom ändringen nu kan ske härifrån (den delade menyn) istället för
+  // bara på index.html:s profilformulär.
   function fireDogUpdateEvent(dog) {
     document.dispatchEvent(new CustomEvent('doginary:dogupdate', { detail: { dog: dog } }));
   }
 
-  function saveDogNameFromMenu() {
-    var saveBtn = document.getElementById('doginaryAccountDogNameSave');
-    var trimmed = dogNameMenuInput.value.trim();
+  // Sparar namn, ras och ålder tillsammans från kontomenyn — samma
+  // profilfält som index.html:s formulär, se dogProfileFromAccountDog() i
+  // app.js. Precis som där räknas tomt namn som "inget namn" (null) men
+  // ras/ålder skickas alltid med, tomma eller inte.
+  function saveDogProfileFromMenu() {
+    var saveBtn = document.getElementById('doginaryAccountDogSave');
+    var name = dogNameMenuInput.value.trim();
+    var breed = dogBreedMenuInput.value.trim();
+    var age = dogAgeMenuInput.value;
     saveBtn.disabled = true;
-    dogNameMenuStatus.className = '';
-    dogNameMenuStatus.textContent = 'Sparar …';
-    // Går via updateCurrentDog() (inte DoginaryDB.updateDogName direkt) så
-    // att cachen och "doginary:dogupdate"-eventet uppdateras på samma sätt
-    // som från index.html/logga.html, se kommentaren där.
-    updateCurrentDog({ name: trimmed || null }).then(function () {
-      dogNameMenuStatus.className = '';
-      dogNameMenuStatus.textContent = 'Sparat.';
+    dogMenuStatus.className = '';
+    dogMenuStatus.textContent = 'Sparar …';
+    // Går via updateCurrentDog() (inte DoginaryDB.updateDogProfile direkt)
+    // så att cachen och "doginary:dogupdate"-eventet uppdateras på samma
+    // sätt som från index.html, se kommentaren där.
+    updateCurrentDog({ name: name || null, breed: breed, age: age }).then(function () {
+      dogMenuStatus.className = '';
+      dogMenuStatus.textContent = 'Sparat.';
     }).catch(function () {
-      dogNameMenuStatus.className = 'error';
-      dogNameMenuStatus.textContent = 'Kunde inte spara just nu — försök igen.';
+      dogMenuStatus.className = 'error';
+      dogMenuStatus.textContent = 'Kunde inte spara just nu — försök igen.';
     }).finally(function () {
       saveBtn.disabled = false;
     });
@@ -310,18 +325,26 @@
           '<p id="doginaryAccountMenuEmail">' + escapeHtml(currentSession.user.email) + '</p>' +
           '<div class="doginaryAccountMenu__divider"></div>' +
           '<label class="doginaryAccountMenu__label" for="doginaryAccountDogName">Hundens namn</label>' +
-          '<div class="doginaryAccountMenu__namerow">' +
-            '<input type="text" id="doginaryAccountDogName" placeholder="Hundens namn" maxlength="40">' +
-            '<button type="button" id="doginaryAccountDogNameSave">Spara</button>' +
-          '</div>' +
-          '<p id="doginaryAccountDogNameStatus" role="status" aria-live="polite"></p>' +
+          '<input type="text" id="doginaryAccountDogName" placeholder="Hundens namn" maxlength="40">' +
+          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogBreed">Ras</label>' +
+          '<input type="text" id="doginaryAccountDogBreed" placeholder="T.ex. Golden retriever" maxlength="40">' +
+          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogAge">Ålder</label>' +
+          '<select id="doginaryAccountDogAge">' +
+            '<option value="puppy">Valp (under 1 år)</option>' +
+            '<option value="adult">Vuxen</option>' +
+            '<option value="senior">Senior (8+ år)</option>' +
+          '</select>' +
+          '<button type="button" id="doginaryAccountDogSave">Spara</button>' +
+          '<p id="doginaryAccountDogStatus" role="status" aria-live="polite"></p>' +
           '<div class="doginaryAccountMenu__divider"></div>' +
           '<button type="button" id="doginaryAccountLogout" class="doginaryAccountMenu__logout">Logga ut</button>' +
         '</div>';
 
       menuEl = document.getElementById('doginaryAccountMenu');
       dogNameMenuInput = document.getElementById('doginaryAccountDogName');
-      dogNameMenuStatus = document.getElementById('doginaryAccountDogNameStatus');
+      dogBreedMenuInput = document.getElementById('doginaryAccountDogBreed');
+      dogAgeMenuInput = document.getElementById('doginaryAccountDogAge');
+      dogMenuStatus = document.getElementById('doginaryAccountDogStatus');
       menuOpen = false;
 
       document.getElementById('doginaryAccountIconBtn').addEventListener('click', function (ev) {
@@ -332,14 +355,15 @@
         closeAccountMenu();
         global.DoginaryAuth.signOut();
       });
-      document.getElementById('doginaryAccountDogNameSave').addEventListener('click', saveDogNameFromMenu);
+      document.getElementById('doginaryAccountDogSave').addEventListener('click', saveDogProfileFromMenu);
       dogNameMenuInput.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Enter') { ev.preventDefault(); saveDogNameFromMenu(); }
+        if (ev.key === 'Enter') { ev.preventDefault(); saveDogProfileFromMenu(); }
+      });
+      dogBreedMenuInput.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') { ev.preventDefault(); saveDogProfileFromMenu(); }
       });
 
-      getCurrentDog().then(function (dog) {
-        if (dogNameMenuInput) dogNameMenuInput.value = (dog && dog.name) || '';
-      });
+      getCurrentDog().then(fillDogFormFields);
     } else {
       menuEl = null;
       menuOpen = false;

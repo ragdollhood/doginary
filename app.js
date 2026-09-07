@@ -266,7 +266,7 @@ const STR = {
     navDogAdvice: "Hälsa & päls",
     navKnowledge: "Kunskap",
 
-    profileHeading: "Din hunds profil - THIS IS UNDER CONSTRUCTION!!!!",
+    profileHeading: "Din hunds profil",
     profileIntro: "Fyll i några detaljer så justeras komfortindexet och råden nedan efter just din hund — smartare promenadbeslut, anpassade för din hund.",
     profileNameLabel: "Namn (valfritt)",
     profileNamePlaceholder: "T.ex. Bella",
@@ -276,7 +276,7 @@ const STR = {
     profileAgePuppy: "Valp (under 1 år)",
     profileAgeAdult: "Vuxen",
     profileAgeSenior: "Senior (8+ år)",
-    profileSaveBtn: "Spara profil - THIS IS UNDER CONSTRUCTION!!!",
+    profileSaveBtn: "Spara profil",
     profileEditBtn: "Ändra profil",
     profileClearBtn: "Ta bort profil",
     profileSavedConfirm: "Sparat — komfortindexet är nu anpassat.",
@@ -1820,15 +1820,19 @@ if (window.DoginaryAuthUI) {
       if (isFreshLogin) handleFreshLogin(session);
     });
   });
-  // Namnet kan bytas från kontomenyn eller från Logga (logga.html) utan att
-  // den här sidan laddas om — håll profilkortet i synk med det, precis som
-  // Logga/Insikter redan gör med varandra. Ras/ålder ändras aldrig från de
-  // andra sidorna, så bara namnet uppdateras här.
+  // Namnet, rasen eller åldern kan bytas från kontomenyn (kontoikonen,
+  // synlig på alla tre sidor) utan att den här sidan laddas om — håll
+  // profilkortet i synk med det. Vi bygger om `dogProfile` helt utifrån
+  // den uppdaterade hund-raden (samma logik som syncDogProfileWithAccount)
+  // så att både namnbyten och ras/ålder-ändringar från kontomenyn slår
+  // igenom här.
   document.addEventListener('doginary:dogupdate', e => {
     const dog = e.detail && e.detail.dog;
     if (!dog || !isDoginaryLoggedIn()) return;
-    if (dogProfile) dogProfile = { ...dogProfile, name: dog.name || '' };
-    if (dogProfileNameEl) dogProfileNameEl.value = dog.name || '';
+    dogProfile = dogProfileFromAccountDog(dog);
+    dogProfileNameEl.value = dog.name || '';
+    dogProfileBreedEl.value = dog.breed || '';
+    dogProfileAgeEl.value = dog.age || 'adult';
     renderDogProfileUI();
     updateHeroTitle();
     updateLogTitle();

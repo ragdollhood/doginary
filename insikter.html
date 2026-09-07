@@ -580,6 +580,16 @@
     display: block;
     border-radius: 8px;
   }
+  .crossnav-right{ display: flex; align-items: center; gap: 14px; }
+  .lang-switch{ display:flex; align-items:center; }
+  .lang-btn{
+    border:0; background:var(--surface-2); border-radius:999px;
+    width:34px; height:34px; font-size:17px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .15s ease;
+  }
+  .lang-btn:hover, .lang-btn:focus-visible{ background:var(--hair); outline:none; }
+  .flag-icon{ border-radius:3px; display:block; }
   .emptycard{
     background: var(--surface);
     border: 1px dashed var(--hair);
@@ -696,17 +706,23 @@
 
 <nav class="crossnav">
   <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
-  <a href="logga.html">Logga en dag</a>
-  <div id="doginaryAuthRoot"></div>
+  <a href="logga.html" data-i18n="navLogday">Logga en dag</a>
+  <div class="crossnav-right">
+    <div class="lang-switch">
+      <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="20" height="13" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
+      <button type="button" id="langBtnEn" class="lang-btn" aria-label="Show the page in English" title="English" hidden><svg class="flag-icon" viewBox="0 0 60 30" width="20" height="13" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-clip-insikter)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="uk-clip-insikter"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
+    </div>
+    <div id="doginaryAuthRoot"></div>
+  </div>
 </nav>
 
 <div class="page">
 
   <div id="authScreen">
     <div class="doginary-loggedout-card">
-      <h2>Skapa konto eller logga in</h2>
-      <p>Samma konto som du loggar din hunds dagar på — logga in för att se insikterna.</p>
-      <button type="button" id="openAuthBtn">Skapa konto / Logga in</button>
+      <h2 data-i18n="authCardTitle">Skapa konto eller logga in</h2>
+      <p data-i18n="authCardText">Samma konto som du loggar din hunds dagar på — logga in för att se insikterna.</p>
+      <button type="button" id="openAuthBtn" data-i18n="authCardBtn">Skapa konto / Logga in</button>
     </div>
   </div>
 
@@ -727,7 +743,7 @@
 
   <section id="today">
     <div class="section__head">
-      <h2 class="section__title">Dagens insikter</h2>
+      <h2 class="section__title" data-i18n="todayTitle">Dagens insikter</h2>
       <span class="section__meta" id="todayMeta"></span>
     </div>
     <p class="icard__coverage" id="todayCoverage" style="margin-bottom:10px"></p>
@@ -736,7 +752,7 @@
 
   <section id="week">
     <div class="section__head">
-      <h2 class="section__title">Veckans insikter</h2>
+      <h2 class="section__title" data-i18n="weekTitle">Veckans insikter</h2>
       <span class="section__meta" id="weekMeta"></span>
     </div>
     <div id="weekContent" aria-live="polite"></div>
@@ -744,7 +760,7 @@
 
   <section id="month">
     <div class="section__head">
-      <h2 class="section__title">Månadens rapport</h2>
+      <h2 class="section__title" data-i18n="monthTitle">Månadens rapport</h2>
       <span class="section__meta" id="monthMeta"></span>
     </div>
     <div id="monthContent" aria-live="polite"></div>
@@ -752,42 +768,42 @@
 
   <section id="warnings">
     <div class="section__head">
-      <h2 class="section__title">Varningar</h2>
+      <h2 class="section__title" data-i18n="warningsTitle">Varningar</h2>
     </div>
     <div id="warningsContent" aria-live="polite"></div>
   </section>
 
   <section id="rewards">
     <div class="section__head">
-      <h2 class="section__title">Belöningar</h2>
+      <h2 class="section__title" data-i18n="rewardsTitle">Belöningar</h2>
     </div>
     <div id="rewardsContent" aria-live="polite"></div>
   </section>
 
   <section id="om-insikterna">
     <div class="section__head">
-      <h2 class="section__title">Så tolkas insikterna</h2>
+      <h2 class="section__title" data-i18n="aboutTitle">Så tolkas insikterna</h2>
     </div>
     <div class="infobox">
-      <p>Insikterna här är en egen, pedagogisk sammanställning av det du loggar om din hund — inte en klinisk bedömning och ersätter aldrig en veterinärs bedömning.</p>
+      <p data-i18n="aboutIntro">Insikterna här är en egen, pedagogisk sammanställning av det du loggar om din hund — inte en klinisk bedömning och ersätter aldrig en veterinärs bedömning.</p>
       <ul>
-        <li><strong>Trender och pilar</strong> jämför alltid hunden med sig själv: dagens värde mot snittet av dess egna senaste dagar. Ingen extern norm används här, eftersom det som är "normalt" varierar stort mellan individer.</li>
-        <li><strong>Sömn</strong> loggas som nattsömn, men vetenskapliga sömnsiffror (8–16 timmar/dygn för en vuxen hund) gäller hela dygnet inklusive tupplurar. Därför jämförs sömn mot hundens eget snitt istället för en fast gräns.</li>
-        <li><strong>Motion:</strong> de flesta hundar mår bäst av minst 1–2 timmars sammanlagd rörelse per dag. Eftersom bara en promenad loggas per dag är det ett riktmärke att ha i bakhuvudet, inte något appen räknar automatiskt på.</li>
-        <li><strong>Varningen om "3 dagar med låg energi"</strong> är en gräns vi satt själva som en försiktig påminnelse — inte ett medicinskt fastställt tal. Kontakta veterinär tidigare om tröttheten kommer plötsligt eller kraftigt, eller följs av t.ex. minskad aptit, kräkningar, diarré eller onormala törst-/kissvanor.</li>
+        <li data-i18n="aboutLi1"><strong>Trender och pilar</strong> jämför alltid hunden med sig själv: dagens värde mot snittet av dess egna senaste dagar. Ingen extern norm används här, eftersom det som är "normalt" varierar stort mellan individer.</li>
+        <li data-i18n="aboutLi2"><strong>Sömn</strong> loggas som nattsömn, men vetenskapliga sömnsiffror (8–16 timmar/dygn för en vuxen hund) gäller hela dygnet inklusive tupplurar. Därför jämförs sömn mot hundens eget snitt istället för en fast gräns.</li>
+        <li data-i18n="aboutLi3"><strong>Motion:</strong> de flesta hundar mår bäst av minst 1–2 timmars sammanlagd rörelse per dag. Eftersom bara en promenad loggas per dag är det ett riktmärke att ha i bakhuvudet, inte något appen räknar automatiskt på.</li>
+        <li data-i18n="aboutLi4"><strong>Varningen om "3 dagar med låg energi"</strong> är en gräns vi satt själva som en försiktig påminnelse — inte ett medicinskt fastställt tal. Kontakta veterinär tidigare om tröttheten kommer plötsligt eller kraftigt, eller följs av t.ex. minskad aptit, kräkningar, diarré eller onormala törst-/kissvanor.</li>
       </ul>
-      <p class="infobox__sources">Källor: <a href="https://www.agria.se/hund/artiklar/forskning/somn-har-stor-inverkan-pa-hundens-valbefinnande/" target="_blank" rel="noopener">Agria — hundens sömnbehov</a> · <a href="https://news.cision.com/se/agria-djurforsakring/r/hundar-far-for-lite-motion---allvarligt-halsohot,c3555427" target="_blank" rel="noopener">Agria Vårdguide — motionsbehov</a> · <a href="https://evidensia.se/djurvardguiden/" target="_blank" rel="noopener">Evidensia — djurvårdsguide</a></p>
+      <p class="infobox__sources"><span data-i18n="sourcesLabel">Källor:</span> <a href="https://www.agria.se/hund/artiklar/forskning/somn-har-stor-inverkan-pa-hundens-valbefinnande/" target="_blank" rel="noopener" data-i18n="source1">Agria — hundens sömnbehov</a> · <a href="https://news.cision.com/se/agria-djurforsakring/r/hundar-far-for-lite-motion---allvarligt-halsohot,c3555427" target="_blank" rel="noopener" data-i18n="source2">Agria Vårdguide — motionsbehov</a> · <a href="https://evidensia.se/djurvardguiden/" target="_blank" rel="noopener" data-i18n="source3">Evidensia — djurvårdsguide</a></p>
     </div>
   </section>
 
-  <footer>Doginary · Insikter uppdateras varje kväll</footer>
+  <footer data-i18n="footerText">Doginary · Insikter uppdateras varje kväll</footer>
   </div><!-- /#appScreen -->
 </div>
 
 <footer class="doginary-footer">
-  <p class="doginary-footer__disclaimer">Doginary ger allmänna tips och en pedagogisk sammanställning av det du loggar om din hund — inte veterinärmedicinsk rådgivning eller en klinisk bedömning. Informationen ersätter aldrig en veterinärs bedömning och tar inte hänsyn till alla faktorer som gäller just din hund. Du som hundägare ansvarar alltid själv för att bedöma din hunds hälsa, ålder, ras och tillstånd, och för att söka veterinärvård vid oro för din hunds hälsa.</p>
+  <p class="doginary-footer__disclaimer" data-i18n="siteFooterDisclaimer">Doginary ger allmänna tips och en pedagogisk sammanställning av det du loggar om din hund — inte veterinärmedicinsk rådgivning eller en klinisk bedömning. Informationen ersätter aldrig en veterinärs bedömning och tar inte hänsyn till alla faktorer som gäller just din hund. Du som hundägare ansvarar alltid själv för att bedöma din hunds hälsa, ålder, ras och tillstånd, och för att söka veterinärvård vid oro för din hunds hälsa.</p>
   <div class="doginary-footer__links">
-    <a href="terms.html">Villkor</a>
+    <a href="terms.html" data-i18n="footerTerms">Villkor</a>
     <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>
   </div>
   <p class="doginary-footer__copyright">© 2026 Malin Larsson (Doginary)</p>
@@ -806,6 +822,208 @@
   // knappen öppnar bara samma ruta som kontoikonen i crossnav.
   openAuthBtn.addEventListener('click', () => DoginaryAuthUI.open('signup'));
 
+  /* ==================================================================
+     Language / i18n
+     Delar "dogWeatherLang"-nyckeln i localStorage med index.html/app.js
+     och logga.html, så språkvalet följer med mellan sidorna. Allt som
+     doginary-data.js genererar (kort, varningar, belöningar) skickas
+     genom med samma lang-parameter, se renderInsights() nedan.
+     ================================================================== */
+  const LOCALE = { en: 'en-GB', sv: 'sv-SE' };
+  const langBtnSvEl = document.getElementById('langBtnSv');
+  const langBtnEnEl = document.getElementById('langBtnEn');
+
+  let lang = (() => {
+    try {
+      const saved = localStorage.getItem('dogWeatherLang');
+      if (saved === 'en' || saved === 'sv') return saved;
+    } catch { /* localStorage kan saknas */ }
+    return 'en';
+  })();
+
+  const STR = {
+    en: {
+      navLogday: 'Log a day',
+      authCardTitle: 'Create an account or log in',
+      authCardText: 'The same account you log your dog’s days with — log in to see the insights.',
+      authCardBtn: 'Create account / Log in',
+      todayTitle: 'Today’s insights',
+      weekTitle: 'This week’s insights',
+      monthTitle: 'Monthly report',
+      warningsTitle: 'Warnings',
+      rewardsTitle: 'Rewards',
+      aboutTitle: 'How the insights are worked out',
+      aboutIntro: 'The insights here are Doginary’s own, educational summary of what you log about your dog — not a clinical assessment, and they never replace a vet’s judgment.',
+      aboutLi1: '<strong>Trends and arrows</strong> always compare the dog with itself: today’s value against the average of its own recent days. No external norm is used here, since what counts as "normal" varies a lot between individuals.',
+      aboutLi2: '<strong>Sleep</strong> is logged as night sleep, but scientific sleep figures (8–16 hours/day for an adult dog) apply to the whole day including naps. That’s why sleep is compared against the dog’s own average instead of a fixed limit.',
+      aboutLi3: '<strong>Exercise:</strong> most dogs do best with at least 1–2 hours of combined activity per day. Since only one walk is logged per day, this is a benchmark to keep in mind, not something the app calculates automatically.',
+      aboutLi4: 'The <strong>"3 days of low energy" warning</strong> is a limit we’ve set ourselves as a cautious reminder — not a medically established figure. Contact a vet sooner if the fatigue is sudden or severe, or is followed by e.g. reduced appetite, vomiting, diarrhoea, or unusual thirst/urination habits.',
+      sourcesLabel: 'Sources:',
+      source1: 'Agria — dogs’ need for sleep',
+      source2: 'Agria Care Guide — exercise needs',
+      source3: 'Evidensia — pet care guide',
+      footerText: 'Doginary · Insights update every evening',
+      siteFooterDisclaimer: 'Doginary provides general tips and an educational summary of what you log about your dog — not veterinary advice or a clinical assessment. This information never replaces a vet’s assessment and doesn’t account for every factor specific to your dog. As the dog owner, you’re always responsible for assessing your dog’s health, age, breed and condition, and for seeking veterinary care if you’re concerned about your dog’s health.',
+      footerTerms: 'Terms',
+      confInsufficient: 'Not enough data', confPreliminary: 'Preliminary', confEstablished: 'Established pattern', confUnknown: 'Unknown',
+      trendMoreData: 'More data needed',
+      trendPreliminaryN: n => `Preliminary pattern (${n} days)`,
+      trendAboveBaseline: 'Above your own baseline',
+      trendBelowBaseline: 'Below your own baseline',
+      trendNearBaseline: 'Near your own baseline',
+      warnObservation: 'Observation',
+      warnWatch: 'Keep an eye on it',
+      warnContactVet: 'Contact a vet',
+      todayCoverageInsufficient: 'Not enough data yet to assess a pattern.',
+      todayCoveragePreliminary: n => `Preliminary pattern, based on ${n} previously logged days.`,
+      todayCoverageEstablished: n => `Based on ${n} previously logged days.`,
+      whyLoggedToday: v => `Value logged today: ${v}`,
+      whyNotSpecified: 'not specified',
+      whyBaseline: (v, method) => `Personal baseline: ${v}${method ? ' (' + method + ')' : ''}`,
+      whyMethodMedian: 'median', whyMethodMode: 'most common value',
+      whySampleSize: n => `Basis: ${n} previously logged days`,
+      whyConfidence: v => `Reliability: ${v}`,
+      whyNameUsed: name => `The dog’s name (${name}) was used in the text. Breed and age don’t affect this comparison — it’s based only on ${name}’s own history.`,
+      whyProductRule: 'The comparison method (median over previously logged days) is Doginary’s own cautious product rule — not a medically established measure.',
+      whyToggle: 'Why am I seeing this?',
+      productRuleTag: 'Doginary’s observation rule — not a medical threshold.',
+      sourcesMultiLabel: 'Sources and reasoning',
+      sourceLabel: 'Source',
+      emptyToday: name => `No day logged yet. <a href="logga.html">Log ${name}’s first day</a> to see insights here.`,
+      heroEmptyHeadline: name => `${name} is waiting for its first logged day.`,
+      heroEmptySub: 'As soon as you log a day, the first insights will appear here.',
+      heroWarningHeadline: name => `Something worth keeping an extra eye on for ${name} today.`,
+      heroWarningSub: 'See the warnings further down for more details.',
+      heroCalmHeadline: name => `${name} has had a calm day today.`,
+      heroCalmSub: 'The insights below are based on what you’ve logged so far.',
+      weekNumber: n => `Week ${n}`,
+      weekEmpty: 'Log a few days in a row and the week’s patterns will gather here.',
+      weekLowData: '(not enough data for a reliable pattern)',
+      sparkEnergy: 'Energy', sparkWalks: 'Walks', sparkSleep: 'Sleep',
+      sparkMostCommon: v => `most common: ${v}`,
+      sparkMedianMin: n => `median ${n} min`,
+      sparkMedianHours: n => `median ${n} h`,
+      monthPeriod: 'Logged period',
+      monthEmpty: 'The monthly report fills in as you log more days.',
+      monthHighlights: 'Highlights',
+      monthWatch: 'Things to watch',
+      monthWatchEmpty: 'Nothing in particular to watch right now.',
+      monthRecommendation: 'Recommendation',
+      monthRecommendationEmpty: 'Carry on as usual — everything looks stable.',
+      monthCoverage: (n, low) => `${n} days logged during this period${low ? ' — low data coverage, the patterns below are preliminary.' : '.'}`,
+      monthChartAria: median => `Walk length over the logged period, median ${median} minutes`,
+      warningsEmpty: 'No clear changes have been detected in the logged information. This is not a medical assessment.',
+      rewardsEmpty: 'Log a few days in a row to start collecting rewards.',
+      loadError: 'Couldn’t load your dog’s data right now — please reload the page.',
+    },
+    sv: {
+      navLogday: 'Logga en dag',
+      authCardTitle: 'Skapa konto eller logga in',
+      authCardText: 'Samma konto som du loggar din hunds dagar på — logga in för att se insikterna.',
+      authCardBtn: 'Skapa konto / Logga in',
+      todayTitle: 'Dagens insikter',
+      weekTitle: 'Veckans insikter',
+      monthTitle: 'Månadens rapport',
+      warningsTitle: 'Varningar',
+      rewardsTitle: 'Belöningar',
+      aboutTitle: 'Så tolkas insikterna',
+      aboutIntro: 'Insikterna här är en egen, pedagogisk sammanställning av det du loggar om din hund — inte en klinisk bedömning och ersätter aldrig en veterinärs bedömning.',
+      aboutLi1: '<strong>Trender och pilar</strong> jämför alltid hunden med sig själv: dagens värde mot snittet av dess egna senaste dagar. Ingen extern norm används här, eftersom det som är "normalt" varierar stort mellan individer.',
+      aboutLi2: '<strong>Sömn</strong> loggas som nattsömn, men vetenskapliga sömnsiffror (8–16 timmar/dygn för en vuxen hund) gäller hela dygnet inklusive tupplurar. Därför jämförs sömn mot hundens eget snitt istället för en fast gräns.',
+      aboutLi3: '<strong>Motion:</strong> de flesta hundar mår bäst av minst 1–2 timmars sammanlagd rörelse per dag. Eftersom bara en promenad loggas per dag är det ett riktmärke att ha i bakhuvudet, inte något appen räknar automatiskt på.',
+      aboutLi4: '<strong>Varningen om "3 dagar med låg energi"</strong> är en gräns vi satt själva som en försiktig påminnelse — inte ett medicinskt fastställt tal. Kontakta veterinär tidigare om tröttheten kommer plötsligt eller kraftigt, eller följs av t.ex. minskad aptit, kräkningar, diarré eller onormala törst-/kissvanor.',
+      sourcesLabel: 'Källor:',
+      source1: 'Agria — hundens sömnbehov',
+      source2: 'Agria Vårdguide — motionsbehov',
+      source3: 'Evidensia — djurvårdsguide',
+      footerText: 'Doginary · Insikter uppdateras varje kväll',
+      siteFooterDisclaimer: 'Doginary ger allmänna tips och en pedagogisk sammanställning av det du loggar om din hund — inte veterinärmedicinsk rådgivning eller en klinisk bedömning. Informationen ersätter aldrig en veterinärs bedömning och tar inte hänsyn till alla faktorer som gäller just din hund. Du som hundägare ansvarar alltid själv för att bedöma din hunds hälsa, ålder, ras och tillstånd, och för att söka veterinärvård vid oro för din hunds hälsa.',
+      footerTerms: 'Villkor',
+      confInsufficient: 'Otillräckligt underlag', confPreliminary: 'Preliminärt', confEstablished: 'Etablerat mönster', confUnknown: 'Okänt',
+      trendMoreData: 'Mer data behövs',
+      trendPreliminaryN: n => `Preliminärt mönster (${n} dagar)`,
+      trendAboveBaseline: 'Över egen baslinje',
+      trendBelowBaseline: 'Under egen baslinje',
+      trendNearBaseline: 'Nära egen baslinje',
+      warnObservation: 'Observation',
+      warnWatch: 'Håll uppsikt',
+      warnContactVet: 'Kontakta veterinär',
+      todayCoverageInsufficient: 'För lite data för att bedöma ett mönster.',
+      todayCoveragePreliminary: n => `Preliminärt mönster, baserat på ${n} tidigare loggade dagar.`,
+      todayCoverageEstablished: n => `Baserat på ${n} tidigare loggade dagar.`,
+      whyLoggedToday: v => `Loggat värde idag: ${v}`,
+      whyNotSpecified: 'ej angivet',
+      whyBaseline: (v, method) => `Personlig baslinje: ${v}${method ? ' (' + method + ')' : ''}`,
+      whyMethodMedian: 'median', whyMethodMode: 'vanligaste värde',
+      whySampleSize: n => `Underlag: ${n} tidigare loggade dagar`,
+      whyConfidence: v => `Tillförlitlighet: ${v}`,
+      whyNameUsed: name => `Hundens namn (${name}) användes i texten. Ras och ålder påverkar inte den här jämförelsen — den bygger enbart på ${name}s egen historik.`,
+      whyProductRule: 'Jämförelsemetoden (median över tidigare loggade dagar) är Doginarys egen, försiktiga produktregel — inte ett medicinskt fastställt mått.',
+      whyToggle: 'Varför ser jag detta?',
+      productRuleTag: 'Doginarys observationsregel — inte ett medicinskt gränsvärde',
+      sourcesMultiLabel: 'Källor och resonemang',
+      sourceLabel: 'Källa',
+      emptyToday: name => `Ingen dag loggad än. <a href="logga.html">Logga ${name}s första dag</a> för att se insikter här.`,
+      heroEmptyHeadline: name => `${name} väntar på sin första loggade dag.`,
+      heroEmptySub: 'Så fort du loggat en dag dyker de första insikterna upp här.',
+      heroWarningHeadline: name => `Något att hålla lite extra koll på för ${name} idag.`,
+      heroWarningSub: 'Se varningarna längre ner för mer detaljer.',
+      heroCalmHeadline: name => `${name} har haft en lugn dag idag.`,
+      heroCalmSub: 'Insikterna nedan bygger på det du loggat hittills.',
+      weekNumber: n => `Vecka ${n}`,
+      weekEmpty: 'Logga några dagar i rad så samlas veckans mönster här.',
+      weekLowData: '(för lite data för ett säkert mönster)',
+      sparkEnergy: 'Energi', sparkWalks: 'Promenader', sparkSleep: 'Sömn',
+      sparkMostCommon: v => `vanligast: ${v}`,
+      sparkMedianMin: n => `median ${n} min`,
+      sparkMedianHours: n => `median ${n} h`,
+      monthPeriod: 'Loggad period',
+      monthEmpty: 'Månadsrapporten fylls på allt eftersom du loggar fler dagar.',
+      monthHighlights: 'Höjdpunkter',
+      monthWatch: 'Att hålla ögonen på',
+      monthWatchEmpty: 'Inget särskilt att hålla ögonen på just nu.',
+      monthRecommendation: 'Rekommendation',
+      monthRecommendationEmpty: 'Fortsätt som vanligt — allt ser stabilt ut.',
+      monthCoverage: (n, low) => `${n} dagar loggade under den här perioden${low ? ' — låg datatäckning, mönstren nedan är preliminära.' : '.'}`,
+      monthChartAria: median => `Promenadlängd över den loggade perioden, median ${median} minuter`,
+      warningsEmpty: 'Inga tydliga förändringar har upptäckts i den information som har loggats. Detta är inte en medicinsk bedömning.',
+      rewardsEmpty: 'Logga några dagar i rad för att börja samla belöningar.',
+      loadError: 'Kunde inte hämta din hunds data just nu — ladda om sidan.',
+    }
+  };
+
+  function t(key){
+    const val = (STR[lang] && STR[lang][key] !== undefined) ? STR[lang][key] : STR.sv[key];
+    return val;
+  }
+
+  function applyI18n(){
+    document.documentElement.lang = lang;
+    document.title = lang === 'en' ? 'Doginary — Insights' : 'Doginary — Insikter';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const val = t(el.getAttribute('data-i18n'));
+      if (typeof val === 'string') el.innerHTML = val;
+    });
+    if (langBtnSvEl) langBtnSvEl.hidden = lang !== 'en';
+    if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';
+  }
+
+  let lastDogName = null, lastProfile = null;
+
+  function setLang(l){
+    if (l !== 'en' && l !== 'sv') return;
+    lang = l;
+    try { localStorage.setItem('dogWeatherLang', lang); } catch { /* ignore */ }
+    applyI18n();
+    if (signedIn && lastEntries && lastDogName !== null) {
+      renderInsights(lastDogName, lastEntries, lastProfile);
+    }
+  }
+
+  langBtnSvEl?.addEventListener('click', () => setLang('sv'));
+  langBtnEnEl?.addEventListener('click', () => setLang('en'));
+  applyI18n();
+
   const icons = {
     energy: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>',
     walk: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2.4"/><circle cx="15" cy="4.5" r="2"/><circle cx="19" cy="9" r="1.8"/><ellipse cx="10.5" cy="15" rx="5.4" ry="4.3"/></svg>',
@@ -815,20 +1033,16 @@
 
   // Etikett + ikon för varje varningsnivå (uppgift 8) — text + färg +
   // ikon används alltid tillsammans, aldrig bara färg.
-  const WARNING_LEVEL = {
-    observation: {
-      label: 'Observation',
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12.5"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
-    },
-    watch: {
-      label: 'Håll uppsikt',
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
-    },
-    contact_vet: {
-      label: 'Kontakta veterinär',
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v5h5v6h-5v5H9v-5H4V8h5V3z"/></svg>'
-    }
+  const WARNING_LEVEL_ICONS = {
+    observation: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12.5"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    watch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    contact_vet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v5h5v6h-5v5H9v-5H4V8h5V3z"/></svg>'
   };
+  function warningLevel(severity){
+    const key = WARNING_LEVEL_ICONS[severity] ? severity : 'observation';
+    const labelKey = key === 'watch' ? 'warnWatch' : key === 'contact_vet' ? 'warnContactVet' : 'warnObservation';
+    return { icon: WARNING_LEVEL_ICONS[key], label: t(labelKey) };
+  }
 
   function esc(s){
     const d = document.createElement('div');
@@ -836,11 +1050,24 @@
     return d.innerHTML;
   }
 
+  function capitalize(s){
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  }
+
+  // dogName kan vara sentinelvärdet DoginaryData.DEFAULT_NAME ("your dog")
+  // när hunden saknar namn — den här sidans EGNA texter (hero, tomma
+  // tillstånd) ska då visa en lokaliserad variant istället för att råka
+  // blanda in engelska i en svensk mening. DoginaryData:s egna genererade
+  // texter hanterar samma sak internt (se subject()/possessive()).
+  function displayDogName(name){
+    return name === DoginaryData.DEFAULT_NAME ? (lang === 'en' ? 'your dog' : 'din hund') : name;
+  }
+
   function confidenceLabel(c){
-    if (c === 'insufficient') return 'Otillräckligt underlag';
-    if (c === 'preliminary') return 'Preliminärt';
-    if (c === 'established') return 'Etablerat mönster';
-    return 'Okänt';
+    if (c === 'insufficient') return t('confInsufficient');
+    if (c === 'preliminary') return t('confPreliminary');
+    if (c === 'established') return t('confEstablished');
+    return t('confUnknown');
   }
 
   // Trendmärket följer de tre lägena i uppgift 2: insufficient visar aldrig
@@ -848,14 +1075,14 @@
   // försiktigt, neutralt läge; established får visa riktning.
   function trendBadge(item){
     if (item.confidence === 'insufficient' || item.dir === 'unknown') {
-      return { cls: 'trend--neutral', arrow: '', text: 'Mer data behövs' };
+      return { cls: 'trend--neutral', arrow: '', text: t('trendMoreData') };
     }
     if (item.confidence === 'preliminary') {
-      return { cls: 'trend--neutral', arrow: '', text: `Preliminärt mönster (${item.sampleSize} dagar)` };
+      return { cls: 'trend--neutral', arrow: '', text: t('trendPreliminaryN')(item.sampleSize) };
     }
-    if (item.dir === 'up') return { cls: 'trend--up', arrow: '↑', text: 'Över egen baslinje' };
-    if (item.dir === 'down') return { cls: 'trend--down', arrow: '↓', text: 'Under egen baslinje' };
-    return { cls: 'trend--flat', arrow: '→', text: 'Nära egen baslinje' };
+    if (item.dir === 'up') return { cls: 'trend--up', arrow: '↑', text: t('trendAboveBaseline') };
+    if (item.dir === 'down') return { cls: 'trend--down', arrow: '↓', text: t('trendBelowBaseline') };
+    return { cls: 'trend--flat', arrow: '→', text: t('trendNearBaseline') };
   }
 
   function sparklinePath(values, w, h, pad = 4){
@@ -890,13 +1117,11 @@
     container.appendChild(wrap);
   }
 
-  // Uppgift 9: återanvändbar källfunktion. Tar bort dubbletter, hoppar
-  // över okända id:n, öppnar originalkällan i ny flik på ett säkert sätt.
   function renderSourceLinks(sourceIds, isProductRule){
     const ids = Array.from(new Set((sourceIds || []).filter(id => window.DoginarySources && window.DoginarySources[id])));
     if (!ids.length) {
       if (isProductRule) {
-        return `<p class="productrule-tag">Doginarys observationsregel — inte ett medicinskt gränsvärde</p>`;
+        return `<p class="productrule-tag">${t('productRuleTag')}</p>`;
       }
       return '';
     }
@@ -905,7 +1130,7 @@
       const text = s.organization || s.title;
       return `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
     }).join(' · ');
-    const label = ids.length > 1 ? 'Källor och resonemang' : 'Källa';
+    const label = ids.length > 1 ? t('sourcesMultiLabel') : t('sourceLabel');
     return `<p class="sources"><span class="sources__label">${label}:</span>${links}</p>`;
   }
 
@@ -920,21 +1145,22 @@
   function renderWhySection(item){
     const id = `why-${whyPanelSeq++}`;
     const rows = [];
-    rows.push(`<li>Loggat värde idag: ${esc(item.currentValue == null || item.currentValue === '' ? 'ej angivet' : item.currentValue)}</li>`);
+    rows.push(`<li>${t('whyLoggedToday')(esc(item.currentValue == null || item.currentValue === '' ? t('whyNotSpecified') : item.currentValue))}</li>`);
     if (item.baselineValue != null) {
       const bv = typeof item.baselineValue === 'number' ? (Math.round(item.baselineValue * 10) / 10) : item.baselineValue;
-      rows.push(`<li>Personlig baslinje: ${esc(bv)}${item.baselineMethod ? ' (' + esc(item.baselineMethod === 'median' ? 'median' : 'vanligaste värde') + ')' : ''}</li>`);
+      const method = item.baselineMethod ? (item.baselineMethod === 'median' ? t('whyMethodMedian') : t('whyMethodMode')) : null;
+      rows.push(`<li>${t('whyBaseline')(esc(bv), method ? esc(method) : null)}</li>`);
     }
-    rows.push(`<li>Underlag: ${item.sampleSize} tidigare loggade dagar</li>`);
-    rows.push(`<li>Tillförlitlighet: ${esc(confidenceLabel(item.confidence))}</li>`);
+    rows.push(`<li>${t('whySampleSize')(item.sampleSize)}</li>`);
+    rows.push(`<li>${t('whyConfidence')(esc(confidenceLabel(item.confidence)))}</li>`);
     if (item.profileContext && item.profileContext.name) {
-      rows.push(`<li>Hundens namn (${esc(item.profileContext.name)}) användes i texten. Ras och ålder påverkar inte den här jämförelsen — den bygger enbart på ${esc(item.profileContext.name)}s egen historik.</li>`);
+      rows.push(`<li>${t('whyNameUsed')(esc(item.profileContext.name))}</li>`);
     }
-    if (item.isProductRule) rows.push(`<li>Jämförelsemetoden (median över tidigare loggade dagar) är Doginarys egen, försiktiga produktregel — inte ett medicinskt fastställt mått.</li>`);
+    if (item.isProductRule) rows.push(`<li>${t('whyProductRule')}</li>`);
     const sources = renderSourceLinks(item.sourceIds, false);
     return `
       <div class="why">
-        <button type="button" class="why__toggle" aria-expanded="false" aria-controls="${id}" data-why-toggle>Varför ser jag detta?</button>
+        <button type="button" class="why__toggle" aria-expanded="false" aria-controls="${id}" data-why-toggle>${t('whyToggle')}</button>
         <div class="why__panel" id="${id}" hidden>
           <ul>${rows.join('')}</ul>
           ${sources}
@@ -955,15 +1181,18 @@
   }
 
   function todayCoverageText(confidence, sampleSize){
-    if (confidence === 'insufficient') return 'För lite data för att bedöma ett mönster.';
-    if (confidence === 'preliminary') return `Preliminärt mönster, baserat på ${sampleSize} tidigare loggade dagar.`;
-    return `Baserat på ${sampleSize} tidigare loggade dagar.`;
+    if (confidence === 'insufficient') return t('todayCoverageInsufficient');
+    if (confidence === 'preliminary') return t('todayCoveragePreliminary')(sampleSize);
+    return t('todayCoverageEstablished')(sampleSize);
   }
 
   async function renderInsights(dogName, rawEntries, profile){
-    document.getElementById('heroDate').textContent = new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
-    document.getElementById('heroDogName').textContent = dogName;
-    document.getElementById('todayMeta').textContent = new Date().toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
+    lastDogName = dogName;
+    lastProfile = profile;
+    const displayName = displayDogName(dogName);
+    document.getElementById('heroDate').textContent = capitalize(new Date().toLocaleDateString(LOCALE[lang], { weekday: 'long', day: 'numeric', month: 'long' }));
+    document.getElementById('heroDogName').textContent = displayName;
+    document.getElementById('todayMeta').textContent = new Date().toLocaleDateString(LOCALE[lang], { day: 'numeric', month: 'short' });
 
     // Enda platsen där de rådata som logga.html sparar (snabbloggning +
     // ev. strukturerade rader) slås ihop till en post per kalenderdag,
@@ -975,16 +1204,16 @@
     todayGrid.innerHTML = '';
     let todayData = null;
     try {
-      todayData = DoginaryData.computeToday(allEntries, dogName, profile);
+      todayData = DoginaryData.computeToday(allEntries, dogName, profile, lang);
     } catch (e) {
       todayData = null;
     }
 
     if (!todayData) {
       todayCoverage.textContent = '';
-      todayGrid.innerHTML = `<div class="emptycard" style="grid-column:1/-1">Ingen dag loggad än. <a href="logga.html">Logga ${esc(dogName)}s första dag</a> för att se insikter här.</div>`;
-      document.getElementById('heroHeadline').textContent = `${esc(dogName)} väntar på sin första loggade dag.`;
-      document.getElementById('heroSub').textContent = 'Så fort du loggat en dag dyker de första insikterna upp här.';
+      todayGrid.innerHTML = `<div class="emptycard" style="grid-column:1/-1">${t('emptyToday')(esc(displayName))}</div>`;
+      document.getElementById('heroHeadline').textContent = capitalize(t('heroEmptyHeadline')(displayName));
+      document.getElementById('heroSub').textContent = t('heroEmptySub');
     } else {
       todayCoverage.textContent = todayCoverageText(todayData.confidence, todayData.sampleSize);
       todayData.cards.forEach(item => {
@@ -1009,16 +1238,16 @@
     // ---- Varningar (beräknas här så att hero-texten ovan aldrig
     // överdriver hur lugn dagen varit när det faktiskt finns en varning) ----
     let warnings = [];
-    try { warnings = DoginaryData.computeWarnings(allEntries, dogName, profile); } catch (e) { warnings = []; }
+    try { warnings = DoginaryData.computeWarnings(allEntries, dogName, profile, lang); } catch (e) { warnings = []; }
     const hasSeriousWarning = warnings.some(w => w.severity === 'watch' || w.severity === 'contact_vet');
 
     if (todayData) {
       if (hasSeriousWarning) {
-        document.getElementById('heroHeadline').textContent = `Något att hålla lite extra koll på för ${esc(dogName)} idag.`;
-        document.getElementById('heroSub').textContent = 'Se varningarna längre ner för mer detaljer.';
+        document.getElementById('heroHeadline').textContent = t('heroWarningHeadline')(displayName);
+        document.getElementById('heroSub').textContent = t('heroWarningSub');
       } else {
-        document.getElementById('heroHeadline').textContent = `${esc(dogName)} har haft en lugn dag idag.`;
-        document.getElementById('heroSub').textContent = 'Insikterna nedan bygger på det du loggat hittills.';
+        document.getElementById('heroHeadline').textContent = t('heroCalmHeadline')(displayName);
+        document.getElementById('heroSub').textContent = t('heroCalmSub');
       }
     }
 
@@ -1026,19 +1255,19 @@
     const weekMeta = document.getElementById('weekMeta');
     const weekContent = document.getElementById('weekContent');
     let weekData = null;
-    try { weekData = DoginaryData.computeWeek(allEntries, dogName, profile); } catch (e) { weekData = null; }
+    try { weekData = DoginaryData.computeWeek(allEntries, dogName, profile, lang); } catch (e) { weekData = null; }
     const now = new Date();
     const oneJan = new Date(now.getFullYear(), 0, 1);
     const weekNumber = Math.ceil((((now - oneJan) / 86400000) + oneJan.getDay() + 1) / 7);
-    weekMeta.textContent = 'Vecka ' + weekNumber;
+    weekMeta.textContent = t('weekNumber')(weekNumber);
 
     if (!weekData) {
-      weekContent.innerHTML = `<div class="emptycard">Logga några dagar i rad så samlas veckans mönster här.</div>`;
+      weekContent.innerHTML = `<div class="emptycard">${t('weekEmpty')}</div>`;
     } else {
       weekContent.innerHTML = `
         <div class="weekcard">
           <p class="weekcard__summary">${esc(weekData.summary)}</p>
-          <p class="weekcard__coverage">${esc(weekData.coverageText)} ${weekData.confidence === 'insufficient' ? '(för lite data för ett säkert mönster)' : ''}</p>
+          <p class="weekcard__coverage">${esc(weekData.coverageText)} ${weekData.confidence === 'insufficient' ? t('weekLowData') : ''}</p>
           <div class="sparklines" id="sparklineRow"></div>
           <div class="doginsight">
             <span class="doginsight__mark">”</span>
@@ -1047,10 +1276,11 @@
         </div>
       `;
       const sparkRow = document.getElementById('sparklineRow');
-      const energyMode = Object.keys(weekData.energyDistribution || {}).sort((a, b) => weekData.energyDistribution[b] - weekData.energyDistribution[a])[0];
-      renderSpark(sparkRow, 'Energi', weekData.sparklines.energy, energyMode ? `vanligast: ${energyMode.toLowerCase()}` : '', '#A15C38');
-      renderSpark(sparkRow, 'Promenader', weekData.sparklines.walks, weekData.walkMedian != null ? `median ${Math.round(weekData.walkMedian)} min` : '', '#33505A');
-      renderSpark(sparkRow, 'Sömn', weekData.sparklines.sleep, weekData.sleepMedian != null ? `median ${weekData.sleepMedian.toFixed(1)} h` : '', '#4B6B3E');
+      const energyModeRaw = Object.keys(weekData.energyDistribution || {}).sort((a, b) => weekData.energyDistribution[b] - weekData.energyDistribution[a])[0];
+      const energyMode = energyModeRaw ? DoginaryData.displayEnergi(energyModeRaw, lang) : null;
+      renderSpark(sparkRow, t('sparkEnergy'), weekData.sparklines.energy, energyMode ? t('sparkMostCommon')(energyMode.toLowerCase()) : '', '#A15C38');
+      renderSpark(sparkRow, t('sparkWalks'), weekData.sparklines.walks, weekData.walkMedian != null ? t('sparkMedianMin')(Math.round(weekData.walkMedian)) : '', '#33505A');
+      renderSpark(sparkRow, t('sparkSleep'), weekData.sparklines.sleep, weekData.sleepMedian != null ? t('sparkMedianHours')(weekData.sleepMedian.toFixed(1)) : '', '#4B6B3E');
       if (!sparkRow.children.length) sparkRow.remove();
     }
 
@@ -1058,11 +1288,11 @@
     const monthMeta = document.getElementById('monthMeta');
     const monthContent = document.getElementById('monthContent');
     let monthData = null;
-    try { monthData = DoginaryData.computeMonth(allEntries, dogName, profile); } catch (e) { monthData = null; }
-    monthMeta.textContent = 'Loggad period';
+    try { monthData = DoginaryData.computeMonth(allEntries, dogName, profile, lang); } catch (e) { monthData = null; }
+    monthMeta.textContent = t('monthPeriod');
 
     if (!monthData) {
-      monthContent.innerHTML = `<div class="emptycard">Månadsrapporten fylls på allt eftersom du loggar fler dagar.</div>`;
+      monthContent.innerHTML = `<div class="emptycard">${t('monthEmpty')}</div>`;
     } else {
       const list = (items, dotClass) => items.map(t => `<li><span class="dot ${dotClass}"></span>${esc(t)}</li>`).join('');
       const lowCoverage = monthData.confidence !== 'established';
@@ -1070,20 +1300,20 @@
         <div class="monthcard">
           <div class="monthcard__grid">
             <div class="monthcard__block">
-              <h3>Höjdpunkter</h3>
+              <h3>${t('monthHighlights')}</h3>
               <ul>${list(monthData.highlights, 'dot--rust')}</ul>
             </div>
             <div class="monthcard__block">
-              <h3>Att hålla ögonen på</h3>
-              <ul>${monthData.watch.length ? list(monthData.watch, 'dot--teal') : '<li><span class="dot dot--teal"></span>Inget särskilt att hålla ögonen på just nu.</li>'}</ul>
+              <h3>${t('monthWatch')}</h3>
+              <ul>${monthData.watch.length ? list(monthData.watch, 'dot--teal') : `<li><span class="dot dot--teal"></span>${t('monthWatchEmpty')}</li>`}</ul>
             </div>
             <div class="monthcard__block">
-              <h3>Rekommendation</h3>
-              <ul>${monthData.recommendations.length ? list(monthData.recommendations, 'dot--rust') : '<li><span class="dot dot--rust"></span>Fortsätt som vanligt — allt ser stabilt ut.</li>'}</ul>
+              <h3>${t('monthRecommendation')}</h3>
+              <ul>${monthData.recommendations.length ? list(monthData.recommendations, 'dot--rust') : `<li><span class="dot dot--rust"></span>${t('monthRecommendationEmpty')}</li>`}</ul>
             </div>
           </div>
           <div class="monthchart" id="monthChart"></div>
-          <p class="coverage-note ${lowCoverage ? 'coverage-note--low' : ''}">${monthData.loggedDays} dagar loggade under den här perioden${lowCoverage ? ' — låg datatäckning, mönstren nedan är preliminära.' : '.'}</p>
+          <p class="coverage-note ${lowCoverage ? 'coverage-note--low' : ''}">${t('monthCoverage')(monthData.loggedDays, lowCoverage)}</p>
         </div>
       `;
       if (monthData.walkTrend.length > 1) {
@@ -1094,7 +1324,7 @@
           const linePath = sparklinePath(mv, mw, mh, mpad);
           const areaPath = `${linePath} L${mw - mpad},${mh - mpad} L${mpad},${mh - mpad} Z`;
           monthChart.innerHTML = `
-            <svg viewBox="0 0 ${mw} ${mh}" preserveAspectRatio="none" role="img" aria-label="Promenadlängd över den loggade perioden, median ${monthData.walkMedian != null ? Math.round(monthData.walkMedian) : '?'} minuter">
+            <svg viewBox="0 0 ${mw} ${mh}" preserveAspectRatio="none" role="img" aria-label="${t('monthChartAria')(monthData.walkMedian != null ? Math.round(monthData.walkMedian) : '?')}">
               <path d="${areaPath}" fill="#A15C38" opacity="0.12"/>
               <path d="${linePath}" fill="none" stroke="#A15C38" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -1107,30 +1337,30 @@
     const warningsContent = document.getElementById('warningsContent');
     warningsContent.innerHTML = warnings.length
       ? warnings.map(w => {
-          const level = WARNING_LEVEL[w.severity] || WARNING_LEVEL.observation;
+          const level = warningLevel(w.severity);
           return `
             <div class="noticecard noticecard--${w.severity}">
               <div class="noticecard__icon">${level.icon}</div>
               <div class="noticecard__body">
                 <span class="noticecard__level">${esc(level.label)}</span>
                 <p class="noticecard__text"><strong>${esc(w.title)}</strong>${esc(w.text)}</p>
-                ${w.isProductRule ? '<p class="noticecard__note">Doginarys observationsregel — inte ett medicinskt gränsvärde.</p>' : ''}
+                ${w.isProductRule ? `<p class="noticecard__note">${t('productRuleTag')}</p>` : ''}
                 ${renderSourceLinks(w.sourceIds, false)}
               </div>
             </div>`;
         }).join('')
-      : `<div class="emptycard">Inga tydliga förändringar har upptäckts i den information som har loggats. Detta är inte en medicinsk bedömning.</div>`;
+      : `<div class="emptycard">${t('warningsEmpty')}</div>`;
 
     const rewardsContent = document.getElementById('rewardsContent');
     let rewards = [];
-    try { rewards = DoginaryData.computeRewards(allEntries, dogName, profile); } catch (e) { rewards = []; }
+    try { rewards = DoginaryData.computeRewards(allEntries, dogName, profile, lang); } catch (e) { rewards = []; }
     rewardsContent.innerHTML = rewards.length
       ? rewards.map(r => `
           <div class="noticecard noticecard--reward">
             <div class="noticecard__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.8-5 4.8 1.3 6.8L12 17.6 5.9 20.7l1.3-6.8-5-4.8 6.9-.8L12 2z"/></svg></div>
             <p class="noticecard__text"><strong>${esc(r.title)}</strong>${esc(r.text)}</p>
           </div>`).join('')
-      : `<div class="emptycard">Logga några dagar i rad för att börja samla belöningar.</div>`;
+      : `<div class="emptycard">${t('rewardsEmpty')}</div>`;
   }
 
   let lastEntries = null;
@@ -1155,7 +1385,7 @@
       lastEntries = entries;
       await renderInsights(dogName, entries, profile);
     } catch(e){
-      appScreen.innerHTML = '<div class="emptycard">Kunde inte hämta din hunds data just nu — ladda om sidan.</div>';
+      appScreen.innerHTML = `<div class="emptycard">${t('loadError')}</div>`;
     }
   }
 

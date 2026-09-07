@@ -15,8 +15,34 @@
   var PRELIMINARY_MIN_DAYS = 3;
   var ESTABLISHED_MIN_DAYS = 7;
 
-  var ENERGY_VALUE = { 'Låg': 1, 'Normal': 2, 'Hög': 3, 'Low': 1, 'Normal': 2, 'High': 3 };
-  var APPETITE_VALUE = { 'Dålig': 1, 'Normal': 2, 'Stark': 3, 'Poor': 1, 'Normal': 2, 'Strong': 3 };
+  var ENERGY_VALUE = { 'Låg': 1, 'Normal': 2, 'Hög': 3, 'Low': 1, 'High': 3 };
+  var APPETITE_VALUE = { 'Dålig': 1, 'Normal': 2, 'Stark': 3, 'Poor': 1, 'Strong': 3 };
+
+  // Visningsöversättningar för kategoriska värden som kan vara sparade på
+  // antingen svenska eller engelska (se ENERGY_VALUE/APPETITE_VALUE ovan).
+  // Används när en sådan lagrad text ska skrivas in i en genererad mening,
+  // så att texten alltid visas på det språk som för tillfället är valt —
+  // oavsett vilket språk som gällde när posten sparades.
+  var ENERGI_LABELS = {
+    'Låg': { sv: 'Låg', en: 'Low' }, 'Low': { sv: 'Låg', en: 'Low' },
+    'Normal': { sv: 'Normal', en: 'Normal' },
+    'Hög': { sv: 'Hög', en: 'High' }, 'High': { sv: 'Hög', en: 'High' }
+  };
+  var APTIT_LABELS = {
+    'Dålig': { sv: 'Dålig', en: 'Poor' }, 'Poor': { sv: 'Dålig', en: 'Poor' },
+    'Normal': { sv: 'Normal', en: 'Normal' },
+    'Stark': { sv: 'Stark', en: 'Strong' }, 'Strong': { sv: 'Stark', en: 'Strong' }
+  };
+  var STOOL_LABELS = {
+    'Normal': { sv: 'Normal', en: 'Normal' },
+    'Lös': { sv: 'Lös', en: 'Loose' }, 'Loose': { sv: 'Lös', en: 'Loose' },
+    'Hård': { sv: 'Hård', en: 'Hard' }, 'Hard': { sv: 'Hård', en: 'Hard' },
+    'Ovanlig': { sv: 'Ovanlig', en: 'Unusual' }, 'Unusual': { sv: 'Ovanlig', en: 'Unusual' }
+  };
+  function labelFor(map, value, lang) {
+    var entry = map[value];
+    return entry ? entry[lang === 'en' ? 'en' : 'sv'] : value;
+  }
 
   var SOURCES = {
     'aaha-senior-care': {
@@ -289,7 +315,12 @@
     return 'established';
   }
 
-  function baselineText(confidence, sampleSize) {
+  function baselineText(confidence, sampleSize, lang) {
+    if (lang === 'en') {
+      if (confidence === 'insufficient') return 'Not enough data yet to assess a pattern (' + sampleSize + ' earlier days).';
+      if (confidence === 'preliminary') return 'Preliminary pattern based on ' + sampleSize + ' earlier days.';
+      return 'Compared with ' + sampleSize + ' previously logged days.';
+    }
     if (confidence === 'insufficient') return 'För lite data för att bedöma ett mönster (' + sampleSize + ' tidigare dagar).';
     if (confidence === 'preliminary') return 'Preliminärt mönster baserat på ' + sampleSize + ' tidigare dagar.';
     return 'Jämfört med ' + sampleSize + ' tidigare loggade dagar.';
@@ -318,20 +349,30 @@
     return 'unknown';
   }
 
-  function trendLabel(direction, confidence) {
+  function trendLabel(direction, confidence, lang) {
+    if (lang === 'en') {
+      if (direction === 'unknown') return confidence === 'preliminary' ? 'Preliminary' : 'More data needed';
+      if (direction === 'up') return 'Above your own median';
+      if (direction === 'down') return 'Below your own median';
+      return 'Near your own median';
+    }
     if (direction === 'unknown') return confidence === 'preliminary' ? 'Preliminärt' : 'Mer data behövs';
     if (direction === 'up') return 'Över eget medianvärde';
     if (direction === 'down') return 'Under eget medianvärde';
     return 'Nära eget medianvärde';
   }
 
-  function subject(name, profile) {
-    return (profile && profile.name) || name || DEFAULT_NAME;
+  function subject(name, profile, lang) {
+    var value = (profile && profile.name) || name || DEFAULT_NAME;
+    if (value === DEFAULT_NAME) return lang === 'en' ? 'your dog' : 'din hund';
+    return value;
   }
 
-  function possessive(name, profile) {
-    var value = subject(name, profile);
-    return value === DEFAULT_NAME ? "your dog's" : value + 's';
+  function possessive(name, profile, lang) {
+    var value = subject(name, profile, lang);
+    if (value === 'your dog') return "your dog's";
+    if (value === 'din hund') return 'din hunds';
+    return value + (lang === 'en' ? '\u2019s' : 's');
   }
 
   function profileContext(profile) {
@@ -357,13 +398,13 @@
     return streak;
   }
 
-  function makeCard(type, label, text, currentValue, baseline, direction, extra) {
+  function makeCard(type, label, text, currentValue, baseline, direction, lang, extra) {
     return Object.assign({
       type: type,
       label: label,
       text: text,
       dir: direction,
-      trend: trendLabel(direction, baseline.confidence),
+      trend: trendLabel(direction, baseline.confidence, lang),
       currentValue: currentValue,
       baselineValue: baseline.value,
       sampleSize: baseline.sampleSize,
@@ -374,76 +415,119 @@
       // räknades fram (t.ex. "median"), för "Varför ser jag detta?".
       baselineMethod: baseline.baselineMethod || null,
       isProductRule: baseline.isProductRule !== false,
-      reasons: [baselineText(baseline.confidence, baseline.sampleSize)],
+      reasons: [baselineText(baseline.confidence, baseline.sampleSize, lang)],
       profileContext: null,
       sourceIds: []
     }, extra || {});
   }
 
-  function computeToday(entriesRaw, dogName, profile) {
+  function computeToday(entriesRaw, dogName, profile, lang) {
+    lang = lang === 'en' ? 'en' : 'sv';
     var entries = normalizeEntries(entriesRaw);
     if (!entries.length) return null;
     var latest = entries[entries.length - 1];
     var prior = entries.slice(0, -1);
-    var name = subject(dogName, profile);
+    var name = subject(dogName, profile, lang);
     var cards = [];
+    var notSpecified = lang === 'en' ? 'not specified' : 'ej angiven';
 
     var energyBaseline = buildCategoricalBaseline(prior, 'energi');
     var energyDirection = classifyCategoricalChange(latest.energi, energyBaseline, ENERGY_VALUE);
-    var energyText = 'Energinivå idag: ' + (latest.energi || 'ej angiven') + '.';
-    if (energyBaseline.value && energyBaseline.confidence !== 'insufficient') energyText += ' Vanligast tidigare nivå har varit ' + String(energyBaseline.value).toLowerCase() + '.';
-    else energyText += ' ' + baselineText(energyBaseline.confidence, energyBaseline.sampleSize);
-    cards.push(makeCard('energy', 'Energi', energyText, latest.energi || null, energyBaseline, energyDirection, { profileContext: profileContext(profile) }));
+    var energyText = lang === 'en'
+      ? 'Energy level today: ' + (latest.energi ? labelFor(ENERGI_LABELS, latest.energi, lang) : notSpecified) + '.'
+      : 'Energinivå idag: ' + (latest.energi ? labelFor(ENERGI_LABELS, latest.energi, lang) : notSpecified) + '.';
+    if (energyBaseline.value && energyBaseline.confidence !== 'insufficient') {
+      energyText += lang === 'en'
+        ? ' The most common earlier level has been ' + labelFor(ENERGI_LABELS, energyBaseline.value, lang).toLowerCase() + '.'
+        : ' Vanligast tidigare nivå har varit ' + labelFor(ENERGI_LABELS, energyBaseline.value, lang).toLowerCase() + '.';
+    } else {
+      energyText += ' ' + baselineText(energyBaseline.confidence, energyBaseline.sampleSize, lang);
+    }
+    cards.push(makeCard('energy', lang === 'en' ? 'Energy' : 'Energi', energyText, latest.energi || null, energyBaseline, energyDirection, lang, { profileContext: profileContext(profile) }));
 
     var walk = num(latest.walkLength);
     var walkBaseline = buildNumericBaseline(prior, 'walkLength');
     var walkDirection = classifyNumericChange(walk, walkBaseline, 10);
-    var walkText = walk === null ? 'Ingen promenadtid loggad idag.' : 'Promenaden var ' + walk + ' minuter.';
-    if (walk !== null && walkBaseline.value !== null && walkBaseline.confidence !== 'insufficient') walkText += ' ' + name + 's median är ' + Math.round(walkBaseline.value) + ' minuter under ' + walkBaseline.sampleSize + ' tidigare loggade dagar.';
-    else walkText += ' ' + baselineText(walkBaseline.confidence, walkBaseline.sampleSize);
-    cards.push(makeCard('walk', 'Promenad', walkText, walk, walkBaseline, walkDirection, { profileContext: profileContext(profile) }));
+    var walkText = walk === null
+      ? (lang === 'en' ? 'No walk time logged today.' : 'Ingen promenadtid loggad idag.')
+      : (lang === 'en' ? 'The walk was ' + walk + ' minutes.' : 'Promenaden var ' + walk + ' minuter.');
+    if (walk !== null && walkBaseline.value !== null && walkBaseline.confidence !== 'insufficient') {
+      walkText += lang === 'en'
+        ? ' ' + possessive(dogName, profile, lang).replace(/^./, function (c) { return c.toUpperCase(); }) + ' median is ' + Math.round(walkBaseline.value) + ' minutes over ' + walkBaseline.sampleSize + ' previously logged days.'
+        : ' ' + name + 's median är ' + Math.round(walkBaseline.value) + ' minuter under ' + walkBaseline.sampleSize + ' tidigare loggade dagar.';
+    } else {
+      walkText += ' ' + baselineText(walkBaseline.confidence, walkBaseline.sampleSize, lang);
+    }
+    cards.push(makeCard('walk', lang === 'en' ? 'Walk' : 'Promenad', walkText, walk, walkBaseline, walkDirection, lang, { profileContext: profileContext(profile) }));
 
     var appetiteBaseline = buildCategoricalBaseline(prior, 'aptit');
     var appetiteDirection = classifyCategoricalChange(latest.aptit, appetiteBaseline, APPETITE_VALUE);
-    var appetiteText = 'Aptit idag: ' + (latest.aptit || 'ej angiven') + '.';
-    if (appetiteBaseline.value && appetiteBaseline.confidence !== 'insufficient') appetiteText += ' Vanligast tidigare nivå har varit ' + String(appetiteBaseline.value).toLowerCase() + '.';
-    else appetiteText += ' ' + baselineText(appetiteBaseline.confidence, appetiteBaseline.sampleSize);
-    cards.push(makeCard('food', 'Aptit', appetiteText, latest.aptit || null, appetiteBaseline, appetiteDirection));
+    var appetiteText = lang === 'en'
+      ? 'Appetite today: ' + (latest.aptit ? labelFor(APTIT_LABELS, latest.aptit, lang) : notSpecified) + '.'
+      : 'Aptit idag: ' + (latest.aptit ? labelFor(APTIT_LABELS, latest.aptit, lang) : notSpecified) + '.';
+    if (appetiteBaseline.value && appetiteBaseline.confidence !== 'insufficient') {
+      appetiteText += lang === 'en'
+        ? ' The most common earlier level has been ' + labelFor(APTIT_LABELS, appetiteBaseline.value, lang).toLowerCase() + '.'
+        : ' Vanligast tidigare nivå har varit ' + labelFor(APTIT_LABELS, appetiteBaseline.value, lang).toLowerCase() + '.';
+    } else {
+      appetiteText += ' ' + baselineText(appetiteBaseline.confidence, appetiteBaseline.sampleSize, lang);
+    }
+    cards.push(makeCard('food', lang === 'en' ? 'Appetite' : 'Aptit', appetiteText, latest.aptit || null, appetiteBaseline, appetiteDirection, lang));
 
     var sleep = num(latest.sleepHours);
     var sleepBaseline = buildNumericBaseline(prior, 'sleepHours');
     var sleepDirection = classifyNumericChange(sleep, sleepBaseline, 0.75);
-    var sleepText = sleep === null ? 'Ingen nattlig sömn loggad.' : 'Nattlig sömn: ' + sleep + ' timmar.';
-    if (sleep !== null && sleepBaseline.value !== null && sleepBaseline.confidence !== 'insufficient') sleepText += ' Egen median är ' + sleepBaseline.value.toFixed(1) + ' timmar.';
-    else sleepText += ' ' + baselineText(sleepBaseline.confidence, sleepBaseline.sampleSize);
-    cards.push(makeCard('sleep', 'Sömn i natt', sleepText, sleep, sleepBaseline, sleepDirection, { sourceIds: ['agria-sleep'] }));
+    var sleepText = sleep === null
+      ? (lang === 'en' ? 'No night sleep logged.' : 'Ingen nattlig sömn loggad.')
+      : (lang === 'en' ? 'Night sleep: ' + sleep + ' hours.' : 'Nattlig sömn: ' + sleep + ' timmar.');
+    if (sleep !== null && sleepBaseline.value !== null && sleepBaseline.confidence !== 'insufficient') {
+      sleepText += lang === 'en'
+        ? ' Your own median is ' + sleepBaseline.value.toFixed(1) + ' hours.'
+        : ' Egen median är ' + sleepBaseline.value.toFixed(1) + ' timmar.';
+    } else {
+      sleepText += ' ' + baselineText(sleepBaseline.confidence, sleepBaseline.sampleSize, lang);
+    }
+    cards.push(makeCard('sleep', lang === 'en' ? 'Sleep last night' : 'Sömn i natt', sleepText, sleep, sleepBaseline, sleepDirection, lang, { sourceIds: ['agria-sleep'] }));
 
     return { latest: latest, cards: cards, confidence: confidenceFor(prior.length), sampleSize: prior.length };
   }
 
-  function computeWeek(entriesRaw, dogName, profile) {
+  function computeWeek(entriesRaw, dogName, profile, lang) {
+    lang = lang === 'en' ? 'en' : 'sv';
     var entries = normalizeEntries(entriesRaw);
     if (!entries.length) return null;
     var week = entries.slice(-7);
-    var name = subject(dogName, profile);
+    var name = subject(dogName, profile, lang);
     var walks = week.map(function (e) { return num(e.walkLength); }).filter(function (v) { return v !== null; });
     var sleep = week.map(function (e) { return num(e.sleepHours); }).filter(function (v) { return v !== null; });
     var energy = week.map(function (e) { return ENERGY_VALUE[e.energi] || null; }).filter(function (v) { return v !== null; });
     var walkMedian = median(walks);
     var sleepMedian = median(sleep);
     var confidence = confidenceFor(week.length);
-    var summary = week.length + ' loggade dagar ingår. ';
-    summary += walkMedian === null ? 'Ingen promenadtid finns att sammanställa.' : 'Medianpromenaden var ' + Math.round(walkMedian) + ' minuter.';
-    if (sleepMedian !== null) summary += ' Medianen för nattlig sömn var ' + sleepMedian.toFixed(1) + ' timmar.';
+    var summary = lang === 'en' ? week.length + ' logged days included. ' : week.length + ' loggade dagar ingår. ';
+    if (walkMedian === null) {
+      summary += lang === 'en' ? 'No walk time to summarize.' : 'Ingen promenadtid finns att sammanställa.';
+    } else {
+      summary += lang === 'en' ? 'The median walk was ' + Math.round(walkMedian) + ' minutes.' : 'Medianpromenaden var ' + Math.round(walkMedian) + ' minuter.';
+    }
+    if (sleepMedian !== null) {
+      summary += lang === 'en'
+        ? ' The median night sleep was ' + sleepMedian.toFixed(1) + ' hours.'
+        : ' Medianen för nattlig sömn var ' + sleepMedian.toFixed(1) + ' timmar.';
+    }
     var streak = loggingStreak(entries);
-    var highlight = streak >= 3 ? 'Du har loggat ' + name + ' ' + streak + ' dagar i rad. Det förbättrar underlaget för personliga mönster.' : baselineText(confidence, week.length);
+    var highlight = streak >= 3
+      ? (lang === 'en'
+          ? 'You\u2019ve logged ' + name + ' ' + streak + ' days in a row. That improves the basis for personal patterns.'
+          : 'Du har loggat ' + name + ' ' + streak + ' dagar i rad. Det förbättrar underlaget för personliga mönster.')
+      : baselineText(confidence, week.length, lang);
     return {
       summary: summary,
       sparklines: { energy: energy, walks: walks, sleep: sleep },
       highlight: highlight,
       loggedDays: week.length,
       confidence: confidence,
-      coverageText: 'Baserat på ' + week.length + ' loggade dagar.',
+      coverageText: lang === 'en' ? 'Based on ' + week.length + ' logged days.' : 'Baserat på ' + week.length + ' loggade dagar.',
       walkMedian: walkMedian,
       sleepMedian: sleepMedian,
       energyDistribution: distribution(week.map(function (e) { return e.energi; })),
@@ -451,26 +535,44 @@
     };
   }
 
-  function computeMonth(entriesRaw, dogName, profile) {
+  function computeMonth(entriesRaw, dogName, profile, lang) {
+    lang = lang === 'en' ? 'en' : 'sv';
     var entries = normalizeEntries(entriesRaw);
     if (!entries.length) return null;
     var period = entries.slice(-30);
-    var name = subject(dogName, profile);
+    var name = subject(dogName, profile, lang);
     var walks = period.map(function (e) { return num(e.walkLength); }).filter(function (v) { return v !== null; });
     var weights = period.map(function (e) { return num(e.weight); }).filter(function (v) { return v !== null; });
     var energyDist = distribution(period.map(function (e) { return e.energi; }));
     var appetiteDist = distribution(period.map(function (e) { return e.aptit; }));
-    var highlights = ['Rapporten bygger på ' + period.length + ' loggade dagar.'];
+    var highlights = [lang === 'en' ? 'The report is based on ' + period.length + ' logged days.' : 'Rapporten bygger på ' + period.length + ' loggade dagar.'];
     var watch = [];
     var recommendations = [];
-    if (walks.length) highlights.push('Medianpromenaden var ' + Math.round(median(walks)) + ' minuter per loggad dag.');
-    if (mode(period.map(function (e) { return e.energi; }))) highlights.push('Vanligast loggade energinivå var ' + mode(period.map(function (e) { return e.energi; })).toLowerCase() + '.');
+    if (walks.length) {
+      highlights.push(lang === 'en'
+        ? 'The median walk was ' + Math.round(median(walks)) + ' minutes per logged day.'
+        : 'Medianpromenaden var ' + Math.round(median(walks)) + ' minuter per loggad dag.');
+    }
+    var energyMode = mode(period.map(function (e) { return e.energi; }));
+    if (energyMode) {
+      highlights.push(lang === 'en'
+        ? 'The most commonly logged energy level was ' + labelFor(ENERGI_LABELS, energyMode, lang).toLowerCase() + '.'
+        : 'Vanligast loggade energinivå var ' + labelFor(ENERGI_LABELS, energyMode, lang).toLowerCase() + '.');
+    }
     if (weights.length >= 3) {
       var difference = weights[weights.length - 1] - weights[0];
-      watch.push('Vikten gick från ' + weights[0].toFixed(1) + ' till ' + weights[weights.length - 1].toFixed(1) + ' kg under de loggade mätningarna (' + (difference >= 0 ? '+' : '') + difference.toFixed(1) + ' kg).');
-      recommendations.push('Följ viktens utveckling över tid och kontakta veterinär om förändringen är oväntad eller oroande.');
+      watch.push(lang === 'en'
+        ? 'Weight went from ' + weights[0].toFixed(1) + ' to ' + weights[weights.length - 1].toFixed(1) + ' kg over the logged measurements (' + (difference >= 0 ? '+' : '') + difference.toFixed(1) + ' kg).'
+        : 'Vikten gick från ' + weights[0].toFixed(1) + ' till ' + weights[weights.length - 1].toFixed(1) + ' kg under de loggade mätningarna (' + (difference >= 0 ? '+' : '') + difference.toFixed(1) + ' kg).');
+      recommendations.push(lang === 'en'
+        ? 'Track the weight trend over time and contact a vet if the change is unexpected or concerning.'
+        : 'Följ viktens utveckling över tid och kontakta veterinär om förändringen är oväntad eller oroande.');
     }
-    if (period.length < ESTABLISHED_MIN_DAYS) watch.push('Underlaget är fortfarande begränsat. Fler loggade dagar ger en säkrare personlig jämförelse.');
+    if (period.length < ESTABLISHED_MIN_DAYS) {
+      watch.push(lang === 'en'
+        ? 'The data is still limited. More logged days give a more reliable personal comparison.'
+        : 'Underlaget är fortfarande begränsat. Fler loggade dagar ger en säkrare personlig jämförelse.');
+    }
     return {
       highlights: highlights,
       watch: watch,
@@ -493,11 +595,12 @@
   function poorAppetite(entry) { return entry && (entry.aptit === 'Dålig' || entry.aptit === 'Poor'); }
   function abnormalStool(entry) { return entry && ['Lös', 'Hård', 'Ovanlig', 'Loose', 'Hard', 'Unusual'].indexOf(entry.stool) >= 0; }
 
-  function computeWarnings(entriesRaw, dogName, profile) {
+  function computeWarnings(entriesRaw, dogName, profile, lang) {
+    lang = lang === 'en' ? 'en' : 'sv';
     var entries = normalizeEntries(entriesRaw);
     var warnings = [];
     if (!entries.length) return warnings;
-    var name = subject(dogName, profile);
+    var name = subject(dogName, profile, lang);
     var latest = entries[entries.length - 1];
     var recent3 = entries.slice(-3);
     var recent5 = entries.slice(-5);
@@ -508,8 +611,10 @@
     if (latestSymptoms && (latestLow || latestPoorAppetite)) {
       warnings.push({
         severity: 'watch',
-        title: 'Flera förändringar är loggade',
-        text: name + ' har ett noterat symptom tillsammans med ' + (latestLow ? 'låg energi' : 'sämre aptit') + '. Håll extra uppsikt och kontakta veterinär om tillståndet försämras eller oroar dig.',
+        title: lang === 'en' ? 'Several changes have been logged' : 'Flera förändringar är loggade',
+        text: lang === 'en'
+          ? name + ' has a noted symptom together with ' + (latestLow ? 'low energy' : 'reduced appetite') + '. Keep a closer eye and contact a vet if the condition worsens or worries you.'
+          : name + ' har ett noterat symptom tillsammans med ' + (latestLow ? 'låg energi' : 'sämre aptit') + '. Håll extra uppsikt och kontakta veterinär om tillståndet försämras eller oroar dig.',
         triggers: ['symptoms', latestLow ? 'low_energy' : 'poor_appetite'],
         sampleSize: recent5.length,
         profileContext: profileContext(profile),
@@ -519,8 +624,10 @@
     } else if (latestSymptoms) {
       warnings.push({
         severity: 'observation',
-        title: 'Symptom noterat',
-        text: 'Du noterade: "' + latest.symptoms.trim() + '". Följ utvecklingen och kontakta veterinär om symptomet kvarstår, förvärras eller oroar dig.',
+        title: lang === 'en' ? 'Symptom noted' : 'Symptom noterat',
+        text: lang === 'en'
+          ? 'You noted: "' + latest.symptoms.trim() + '". Keep track of it and contact a vet if the symptom persists, worsens, or worries you.'
+          : 'Du noterade: "' + latest.symptoms.trim() + '". Följ utvecklingen och kontakta veterinär om symptomet kvarstår, förvärras eller oroar dig.',
         triggers: ['symptoms'], sampleSize: 1, profileContext: profileContext(profile),
         sourceIds: ['evidensia-fatigue'], isProductRule: false
       });
@@ -528,15 +635,19 @@
 
     if (latestLow && latestPoorAppetite) {
       warnings.push({
-        severity: 'watch', title: 'Låg energi och sämre aptit',
-        text: 'Både låg energi och dålig aptit är loggade för ' + name + '. Följ hundens allmäntillstånd och kontakta veterinär om förändringen är tydlig, plötslig eller fortsätter.',
+        severity: 'watch', title: lang === 'en' ? 'Low energy and reduced appetite' : 'Låg energi och sämre aptit',
+        text: lang === 'en'
+          ? 'Both low energy and poor appetite are logged for ' + name + '. Watch the dog\u2019s overall condition and contact a vet if the change is clear, sudden, or continues.'
+          : 'Både låg energi och dålig aptit är loggade för ' + name + '. Följ hundens allmäntillstånd och kontakta veterinär om förändringen är tydlig, plötslig eller fortsätter.',
         triggers: ['low_energy', 'poor_appetite'], sampleSize: 1,
         profileContext: profileContext(profile), sourceIds: ['evidensia-fatigue'], isProductRule: false
       });
     } else if (latestLow) {
       warnings.push({
-        severity: 'observation', title: 'Låg energi idag',
-        text: 'En enstaka låg energidag är en observation, inte en trend. Fortsätt logga och håll uppsikt efter andra förändringar.',
+        severity: 'observation', title: lang === 'en' ? 'Low energy today' : 'Låg energi idag',
+        text: lang === 'en'
+          ? 'A single low-energy day is an observation, not a trend. Keep logging and watch for other changes.'
+          : 'En enstaka låg energidag är en observation, inte en trend. Fortsätt logga och håll uppsikt efter andra förändringar.',
         triggers: ['low_energy'], sampleSize: 1,
         profileContext: profileContext(profile), sourceIds: [], isProductRule: true
       });
@@ -544,8 +655,10 @@
 
     if (recent3.length === 3 && recent3.every(lowEnergy) && !latestPoorAppetite && !latestSymptoms) {
       warnings.push({
-        severity: 'watch', title: 'Låg energi i tre loggade dagar',
-        text: 'Låg energi har loggats tre dagar i rad. Det är Doginarys försiktiga observationsregel, inte en medicinsk tidsgräns.',
+        severity: 'watch', title: lang === 'en' ? 'Low energy for three logged days' : 'Låg energi i tre loggade dagar',
+        text: lang === 'en'
+          ? 'Low energy has been logged three days in a row. This is Doginary\u2019s cautious observation rule, not a medical threshold.'
+          : 'Låg energi har loggats tre dagar i rad. Det är Doginarys försiktiga observationsregel, inte en medicinsk tidsgräns.',
         triggers: ['low_energy_3_days'], sampleSize: 3,
         profileContext: profileContext(profile), sourceIds: [], isProductRule: true
       });
@@ -554,8 +667,10 @@
     var abnormalCount = recent5.filter(abnormalStool).length;
     if (abnormalCount >= 2) {
       warnings.push({
-        severity: 'watch', title: 'Avföringen har avvikit flera gånger',
-        text: 'Avvikande avföring har loggats ' + abnormalCount + ' av de senaste ' + recent5.length + ' dagarna. Följ utvecklingen och kontakta veterinär vid försämring eller andra symptom.',
+        severity: 'watch', title: lang === 'en' ? 'Stool has been unusual several times' : 'Avföringen har avvikit flera gånger',
+        text: lang === 'en'
+          ? 'Unusual stool has been logged ' + abnormalCount + ' of the last ' + recent5.length + ' days. Keep track and contact a vet if it worsens or other symptoms appear.'
+          : 'Avvikande avföring har loggats ' + abnormalCount + ' av de senaste ' + recent5.length + ' dagarna. Följ utvecklingen och kontakta veterinär vid försämring eller andra symptom.',
         triggers: ['repeated_abnormal_stool'], sampleSize: recent5.length,
         profileContext: profileContext(profile), sourceIds: ['evidensia-fatigue'], isProductRule: true
       });
@@ -564,8 +679,10 @@
     var latestWalk = num(latest.walkLength);
     var walkDirection = classifyNumericChange(latestWalk, walkBaseline, 10);
     if (latestLow && walkBaseline.confidence === 'established' && walkDirection === 'down') {
-      warnings.push({ severity: 'watch', title: 'Låg energi och kortare promenad',
-        text: 'Låg energi och en tydligt kortare promenad än den personliga baslinjen har loggats samtidigt. Fortsätt observera och kontakta veterinär vid oro eller försämring.',
+      warnings.push({ severity: 'watch', title: lang === 'en' ? 'Low energy and a shorter walk' : 'Låg energi och kortare promenad',
+        text: lang === 'en'
+          ? 'Low energy and a walk noticeably shorter than the personal baseline have been logged at the same time. Keep observing and contact a vet if you\u2019re worried or it worsens.'
+          : 'Låg energi och en tydligt kortare promenad än den personliga baslinjen har loggats samtidigt. Fortsätt observera och kontakta veterinär vid oro eller försämring.',
         triggers: ['low_energy', 'walk_below_baseline'], sampleSize: walkBaseline.sampleSize,
         confidence: walkBaseline.confidence, profileContext: profileContext(profile),
         sourceIds: ['evidensia-fatigue'], isProductRule: true });
@@ -574,8 +691,10 @@
     if (recentWeights.length >= 3 && latestPoorAppetite) {
       var weightDelta = recentWeights[recentWeights.length - 1] - recentWeights[0];
       if (Math.abs(weightDelta) >= 0.1) {
-        warnings.push({ severity: 'watch', title: 'Vikt och aptit har förändrats',
-          text: 'En viktförändring och dålig aptit finns i den loggade informationen. Detta är en observation, inte en diagnos. Kontakta veterinär om förändringen är oväntad eller oroande.',
+        warnings.push({ severity: 'watch', title: lang === 'en' ? 'Weight and appetite have changed' : 'Vikt och aptit har förändrats',
+          text: lang === 'en'
+            ? 'A weight change and poor appetite appear in the logged information. This is an observation, not a diagnosis. Contact a vet if the change is unexpected or concerning.'
+            : 'En viktförändring och dålig aptit finns i den loggade informationen. Detta är en observation, inte en diagnos. Kontakta veterinär om förändringen är oväntad eller oroande.',
           triggers: ['weight_change', 'poor_appetite'], sampleSize: recentWeights.length,
           confidence: confidenceFor(recentWeights.length), profileContext: profileContext(profile),
           sourceIds: ['evidensia-fatigue'], isProductRule: true });
@@ -588,14 +707,30 @@
     return warnings;
   }
 
-  function computeRewards(entriesRaw, dogName, profile) {
+  function computeRewards(entriesRaw, dogName, profile, lang) {
+    lang = lang === 'en' ? 'en' : 'sv';
     var entries = normalizeEntries(entriesRaw);
     var rewards = [];
-    var name = subject(dogName, profile);
+    var name = subject(dogName, profile, lang);
     var streak = loggingStreak(entries);
-    if (streak >= 3) rewards.push({ title: streak + ' dagar i rad', text: 'Bra jobbat. Du har loggat ' + name + ' ' + streak + ' dagar i rad, vilket förbättrar underlaget för personliga mönster.' });
-    if (entries.length === ESTABLISHED_MIN_DAYS) rewards.push({ title: 'Personlig baslinje upplåst', text: 'Sju loggade dagar ger Doginary ett bättre underlag för försiktiga jämförelser med hundens egen historik.' });
-    if (entries.length > ESTABLISHED_MIN_DAYS && entries.length % 10 === 0) rewards.push({ title: entries.length + ' loggade dagar', text: 'Fler regelbundet loggade dagar gör insikterna mer representativa för ' + name + '.' });
+    if (streak >= 3) rewards.push({
+      title: lang === 'en' ? streak + ' days in a row' : streak + ' dagar i rad',
+      text: lang === 'en'
+        ? 'Well done. You\u2019ve logged ' + name + ' ' + streak + ' days in a row, which improves the basis for personal patterns.'
+        : 'Bra jobbat. Du har loggat ' + name + ' ' + streak + ' dagar i rad, vilket förbättrar underlaget för personliga mönster.'
+    });
+    if (entries.length === ESTABLISHED_MIN_DAYS) rewards.push({
+      title: lang === 'en' ? 'Personal baseline unlocked' : 'Personlig baslinje upplåst',
+      text: lang === 'en'
+        ? 'Seven logged days give Doginary a better basis for careful comparisons with the dog\u2019s own history.'
+        : 'Sju loggade dagar ger Doginary ett bättre underlag för försiktiga jämförelser med hundens egen historik.'
+    });
+    if (entries.length > ESTABLISHED_MIN_DAYS && entries.length % 10 === 0) rewards.push({
+      title: lang === 'en' ? entries.length + ' logged days' : entries.length + ' loggade dagar',
+      text: lang === 'en'
+        ? 'More regularly logged days make the insights more representative for ' + name + '.'
+        : 'Fler regelbundet loggade dagar gör insikterna mer representativa för ' + name + '.'
+    });
     return rewards;
   }
 
@@ -612,6 +747,11 @@
     computeMonth: computeMonth,
     computeWarnings: computeWarnings,
     computeRewards: computeRewards,
+    // Visningsöversättning av lagrade kategoriska värden (energi/aptit/
+    // avföring) till aktuellt visningsspråk — se ENERGI_LABELS m.fl. ovan.
+    displayEnergi: function (value, lang) { return labelFor(ENERGI_LABELS, value, lang); },
+    displayAptit: function (value, lang) { return labelFor(APTIT_LABELS, value, lang); },
+    displayStool: function (value, lang) { return labelFor(STOOL_LABELS, value, lang); },
     loggingStreak: loggingStreak,
     normalizeEntries: normalizeEntries,
     buildDailyEntries: buildDailyEntries,

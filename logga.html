@@ -2012,7 +2012,12 @@
     if(!trimmed) return;
     dogNameBtn.disabled = true;
     try{
-      currentDog = await DoginaryDB.updateDogName(currentDog.id, trimmed);
+      // Går via DoginaryAuthUI.updateDog() (inte DoginaryDB.updateDogName
+      // direkt) så att kontomenyns cachade namn och index.html:s profilkort
+      // uppdateras direkt via "doginary:dogupdate" — annars kunde namnet
+      // som sattes här skilja sig från vad som visades på de andra sidorna
+      // tills man laddade om.
+      currentDog = await DoginaryAuthUI.updateDog({ name: trimmed });
       updateDogChrome();
     } catch(err){
       alert('Kunde inte spara namnet just nu — försök igen.');

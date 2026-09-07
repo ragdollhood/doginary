@@ -71,6 +71,34 @@
     });
   }
 
+  // Enda vägen in för att SKRIVA namn/ras/ålder på den inloggade hunden,
+  // oavsett vilken sida det görs från (index.html:s profilformulär,
+  // logga.html:s namnruta, eller kontomenyns namnfält här nedanför).
+  //
+  // Tidigare gick t.ex. index.html:s profilformulär och logga.html:s
+  // namnruta direkt via DoginaryDB.updateDogProfile()/updateDogName(),
+  // vilket sparade rätt i databasen men ALDRIG uppdaterade den hund som
+  // redan låg cachad här (currentDog) eller talade om för de andra
+  // sidorna/kontomenyn att något ändrats — därav att namnet kunde se
+  // olika ut i kontomenyn jämfört med t.ex. index, tills sidan laddades
+  // om. Genom att alltid gå via den här funktionen hålls cachen och
+  // "doginary:dogupdate"-eventet (som logga.html och insikter.html redan
+  // lyssnar på) i synk direkt, oavsett varifrån ändringen kom.
+  //
+  // `fields` kan innehålla valfri kombination av { name, breed, size,
+  // coat, age }, se updateDogProfile() i doginary-supabase.js.
+  function updateCurrentDog(fields) {
+    return getCurrentDog().then(function (dog) {
+      if (!dog) throw new Error('Ingen inloggad hund att uppdatera.');
+      return global.DoginaryDB.updateDogProfile(dog.id, fields).then(function (updatedDog) {
+        currentDog = updatedDog;
+        if (dogNameMenuInput) dogNameMenuInput.value = (updatedDog && updatedDog.name) || '';
+        fireDogUpdateEvent(updatedDog);
+        return updatedDog;
+      });
+    });
+  }
+
   // ---------- Modal + kontoknapp: bygg DOM ----------
 
   var modalEl, formEl, emailInput, passwordInput, messageEl, submitBtn,
@@ -257,14 +285,12 @@
     saveBtn.disabled = true;
     dogNameMenuStatus.className = '';
     dogNameMenuStatus.textContent = 'Sparar …';
-    getCurrentDog().then(function (dog) {
-      if (!dog) throw new Error('Ingen hund att uppdatera.');
-      return global.DoginaryDB.updateDogName(dog.id, trimmed || null);
-    }).then(function (updatedDog) {
-      currentDog = updatedDog;
+    // Går via updateCurrentDog() (inte DoginaryDB.updateDogName direkt) så
+    // att cachen och "doginary:dogupdate"-eventet uppdateras på samma sätt
+    // som från index.html/logga.html, se kommentaren där.
+    updateCurrentDog({ name: trimmed || null }).then(function () {
       dogNameMenuStatus.className = '';
       dogNameMenuStatus.textContent = 'Sparat.';
-      fireDogUpdateEvent(updatedDog);
     }).catch(function () {
       dogNameMenuStatus.className = 'error';
       dogNameMenuStatus.textContent = 'Kunde inte spara just nu — försök igen.';
@@ -346,6 +372,11 @@
     open: openModal,
     close: closeModal,
     getCurrentDog: getCurrentDog,
+    // Skriv namn/ras/ålder på den inloggade hunden. Använd ALLTID den här
+    // (aldrig DoginaryDB.updateDogProfile/updateDogName direkt) från sidans
+    // egen kod, annars tappar kontomenyn och de andra sidorna synken —
+    // se kommentaren vid updateCurrentDog() ovan.
+    updateDog: updateCurrentDog,
     getSession: function () { return currentSession; },
     // Slår an EN gång med den allra första inloggningsstatusen (session
     // eller null) så att andra script (t.ex. app.js) kan vänta in det

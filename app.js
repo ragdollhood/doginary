@@ -1200,8 +1200,12 @@ async function saveDogProfile(profile) {
   dogProfile = profile;
   if (isDoginaryLoggedIn()) {
     try {
-      const dog = await DoginaryAuthUI.getCurrentDog();
-      await DoginaryDB.updateDogProfile(dog.id, profile);
+      // Går via DoginaryAuthUI.updateDog() (inte DoginaryDB.updateDogProfile
+      // direkt) så att kontomenyns cachade namn och "doginary:dogupdate"
+      // (som Logga/Insikter lyssnar på) hålls i synk direkt — annars kunde
+      // det stå ett namn här och ett annat i kontomenyn tills sidan
+      // laddades om.
+      await DoginaryAuthUI.updateDog(profile);
     } catch (e) {
       statusEl.textContent = lang === 'sv'
         ? 'Kunde inte spara profilen på kontot just nu — försök igen.'
@@ -1221,8 +1225,7 @@ async function clearDogProfile() {
   dogProfile = null;
   if (isDoginaryLoggedIn()) {
     try {
-      const dog = await DoginaryAuthUI.getCurrentDog();
-      await DoginaryDB.updateDogProfile(dog.id, { breed: null, age: null });
+      await DoginaryAuthUI.updateDog({ breed: null, age: null });
     } catch (e) {
       statusEl.textContent = lang === 'sv'
         ? 'Kunde inte ta bort profilen på kontot just nu — försök igen.'
@@ -1254,7 +1257,7 @@ async function syncDogProfileWithAccount(session) {
       const localProfile = loadLocalDogProfile();
       if (localProfile) {
         try {
-          await DoginaryDB.updateDogProfile(dog.id, localProfile);
+          await DoginaryAuthUI.updateDog(localProfile);
           clearLocalDogProfile();
           dogProfile = localProfile;
         } catch (e) {
@@ -1816,6 +1819,20 @@ if (window.DoginaryAuthUI) {
     syncDogProfileWithAccount(session).then(() => {
       if (isFreshLogin) handleFreshLogin(session);
     });
+  });
+  // Namnet kan bytas från kontomenyn eller från Logga (logga.html) utan att
+  // den här sidan laddas om — håll profilkortet i synk med det, precis som
+  // Logga/Insikter redan gör med varandra. Ras/ålder ändras aldrig från de
+  // andra sidorna, så bara namnet uppdateras här.
+  document.addEventListener('doginary:dogupdate', e => {
+    const dog = e.detail && e.detail.dog;
+    if (!dog || !isDoginaryLoggedIn()) return;
+    if (dogProfile) dogProfile = { ...dogProfile, name: dog.name || '' };
+    if (dogProfileNameEl) dogProfileNameEl.value = dog.name || '';
+    renderDogProfileUI();
+    updateHeroTitle();
+    updateLogTitle();
+    if (lastWeatherData && lastLoc) render(lastWeatherData, lastLoc, lastSource);
   });
 } else {
   // doginary-auth.js kunde inte laddas (t.ex. nätverksfel) — profilen

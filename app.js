@@ -1257,11 +1257,21 @@ async function syncDogProfileWithAccount(session) {
       const localProfile = loadLocalDogProfile();
       if (localProfile) {
         try {
-          await DoginaryAuthUI.updateDog(localProfile);
+          const updatedDog = await DoginaryAuthUI.updateDog(localProfile);
           clearLocalDogProfile();
-          dogProfile = localProfile;
+          dogProfile = dogProfileFromAccountDog(updatedDog) || localProfile;
         } catch (e) {
-          dogProfile = localProfile; // visa den ändå, försök spara nästa gång
+          // Migreringen till kontot misslyckades (t.ex. tillfälligt
+          // nätverksfel). Låtsas INTE att den lokala gissningen redan
+          // gäller — det var precis det som gjorde att profilkortet här
+          // kunde visa ett annat namn ("Rufus") än vad kontomenyn visade
+          // ("Signe"), eftersom kontomenyn läser sin egen cache
+          // (currentDog i doginary-auth.js) som aldrig uppdaterades här.
+          // Visa istället kontots FAKTISKA data (bara namnet, om satt) och
+          // låt den lokala gästprofilen ligga kvar i localStorage så
+          // migreringen försöks igen nästa gång sidan laddas.
+          dogProfile = null;
+          if (dog.name) dogProfileNameEl.value = dog.name;
         }
       } else {
         dogProfile = null;

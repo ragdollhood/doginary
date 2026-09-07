@@ -60,6 +60,130 @@
     return values.filter(function (v, i, a) { return v != null && a.indexOf(v) === i; });
   }
 
+  /*
+    ---------------------------------------------------------------------
+    Daglig normalisering av loggbokens rader (uppgift 13)
+    ---------------------------------------------------------------------
+    logga.html sparar i nuläget dels "snabbloggnings"-händelser
+    ({ type: 'walk'|'eat'|'poop'|'play'|'energy'|..., detail: '<etikett>' },
+    flera per dag), dels (för vikt/symptom och en ny energikort) rader med
+    strukturerade fält som redan matchar det denna fil förväntar sig
+    (energi, aptit, walkLength, sleepHours, weight, symptoms, stool, play).
+
+    computeToday/computeWeek/computeMonth/computeWarnings antar EN post per
+    kalenderdag. Den här funktionen är den enda platsen där händelser slås
+    ihop till en sådan daglig post, så att ingen annan fil behöver
+    duplicera mappningen mellan snabbloggningens etiketter och de
+    strukturerade fälten.
+
+    Principer:
+    - Ingen ny information hittas på. Kategoriska etiketter (t.ex.
+      sömnkvalitet) omvandlas ALDRIG till en siffra (t.ex. sömntimmar) –
+      det skulle ge falsk precision. Bara sådant som redan är en tydlig
+      tidsintervall (promenadlängd) får en representativ mittpunkt.
+    - Explicit numeriskt värde (t.ex. redan satt walkLength/sleepHours)
+      vinner alltid över en gissning från en snabbloggningsetikett.
+    - 0 promenadminuter ska bevaras som 0, aldrig tolkas som saknat värde.
+  */
+
+  // Ungefärlig, dokumenterad mittpunkt för promenadens längdintervall –
+  // detta är en Doginary-uppskattning för sortering/jämförelse, inte en
+  // exakt loggad tid.
+  var WALK_BUCKET_MINUTES = {
+    'Kort (10–20 min)': 15, 'Medel (20–40 min)': 30, 'Lång (40+ min)': 50,
+    'Short (10–20 min)': 15, 'Medium (20–40 min)': 30, 'Long (40+ min)': 50
+  };
+  var EAT_BUCKET_APTIT = {
+    'Dålig aptit': 'Dålig', 'Normal aptit': 'Normal', 'Stark aptit': 'Stark',
+    'Poor appetite': 'Poor', 'Normal appetite': 'Normal', 'Strong appetite': 'Strong'
+  };
+  var POOP_BUCKET_STOOL = {
+    'Bra': 'Normal', 'Lös': 'Lös', 'Hård': 'Hård',
+    'Good': 'Normal', 'Loose': 'Loose', 'Hard': 'Hard'
+  };
+  // Används för att avgöra vilket avföringsvärde som "vinner" om flera är
+  // loggade samma dag – det mest avvikande visas, så att ett ovanligt
+  // tillfälle inte döljs av ett normalt tillfälle senare samma dag.
+  var STOOL_PRIORITY = ['Ovanlig', 'Unusual', 'Hård', 'Hard', 'Lös', 'Loose', 'Normal'];
+
+  function worseStool(a, b) {
+    if (!a) return b;
+    if (!b) return a;
+    var ai = STOOL_PRIORITY.indexOf(a);
+    var bi = STOOL_PRIORITY.indexOf(b);
+    if (ai === -1) return a;
+    if (bi === -1) return b;
+    return ai <= bi ? a : b;
+  }
+
+  // Härleder ÅÅÅÅ-MM-DD för äldre poster som saknar isoDate, på samma sätt
+  // som logga.html:s egen kalenderplacering – men bara som en fallback.
+  var SV_MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
+  function fallbackIsoDate(entry) {
+    if (!entry) return null;
+    if (entry.isoDate) return entry.isoDate;
+    if (entry.created_at) {
+      var d = new Date(entry.created_at);
+      if (Number.isFinite(d.getTime())) return d.toISOString().slice(0, 10);
+    }
+    if (typeof entry.date === 'string') {
+      var m = entry.date.match(/(\d{1,2})\s+([a-zA-ZåäöÅÄÖ]+)/);
+      if (m) {
+        var day = parseInt(m[1], 10);
+        var monthIdx = SV_MONTHS.indexOf(m[2].toLowerCase());
+        if (monthIdx >= 0 && day >= 1 && day <= 31) {
+          return new Date().getFullYear() + '-' + String(monthIdx + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        }
+      }
+    }
+    return null;
+  }
+
+  var STRUCTURED_FIELDS = ['energi', 'aptit', 'weight', 'symptoms', 'sleepHours', 'play', 'walkLength', 'stool'];
+
+  function hasValue(v) { return v !== undefined && v !== null && v !== ''; }
+
+  function buildDailyEntries(rawEntriesInput) {
+    var raw = Array.isArray(rawEntriesInput) ? rawEntriesInput : [];
+    var byDay = {};
+    var order = [];
+
+    raw.forEach(function (entry) {
+      if (!entry || typeof entry !== 'object') return;
+      var iso = fallbackIsoDate(entry);
+      if (!iso) return;
+      if (!byDay[iso]) {
+        byDay[iso] = { isoDate: iso, date: entry.date || null };
+        order.push(iso);
+      }
+      var day = byDay[iso];
+      if (entry.date && !day.date) day.date = entry.date;
+
+      // Strukturerade fält som redan finns direkt på raden (t.ex. en
+      // vikt/symptom-anteckning, eller framtida poster som sparas direkt i
+      // rätt form) vinner alltid och kopieras igenom oförändrade.
+      STRUCTURED_FIELDS.forEach(function (field) {
+        if (hasValue(entry[field])) day[field] = entry[field];
+      });
+
+      // Snabbloggningens type/detail-händelser översätts till samma
+      // strukturerade fält, enbart här.
+      if (entry.type === 'walk' && WALK_BUCKET_MINUTES[entry.detail] != null && !hasValue(entry.walkLength)) {
+        day.walkLength = (typeof day.walkLength === 'number' ? day.walkLength : 0) + WALK_BUCKET_MINUTES[entry.detail];
+      } else if (entry.type === 'eat' && EAT_BUCKET_APTIT[entry.detail]) {
+        day.aptit = EAT_BUCKET_APTIT[entry.detail];
+      } else if (entry.type === 'poop' && POOP_BUCKET_STOOL[entry.detail]) {
+        day.stool = worseStool(day.stool, POOP_BUCKET_STOOL[entry.detail]);
+      } else if (entry.type === 'play' && entry.detail) {
+        day.play = entry.detail;
+      } else if ((entry.type === 'energy' || entry.type === 'energi') && entry.detail) {
+        day.energi = entry.detail;
+      }
+    });
+
+    return order.map(function (iso) { return byDay[iso]; });
+  }
+
   function num(value) {
     if (value === '' || value === null || value === undefined) return null;
     var parsed = Number(value);
@@ -244,6 +368,12 @@
       baselineValue: baseline.value,
       sampleSize: baseline.sampleSize,
       confidence: baseline.confidence,
+      // Jämförelsen (median över senaste upp till 14 dagarna) är alltid
+      // Doginarys egen produktregel, inte ett medicinskt fastställt mått –
+      // se filens huvudkommentar. baselineMethod beskriver HUR baslinjen
+      // räknades fram (t.ex. "median"), för "Varför ser jag detta?".
+      baselineMethod: baseline.baselineMethod || null,
+      isProductRule: baseline.isProductRule !== false,
       reasons: [baselineText(baseline.confidence, baseline.sampleSize)],
       profileContext: null,
       sourceIds: []
@@ -260,7 +390,10 @@
 
     var energyBaseline = buildCategoricalBaseline(prior, 'energi');
     var energyDirection = classifyCategoricalChange(latest.energi, energyBaseline, ENERGY_VALUE);
-    cards.push(makeCard('energy', 'Energi', 'Energinivå idag: ' + (latest.energi || 'ej angiven') + '. ' + baselineText(energyBaseline.confidence, energyBaseline.sampleSize), latest.energi || null, energyBaseline, energyDirection, { profileContext: profileContext(profile) }));
+    var energyText = 'Energinivå idag: ' + (latest.energi || 'ej angiven') + '.';
+    if (energyBaseline.value && energyBaseline.confidence !== 'insufficient') energyText += ' Vanligast tidigare nivå har varit ' + String(energyBaseline.value).toLowerCase() + '.';
+    else energyText += ' ' + baselineText(energyBaseline.confidence, energyBaseline.sampleSize);
+    cards.push(makeCard('energy', 'Energi', energyText, latest.energi || null, energyBaseline, energyDirection, { profileContext: profileContext(profile) }));
 
     var walk = num(latest.walkLength);
     var walkBaseline = buildNumericBaseline(prior, 'walkLength');
@@ -272,7 +405,10 @@
 
     var appetiteBaseline = buildCategoricalBaseline(prior, 'aptit');
     var appetiteDirection = classifyCategoricalChange(latest.aptit, appetiteBaseline, APPETITE_VALUE);
-    cards.push(makeCard('food', 'Aptit', 'Aptit idag: ' + (latest.aptit || 'ej angiven') + '. ' + baselineText(appetiteBaseline.confidence, appetiteBaseline.sampleSize), latest.aptit || null, appetiteBaseline, appetiteDirection));
+    var appetiteText = 'Aptit idag: ' + (latest.aptit || 'ej angiven') + '.';
+    if (appetiteBaseline.value && appetiteBaseline.confidence !== 'insufficient') appetiteText += ' Vanligast tidigare nivå har varit ' + String(appetiteBaseline.value).toLowerCase() + '.';
+    else appetiteText += ' ' + baselineText(appetiteBaseline.confidence, appetiteBaseline.sampleSize);
+    cards.push(makeCard('food', 'Aptit', appetiteText, latest.aptit || null, appetiteBaseline, appetiteDirection));
 
     var sleep = num(latest.sleepHours);
     var sleepBaseline = buildNumericBaseline(prior, 'sleepHours');
@@ -478,6 +614,7 @@
     computeRewards: computeRewards,
     loggingStreak: loggingStreak,
     normalizeEntries: normalizeEntries,
+    buildDailyEntries: buildDailyEntries,
     validNumericValues: validNumericValues,
     buildBaseline: buildBaseline,
     median: median,

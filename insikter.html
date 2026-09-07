@@ -200,6 +200,7 @@
   .trend--up{ color: var(--reward); background: var(--reward-soft); }
   .trend--down{ color: var(--warn); background: var(--warn-soft); }
   .trend--flat{ color: var(--ink-soft); background: var(--surface-2); }
+  .trend--neutral{ color: var(--ink-soft); background: var(--surface-2); }
 
   .icard__label{
     font-size: 12px;
@@ -210,6 +211,65 @@
     font-size: 14.5px;
     line-height: 1.4;
     margin: 0;
+  }
+
+  .icard__coverage{
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ---------- Why-am-I-seeing-this (expandable explanation) ---------- */
+
+  .why{
+    margin-top: 2px;
+  }
+
+  .why__toggle{
+    font-size: 11.5px;
+    color: var(--teal);
+    font-weight: 500;
+    padding: 2px 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .why__panel{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 9px 10px;
+    margin-top: 6px;
+  }
+
+  .why__panel[hidden]{ display: none; }
+
+  .why__panel ul{ margin: 0; padding-left: 16px; }
+  .why__panel li{ margin-bottom: 3px; }
+
+  .sources{
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .sources a{
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .sources__label{ margin-right: 4px; }
+
+  .productrule-tag{
+    display: inline-block;
+    font-size: 11px;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border-radius: 20px;
+    padding: 2px 8px;
+    margin-top: 6px;
   }
 
   /* ---------- Week ---------- */
@@ -330,6 +390,22 @@
 
   .monthchart svg{ width: 100%; height: 64px; display: block; }
 
+  .coverage-note{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 10px 0 0;
+  }
+
+  .coverage-note--low{
+    color: var(--rust);
+  }
+
+  .weekcard__coverage{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 2px 0 14px;
+  }
+
   /* ---------- Warnings & rewards ---------- */
 
   .noticecard{
@@ -343,7 +419,18 @@
 
   .noticecard + .noticecard{ margin-top: 10px; }
 
-  .noticecard--warn{
+  /* Tre distinkta varningsnivåer (uppgift 8) — observation, watch,
+     contact_vet — samt belöning. Ikon + text + färg tillsammans, aldrig
+     bara färg. */
+  .noticecard--observation{
+    background: var(--surface-2);
+    border-color: var(--hair);
+  }
+  .noticecard--watch{
+    background: #F6ECD2;
+    border-color: #E3CE9C;
+  }
+  .noticecard--contact_vet{
     background: var(--warn-soft);
     border-color: #E0BFB4;
   }
@@ -362,9 +449,26 @@
     justify-content: center;
   }
 
-  .noticecard--warn .noticecard__icon{ background: #E4C3B8; color: var(--warn); }
+  .noticecard--observation .noticecard__icon{ background: var(--surface); color: var(--ink-soft); }
+  .noticecard--watch .noticecard__icon{ background: #EBDBAE; color: #8A6A1E; }
+  .noticecard--contact_vet .noticecard__icon{ background: #E4C3B8; color: var(--warn); }
   .noticecard--reward .noticecard__icon{ background: #C9D9BC; color: var(--reward); }
   .noticecard__icon svg{ width: 15px; height: 15px; }
+
+  .noticecard__body{ flex: 1; min-width: 0; }
+
+  .noticecard__level{
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 3px;
+  }
+
+  .noticecard--observation .noticecard__level{ color: var(--ink-soft); }
+  .noticecard--watch .noticecard__level{ color: #8A6A1E; }
+  .noticecard--contact_vet .noticecard__level{ color: var(--warn); }
 
   .noticecard__text{
     font-size: 14.5px;
@@ -373,8 +477,15 @@
 
   .noticecard__text strong{ display: block; font-size: 13px; margin-bottom: 2px; }
 
-  .noticecard--warn .noticecard__text strong{ color: var(--warn); }
+  .noticecard--contact_vet .noticecard__text strong{ color: var(--warn); }
   .noticecard--reward .noticecard__text strong{ color: var(--reward); }
+
+  .noticecard__note{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 6px 0 0;
+    font-style: italic;
+  }
 
   .more{
     display: inline-block;
@@ -405,8 +516,13 @@
 
   .crossnav{
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    height: 76px;
+    padding: 0 max(24px, 5vw);
+    background: var(--surface);
+    border-bottom: 1px solid var(--hair);
   }
   .crossnav a{
     font-size: 13.5px;
@@ -419,7 +535,16 @@
     text-decoration: none !important;
     border: 1.5px solid currentColor;
     border-radius: 999px;
-    padding: 4px 12px;
+    padding: 6px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .crossnav-logo{
+    height: 34px;
+    width: auto;
+    display: block;
+    border-radius: 8px;
   }
   .emptycard{
     background: var(--surface);
@@ -455,7 +580,6 @@
 
   [hidden]{ display: none !important; }
 
-  .crossnav{ justify-content: space-between; align-items: center; }
   .crossnav button.linklike{
     font-size: 13.5px;
     color: var(--teal);
@@ -535,13 +659,14 @@
 <link rel="stylesheet" href="doginary-auth-ui.css">
 </head>
 <body>
-<div class="page">
 
-  <nav class="crossnav">
-    <a href="index.html" class="crossnav-home">← Doginary</a>
-    <a href="logga.html">Logga en dag</a>
-    <div id="doginaryAuthRoot"></div>
-  </nav>
+<nav class="crossnav">
+  <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
+  <a href="logga.html">Logga en dag</a>
+  <div id="doginaryAuthRoot"></div>
+</nav>
+
+<div class="page">
 
   <div id="authScreen">
     <div class="doginary-loggedout-card">
@@ -569,9 +694,10 @@
   <section id="today">
     <div class="section__head">
       <h2 class="section__title">Dagens insikter</h2>
-      <span class="section__meta">4 sep</span>
+      <span class="section__meta" id="todayMeta"></span>
     </div>
-    <div class="cardgrid" id="todayGrid"></div>
+    <p class="icard__coverage" id="todayCoverage" style="margin-bottom:10px"></p>
+    <div class="cardgrid" id="todayGrid" aria-live="polite"></div>
   </section>
 
   <section id="week">
@@ -579,7 +705,7 @@
       <h2 class="section__title">Veckans insikter</h2>
       <span class="section__meta" id="weekMeta"></span>
     </div>
-    <div id="weekContent"></div>
+    <div id="weekContent" aria-live="polite"></div>
   </section>
 
   <section id="month">
@@ -587,21 +713,21 @@
       <h2 class="section__title">Månadens rapport</h2>
       <span class="section__meta" id="monthMeta"></span>
     </div>
-    <div id="monthContent"></div>
+    <div id="monthContent" aria-live="polite"></div>
   </section>
 
   <section id="warnings">
     <div class="section__head">
       <h2 class="section__title">Varningar</h2>
     </div>
-    <div id="warningsContent"></div>
+    <div id="warningsContent" aria-live="polite"></div>
   </section>
 
   <section id="rewards">
     <div class="section__head">
       <h2 class="section__title">Belöningar</h2>
     </div>
-    <div id="rewardsContent"></div>
+    <div id="rewardsContent" aria-live="polite"></div>
   </section>
 
   <section id="om-insikterna">
@@ -644,17 +770,51 @@
     sleep: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>'
   };
 
-  function trendClass(dir){
-    return dir === 'up' ? 'trend--up' : dir === 'down' ? 'trend--down' : 'trend--flat';
-  }
-  function trendArrow(dir){
-    return dir === 'up' ? '↑' : dir === 'down' ? '↓' : '→';
-  }
+  // Etikett + ikon för varje varningsnivå (uppgift 8) — text + färg +
+  // ikon används alltid tillsammans, aldrig bara färg.
+  const WARNING_LEVEL = {
+    observation: {
+      label: 'Observation',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12.5"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+    },
+    watch: {
+      label: 'Håll uppsikt',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+    },
+    contact_vet: {
+      label: 'Kontakta veterinär',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v5h5v6h-5v5H9v-5H4V8h5V3z"/></svg>'
+    }
+  };
+
   function esc(s){
     const d = document.createElement('div');
     d.textContent = s == null ? '' : String(s);
     return d.innerHTML;
   }
+
+  function confidenceLabel(c){
+    if (c === 'insufficient') return 'Otillräckligt underlag';
+    if (c === 'preliminary') return 'Preliminärt';
+    if (c === 'established') return 'Etablerat mönster';
+    return 'Okänt';
+  }
+
+  // Trendmärket följer de tre lägena i uppgift 2: insufficient visar aldrig
+  // en pil och presenteras inte som en trend; preliminary visar ett
+  // försiktigt, neutralt läge; established får visa riktning.
+  function trendBadge(item){
+    if (item.confidence === 'insufficient' || item.dir === 'unknown') {
+      return { cls: 'trend--neutral', arrow: '', text: 'Mer data behövs' };
+    }
+    if (item.confidence === 'preliminary') {
+      return { cls: 'trend--neutral', arrow: '', text: `Preliminärt mönster (${item.sampleSize} dagar)` };
+    }
+    if (item.dir === 'up') return { cls: 'trend--up', arrow: '↑', text: 'Över egen baslinje' };
+    if (item.dir === 'down') return { cls: 'trend--down', arrow: '↓', text: 'Under egen baslinje' };
+    return { cls: 'trend--flat', arrow: '→', text: 'Nära egen baslinje' };
+  }
+
   function sparklinePath(values, w, h, pad = 4){
     const min = Math.min(...values), max = Math.max(...values);
     const range = (max - min) || 1;
@@ -665,61 +825,165 @@
       return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(' ');
   }
-  function renderSpark(container, label, values, unit, color){
+
+  // Sparklines visar bara formen på mönstret. Ingen "första mot sista"-
+  // procentsats visas längre (uppgift 2/6): den kan bli missvisande vid få
+  // datapunkter och ger falsk precision för kategoriska värden som energi.
+  // Istället visas medianen (numeriska serier) eller vanligaste nivå
+  // (energi), vilket är samma huvudmått som resten av sidan använder.
+  function renderSpark(container, label, values, valueLabel, color){
+    if (!values || values.length < 2 || values.every(v => !Number.isFinite(v))) return;
+    const clean = values.filter(v => Number.isFinite(v));
+    if (clean.length < 2) return;
     const w = 140, h = 34;
-    const last = values[values.length - 1];
-    const first = values[0];
-    const delta = (((last - first) / (first || 1)) * 100).toFixed(0);
-    const sign = delta > 0 ? '+' : '';
     const wrap = document.createElement('div');
     wrap.className = 'spark';
     wrap.innerHTML = `
-      <div class="spark__label"><span>${label}</span><span class="spark__value">${sign}${delta}%</span></div>
-      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
-        <path d="${sparklinePath(values, w, h)}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="spark__label"><span>${esc(label)}</span><span class="spark__value">${esc(valueLabel)}</span></div>
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="${esc(label)}-trend, ${esc(valueLabel)}">
+        <path d="${sparklinePath(clean, w, h)}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     `;
     container.appendChild(wrap);
   }
 
-  async function renderInsights(dogName, allEntries){
+  // Uppgift 9: återanvändbar källfunktion. Tar bort dubbletter, hoppar
+  // över okända id:n, öppnar originalkällan i ny flik på ett säkert sätt.
+  function renderSourceLinks(sourceIds, isProductRule){
+    const ids = Array.from(new Set((sourceIds || []).filter(id => window.DoginarySources && window.DoginarySources[id])));
+    if (!ids.length) {
+      if (isProductRule) {
+        return `<p class="productrule-tag">Doginarys observationsregel — inte ett medicinskt gränsvärde</p>`;
+      }
+      return '';
+    }
+    const links = ids.map(id => {
+      const s = window.DoginarySources[id];
+      const text = s.organization || s.title;
+      return `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
+    }).join(' · ');
+    const label = ids.length > 1 ? 'Källor och resonemang' : 'Källa';
+    return `<p class="sources"><span class="sources__label">${label}:</span>${links}</p>`;
+  }
+
+  let whyPanelSeq = 0;
+
+  // Uppgift 10: "Varför ser jag detta?" — tillgänglig, expanderbar
+  // förklaring per insiktskort. Visar bara ras/ålder som en faktor om
+  // beräkningen faktiskt använde den — Doginarys dagliga jämförelser
+  // bygger just nu enbart på hundens egen historik, så profilen används
+  // här bara för att sätta rätt namn i texten, aldrig som en påverkande
+  // faktor i själva uträkningen.
+  function renderWhySection(item){
+    const id = `why-${whyPanelSeq++}`;
+    const rows = [];
+    rows.push(`<li>Loggat värde idag: ${esc(item.currentValue == null || item.currentValue === '' ? 'ej angivet' : item.currentValue)}</li>`);
+    if (item.baselineValue != null) {
+      const bv = typeof item.baselineValue === 'number' ? (Math.round(item.baselineValue * 10) / 10) : item.baselineValue;
+      rows.push(`<li>Personlig baslinje: ${esc(bv)}${item.baselineMethod ? ' (' + esc(item.baselineMethod === 'median' ? 'median' : 'vanligaste värde') + ')' : ''}</li>`);
+    }
+    rows.push(`<li>Underlag: ${item.sampleSize} tidigare loggade dagar</li>`);
+    rows.push(`<li>Tillförlitlighet: ${esc(confidenceLabel(item.confidence))}</li>`);
+    if (item.profileContext && item.profileContext.name) {
+      rows.push(`<li>Hundens namn (${esc(item.profileContext.name)}) användes i texten. Ras och ålder påverkar inte den här jämförelsen — den bygger enbart på ${esc(item.profileContext.name)}s egen historik.</li>`);
+    }
+    if (item.isProductRule) rows.push(`<li>Jämförelsemetoden (median över tidigare loggade dagar) är Doginarys egen, försiktiga produktregel — inte ett medicinskt fastställt mått.</li>`);
+    const sources = renderSourceLinks(item.sourceIds, false);
+    return `
+      <div class="why">
+        <button type="button" class="why__toggle" aria-expanded="false" aria-controls="${id}" data-why-toggle>Varför ser jag detta?</button>
+        <div class="why__panel" id="${id}" hidden>
+          <ul>${rows.join('')}</ul>
+          ${sources}
+        </div>
+      </div>
+    `;
+  }
+
+  function wireWhyToggles(scope){
+    scope.querySelectorAll('[data-why-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panel = document.getElementById(btn.getAttribute('aria-controls'));
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        if (panel) panel.hidden = expanded;
+      });
+    });
+  }
+
+  function todayCoverageText(confidence, sampleSize){
+    if (confidence === 'insufficient') return 'För lite data för att bedöma ett mönster.';
+    if (confidence === 'preliminary') return `Preliminärt mönster, baserat på ${sampleSize} tidigare loggade dagar.`;
+    return `Baserat på ${sampleSize} tidigare loggade dagar.`;
+  }
+
+  async function renderInsights(dogName, rawEntries, profile){
     document.getElementById('heroDate').textContent = new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
     document.getElementById('heroDogName').textContent = dogName;
+    document.getElementById('todayMeta').textContent = new Date().toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
+
+    // Enda platsen där de rådata som logga.html sparar (snabbloggning +
+    // ev. strukturerade rader) slås ihop till en post per kalenderdag,
+    // vilket är vad DoginaryData:s beräkningar förutsätter (uppgift 13).
+    const allEntries = DoginaryData.buildDailyEntries(rawEntries);
 
     const todayGrid = document.getElementById('todayGrid');
+    const todayCoverage = document.getElementById('todayCoverage');
     todayGrid.innerHTML = '';
-    const todayData = 
-DoginaryData.computeToday(allEntries, dogName, {
-  name: dog.name,
-  breed: dog.breed,
-  age: dog.age
-});
+    let todayData = null;
+    try {
+      todayData = DoginaryData.computeToday(allEntries, dogName, profile);
+    } catch (e) {
+      todayData = null;
+    }
+
     if (!todayData) {
+      todayCoverage.textContent = '';
       todayGrid.innerHTML = `<div class="emptycard" style="grid-column:1/-1">Ingen dag loggad än. <a href="logga.html">Logga ${esc(dogName)}s första dag</a> för att se insikter här.</div>`;
-      document.getElementById('heroHeadline').textContent = `${dogName} väntar på sin första loggade dag.`;
+      document.getElementById('heroHeadline').textContent = `${esc(dogName)} väntar på sin första loggade dag.`;
       document.getElementById('heroSub').textContent = 'Så fort du loggat en dag dyker de första insikterna upp här.';
     } else {
-      document.getElementById('heroHeadline').textContent = `${dogName} har haft en lugn och fin dag idag.`;
-      document.getElementById('heroSub').textContent = 'Insikterna nedan bygger på det du loggat hittills.';
+      todayCoverage.textContent = todayCoverageText(todayData.confidence, todayData.sampleSize);
       todayData.cards.forEach(item => {
+        const badge = trendBadge(item);
         const el = document.createElement('div');
         el.className = `icard icard--${item.type}`;
         el.innerHTML = `
           <div class="icard__top">
-            <span class="icard__icon">${icons[item.type]}</span>
-            <span class="trend ${trendClass(item.dir)}">${trendArrow(item.dir)} ${esc(item.trend)}</span>
+            <span class="icard__icon">${icons[item.type] || ''}</span>
+            <span class="trend ${badge.cls}">${badge.arrow ? badge.arrow + ' ' : ''}${esc(badge.text)}</span>
           </div>
           <span class="icard__label">${esc(item.label)}</span>
           <p class="icard__text">${esc(item.text)}</p>
+          ${renderSourceLinks(item.sourceIds, false)}
+          ${renderWhySection(item)}
         `;
         todayGrid.appendChild(el);
       });
+      wireWhyToggles(todayGrid);
+    }
+
+    // ---- Varningar (beräknas här så att hero-texten ovan aldrig
+    // överdriver hur lugn dagen varit när det faktiskt finns en varning) ----
+    let warnings = [];
+    try { warnings = DoginaryData.computeWarnings(allEntries, dogName, profile); } catch (e) { warnings = []; }
+    const hasSeriousWarning = warnings.some(w => w.severity === 'watch' || w.severity === 'contact_vet');
+
+    if (todayData) {
+      if (hasSeriousWarning) {
+        document.getElementById('heroHeadline').textContent = `Något att hålla lite extra koll på för ${esc(dogName)} idag.`;
+        document.getElementById('heroSub').textContent = 'Se varningarna längre ner för mer detaljer.';
+      } else {
+        document.getElementById('heroHeadline').textContent = `${esc(dogName)} har haft en lugn dag idag.`;
+        document.getElementById('heroSub').textContent = 'Insikterna nedan bygger på det du loggat hittills.';
+      }
     }
 
     // ---- Vecka ----
     const weekMeta = document.getElementById('weekMeta');
     const weekContent = document.getElementById('weekContent');
-    const weekData = DoginaryData.computeWeek(allEntries, dogName);
+    let weekData = null;
+    try { weekData = DoginaryData.computeWeek(allEntries, dogName, profile); } catch (e) { weekData = null; }
     const now = new Date();
     const oneJan = new Date(now.getFullYear(), 0, 1);
     const weekNumber = Math.ceil((((now - oneJan) / 86400000) + oneJan.getDay() + 1) / 7);
@@ -731,6 +995,7 @@ DoginaryData.computeToday(allEntries, dogName, {
       weekContent.innerHTML = `
         <div class="weekcard">
           <p class="weekcard__summary">${esc(weekData.summary)}</p>
+          <p class="weekcard__coverage">${esc(weekData.coverageText)} ${weekData.confidence === 'insufficient' ? '(för lite data för ett säkert mönster)' : ''}</p>
           <div class="sparklines" id="sparklineRow"></div>
           <div class="doginsight">
             <span class="doginsight__mark">”</span>
@@ -739,22 +1004,25 @@ DoginaryData.computeToday(allEntries, dogName, {
         </div>
       `;
       const sparkRow = document.getElementById('sparklineRow');
-      if (weekData.sparklines.energy.length > 1) renderSpark(sparkRow, 'Energi', weekData.sparklines.energy, '', '#A15C38');
-      if (weekData.sparklines.walks.length > 1) renderSpark(sparkRow, 'Promenader', weekData.sparklines.walks, 'min', '#33505A');
-      if (weekData.sparklines.sleep.length > 1) renderSpark(sparkRow, 'Sömn', weekData.sparklines.sleep, 'h', '#4B6B3E');
+      const energyMode = Object.keys(weekData.energyDistribution || {}).sort((a, b) => weekData.energyDistribution[b] - weekData.energyDistribution[a])[0];
+      renderSpark(sparkRow, 'Energi', weekData.sparklines.energy, energyMode ? `vanligast: ${energyMode.toLowerCase()}` : '', '#A15C38');
+      renderSpark(sparkRow, 'Promenader', weekData.sparklines.walks, weekData.walkMedian != null ? `median ${Math.round(weekData.walkMedian)} min` : '', '#33505A');
+      renderSpark(sparkRow, 'Sömn', weekData.sparklines.sleep, weekData.sleepMedian != null ? `median ${weekData.sleepMedian.toFixed(1)} h` : '', '#4B6B3E');
       if (!sparkRow.children.length) sparkRow.remove();
     }
 
     // ---- Månad ----
     const monthMeta = document.getElementById('monthMeta');
     const monthContent = document.getElementById('monthContent');
-    const monthData = DoginaryData.computeMonth(allEntries, dogName);
-    monthMeta.textContent = now.toLocaleDateString('sv-SE', { month: 'long' });
+    let monthData = null;
+    try { monthData = DoginaryData.computeMonth(allEntries, dogName, profile); } catch (e) { monthData = null; }
+    monthMeta.textContent = 'Loggad period';
 
     if (!monthData) {
       monthContent.innerHTML = `<div class="emptycard">Månadsrapporten fylls på allt eftersom du loggar fler dagar.</div>`;
     } else {
       const list = (items, dotClass) => items.map(t => `<li><span class="dot ${dotClass}"></span>${esc(t)}</li>`).join('');
+      const lowCoverage = monthData.confidence !== 'established';
       monthContent.innerHTML = `
         <div class="monthcard">
           <div class="monthcard__grid">
@@ -772,36 +1040,47 @@ DoginaryData.computeToday(allEntries, dogName, {
             </div>
           </div>
           <div class="monthchart" id="monthChart"></div>
+          <p class="coverage-note ${lowCoverage ? 'coverage-note--low' : ''}">${monthData.loggedDays} dagar loggade under den här perioden${lowCoverage ? ' — låg datatäckning, mönstren nedan är preliminära.' : '.'}</p>
         </div>
       `;
       if (monthData.walkTrend.length > 1) {
         const monthChart = document.getElementById('monthChart');
-        const mv = monthData.walkTrend;
-        const mw = 560, mh = 64, mpad = 6;
-        const linePath = sparklinePath(mv, mw, mh, mpad);
-        const areaPath = `${linePath} L${mw - mpad},${mh - mpad} L${mpad},${mh - mpad} Z`;
-        monthChart.innerHTML = `
-          <svg viewBox="0 0 ${mw} ${mh}" preserveAspectRatio="none">
-            <path d="${areaPath}" fill="#A15C38" opacity="0.12"/>
-            <path d="${linePath}" fill="none" stroke="#A15C38" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        `;
+        const mv = monthData.walkTrend.filter(v => Number.isFinite(v));
+        if (mv.length > 1) {
+          const mw = 560, mh = 64, mpad = 6;
+          const linePath = sparklinePath(mv, mw, mh, mpad);
+          const areaPath = `${linePath} L${mw - mpad},${mh - mpad} L${mpad},${mh - mpad} Z`;
+          monthChart.innerHTML = `
+            <svg viewBox="0 0 ${mw} ${mh}" preserveAspectRatio="none" role="img" aria-label="Promenadlängd över den loggade perioden, median ${monthData.walkMedian != null ? Math.round(monthData.walkMedian) : '?'} minuter">
+              <path d="${areaPath}" fill="#A15C38" opacity="0.12"/>
+              <path d="${linePath}" fill="none" stroke="#A15C38" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          `;
+        }
       }
     }
 
-    // ---- Varningar & belöningar ----
+    // ---- Varningar ----
     const warningsContent = document.getElementById('warningsContent');
-    const warnings = DoginaryData.computeWarnings(allEntries, dogName);
     warningsContent.innerHTML = warnings.length
-      ? warnings.map(w => `
-          <div class="noticecard noticecard--warn">
-            <div class="noticecard__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2L12 3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-            <p class="noticecard__text"><strong>${esc(w.title)}</strong>${esc(w.text)}</p>
-          </div>`).join('')
-      : `<div class="emptycard">Inga varningar just nu.</div>`;
+      ? warnings.map(w => {
+          const level = WARNING_LEVEL[w.severity] || WARNING_LEVEL.observation;
+          return `
+            <div class="noticecard noticecard--${w.severity}">
+              <div class="noticecard__icon">${level.icon}</div>
+              <div class="noticecard__body">
+                <span class="noticecard__level">${esc(level.label)}</span>
+                <p class="noticecard__text"><strong>${esc(w.title)}</strong>${esc(w.text)}</p>
+                ${w.isProductRule ? '<p class="noticecard__note">Doginarys observationsregel — inte ett medicinskt gränsvärde.</p>' : ''}
+                ${renderSourceLinks(w.sourceIds, false)}
+              </div>
+            </div>`;
+        }).join('')
+      : `<div class="emptycard">Inga tydliga förändringar har upptäckts i den information som har loggats. Detta är inte en medicinsk bedömning.</div>`;
 
     const rewardsContent = document.getElementById('rewardsContent');
-    const rewards = DoginaryData.computeRewards(allEntries, dogName);
+    let rewards = [];
+    try { rewards = DoginaryData.computeRewards(allEntries, dogName, profile); } catch (e) { rewards = []; }
     rewardsContent.innerHTML = rewards.length
       ? rewards.map(r => `
           <div class="noticecard noticecard--reward">
@@ -816,11 +1095,19 @@ DoginaryData.computeToday(allEntries, dogName, {
     appScreen.hidden = false;
     try{
       const dog = await DoginaryDB.getOrCreateDog(session.user.id);
-      const dogName = dog.name || DoginaryData.DEFAULT_NAME;
+      const dogName = (dog && dog.name) || DoginaryData.DEFAULT_NAME;
+      // Samma profilform som index.html/app.js/logga.html använder överallt
+      // (uppgift 12). Saknas ras/ålder skickas de som null/tom sträng —
+      // hela insiktsmotorn är byggd för att fungera fint ändå (uppgift 1/16).
+      const profile = {
+        name: (dog && dog.name) || '',
+        breed: (dog && dog.breed) || '',
+        age: (dog && dog.age) || null
+      };
       const entries = await DoginaryDB.loadEntries(dog.id);
-      await renderInsights(dogName, entries);
+      await renderInsights(dogName, entries, profile);
     } catch(e){
-      appScreen.innerHTML = '<div class="emptycard">This function is under construction. Please come back soon! Thank you!</div>';
+      appScreen.innerHTML = '<div class="emptycard">Kunde inte hämta din hunds data just nu — ladda om sidan.</div>';
     }
   }
 

@@ -952,6 +952,108 @@
   .quicklog-card[data-type="learn"] .quicklog-sign{ left: 6%;   top: 18%;   width: 66%; height: 71%; }
   .quicklog-card[data-type="play"]  .quicklog-sign{ left: 6.5%; top: 23%;   width: 65%; height: 62%; }
   .quicklog-card[data-type="poop"]  .quicklog-sign{ left: 7%;   top: 23%;   width: 60%; height: 62%; }
+
+  /* ---------- Fler detaljer idag (energi, sömntimmar, vikt, symptom) ----------
+     Ingen bild finns för dessa nya fält, så de får inte fotokortens design –
+     istället en kompakt, valfri panel i samma färgspråk under snabbloggningen.
+     Detta är det enda stället i UI:t där energi, vikt och symptom kan
+     loggas, vilket insiktsmotorn (doginary-data.js) behöver för att kunna
+     visa något meningsfullt om dem (se insikter.html). */
+  .moredetails{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 20px 20px 22px;
+    margin: 22px auto 0;
+    max-width: 960px;
+  }
+  .moredetails h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 4px;
+  }
+  .moredetails > p{
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+  }
+  .moredetails-grid{
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px){
+    .moredetails-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+  .moredetails-field label{
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .moredetails-field .field-hint{
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 400;
+    display: block;
+    margin-top: 2px;
+  }
+  .segmented{
+    display: flex;
+    gap: 6px;
+  }
+  .segmented button{
+    flex: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    padding: 8px 6px;
+    cursor: pointer;
+  }
+  .segmented button[aria-pressed="true"]{
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--surface);
+  }
+  .moredetails-field input[type="number"],
+  .moredetails-field input[type="text"]{
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--hair);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .moredetails-actions{
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .moredetails-save{
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--surface);
+    background: var(--ink);
+    border: none;
+    border-radius: 999px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  .moredetails-status{
+    font-size: 13px;
+    color: var(--reward);
+  }
+  .moredetails-status.err{ color: var(--warn); }
 </style>
 <link rel="stylesheet" href="doginary-auth-ui.css">
 </head>
@@ -1017,7 +1119,7 @@
             <img src="assets/card-sleep.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">😴 Sömn</span>
+            <span class="quicklog-label">😴 Sömn i natt</span>
             <span class="quicklog-count" id="qc-sleep" hidden></span>
             <div class="quicklog-opts" data-type="sleep"></div>
             <div class="quicklog-logged" id="ql-sleep" hidden>LOGGAD</div>
@@ -1125,6 +1227,45 @@
     </section>
     </div>
 
+    <!-- Uppgift 1/13: enda platsen där energi, nattlig sömn i timmar, vikt
+         och symptom kan loggas idag. Helt valfritt, sparas som en enskild
+         anteckning för dagens datum och läses av Insikter via samma
+         normaliseringslager som snabbloggningen (DoginaryData.buildDailyEntries). -->
+    <section class="moredetails" aria-label="Fler detaljer idag (valfritt)">
+      <h2>Fler detaljer idag</h2>
+      <p>Helt valfritt — men ju mer du fyller i, desto bättre kan Insikter se mönster över tid.</p>
+      <div class="moredetails-grid">
+        <div class="moredetails-field">
+          <label id="energiLabel">Energinivå idag</label>
+          <div class="segmented" role="group" aria-labelledby="energiLabel" id="energiSegmented">
+            <button type="button" data-value="Låg" aria-pressed="false">Låg</button>
+            <button type="button" data-value="Normal" aria-pressed="false">Normal</button>
+            <button type="button" data-value="Hög" aria-pressed="false">Hög</button>
+          </div>
+        </div>
+        <div class="moredetails-field">
+          <label for="sleepHoursInput">Sömn i natt (timmar)
+            <span class="field-hint">Bara den nattliga sömnen, inte tupplurar under dagen.</span>
+          </label>
+          <input type="number" id="sleepHoursInput" min="0" max="24" step="0.5" inputmode="decimal" placeholder="t.ex. 8">
+        </div>
+        <div class="moredetails-field">
+          <label for="weightInput">Vikt (kg)</label>
+          <input type="number" id="weightInput" min="0" max="120" step="0.1" inputmode="decimal" placeholder="t.ex. 24.5">
+        </div>
+        <div class="moredetails-field">
+          <label for="symptomsInput">Symptom eller anteckning
+            <span class="field-hint">T.ex. "hostade lite" eller "verkade halta". Lämna tomt om inget.</span>
+          </label>
+          <input type="text" id="symptomsInput" maxlength="200" placeholder="Valfritt">
+        </div>
+      </div>
+      <div class="moredetails-actions">
+        <button type="button" class="moredetails-save" id="moredetailsSave">Spara detaljer</button>
+        <p class="moredetails-status" id="moredetailsStatus" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
     <div class="entries-bleed">
     <div class="entries">
       <div class="entries__head">
@@ -1202,6 +1343,13 @@
   const dayCardList = document.getElementById('dayCardList');
   const quicklogGrid = document.getElementById('quicklogGrid');
   const quicklogStatus = document.getElementById('quicklogStatus');
+  const energiSegmented = document.getElementById('energiSegmented');
+  const sleepHoursInput = document.getElementById('sleepHoursInput');
+  const weightInput = document.getElementById('weightInput');
+  const symptomsInput = document.getElementById('symptomsInput');
+  const moredetailsSave = document.getElementById('moredetailsSave');
+  const moredetailsStatus = document.getElementById('moredetailsStatus');
+  let selectedEnergi = null;
 
   let currentUser = null;
   let currentDog = null;
@@ -1236,7 +1384,7 @@
   // på sidan — återanvänds även för att visa en kort typ-etikett i listan
   // "Sparade dagar" för poster som kommer från ett snabbtryck.
   const QUICKLOG_TYPES = {
-    sleep: '😴 Sömn',
+    sleep: '😴 Sömn i natt',
     bath: '🛁 Bad',
     brush: '🪮 Borstning',
     claw: '💅 Klor klippta',
@@ -1479,7 +1627,9 @@
     if(e.detail) bits.push(e.detail);
     if(e.energi) bits.push(`energi: ${String(e.energi).toLowerCase()}`);
     if(e.aptit) bits.push(`aptit: ${String(e.aptit).toLowerCase()}`);
-    if(e.sleepHours) bits.push(`${e.sleepHours} h sömn`);
+    if(e.sleepHours) bits.push(`${e.sleepHours} h sömn i natt`);
+    if(e.weight) bits.push(`${e.weight} kg`);
+    if(e.symptoms) bits.push(e.symptoms);
     return bits.join(' · ');
   }
 
@@ -1570,6 +1720,7 @@
     renderCalendar();
     renderDayCard();
     renderQuickCounts();
+    fillMoreDetailsFromToday();
     return entries;
   }
 
@@ -1655,6 +1806,84 @@
   }
 
   buildQuicklogOptions();
+
+  /* ---------- Fler detaljer idag (energi / sömntimmar / vikt / symptom) ----------
+     Sparas som EN anteckningspost för dagens datum (utan type/detail, så den
+     hamnar i "_note"-gruppen i dagskortet ovan). Finns redan en sådan post
+     för idag uppdateras den istället för att en ny skapas, så att man kan
+     komma tillbaka och fylla i mer under dagen utan att få dubbletter. */
+  function findTodaysNote(){
+    const iso = todayISO();
+    return (allEntries || []).find(e => e.isoDate === iso && !e.type);
+  }
+
+  function fillMoreDetailsFromToday(){
+    const note = findTodaysNote();
+    selectedEnergi = (note && note.energi) || null;
+    energiSegmented.querySelectorAll('button').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-value') === selectedEnergi));
+    });
+    sleepHoursInput.value = (note && note.sleepHours != null) ? note.sleepHours : '';
+    weightInput.value = (note && note.weight != null) ? note.weight : '';
+    symptomsInput.value = (note && note.symptoms) || '';
+  }
+
+  energiSegmented.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = btn.getAttribute('data-value');
+      selectedEnergi = (selectedEnergi === value) ? null : value; // klick igen avmarkerar
+      energiSegmented.querySelectorAll('button').forEach(b => {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-value') === selectedEnergi));
+      });
+    });
+  });
+
+  moredetailsSave.addEventListener('click', async () => {
+    if(!currentDog || !currentUser) return;
+
+    const sleepRaw = sleepHoursInput.value.trim();
+    const weightRaw = weightInput.value.trim();
+    const symptomsRaw = symptomsInput.value.trim();
+
+    // Inget ifyllt alls — inget att spara, och ingen tom post ska skapas.
+    if(!selectedEnergi && !sleepRaw && !weightRaw && !symptomsRaw){
+      moredetailsStatus.classList.remove('err');
+      moredetailsStatus.textContent = 'Fyll i minst ett fält för att spara.';
+      return;
+    }
+
+    moredetailsSave.disabled = true;
+    moredetailsStatus.classList.remove('err');
+    moredetailsStatus.textContent = 'Sparar …';
+
+    const existing = findTodaysNote();
+    const entry = {
+      date: todayLabel(),
+      isoDate: todayISO(),
+      time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
+      energi: selectedEnergi || undefined,
+      sleepHours: sleepRaw === '' ? undefined : Number(sleepRaw),
+      weight: weightRaw === '' ? undefined : Number(weightRaw),
+      symptoms: symptomsRaw || undefined
+    };
+
+    try{
+      // Uppdatera befintlig anteckning för idag om det finns en, annars
+      // skapa en ny — normaliseringslagret (DoginaryData.buildDailyEntries)
+      // förutsätter en post per dag för dessa fält (uppgift 13).
+      if(existing && existing.id){
+        await DoginaryDB.removeEntry(existing.id);
+      }
+      await DoginaryDB.addEntry(currentDog.id, currentUser.id, entry);
+      await refreshEntries();
+      moredetailsStatus.textContent = 'Sparat.';
+    } catch(err){
+      moredetailsStatus.classList.add('err');
+      moredetailsStatus.textContent = 'Kunde inte spara just nu — försök igen.';
+    } finally {
+      moredetailsSave.disabled = false;
+    }
+  });
 
   function updateDogChrome(){
     const hasName = !!(currentDog && currentDog.name);

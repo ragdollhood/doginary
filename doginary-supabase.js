@@ -26,21 +26,16 @@
      båda lägena, men bara detta Supabase-projekt-steg tar bort
      mejlkravet helt — det går inte att stänga av från klientkoden.
 
-  4. Om ni vill knyta hela hundprofilen (namn, storlek, päls, ålder) till
-     kontot — inte bara namnet — kör även:
+  4. Om ni vill knyta hela hundprofilen (namn, ras, storlek, päls, ålder)
+     till kontot — inte bara namnet — kör även:
+       alter table public.dogs add column if not exists breed text;
        alter table public.dogs add column if not exists size text;
        alter table public.dogs add column if not exists coat text;
        alter table public.dogs add column if not exists age text;
-     Se updateDogProfile() längre ner i den här filen.
-
-  5. Snabbloggningen (foto-korten i logga.html) sparar `type`, `detail`
-     och `time` på varje post (typ av händelse, valt alternativ och
-     klockslag). Kör detta i SQL Editor INNAN ni lägger in den här
-     versionen av filen, annars kommer varje sparning att misslyckas
-     med ett fel (kolumnen finns inte):
-       alter table public.entries add column if not exists type text;
-       alter table public.entries add column if not exists detail text;
-       alter table public.entries add column if not exists time text;
+     Se updateDogProfile() längre ner i den här filen. Insikter.html och
+     logga.html använder breed/age (name + breed + age = samma profilform
+     som index.html sparar i localStorage under "dogWeatherProfile") för
+     att ge Doginarys insiktsmotor lite försiktig, valfri kontext.
 
   Datan är trygg trots att den publika nyckeln syns i webbläsaren, EFTERSOM
   Row Level Security (steg 1 ovan) ser till att varje användare bara kan
@@ -161,11 +156,16 @@
   //   alter table public.dogs add column if not exists coat text;
   //   alter table public.dogs add column if not exists age text;
   //
-  // `fields` kan innehålla valfri kombination av { name, size, coat, age }
-  // — bara de fälten som skickas in uppdateras.
+  // `fields` kan innehålla valfri kombination av
+  // { name, breed, size, coat, age } — bara de fälten som skickas in
+  // uppdateras. OBS: `breed` saknades tidigare här, vilket gjorde att ras
+  // aldrig sparades till kontot även när app.js/insikter.html skickade in
+  // den (bara namn åkte med) — profilformatet är annars { name, breed, age }
+  // överallt i projektet (index.html, app.js, logga.html, insikter.html).
   function updateDogProfile(dogId, fields) {
     var patch = {};
     if (Object.prototype.hasOwnProperty.call(fields, 'name')) patch.name = fields.name || null;
+    if (Object.prototype.hasOwnProperty.call(fields, 'breed')) patch.breed = fields.breed || null;
     if (Object.prototype.hasOwnProperty.call(fields, 'size')) patch.size = fields.size || null;
     if (Object.prototype.hasOwnProperty.call(fields, 'coat')) patch.coat = fields.coat || null;
     if (Object.prototype.hasOwnProperty.call(fields, 'age')) patch.age = fields.age || null;
@@ -210,10 +210,7 @@
             medGiven: row.med_given,
             sleepHours: row.sleep_hours,
             sleepQuality: row.sleep_quality,
-            freeNote: row.free_note,
-            type: row.type,
-            detail: row.detail,
-            time: row.time
+            freeNote: row.free_note
           };
         });
       });
@@ -237,10 +234,7 @@
       med_given: !!entry.medGiven,
       sleep_hours: entry.sleepHours === '' || entry.sleepHours == null ? null : Number(entry.sleepHours),
       sleep_quality: entry.sleepQuality,
-      free_note: entry.freeNote,
-      type: entry.type || null,
-      detail: entry.detail || null,
-      time: entry.time || null
+      free_note: entry.freeNote
     };
     return client
       .from('entries')

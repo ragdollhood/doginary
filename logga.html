@@ -591,12 +591,12 @@
   /* ---------- Veckokalender (förstahandsvyn) ----------
      Stora, breda dagsrutor sida vid sida — en rad med sju rutor som,
      tack vare .entries-bleed ovan, blir lika bred som fotokorten. */
-  .calendar--week{ padding: 16px 10px; }
+  .calendar--week{ padding: 14px 6px; }
 
   .calendar-week__grid{
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
   }
 
   .week-day{
@@ -605,27 +605,30 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 6px;
-    padding: 10px 4px 8px;
-    border-radius: 14px;
+    gap: 4px;
+    min-width: 0;
+    padding: 8px 2px 6px;
+    border-radius: 12px;
     border: 1.5px solid transparent;
     background: var(--surface-2);
     cursor: pointer;
     font-family: inherit;
+    overflow: hidden;
   }
 
   .week-day__dow{
-    font-size: 10.5px;
+    font-size: clamp(8px, 2.6vw, 10.5px);
     font-weight: 600;
-    letter-spacing: .03em;
+    letter-spacing: .02em;
     text-transform: uppercase;
     color: var(--ink-soft);
+    white-space: nowrap;
   }
 
   .week-day__num{
     font-family: 'Fraunces', serif;
     font-weight: 500;
-    font-size: clamp(18px, 4.5vw, 24px);
+    font-size: clamp(14px, 4.8vw, 24px);
     line-height: 1;
   }
 
@@ -634,8 +637,8 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    font-size: 13px;
+    gap: 1px;
+    font-size: clamp(9px, 2.8vw, 13px);
     line-height: 1;
     min-height: 15px;
   }
@@ -892,7 +895,7 @@
   .quicklog-opts{
     display: grid;
     justify-content: start;
-    gap: 6px;
+    gap: 10px;
     margin-top: 2px;
     max-width: 100%;
   }
@@ -905,7 +908,7 @@
     background: var(--teal);
     border: none;
     border-radius: 999px;
-    padding: 4px 9px;
+    padding: 11px 9px;
     cursor: pointer;
     line-height: 1.2;
     width: 100%;
@@ -969,7 +972,8 @@
     }
     .quicklog-label{ font-size: clamp(15px, 2.4vw, 22px); }
     .quicklog-count{ font-size: 12px; }
-    .quicklog-opt{ font-size: clamp(12px, 1.8vw, 15.5px); padding: 8px 16px; }
+    .quicklog-opts{ gap: 14px; }
+    .quicklog-opt{ font-size: clamp(12px, 1.8vw, 15.5px); padding: 16px 16px; }
     .quicklog-logged{ font-size: clamp(16px, 2.4vw, 21px); }
   }
 

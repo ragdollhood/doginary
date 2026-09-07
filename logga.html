@@ -139,6 +139,63 @@
     color: var(--rust);
   }
 
+  /* ---------- Bekräftelse: logga på annat datum än idag ---------- */
+  .confirm-modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 36, 28, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 200;
+  }
+
+  .confirm-modal-card{
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 24px 22px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 12px 40px rgba(43, 36, 28, 0.25);
+  }
+
+  .confirm-modal-card p{
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 18px;
+    color: var(--ink);
+  }
+
+  .confirm-modal-actions{
+    display: flex;
+    gap: 10px;
+  }
+
+  .confirm-modal-actions button{
+    flex: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 30px;
+    padding: 12px;
+    cursor: pointer;
+  }
+
+  .confirm-modal-no{
+    background: none;
+    color: var(--ink-soft);
+    border: 1px solid var(--hair);
+  }
+  .confirm-modal-no:hover{ background: var(--surface-2); }
+
+  .confirm-modal-yes{
+    background: var(--ink);
+    color: var(--surface);
+    border: none;
+  }
+  .confirm-modal-yes:hover{ background: #3A322A; }
+
   /* ---------- auth screen ---------- */
   .authcard{
     background: var(--surface);
@@ -741,6 +798,22 @@
     color: var(--ink-soft);
     margin: 0;
   }
+  .quicklog-target{
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--rust);
+    background: var(--rust-soft);
+    border-radius: 20px;
+    padding: 4px 11px;
+    margin-top: 8px !important;
+  }
+  .moredetails-target{
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--rust);
+    margin: -10px 0 14px;
+  }
 
   /* Mobil (standard): en bild per rad. Två per rad slås bara på från
      640px och uppåt, se media-queryn längre ner. */
@@ -1038,6 +1111,7 @@
       <div class="quicklog-head">
         <h2>Snabblogga</h2>
         <p>Tryck på en bild för att logga direkt — fyll i mer i den djupare dagboken nedan om du vill.</p>
+        <p class="quicklog-target" id="quicklogTarget" hidden></p>
       </div>
       <div class="quicklog-grid" id="quicklogGrid">
         <div class="quicklog-card" data-type="sleep">
@@ -1155,15 +1229,18 @@
     </div>
 
     <!-- Uppgift 1/13: enda platsen där energi, nattlig sömn i timmar, vikt
-         och symptom kan loggas idag. Helt valfritt, sparas som en enskild
-         anteckning för dagens datum och läses av Insikter via samma
+         och symptom kan loggas. Helt valfritt, sparas som en enskild
+         anteckning för det datum som är markerat i kalendern (idag som
+         standard, men går även att backa/framåt i tiden — se
+         backdateModal ovan) och läses av Insikter via samma
          normaliseringslager som snabbloggningen (DoginaryData.buildDailyEntries). -->
-    <section class="moredetails" aria-label="Fler detaljer idag (valfritt)">
-      <h2>Fler detaljer idag</h2>
+    <section class="moredetails" aria-label="Fler detaljer (valfritt)">
+      <h2 id="moredetailsTitle">Fler detaljer idag</h2>
       <p>Helt valfritt — men ju mer du fyller i, desto bättre kan Insikter se mönster över tid.</p>
+      <p class="moredetails-target" id="moredetailsTarget" hidden></p>
       <div class="moredetails-grid">
         <div class="moredetails-field">
-          <label id="energiLabel">Energinivå idag</label>
+          <label id="energiLabel">Energinivå</label>
           <div class="segmented" role="group" aria-labelledby="energiLabel" id="energiSegmented">
             <button type="button" data-value="Låg" aria-pressed="false">Låg</button>
             <button type="button" data-value="Normal" aria-pressed="false">Normal</button>
@@ -1233,6 +1310,17 @@
     </div>
     </div>
 
+    <!-- ---------- Bekräftelse: logga på ett annat datum än idag ---------- -->
+    <div class="confirm-modal-overlay" id="backdateModal" hidden>
+      <div class="confirm-modal-card" role="alertdialog" aria-modal="true" aria-labelledby="backdateModalText">
+        <p id="backdateModalText"></p>
+        <div class="confirm-modal-actions">
+          <button type="button" class="confirm-modal-no" id="backdateModalNo">Nej</button>
+          <button type="button" class="confirm-modal-yes" id="backdateModalYes">Ja</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -1270,6 +1358,13 @@
   const symptomsInput = document.getElementById('symptomsInput');
   const moredetailsSave = document.getElementById('moredetailsSave');
   const moredetailsStatus = document.getElementById('moredetailsStatus');
+  const moredetailsTitle = document.getElementById('moredetailsTitle');
+  const moredetailsTarget = document.getElementById('moredetailsTarget');
+  const quicklogTarget = document.getElementById('quicklogTarget');
+  const backdateModal = document.getElementById('backdateModal');
+  const backdateModalText = document.getElementById('backdateModalText');
+  const backdateModalYes = document.getElementById('backdateModalYes');
+  const backdateModalNo = document.getElementById('backdateModalNo');
   let selectedEnergi = null;
 
   let currentUser = null;
@@ -1380,6 +1475,71 @@
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
   }
 
+  function isoToDate(iso){
+    const [y, m, d] = iso.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  // Samma läsbara datumformat som dagskortets rubrik, fast för valfritt
+  // ÅÅÅÅ-MM-DD — används i bekräftelsemodalen och i "loggar för …"-texten.
+  function dateLabelForISO(iso){
+    return capitalize(isoToDate(iso).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }));
+  }
+
+  /* ---------- Bakåt-/framåtloggning (backdating) ----------
+     Allt loggande (snabbloggning + "Fler detaljer") sker numera på det
+     datum som är markerat i kalendern, inte alltid dagens datum. Är det
+     markerade datumet inte idag frågas man alltid en gång per
+     loggningstillfälle: "Är du säker att du vill logga detta på (datum)
+     och inte på dagens datum?" — Ja fortsätter loggningen på det valda
+     datumet, Nej avbryter (inget sparas). */
+  function isBackdated(){
+    return selectedISO !== todayISO();
+  }
+
+  function showBackdateConfirm(iso){
+    return new Promise(resolve => {
+      backdateModalText.textContent = `Är du säker att du vill logga detta på ${dateLabelForISO(iso)} och inte på dagens datum?`;
+      backdateModal.hidden = false;
+
+      function cleanup(result){
+        backdateModal.hidden = true;
+        backdateModalYes.removeEventListener('click', onYes);
+        backdateModalNo.removeEventListener('click', onNo);
+        backdateModal.removeEventListener('click', onOverlay);
+        document.removeEventListener('keydown', onKey);
+        resolve(result);
+      }
+      function onYes(){ cleanup(true); }
+      function onNo(){ cleanup(false); }
+      function onOverlay(e){ if(e.target === backdateModal) cleanup(false); }
+      function onKey(e){ if(e.key === 'Escape') cleanup(false); }
+
+      backdateModalYes.addEventListener('click', onYes);
+      backdateModalNo.addEventListener('click', onNo);
+      backdateModal.addEventListener('click', onOverlay);
+      document.addEventListener('keydown', onKey);
+    });
+  }
+
+  // Uppdaterar de små "loggar för …"-texterna ovanför snabbloggningen och
+  // "Fler detaljer" så att det alltid syns tydligt vilket datum man håller
+  // på att fylla i, när det inte är idag.
+  function updateLogTargetUI(){
+    if(isBackdated()){
+      const label = dateLabelForISO(selectedISO);
+      quicklogTarget.textContent = `Loggar för ${label.toLowerCase()}`;
+      quicklogTarget.hidden = false;
+      moredetailsTitle.textContent = 'Fler detaljer';
+      moredetailsTarget.textContent = `För ${label.toLowerCase()}`;
+      moredetailsTarget.hidden = false;
+    } else {
+      quicklogTarget.hidden = true;
+      moredetailsTitle.textContent = 'Fler detaljer idag';
+      moredetailsTarget.hidden = true;
+    }
+  }
+
   // Dirigerar till rätt vy. Veckokalendern är förstahandsvyn; månadskalendern
   // är alternativet man kan växla till via segmentknapparna i huvudet.
   function renderCalendar(){
@@ -1487,6 +1647,8 @@
     selectedISO = iso;
     renderCalendar();
     renderDayCard();
+    updateLogTargetUI();
+    fillMoreDetailsForSelectedDate();
   }
 
   calViewBtns.forEach(btn => {
@@ -1536,6 +1698,8 @@
     selectedISO = todayISO();
     renderCalendar();
     renderDayCard();
+    updateLogTargetUI();
+    fillMoreDetailsForSelectedDate();
   });
 
   // Alla poster som sparats samma dag samlas i en och samma dagsruta.
@@ -1641,7 +1805,7 @@
     renderCalendar();
     renderDayCard();
     renderQuickCounts();
-    fillMoreDetailsFromToday();
+    fillMoreDetailsForSelectedDate();
     return entries;
   }
 
@@ -1691,6 +1855,16 @@
 
   async function quickLog(type, detail){
     if(!currentDog || !currentUser) return;
+    const targetISO = selectedISO;
+
+    // Man kan nu logga bakåt/framåt i tiden genom att först markera ett
+    // annat datum i kalendern — men bara efter en tydlig bekräftelse, så
+    // att man inte råkar logga på fel dag.
+    if(targetISO !== todayISO()){
+      const confirmed = await showBackdateConfirm(targetISO);
+      if(!confirmed) return; // avbrutet — inget sparas
+    }
+
     const label = QUICKLOG_TYPES[type] || type;
     const optsEl = document.querySelector(`.quicklog-opts[data-type="${type}"]`);
     const loggedEl = document.getElementById(`ql-${type}`);
@@ -1700,8 +1874,8 @@
     quicklogStatus.classList.remove('err');
 
     const entry = {
-      date: todayLabel(),
-      isoDate: todayISO(),
+      date: dateLabelForISO(targetISO),
+      isoDate: targetISO,
       time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
       type,
       detail
@@ -1713,7 +1887,8 @@
 
       if(optsEl) optsEl.hidden = true;
       if(loggedEl) loggedEl.hidden = false;
-      quicklogStatus.textContent = `${label} · ${detail} loggat kl ${entry.time}.`;
+      const dateSuffix = targetISO !== todayISO() ? ` (${dateLabelForISO(targetISO).toLowerCase()})` : '';
+      quicklogStatus.textContent = `${label} · ${detail} loggat kl ${entry.time}${dateSuffix}.`;
       setTimeout(() => {
         if(loggedEl) loggedEl.hidden = true;
         if(optsEl) optsEl.hidden = false;
@@ -1728,18 +1903,18 @@
 
   buildQuicklogOptions();
 
-  /* ---------- Fler detaljer idag (energi / sömntimmar / vikt / symptom) ----------
-     Sparas som EN anteckningspost för dagens datum (utan type/detail, så den
-     hamnar i "_note"-gruppen i dagskortet ovan). Finns redan en sådan post
-     för idag uppdateras den istället för att en ny skapas, så att man kan
-     komma tillbaka och fylla i mer under dagen utan att få dubbletter. */
-  function findTodaysNote(){
-    const iso = todayISO();
-    return (allEntries || []).find(e => e.isoDate === iso && !e.type);
+  /* ---------- Fler detaljer (energi / sömntimmar / vikt / symptom) ----------
+     Sparas som EN anteckningspost för det markerade datumet (utan
+     type/detail, så den hamnar i "_note"-gruppen i dagskortet ovan). Finns
+     redan en sådan post för det datumet uppdateras den istället för att en
+     ny skapas, så att man kan komma tillbaka och fylla i mer utan att få
+     dubbletter. */
+  function findNoteForSelectedDate(){
+    return (allEntries || []).find(e => e.isoDate === selectedISO && !e.type);
   }
 
-  function fillMoreDetailsFromToday(){
-    const note = findTodaysNote();
+  function fillMoreDetailsForSelectedDate(){
+    const note = findNoteForSelectedDate();
     selectedEnergi = (note && note.energi) || null;
     energiSegmented.querySelectorAll('button').forEach(b => {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-value') === selectedEnergi));
@@ -1773,14 +1948,20 @@
       return;
     }
 
+    const targetISO = selectedISO;
+    if(targetISO !== todayISO()){
+      const confirmed = await showBackdateConfirm(targetISO);
+      if(!confirmed) return; // avbrutet — inget sparas
+    }
+
     moredetailsSave.disabled = true;
     moredetailsStatus.classList.remove('err');
     moredetailsStatus.textContent = 'Sparar …';
 
-    const existing = findTodaysNote();
+    const existing = findNoteForSelectedDate();
     const entry = {
-      date: todayLabel(),
-      isoDate: todayISO(),
+      date: dateLabelForISO(targetISO),
+      isoDate: targetISO,
       time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
       energi: selectedEnergi || undefined,
       sleepHours: sleepRaw === '' ? undefined : Number(sleepRaw),
@@ -1789,9 +1970,10 @@
     };
 
     try{
-      // Uppdatera befintlig anteckning för idag om det finns en, annars
-      // skapa en ny — normaliseringslagret (DoginaryData.buildDailyEntries)
-      // förutsätter en post per dag för dessa fält (uppgift 13).
+      // Uppdatera befintlig anteckning för det datumet om det finns en,
+      // annars skapa en ny — normaliseringslagret
+      // (DoginaryData.buildDailyEntries) förutsätter en post per dag för
+      // dessa fält (uppgift 13).
       if(existing && existing.id){
         await DoginaryDB.removeEntry(existing.id);
       }
@@ -1863,6 +2045,7 @@
     calMonth = now.getMonth();
     weekStart = startOfWeek(now);
     selectedISO = todayISO();
+    updateLogTargetUI();
 
     try{
       currentDog = await DoginaryDB.getOrCreateDog(currentUser.id);

@@ -505,6 +505,40 @@
     margin-top: 44px;
   }
 
+  /* ---------- Sidfot: villkor, ansvarsfriskrivning, kontakt ---------- */
+  .doginary-footer{
+    max-width: 720px;
+    margin: 48px auto 24px;
+    padding: 22px 20px 0;
+    border-top: 1px solid var(--hair);
+  }
+  .doginary-footer__disclaimer{
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 0 auto 14px;
+  }
+  .doginary-footer__links{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .doginary-footer__links a{
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .doginary-footer__links a:hover{ color: var(--ink); }
+  .doginary-footer__copyright{
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin: 12px 0 0;
+  }
+
   @media (max-width: 420px){
     .cardgrid{ grid-template-columns: 1fr 1fr; gap: 8px; }
     .sparklines{ grid-template-columns: 1fr; }
@@ -749,6 +783,15 @@
   <footer>Doginary · Insikter uppdateras varje kväll</footer>
   </div><!-- /#appScreen -->
 </div>
+
+<footer class="doginary-footer">
+  <p class="doginary-footer__disclaimer">Doginary ger allmänna tips och en pedagogisk sammanställning av det du loggar om din hund — inte veterinärmedicinsk rådgivning eller en klinisk bedömning. Informationen ersätter aldrig en veterinärs bedömning och tar inte hänsyn till alla faktorer som gäller just din hund. Du som hundägare ansvarar alltid själv för att bedöma din hunds hälsa, ålder, ras och tillstånd, och för att söka veterinärvård vid oro för din hunds hälsa.</p>
+  <div class="doginary-footer__links">
+    <a href="terms.html">Villkor</a>
+    <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>
+  </div>
+  <p class="doginary-footer__copyright">© 2026 Malin Larsson (Doginary)</p>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="doginary-supabase.js"></script>

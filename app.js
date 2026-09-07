@@ -412,7 +412,7 @@ const STR = {
 
     navLog: "Logga",
     logKicker: "DAGBOK",
-    logTitle: "Logga {name}s dag",
+    logTitle: "Logga dagen för {name}",
     logSubtitle: "Promenader, uteliv, pälsvård, aptit, humör och sömn — loggat i en lugn dagbok, med försiktiga insikter över tid.",
     logCtaText: "Doginarys dagbok finns nu på en egen sida, med full kalender och insikter inbyggt.",
     logCtaBtn: "Öppna dagboken →",

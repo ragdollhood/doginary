@@ -63,6 +63,22 @@
     border-radius: 8px;
   }
 
+  .crossnav-right{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .lang-switch{ display:flex; align-items:center; }
+  .lang-btn{
+    border:0; background:var(--surface-2); border-radius:999px;
+    width:34px; height:34px; font-size:17px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .15s ease;
+  }
+  .lang-btn:hover, .lang-btn:focus-visible{ background:var(--hair); outline:none; }
+  .flag-icon{ border-radius:3px; display:block; }
+
   *{ box-sizing: border-box; }
 
   body{
@@ -1111,8 +1127,14 @@
 
 <nav class="crossnav">
   <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
-  <a href="insikter.html">Se insikter →</a>
-  <div id="doginaryAuthRoot"></div>
+  <a href="insikter.html" data-i18n="navInsights">Se insikter →</a>
+  <div class="crossnav-right">
+    <div class="lang-switch">
+      <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="20" height="13" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
+      <button type="button" id="langBtnEn" class="lang-btn" aria-label="Show the page in English" title="English" hidden><svg class="flag-icon" viewBox="0 0 60 30" width="20" height="13" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-clip-logga)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="uk-clip-logga"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
+    </div>
+    <div id="doginaryAuthRoot"></div>
+  </div>
 </nav>
 
 <div class="page">
@@ -1121,12 +1143,12 @@
   <div id="authScreen">
     <header class="top">
       <p class="eyebrow">Doginary</p>
-      <h1>Logga in för att spara loggen</h1>
+      <h1 data-i18n="authTitle">Logga in för att spara loggen</h1>
     </header>
     <div class="doginary-loggedout-card">
-      <h2>Skapa konto eller logga in</h2>
-      <p>Din hunds dagbok sparas på ditt konto och syncar mellan dina enheter. Tar under en minut.</p>
-      <button type="button" id="openAuthBtn">Skapa konto / Logga in</button>
+      <h2 data-i18n="authCardTitle">Skapa konto eller logga in</h2>
+      <p data-i18n="authCardText">Din hunds dagbok sparas på ditt konto och syncar mellan dina enheter. Tar under en minut.</p>
+      <button type="button" id="openAuthBtn" data-i18n="authCardBtn">Skapa konto / Logga in</button>
     </div>
   </div>
 
@@ -1134,18 +1156,18 @@
   <div id="appScreen" hidden>
 
     <header class="top">
-      <h1>Logga dagen för <span class="dogname-inline" id="dogNameInline" hidden></span></h1>
+      <h1><span id="logDayPrefix" data-i18n="logDayPrefix">Logga dagen för</span> <span class="dogname-inline" id="dogNameInline" hidden></span></h1>
       <form class="dogname-row" id="dogNameForm" autocomplete="off">
-        <input type="text" id="dogNameInput" name="dogName" placeholder="Hundens namn">
-        <button type="submit" class="dogname-btn" id="dogNameBtn">Spara</button>
+        <input type="text" id="dogNameInput" name="dogName" placeholder="Hundens namn" data-i18n-placeholder="dogNamePlaceholder">
+        <button type="submit" class="dogname-btn" id="dogNameBtn" data-i18n="saveBtn">Spara</button>
       </form>
     </header>
 
     <div class="quicklog-bleed">
     <section class="quicklog" aria-label="Snabblogga">
       <div class="quicklog-head">
-        <h2>Snabblogga</h2>
-        <p>Tryck på en bild för att logga direkt — fyll i mer i den djupare dagboken nedan om du vill.</p>
+        <h2 data-i18n="quicklogTitle">Snabblogga</h2>
+        <p data-i18n="quicklogIntro">Tryck på en bild för att logga direkt — fyll i mer i den djupare dagboken nedan om du vill.</p>
         <p class="quicklog-target" id="quicklogTarget" hidden></p>
       </div>
       <div class="quicklog-grid" id="quicklogGrid">
@@ -1155,10 +1177,10 @@
             <img src="assets/card-sleep.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">😴 Sömn i natt</span>
+            <span class="quicklog-label" data-i18n="qlLabelSleep">😴 Sömn i natt</span>
             <span class="quicklog-count" id="qc-sleep" hidden></span>
             <div class="quicklog-opts" data-type="sleep"></div>
-            <div class="quicklog-logged" id="ql-sleep" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-sleep" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="bath">
@@ -1167,10 +1189,10 @@
             <img src="assets/card-bath.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">🛁 Bad</span>
+            <span class="quicklog-label" data-i18n="qlLabelBath">🛁 Bad</span>
             <span class="quicklog-count" id="qc-bath" hidden></span>
             <div class="quicklog-opts" data-type="bath"></div>
-            <div class="quicklog-logged" id="ql-bath" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-bath" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="brush">
@@ -1179,10 +1201,10 @@
             <img src="assets/card-brush.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">🪮 Borstning</span>
+            <span class="quicklog-label" data-i18n="qlLabelBrush">🪮 Borstning</span>
             <span class="quicklog-count" id="qc-brush" hidden></span>
             <div class="quicklog-opts" data-type="brush"></div>
-            <div class="quicklog-logged" id="ql-brush" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-brush" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="claw">
@@ -1191,10 +1213,10 @@
             <img src="assets/card-claw.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">💅 Klor</span>
+            <span class="quicklog-label" data-i18n="qlLabelClaw">💅 Klor</span>
             <span class="quicklog-count" id="qc-claw" hidden></span>
             <div class="quicklog-opts" data-type="claw"></div>
-            <div class="quicklog-logged" id="ql-claw" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-claw" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="eat">
@@ -1203,10 +1225,10 @@
             <img src="assets/card-eat.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">🍽️ Mat</span>
+            <span class="quicklog-label" data-i18n="qlLabelEat">🍽️ Mat</span>
             <span class="quicklog-count" id="qc-eat" hidden></span>
             <div class="quicklog-opts" data-type="eat"></div>
-            <div class="quicklog-logged" id="ql-eat" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-eat" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="walk">
@@ -1215,10 +1237,10 @@
             <img src="assets/card-walk.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">🐾 Promenad</span>
+            <span class="quicklog-label" data-i18n="qlLabelWalk">🐾 Promenad</span>
             <span class="quicklog-count" id="qc-walk" hidden></span>
             <div class="quicklog-opts" data-type="walk"></div>
-            <div class="quicklog-logged" id="ql-walk" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-walk" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="learn">
@@ -1227,10 +1249,10 @@
             <img src="assets/card-learn.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">🎓 Träning</span>
+            <span class="quicklog-label" data-i18n="qlLabelLearn">🎓 Träning</span>
             <span class="quicklog-count" id="qc-learn" hidden></span>
             <div class="quicklog-opts" data-type="learn"></div>
-            <div class="quicklog-logged" id="ql-learn" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-learn" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="play">
@@ -1239,10 +1261,10 @@
             <img src="assets/card-play.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">🎾 Lek</span>
+            <span class="quicklog-label" data-i18n="qlLabelPlay">🎾 Lek</span>
             <span class="quicklog-count" id="qc-play" hidden></span>
             <div class="quicklog-opts" data-type="play"></div>
-            <div class="quicklog-logged" id="ql-play" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-play" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
         <div class="quicklog-card" data-type="poop">
@@ -1251,10 +1273,10 @@
             <img src="assets/card-poop.jpg" alt="" loading="lazy" width="900" height="600">
           </picture>
           <div class="quicklog-sign">
-            <span class="quicklog-label">💩 Bajs</span>
+            <span class="quicklog-label" data-i18n="qlLabelPoop">💩 Bajs</span>
             <span class="quicklog-count" id="qc-poop" hidden></span>
             <div class="quicklog-opts" data-type="poop"></div>
-            <div class="quicklog-logged" id="ql-poop" hidden>LOGGAD</div>
+            <div class="quicklog-logged" id="ql-poop" hidden data-i18n="loggedBadge">LOGGAD</div>
           </div>
         </div>
       </div>
@@ -1270,37 +1292,37 @@
          backdateModal ovan) och läses av Insikter via samma
          normaliseringslager som snabbloggningen (DoginaryData.buildDailyEntries). -->
     <section class="moredetails" aria-label="Fler detaljer (valfritt)">
-      <h2 id="moredetailsTitle">Fler detaljer idag</h2>
-      <p>Helt valfritt — men ju mer du fyller i, desto bättre kan Insikter se mönster över tid.</p>
+      <h2 id="moredetailsTitle" data-i18n="moredetailsTitle">Fler detaljer idag</h2>
+      <p data-i18n="moredetailsIntro">Helt valfritt — men ju mer du fyller i, desto bättre kan Insikter se mönster över tid.</p>
       <p class="moredetails-target" id="moredetailsTarget" hidden></p>
       <div class="moredetails-grid">
         <div class="moredetails-field">
-          <label id="energiLabel">Energinivå</label>
+          <label id="energiLabel" data-i18n="energiLabel">Energinivå</label>
           <div class="segmented" role="group" aria-labelledby="energiLabel" id="energiSegmented">
-            <button type="button" data-value="Låg" aria-pressed="false">Låg</button>
-            <button type="button" data-value="Normal" aria-pressed="false">Normal</button>
-            <button type="button" data-value="Hög" aria-pressed="false">Hög</button>
+            <button type="button" data-value="Låg" aria-pressed="false" data-i18n="energiLow">Låg</button>
+            <button type="button" data-value="Normal" aria-pressed="false" data-i18n="energiNormal">Normal</button>
+            <button type="button" data-value="Hög" aria-pressed="false" data-i18n="energiHigh">Hög</button>
           </div>
         </div>
         <div class="moredetails-field">
-          <label for="sleepHoursInput">Sömn i natt (timmar)
-            <span class="field-hint">Bara den nattliga sömnen, inte tupplurar under dagen.</span>
+          <label for="sleepHoursInput"><span data-i18n="sleepHoursLabel">Sömn i natt (timmar)</span>
+            <span class="field-hint" data-i18n="sleepHoursHint">Bara den nattliga sömnen, inte tupplurar under dagen.</span>
           </label>
-          <input type="number" id="sleepHoursInput" min="0" max="24" step="0.5" inputmode="decimal" placeholder="t.ex. 8">
+          <input type="number" id="sleepHoursInput" min="0" max="24" step="0.5" inputmode="decimal" placeholder="t.ex. 8" data-i18n-placeholder="sleepHoursPlaceholder">
         </div>
         <div class="moredetails-field">
-          <label for="weightInput">Vikt (kg)</label>
-          <input type="number" id="weightInput" min="0" max="120" step="0.1" inputmode="decimal" placeholder="t.ex. 24.5">
+          <label for="weightInput" data-i18n="weightLabel">Vikt (kg)</label>
+          <input type="number" id="weightInput" min="0" max="120" step="0.1" inputmode="decimal" placeholder="t.ex. 24.5" data-i18n-placeholder="weightPlaceholder">
         </div>
         <div class="moredetails-field">
-          <label for="symptomsInput">Symptom eller anteckning
-            <span class="field-hint">T.ex. "hostade lite" eller "verkade halta". Lämna tomt om inget.</span>
+          <label for="symptomsInput"><span data-i18n="symptomsLabel">Symptom eller anteckning</span>
+            <span class="field-hint" data-i18n="symptomsHint">T.ex. "hostade lite" eller "verkade halta". Lämna tomt om inget.</span>
           </label>
-          <input type="text" id="symptomsInput" maxlength="200" placeholder="Valfritt">
+          <input type="text" id="symptomsInput" maxlength="200" placeholder="Valfritt" data-i18n-placeholder="optionalPlaceholder">
         </div>
       </div>
       <div class="moredetails-actions">
-        <button type="button" class="moredetails-save" id="moredetailsSave">Spara detaljer</button>
+        <button type="button" class="moredetails-save" id="moredetailsSave" data-i18n="saveDetailsBtn">Spara detaljer</button>
         <p class="moredetails-status" id="moredetailsStatus" role="status" aria-live="polite"></p>
       </div>
     </section>
@@ -1308,20 +1330,20 @@
     <div class="entries-bleed">
     <div class="entries">
       <div class="entries__head">
-        <h2>Kalender</h2>
+        <h2 data-i18n="calendarTitle">Kalender</h2>
         <div class="cal-view-toggle" role="tablist" aria-label="Välj kalendervy">
-          <button type="button" class="cal-view-btn is-active" data-view="week" role="tab" aria-selected="true">Vecka</button>
-          <button type="button" class="cal-view-btn" data-view="month" role="tab" aria-selected="false">Månad</button>
+          <button type="button" class="cal-view-btn is-active" data-view="week" role="tab" aria-selected="true" data-i18n="calViewWeek">Vecka</button>
+          <button type="button" class="cal-view-btn" data-view="month" role="tab" aria-selected="false" data-i18n="calViewMonth">Månad</button>
         </div>
       </div>
 
       <div class="cal-controls">
         <div class="cal-nav">
-          <button type="button" id="calPrev" aria-label="Föregående">‹</button>
+          <button type="button" id="calPrev" aria-label="Föregående" data-i18n-aria-label="calPrevLabel">‹</button>
           <span id="calMonthLabel"></span>
-          <button type="button" id="calNext" aria-label="Nästa">›</button>
+          <button type="button" id="calNext" aria-label="Nästa" data-i18n-aria-label="calNextLabel">›</button>
         </div>
-        <button type="button" id="calToday" class="cal-today-btn" hidden>Idag</button>
+        <button type="button" id="calToday" class="cal-today-btn" hidden data-i18n="calTodayBtn">Idag</button>
       </div>
 
       <div class="calendar calendar--week" id="weekCalendar">
@@ -1329,7 +1351,7 @@
       </div>
 
       <div class="calendar calendar--month" id="monthCalendar" hidden>
-        <div class="calendar__weekdays">
+        <div class="calendar__weekdays" id="calendarWeekdays">
           <span>Mån</span><span>Tis</span><span>Ons</span><span>Tor</span><span>Fre</span><span>Lör</span><span>Sön</span>
         </div>
         <div class="calendar__grid" id="calendarGrid"></div>
@@ -1350,8 +1372,8 @@
       <div class="confirm-modal-card" role="alertdialog" aria-modal="true" aria-labelledby="backdateModalText">
         <p id="backdateModalText"></p>
         <div class="confirm-modal-actions">
-          <button type="button" class="confirm-modal-no" id="backdateModalNo">Nej</button>
-          <button type="button" class="confirm-modal-yes" id="backdateModalYes">Ja</button>
+          <button type="button" class="confirm-modal-no" id="backdateModalNo" data-i18n="backdateNo">Nej</button>
+          <button type="button" class="confirm-modal-yes" id="backdateModalYes" data-i18n="backdateYes">Ja</button>
         </div>
       </div>
     </div>
@@ -1361,9 +1383,9 @@
 </div>
 
 <footer class="doginary-footer">
-  <p class="doginary-footer__disclaimer">Doginary ger allmänna tips och komfortvägledning för hundpromenader — inte veterinärmedicinsk rådgivning. Informationen ersätter aldrig en veterinärs bedömning och tar inte hänsyn till alla faktorer som gäller just din hund. Du som hundägare ansvarar alltid själv för att bedöma väder, underlag och din hunds hälsa, ålder, ras och tillstånd inför och under promenader och andra aktiviteter. Kontakta veterinär vid oro för din hunds hälsa.</p>
+  <p class="doginary-footer__disclaimer" data-i18n="footerDisclaimer">Doginary ger allmänna tips och komfortvägledning för hundpromenader — inte veterinärmedicinsk rådgivning. Informationen ersätter aldrig en veterinärs bedömning och tar inte hänsyn till alla faktorer som gäller just din hund. Du som hundägare ansvarar alltid själv för att bedöma väder, underlag och din hunds hälsa, ålder, ras och tillstånd inför och under promenader och andra aktiviteter. Kontakta veterinär vid oro för din hunds hälsa.</p>
   <div class="doginary-footer__links">
-    <a href="terms.html">Villkor</a>
+    <a href="terms.html" data-i18n="footerTerms">Villkor</a>
     <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>
   </div>
   <p class="doginary-footer__copyright">© 2026 Malin Larsson (Doginary)</p>
@@ -1409,7 +1431,250 @@
   const backdateModalText = document.getElementById('backdateModalText');
   const backdateModalYes = document.getElementById('backdateModalYes');
   const backdateModalNo = document.getElementById('backdateModalNo');
+  const langBtnSvEl = document.getElementById('langBtnSv');
+  const langBtnEnEl = document.getElementById('langBtnEn');
   let selectedEnergi = null;
+
+  /* ==================================================================
+     Language / i18n
+     Shares the "dogWeatherLang" localStorage key with index.html/app.js
+     so a language choice made on one page carries over to the others.
+     ================================================================== */
+  const LOCALE = { en: 'en-GB', sv: 'sv-SE' };
+
+  let lang = (() => {
+    try {
+      const saved = localStorage.getItem('dogWeatherLang');
+      if (saved === 'en' || saved === 'sv') return saved;
+    } catch { /* localStorage may be unavailable */ }
+    return 'en';
+  })();
+
+  const STR = {
+    en: {
+      pageTitleDefault: 'Doginary — Log your dog’s day',
+      navInsights: 'See insights →',
+      authTitle: 'Log in to save your log',
+      authCardTitle: 'Create an account or log in',
+      authCardText: 'Your dog’s diary is saved to your account and syncs across your devices. Takes under a minute.',
+      authCardBtn: 'Create account / Log in',
+      logDayPrefix: 'Log the day for',
+      dogNamePlaceholder: 'Dog’s name',
+      saveBtn: 'Save',
+      quicklogTitle: 'Quick log',
+      quicklogIntro: 'Tap a picture to log it right away — fill in more in the deeper diary below if you like.',
+      qlLabelSleep: '😴 Sleep last night',
+      qlLabelBath: '🛁 Bath',
+      qlLabelBrush: '🪮 Brushing',
+      qlLabelClaw: '💅 Claws',
+      qlLabelEat: '🍽️ Food',
+      qlLabelWalk: '🐾 Walk',
+      qlLabelLearn: '🎓 Training',
+      qlLabelPlay: '🎾 Play',
+      qlLabelPoop: '💩 Poop',
+      loggedBadge: 'LOGGED',
+      moredetailsTitle: 'More details today',
+      moredetailsTitleShort: 'More details',
+      moredetailsIntro: 'Completely optional — but the more you fill in, the better Insights can spot patterns over time.',
+      energiLabel: 'Energy level',
+      energiLow: 'Low',
+      energiNormal: 'Normal',
+      energiHigh: 'High',
+      sleepHoursLabel: 'Sleep last night (hours)',
+      sleepHoursHint: 'Just the night’s sleep, not daytime naps.',
+      sleepHoursPlaceholder: 'e.g. 8',
+      weightLabel: 'Weight (kg)',
+      weightPlaceholder: 'e.g. 24.5',
+      symptomsLabel: 'Symptoms or note',
+      symptomsHint: 'E.g. "coughed a bit" or "seemed to limp". Leave blank if nothing.',
+      optionalPlaceholder: 'Optional',
+      saveDetailsBtn: 'Save details',
+      calendarTitle: 'Calendar',
+      calViewWeek: 'Week',
+      calViewMonth: 'Month',
+      calPrevLabel: 'Previous',
+      calNextLabel: 'Next',
+      calTodayBtn: 'Today',
+      backdateNo: 'No',
+      backdateYes: 'Yes',
+      footerDisclaimer: 'Doginary provides general tips and comfort guidance for dog walks — not veterinary advice. This information never replaces a vet’s assessment and doesn’t account for every factor specific to your dog. As the dog owner, you’re always responsible for assessing the weather, terrain, and your dog’s health, age, breed and condition before and during walks and other activities. Contact a vet if you’re concerned about your dog’s health.',
+      footerTerms: 'Terms',
+      weekdayMon: 'Mon', weekdayTue: 'Tue', weekdayWed: 'Wed', weekdayThu: 'Thu', weekdayFri: 'Fri', weekdaySat: 'Sat', weekdaySun: 'Sun',
+      loggingFor: label => `Logging for ${label}`,
+      forDate: label => `For ${label}`,
+      backdateConfirm: label => `Are you sure you want to log this on ${label} instead of today’s date?`,
+      quicklogSaving: 'Logging …',
+      quicklogSaved: (label, detail, time, suffix) => `${label} · ${detail} logged at ${time}${suffix}`,
+      quicklogSaveError: 'Couldn’t save right now — please try again.',
+      quicklogRemoveError: 'Couldn’t remove right now — please try again.',
+      quicklogLoadError: 'Couldn’t load your dog’s data right now — please reload the page.',
+      loggedToday: 'Logged today',
+      loggedTodayN: n => `Logged ${n}× today`,
+      moredetailsEmpty: 'Fill in at least one field to save.',
+      moredetailsSaving: 'Saving …',
+      moredetailsSaved: 'Saved.',
+      moredetailsSaveError: 'Couldn’t save right now — please try again.',
+      dogNameSaveError: 'Couldn’t save the name right now — please try again.',
+      noEntriesToday: 'No events this day.',
+      noteLabel: 'Note',
+      entriesCount: n => `${n}`,
+      closeLabel: 'Close',
+      timesLabel: n => `${n}×`,
+      titlePossessive: name => `Doginary — Log ${name}’s day`,
+      titleGeneric: 'Doginary — Log your dog’s day',
+    },
+    sv: {
+      pageTitleDefault: 'Doginary — Logga din hunds dag',
+      navInsights: 'Se insikter →',
+      authTitle: 'Logga in för att spara loggen',
+      authCardTitle: 'Skapa konto eller logga in',
+      authCardText: 'Din hunds dagbok sparas på ditt konto och syncar mellan dina enheter. Tar under en minut.',
+      authCardBtn: 'Skapa konto / Logga in',
+      logDayPrefix: 'Logga dagen för',
+      dogNamePlaceholder: 'Hundens namn',
+      saveBtn: 'Spara',
+      quicklogTitle: 'Snabblogga',
+      quicklogIntro: 'Tryck på en bild för att logga direkt — fyll i mer i den djupare dagboken nedan om du vill.',
+      qlLabelSleep: '😴 Sömn i natt',
+      qlLabelBath: '🛁 Bad',
+      qlLabelBrush: '🪮 Borstning',
+      qlLabelClaw: '💅 Klor',
+      qlLabelEat: '🍽️ Mat',
+      qlLabelWalk: '🐾 Promenad',
+      qlLabelLearn: '🎓 Träning',
+      qlLabelPlay: '🎾 Lek',
+      qlLabelPoop: '💩 Bajs',
+      loggedBadge: 'LOGGAD',
+      moredetailsTitle: 'Fler detaljer idag',
+      moredetailsTitleShort: 'Fler detaljer',
+      moredetailsIntro: 'Helt valfritt — men ju mer du fyller i, desto bättre kan Insikter se mönster över tid.',
+      energiLabel: 'Energinivå',
+      energiLow: 'Låg',
+      energiNormal: 'Normal',
+      energiHigh: 'Hög',
+      sleepHoursLabel: 'Sömn i natt (timmar)',
+      sleepHoursHint: 'Bara den nattliga sömnen, inte tupplurar under dagen.',
+      sleepHoursPlaceholder: 't.ex. 8',
+      weightLabel: 'Vikt (kg)',
+      weightPlaceholder: 't.ex. 24.5',
+      symptomsLabel: 'Symptom eller anteckning',
+      symptomsHint: 'T.ex. "hostade lite" eller "verkade halta". Lämna tomt om inget.',
+      optionalPlaceholder: 'Valfritt',
+      saveDetailsBtn: 'Spara detaljer',
+      calendarTitle: 'Kalender',
+      calViewWeek: 'Vecka',
+      calViewMonth: 'Månad',
+      calPrevLabel: 'Föregående',
+      calNextLabel: 'Nästa',
+      calTodayBtn: 'Idag',
+      backdateNo: 'Nej',
+      backdateYes: 'Ja',
+      footerDisclaimer: 'Doginary ger allmänna tips och komfortvägledning för hundpromenader — inte veterinärmedicinsk rådgivning. Informationen ersätter aldrig en veterinärs bedömning och tar inte hänsyn till alla faktorer som gäller just din hund. Du som hundägare ansvarar alltid själv för att bedöma väder, underlag och din hunds hälsa, ålder, ras och tillstånd inför och under promenader och andra aktiviteter. Kontakta veterinär vid oro för din hunds hälsa.',
+      footerTerms: 'Villkor',
+      weekdayMon: 'Mån', weekdayTue: 'Tis', weekdayWed: 'Ons', weekdayThu: 'Tor', weekdayFri: 'Fre', weekdaySat: 'Lör', weekdaySun: 'Sön',
+      loggingFor: label => `Loggar för ${label}`,
+      forDate: label => `För ${label}`,
+      backdateConfirm: label => `Är du säker att du vill logga detta på ${label} och inte på dagens datum?`,
+      quicklogSaving: 'Loggar …',
+      quicklogSaved: (label, detail, time, suffix) => `${label} · ${detail} loggat kl ${time}${suffix}`,
+      quicklogSaveError: 'Kunde inte spara just nu — försök igen.',
+      quicklogRemoveError: 'Kunde inte ta bort just nu — försök igen.',
+      quicklogLoadError: 'Kunde inte hämta din hunds data just nu — ladda om sidan.',
+      loggedToday: 'Loggat idag',
+      loggedTodayN: n => `Loggat ${n} ggr idag`,
+      moredetailsEmpty: 'Fyll i minst ett fält för att spara.',
+      moredetailsSaving: 'Sparar …',
+      moredetailsSaved: 'Sparat.',
+      moredetailsSaveError: 'Kunde inte spara just nu — försök igen.',
+      dogNameSaveError: 'Kunde inte spara namnet just nu — försök igen.',
+      noEntriesToday: 'Inga händelser denna dag.',
+      noteLabel: 'Anteckning',
+      entriesCount: n => `${n} st`,
+      closeLabel: 'Stäng',
+      timesLabel: n => `${n} ggr`,
+      titlePossessive: name => `Doginary — Logga ${name}s dag`,
+      titleGeneric: 'Doginary — Logga din hunds dag',
+    }
+  };
+
+  function t(key){
+    const val = (STR[lang] && STR[lang][key] !== undefined) ? STR[lang][key] : STR.sv[key];
+    return val;
+  }
+
+  // Etiketter (utan emoji) för typerna, per språk — används i "Sparade
+  // dagar"-listans grupphuvuden. Nycklarna (sleep/bath/…) är interna och
+  // språkoberoende, så de påverkar inte hur data sparas.
+  const TYPE_LABEL = {
+    sleep: { sv: 'Sömn i natt', en: 'Sleep last night' },
+    bath: { sv: 'Bad', en: 'Bath' },
+    brush: { sv: 'Borstning', en: 'Brushing' },
+    claw: { sv: 'Klor klippta', en: 'Claws trimmed' },
+    eat: { sv: 'Åt', en: 'Ate' },
+    walk: { sv: 'Promenad', en: 'Walk' },
+    learn: { sv: 'Träning', en: 'Training' },
+    play: { sv: 'Lek', en: 'Play' },
+    poop: { sv: 'Bajs', en: 'Poop' }
+  };
+  function typeLabel(key){
+    const entry = TYPE_LABEL[key];
+    return entry ? entry[lang] : t('noteLabel');
+  }
+
+  // Energinivåns lagrade värde ("Låg"/"Normal"/"Hög") hålls alltid på
+  // svenska oavsett visningsspråk — det är vad som sparas i databasen
+  // och läses av insiktsmotorn (doginary-data.js). Bara texten som visas
+  // för användaren översätts.
+  const ENERGI_DISPLAY = {
+    'Låg': { sv: 'Låg', en: 'Low' },
+    'Normal': { sv: 'Normal', en: 'Normal' },
+    'Hög': { sv: 'Hög', en: 'High' }
+  };
+  function energiDisplay(value){
+    const entry = ENERGI_DISPLAY[value];
+    return entry ? entry[lang] : value;
+  }
+
+  function applyI18n(){
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const val = t(key);
+      if (typeof val === 'string') el.textContent = val;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+      el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label')));
+    });
+    if (langBtnSvEl) langBtnSvEl.hidden = lang !== 'en';
+    if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';
+    document.title = document.title.startsWith('Doginary') ? document.title : t('pageTitleDefault');
+    const weekdaysHead = document.getElementById('calendarWeekdays');
+    if (weekdaysHead) {
+      const names = [t('weekdayMon'), t('weekdayTue'), t('weekdayWed'), t('weekdayThu'), t('weekdayFri'), t('weekdaySat'), t('weekdaySun')];
+      weekdaysHead.querySelectorAll('span').forEach((span, i) => { if (names[i]) span.textContent = names[i]; });
+    }
+  }
+
+  function setLang(l){
+    if (l !== 'en' && l !== 'sv') return;
+    lang = l;
+    try { localStorage.setItem('dogWeatherLang', lang); } catch { /* ignore */ }
+    applyI18n();
+    // Bygg om allt som renderas dynamiskt så det byter språk direkt,
+    // utan att sidan behöver laddas om.
+    if (typeof buildQuicklogOptions === 'function') buildQuicklogOptions();
+    if (typeof updateDogChrome === 'function' && currentDog !== undefined) updateDogChrome();
+    if (typeof updateLogTargetUI === 'function' && selectedISO) updateLogTargetUI();
+    if (typeof renderCalendar === 'function' && weekStart) renderCalendar();
+    if (typeof renderDayCard === 'function' && selectedISO) renderDayCard();
+    if (typeof renderQuickCounts === 'function' && allEntries) renderQuickCounts();
+  }
+
+  langBtnSvEl?.addEventListener('click', () => setLang('sv'));
+  langBtnEnEl?.addEventListener('click', () => setLang('en'));
 
   let currentUser = null;
   let currentDog = null;
@@ -1443,6 +1708,8 @@
   // Etiketter för de nio snabbloggningskorten (bild + vit skylt) högst upp
   // på sidan — återanvänds även för att visa en kort typ-etikett i listan
   // "Sparade dagar" för poster som kommer från ett snabbtryck.
+  // (endast svenska varianten behålls här för bakåtkompatibilitet med
+  // äldre kod; visningen använder typeLabel()/QUICKLOG_TYPES_I18N ovan.)
   const QUICKLOG_TYPES = {
     sleep: '😴 Sömn i natt',
     bath: '🛁 Bad',
@@ -1456,8 +1723,12 @@
   };
 
   // Alternativ som visas i val-panelen för respektive område, när man
-  // tryckt på "Logga" i ett foto-kort. Ett tryck på ett alternativ sparar
-  // posten (typ + valt alternativ) och kortet visar sedan "LOGGAD".
+  // tryckt på en snabbloggningsbild. DET SVENSKA VÄRDET är alltid det som
+  // sparas som entry.detail i databasen (oavsett visningsspråk), eftersom
+  // insiktsmotorn (doginary-data.js) tolkar dessa exakta svenska strängar
+  // (t.ex. "Dålig aptit" → aptit-trend). Bara den TEXT SOM VISAS för
+  // användaren växlar med språket — se QUICKLOG_OPTIONS_EN nedan och
+  // buildQuicklogOptions()/detailFor().
   const QUICKLOG_OPTIONS = {
     sleep: ['Djup och lugn', 'Orolig', 'Avbruten'],
     bath: ['Helbad', 'Snabbdusch', 'Torrschampo'],
@@ -1469,6 +1740,28 @@
     play: ['Mindre än vanligt', 'Som vanligt', 'Mer än vanligt'],
     poop: ['Bra', 'Lös', 'Hård']
   };
+
+  // Engelska visningstexter, position för position samma ordning som
+  // QUICKLOG_OPTIONS ovan — bara för visning, aldrig för lagring.
+  const QUICKLOG_OPTIONS_EN = {
+    sleep: ['Deep and calm', 'Restless', 'Interrupted'],
+    bath: ['Full bath', 'Quick rinse', 'Dry shampoo'],
+    brush: ['Quick brush', 'Thorough brush'],
+    claw: ['Trimmed', 'Filed'],
+    eat: ['Poor appetite', 'Normal appetite', 'Strong appetite'],
+    walk: ['Short (10–20 min)', 'Medium (20–40 min)', 'Long (40+ min)'],
+    learn: ['Went well', 'Mixed', 'Challenging'],
+    play: ['Less than usual', 'As usual', 'More than usual'],
+    poop: ['Good', 'Loose', 'Hard']
+  };
+
+  // Visningstext för en sparad (alltid svensk) detail-sträng, utifrån
+  // aktuellt språk. Okänd/friformad text (äldre poster) visas oförändrad.
+  function quicklogOptionDisplay(type, svValue){
+    const idx = (QUICKLOG_OPTIONS[type] || []).indexOf(svValue);
+    if (idx === -1) return svValue;
+    return lang === 'en' ? (QUICKLOG_OPTIONS_EN[type] || [])[idx] : svValue;
+  }
 
   // Samma händelser fast bara emoji — används som ikoner i kalendern.
   const QUICKLOG_EMOJI = {
@@ -1527,6 +1820,14 @@
   // Samma läsbara datumformat som dagskortets rubrik, fast för valfritt
   // ÅÅÅÅ-MM-DD — används i bekräftelsemodalen och i "loggar för …"-texten.
   function dateLabelForISO(iso){
+    return capitalize(isoToDate(iso).toLocaleDateString(LOCALE[lang], { weekday: 'long', day: 'numeric', month: 'long' }));
+  }
+
+  // Samma sak, men alltid på svenska — används för det FÄLT (entry.date)
+  // som sparas till databasen, så att formatet är konsekvent oavsett
+  // visningsspråk (renderQuickCounts jämför mot detta, och entryISO()
+  // tolkar äldre poster med samma svenska månadsnamn).
+  function dateLabelForISOCanonical(iso){
     return capitalize(isoToDate(iso).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }));
   }
 
@@ -1543,7 +1844,7 @@
 
   function showBackdateConfirm(iso){
     return new Promise(resolve => {
-      backdateModalText.textContent = `Är du säker att du vill logga detta på ${dateLabelForISO(iso)} och inte på dagens datum?`;
+      backdateModalText.textContent = t('backdateConfirm')(dateLabelForISO(iso));
       backdateModal.hidden = false;
 
       function cleanup(result){
@@ -1572,14 +1873,14 @@
   function updateLogTargetUI(){
     if(isBackdated()){
       const label = dateLabelForISO(selectedISO);
-      quicklogTarget.textContent = `Loggar för ${label.toLowerCase()}`;
+      quicklogTarget.textContent = t('loggingFor')(label.toLowerCase());
       quicklogTarget.hidden = false;
-      moredetailsTitle.textContent = 'Fler detaljer';
-      moredetailsTarget.textContent = `För ${label.toLowerCase()}`;
+      moredetailsTitle.textContent = t('moredetailsTitleShort');
+      moredetailsTarget.textContent = t('forDate')(label.toLowerCase());
       moredetailsTarget.hidden = false;
     } else {
       quicklogTarget.hidden = true;
-      moredetailsTitle.textContent = 'Fler detaljer idag';
+      moredetailsTitle.textContent = t('moredetailsTitle');
       moredetailsTarget.hidden = true;
     }
   }
@@ -1597,7 +1898,7 @@
     const firstWeekdayIndex = (first.getDay() + 6) % 7; // 0 = måndag
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
 
-    calMonthLabel.textContent = capitalize(first.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' }));
+    calMonthLabel.textContent = capitalize(first.toLocaleDateString(LOCALE[lang], { month: 'long', year: 'numeric' }));
 
     calendarGrid.innerHTML = '';
 
@@ -1637,11 +1938,14 @@
     });
   }
 
-  const WEEK_DOW = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
+  function weekDow(){
+    return [t('weekdayMon'), t('weekdayTue'), t('weekdayWed'), t('weekdayThu'), t('weekdayFri'), t('weekdaySat'), t('weekdaySun')];
+  }
 
   function renderWeekCalendar(){
     const groups = groupByISO(allEntries);
     const todayIso = todayISO();
+    const WEEK_DOW = weekDow();
 
     const days = [];
     for(let i = 0; i < 7; i++){
@@ -1651,7 +1955,7 @@
     }
 
     const first = days[0], last = days[6];
-    const shortMonth = (d) => capitalize(d.toLocaleDateString('sv-SE', { month: 'short' })).replace(/\.$/, '');
+    const shortMonth = (d) => capitalize(d.toLocaleDateString(LOCALE[lang], { month: 'short' })).replace(/\.$/, '');
     calMonthLabel.textContent = (first.getMonth() === last.getMonth())
       ? `${first.getDate()}–${last.getDate()} ${shortMonth(last)} ${last.getFullYear()}`
       : `${first.getDate()} ${shortMonth(first)} – ${last.getDate()} ${shortMonth(last)} ${last.getFullYear()}`;
@@ -1753,10 +2057,10 @@
   // [symbol] [klockslag] och sedan detaljen under.
   function detailFor(e){
     const bits = [];
-    if(e.detail) bits.push(e.detail);
-    if(e.energi) bits.push(`energi: ${String(e.energi).toLowerCase()}`);
-    if(e.aptit) bits.push(`aptit: ${String(e.aptit).toLowerCase()}`);
-    if(e.sleepHours) bits.push(`${e.sleepHours} h sömn i natt`);
+    if(e.detail) bits.push(quicklogOptionDisplay(e.type, e.detail));
+    if(e.energi) bits.push(lang === 'en' ? `energy: ${energiDisplay(e.energi).toLowerCase()}` : `energi: ${energiDisplay(e.energi).toLowerCase()}`);
+    if(e.aptit) bits.push(lang === 'en' ? `appetite: ${String(e.aptit).toLowerCase()}` : `aptit: ${String(e.aptit).toLowerCase()}`);
+    if(e.sleepHours) bits.push(lang === 'en' ? `${e.sleepHours} h sleep last night` : `${e.sleepHours} h sömn i natt`);
     if(e.weight) bits.push(`${e.weight} kg`);
     if(e.symptoms) bits.push(e.symptoms);
     return bits.join(' · ');
@@ -1766,15 +2070,15 @@
     const iso = selectedISO;
     const [y, m, d] = iso.split('-').map(Number);
     const dateObj = new Date(y, m - 1, d);
-    dayCardTitle.textContent = capitalize(dateObj.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }));
+    dayCardTitle.textContent = capitalize(dateObj.toLocaleDateString(LOCALE[lang], { weekday: 'long', day: 'numeric', month: 'long' }));
 
     const groups = groupByISO(allEntries);
     const dayEntries = groups[iso] || [];
 
-    dayCardCount.textContent = dayEntries.length ? `${dayEntries.length} st` : '';
+    dayCardCount.textContent = dayEntries.length ? t('entriesCount')(dayEntries.length) : '';
 
     if(!dayEntries.length){
-      dayCardList.innerHTML = '<div class="empty">Inga händelser denna dag.</div>';
+      dayCardList.innerHTML = `<div class="empty">${t('noEntriesToday')}</div>`;
       return;
     }
 
@@ -1799,7 +2103,7 @@
     typeKeys.forEach(key => {
       const entries = byType[key].slice().sort((a, b) => (a.time || '').localeCompare(b.time || ''));
       const icon = QUICKLOG_EMOJI[key] || '📝';
-      const label = (key !== '_note' && QUICKLOG_TYPES[key]) ? QUICKLOG_TYPES[key].replace(/^\S+\s/, '') : 'Anteckning';
+      const label = (key !== '_note') ? typeLabel(key) : t('noteLabel');
 
       const group = document.createElement('div');
       group.className = 'day-group';
@@ -1812,7 +2116,7 @@
             <span class="day-entry__icon">${icon}</span>
             <span class="day-entry__time">${e.time || ''}</span>
             <span class="day-entry__choice">${detail || '—'}</span>
-            <button type="button" class="day-entry__remove" data-id="${e.id}" aria-label="Stäng">✕</button>
+            <button type="button" class="day-entry__remove" data-id="${e.id}" aria-label="${t('closeLabel')}">✕</button>
           </div>
         `;
       }).join('');
@@ -1821,7 +2125,7 @@
         <div class="day-group__head">
           <span class="day-group__icon">${icon}</span>
           <span class="day-group__label">${label}</span>
-          ${entries.length > 1 ? `<span class="day-group__count">${entries.length} ggr</span>` : ''}
+          ${entries.length > 1 ? `<span class="day-group__count">${t('timesLabel')(entries.length)}</span>` : ''}
         </div>
         ${rowsHTML}
       `;
@@ -1835,7 +2139,7 @@
           await DoginaryDB.removeEntry(btn.getAttribute('data-id'));
           await refreshEntries();
         } catch(err){
-          quicklogStatus.textContent = 'Kunde inte ta bort just nu — försök igen.';
+          quicklogStatus.textContent = t('quicklogRemoveError');
           quicklogStatus.classList.add('err');
           btn.disabled = false;
         }
@@ -1858,6 +2162,9 @@
      använder för `date`, plus en `time`-stämpel — sparas som en vanlig
      post via DoginaryDB.addEntry, precis som dagbokens fält. */
   function todayLabel(){
+    // Datumformatet som sparas i entry.date måste alltid vara på svenska,
+    // eftersom befintliga poster jämförs mot detta format nedan
+    // (renderQuickCounts) och äldre poster tolkas av entryISO() ovan.
     return new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
   }
 
@@ -1868,7 +2175,7 @@
       const el = document.getElementById(`qc-${type}`);
       if(!el) return;
       if(count > 0){
-        el.textContent = count === 1 ? 'Loggat idag' : `Loggat ${count} ggr idag`;
+        el.textContent = count === 1 ? t('loggedToday') : t('loggedTodayN')(count);
         el.hidden = false;
       } else {
         el.hidden = true;
@@ -1890,7 +2197,9 @@
         const optBtn = document.createElement('button');
         optBtn.type = 'button';
         optBtn.className = 'quicklog-opt';
-        optBtn.textContent = option;
+        // Visar den översatta texten, men skickar alltid det svenska
+        // kanoniska värdet till quickLog() — det är det som sparas.
+        optBtn.textContent = quicklogOptionDisplay(type, option);
         optBtn.addEventListener('click', () => quickLog(type, option));
         container.appendChild(optBtn);
       });
@@ -1909,16 +2218,17 @@
       if(!confirmed) return; // avbrutet — inget sparas
     }
 
-    const label = QUICKLOG_TYPES[type] || type;
+    const label = typeLabel(type);
+    const displayDetail = quicklogOptionDisplay(type, detail);
     const optsEl = document.querySelector(`.quicklog-opts[data-type="${type}"]`);
     const loggedEl = document.getElementById(`ql-${type}`);
     const optionButtons = optsEl ? optsEl.querySelectorAll('.quicklog-opt') : [];
     optionButtons.forEach(b => b.disabled = true);
-    quicklogStatus.textContent = 'Loggar …';
+    quicklogStatus.textContent = t('quicklogSaving');
     quicklogStatus.classList.remove('err');
 
     const entry = {
-      date: dateLabelForISO(targetISO),
+      date: dateLabelForISOCanonical(targetISO),
       isoDate: targetISO,
       time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
       type,
@@ -1932,19 +2242,20 @@
       if(optsEl) optsEl.hidden = true;
       if(loggedEl) loggedEl.hidden = false;
       const dateSuffix = targetISO !== todayISO() ? ` (${dateLabelForISO(targetISO).toLowerCase()})` : '';
-      quicklogStatus.textContent = `${label} · ${detail} loggat kl ${entry.time}${dateSuffix}.`;
+      quicklogStatus.textContent = t('quicklogSaved')(label, displayDetail, entry.time, dateSuffix ? `${dateSuffix}.` : '.');
       setTimeout(() => {
         if(loggedEl) loggedEl.hidden = true;
         if(optsEl) optsEl.hidden = false;
         optionButtons.forEach(b => b.disabled = false);
       }, 1600);
     } catch(e){
-      quicklogStatus.textContent = 'Kunde inte spara just nu — försök igen.';
+      quicklogStatus.textContent = t('quicklogSaveError');
       quicklogStatus.classList.add('err');
       optionButtons.forEach(b => b.disabled = false);
     }
   }
 
+  applyI18n();
   buildQuicklogOptions();
 
   /* ---------- Fler detaljer (energi / sömntimmar / vikt / symptom) ----------
@@ -1988,7 +2299,7 @@
     // Inget ifyllt alls — inget att spara, och ingen tom post ska skapas.
     if(!selectedEnergi && !sleepRaw && !weightRaw && !symptomsRaw){
       moredetailsStatus.classList.remove('err');
-      moredetailsStatus.textContent = 'Fyll i minst ett fält för att spara.';
+      moredetailsStatus.textContent = t('moredetailsEmpty');
       return;
     }
 
@@ -2000,11 +2311,11 @@
 
     moredetailsSave.disabled = true;
     moredetailsStatus.classList.remove('err');
-    moredetailsStatus.textContent = 'Sparar …';
+    moredetailsStatus.textContent = t('moredetailsSaving');
 
     const existing = findNoteForSelectedDate();
     const entry = {
-      date: dateLabelForISO(targetISO),
+      date: dateLabelForISOCanonical(targetISO),
       isoDate: targetISO,
       time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
       energi: selectedEnergi || undefined,
@@ -2023,10 +2334,10 @@
       }
       await DoginaryDB.addEntry(currentDog.id, currentUser.id, entry);
       await refreshEntries();
-      moredetailsStatus.textContent = 'Sparat.';
+      moredetailsStatus.textContent = t('moredetailsSaved');
     } catch(err){
       moredetailsStatus.classList.add('err');
-      moredetailsStatus.textContent = 'Kunde inte spara just nu — försök igen.';
+      moredetailsStatus.textContent = t('moredetailsSaveError');
     } finally {
       moredetailsSave.disabled = false;
     }
@@ -2043,7 +2354,7 @@
       dogNameForm.hidden = false;
       dogNameInput.value = '';
     }
-    document.title = `Doginary — Logga ${dogLabel() === DoginaryData.DEFAULT_NAME ? 'your dog' : dogLabel() + '\u2019s'} day`;
+    document.title = (dogLabel() === DoginaryData.DEFAULT_NAME) ? t('titleGeneric') : t('titlePossessive')(dogLabel());
   }
 
   // Formuläret syns bara innan hunden har fått ett namn — där sparas det
@@ -2064,7 +2375,7 @@
       currentDog = await DoginaryAuthUI.updateDog({ name: trimmed });
       updateDogChrome();
     } catch(err){
-      alert('Kunde inte spara namnet just nu — försök igen.');
+      alert(t('dogNameSaveError'));
     } finally {
       dogNameBtn.disabled = false;
     }
@@ -2101,7 +2412,7 @@
       updateDogChrome();
       await refreshEntries();
     } catch(e){
-      quicklogStatus.textContent = 'Kunde inte hämta din hunds data just nu — ladda om sidan.';
+      quicklogStatus.textContent = t('quicklogLoadError');
       quicklogStatus.classList.add('err');
     }
   }

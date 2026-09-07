@@ -228,7 +228,7 @@
   <div class="topbar-right">
     <nav aria-label="Main menu" data-i18n-aria-label="navAriaLabel">
       <a href="#prognos" data-i18n="navForecast">Today</a>
-      <a href="#logg" data-i18n="navLog">Log</a>
+      <a href="logga.html" data-i18n="navLog">Log</a>
       <a href="#hundrad" data-i18n="navDogAdvice">Health &amp; coat</a>
       <a href="#kunskap" data-i18n="navKnowledge">Knowledge</a>
       <a href="logga.html" id="navLoginBtn" class="nav-login-btn">Logga in</a>
@@ -244,7 +244,7 @@
     <span class="tabbar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M21.5 12H19M5 12H2.5M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8M18.4 18.4l-1.8-1.8M7.4 7.4L5.6 5.6"/></svg></span>
     <span data-i18n="navForecast">Today</span>
   </a>
-  <a href="#logg" class="tabbar-item" data-tab="logg">
+  <a href="logga.html" class="tabbar-item" data-tab="logg">
     <span class="tabbar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v3.5M16 3v3.5M8.5 14l2 2 4.5-4.5"/></svg></span>
     <span data-i18n="navLog">Log</span>
   </a>
@@ -399,70 +399,13 @@
   <div class="section-head">
     <div><span class="kicker" data-i18n="logKicker">DAILY LOG</span><h2 id="logTitle" data-i18n="logTitle">Log your dog's day</h2></div>
     <div class="section-head-meta">
-      <p data-i18n="logSubtitle">Walks, bathroom breaks and grooming — logged in one calm, tappable calendar.</p>
-      <p id="logStreakLine" class="log-streak-line" hidden></p>
-      <p style="font-size:14px;margin-top:6px;"><a href="logga.html" style="color:inherit;text-decoration:underline;">Want a deeper daily journal (appetite, mood, sleep) with insights? Try it →</a></p>
+      <p data-i18n="logSubtitle">Walks, bathroom breaks, grooming, appetite, mood and sleep — logged in one calm daily journal, with gentle insights over time.</p>
     </div>
   </div>
 
-  <div class="log-quick-wrap">
-  <div class="panel-plain log-quick">
-    <h3 class="subheading log-quick-heading" data-i18n="logQuickHeading">Log something</h3>
-    <div class="log-date-row">
-      <label for="logDate" data-i18n="logDateLabel">Date</label>
-      <input type="date" id="logDate">
-      <button type="button" id="logDateToday" class="log-date-today" data-i18n="logDateToday">Today</button>
-    </div>
-    <div class="log-buttons" id="logButtons">
-      <button type="button" class="log-btn" data-type="walk"><span class="log-btn-icon" aria-hidden="true">🐾</span><span data-i18n="logTypeWalk">Walk</span></button>
-      <button type="button" class="log-btn" data-type="poop"><span class="log-btn-icon" aria-hidden="true">💩</span><span data-i18n="logTypePoop">Poop</span></button>
-      <button type="button" class="log-btn" data-type="pee"><span class="log-btn-icon" aria-hidden="true">💧</span><span data-i18n="logTypePee">Pee</span></button>
-      <button type="button" class="log-btn" data-type="nails"><span class="log-btn-icon" aria-hidden="true">💅</span><span data-i18n="logTypeNails">Nails trimmed</span></button>
-      <button type="button" class="log-btn" data-type="bath"><span class="log-btn-icon" aria-hidden="true">🛁</span><span data-i18n="logTypeBath">Bath</span></button>
-      <button type="button" class="log-btn" data-type="coat"><span class="log-btn-icon" aria-hidden="true">✂️</span><span data-i18n="logTypeCoat">Coat trimmed</span></button>
-    </div>
-    <div id="walkDurationPicker" class="walk-duration" hidden>
-      <p data-i18n="logWalkPrompt">How long was the walk?</p>
-      <div class="duration-chips" id="durationChips">
-        <button type="button" data-min="10">10 min</button>
-        <button type="button" data-min="20">20 min</button>
-        <button type="button" data-min="30">30 min</button>
-        <button type="button" data-min="45">45 min</button>
-        <button type="button" data-min="60">60 min</button>
-      </div>
-      <div class="duration-custom">
-        <input type="number" id="walkCustomMinutes" min="1" max="600" inputmode="numeric" data-i18n-placeholder="logWalkCustomPlaceholder" placeholder="Custom minutes">
-        <button type="button" id="walkCustomConfirm" data-i18n="logWalkCustomBtn">Log walk</button>
-      </div>
-      <button type="button" id="walkDurationCancel" class="log-cancel" data-i18n="logCancel">Cancel</button>
-    </div>
-    <div class="log-custom">
-      <label for="logCustomText" data-i18n="logCustomLabel">Or log any event</label>
-      <div class="log-custom-row">
-        <input type="text" id="logCustomText" maxlength="80" data-i18n-placeholder="logCustomPlaceholder" placeholder="E.g. vet visit">
-        <button type="button" id="logCustomConfirm" data-i18n="logCustomBtn">Log</button>
-      </div>
-    </div>
-    <p id="logConfirm" class="log-confirm" role="status" aria-live="polite"></p>
-  </div>
-  <a class="log-donate-link log-donate-link--quick" href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener" aria-label="Support Doginary with a donation">
-    <img src="assets/donation.jpg" alt="Support Doginary with a donation" loading="lazy" decoding="async">
-  </a>
-  </div>
-
-  <div class="log-calendar-wrap">
-    <div class="panel-plain log-calendar">
-      <div class="cal-head">
-        <button type="button" id="calPrev" data-i18n-aria-label="calPrevAria" aria-label="Previous month">‹</button>
-        <h3 id="calMonthLabel"></h3>
-        <button type="button" id="calNext" data-i18n-aria-label="calNextAria" aria-label="Next month">›</button>
-      </div>
-      <div class="cal-weekdays" id="calWeekdays"></div>
-      <div class="cal-grid" id="calGrid"></div>
-    </div>
-    <div class="log-day-col">
-      <div class="panel-plain log-day-detail" id="logDayDetail" aria-live="polite"></div>
-    </div>
+  <div class="panel-plain log-cta">
+    <p class="log-cta-text" data-i18n="logCtaText">Doginary's daily log now lives on its own page, with a full calendar and insights built in.</p>
+    <a class="log-cta-btn" href="logga.html" data-i18n="logCtaBtn">Open the daily log →</a>
   </div>
 </section>
 

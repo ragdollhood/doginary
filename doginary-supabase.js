@@ -182,6 +182,15 @@
   }
 
   // ---------- Dagboksrader ----------
+  //
+  // KRÄVER dessa kolumner på tabellen `entries` (kör en gång i SQL Editor
+  // om de inte redan finns) — annars sparas snabbloggning (foto-korten
+  // högst upp i logga.html) utan sin typ/detalj och hamnar som en
+  // anonym anteckning ("Anteckning", "—") istället för t.ex. "Sömn" med
+  // rätt emoji och färg:
+  //   alter table public.entries add column if not exists type text;
+  //   alter table public.entries add column if not exists detail text;
+  //   alter table public.entries add column if not exists time text;
 
   function loadEntries(dogId) {
     return client
@@ -198,6 +207,9 @@
             id: row.id,
             isoDate: row.iso_date,
             date: row.display_date,
+            time: row.time,
+            type: row.type,
+            detail: row.detail,
             aptit: row.aptit,
             walkLength: row.walk_length,
             walkEnv: row.walk_env,
@@ -220,8 +232,11 @@
     var row = {
       user_id: userId,
       dog_id: dogId,
-      iso_date: new Date().toISOString().slice(0, 10),
+      iso_date: entry.isoDate || new Date().toISOString().slice(0, 10),
       display_date: entry.date,
+      time: entry.time,
+      type: entry.type,
+      detail: entry.detail,
       aptit: entry.aptit,
       walk_length: entry.walkLength === '' || entry.walkLength == null ? null : Number(entry.walkLength),
       walk_env: entry.walkEnv,

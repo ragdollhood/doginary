@@ -436,6 +436,7 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
     try {
       data = await DoginaryDB.loadHealthEntries(currentDog.id);
     } catch (err) {
+      console.error('Doginary: kunde inte läsa in hälsoposter', err);
       data = [];
       alert(t('loadError'));
     } finally {

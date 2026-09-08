@@ -139,7 +139,7 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
       authEyebrow: 'Doginary',
       authTitle: 'Log in to open the health center',
       authCardTitle: 'Create an account or log in',
-      authCardText: 'The health center is part of Doginary Premium. Log in or create an account to start logging your dog’s health — entries are saved in this browser, tied to your account.',
+      authCardText: 'The health center is part of Doginary Premium. Log in or create an account to start logging your dog’s health — everything is saved to your account and syncs across your devices.',
       authCardBtn: 'Create account / Log in',
       eyebrow: 'Doginary Premium',
       pageTitle: 'Health Center',
@@ -165,6 +165,10 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
       cancelBtn: 'Cancel', saveBtn: 'Save to health calendar',
       closeLabel: 'Close', removeLabel: 'Remove',
       emptyMessage: 'No health info logged this day.',
+      loadingEntries: 'Loading …',
+      loadError: 'Couldn’t load your health data right now — please reload the page.',
+      saveError: 'Couldn’t save right now — please try again.',
+      removeError: 'Couldn’t remove right now — please try again.',
       footerDisclaimer: 'Doginary does not provide veterinary advice. Always contact a vet if you’re concerned about your dog’s health.',
       footerTerms: 'Terms',
     },
@@ -174,7 +178,7 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
       authEyebrow: 'Doginary',
       authTitle: 'Logga in för att öppna hälsocentret',
       authCardTitle: 'Skapa konto eller logga in',
-      authCardText: 'Hälsocentret är en del av Doginary Premium. Logga in eller skapa ett konto för att börja logga din hunds hälsa — anteckningarna sparas i den här webbläsaren, kopplade till ditt konto.',
+      authCardText: 'Hälsocentret är en del av Doginary Premium. Logga in eller skapa ett konto för att börja logga din hunds hälsa — allt sparas på ditt konto och syncar mellan dina enheter.',
       authCardBtn: 'Skapa konto / Logga in',
       eyebrow: 'Doginary Premium',
       pageTitle: 'Hälsocenter',
@@ -200,6 +204,10 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
       cancelBtn: 'Avbryt', saveBtn: 'Spara i hälsokalendern',
       closeLabel: 'Stäng', removeLabel: 'Ta bort',
       emptyMessage: 'Ingen hälsoinformation registrerad den här dagen.',
+      loadingEntries: 'Laddar …',
+      loadError: 'Kunde inte hämta din hälsodata just nu — ladda om sidan.',
+      saveError: 'Kunde inte spara just nu — försök igen.',
+      removeError: 'Kunde inte ta bort just nu — försök igen.',
       footerDisclaimer: 'Doginary ger inte veterinärmedicinsk rådgivning. Kontakta alltid veterinär om du är orolig för din hunds hälsa.',
       footerTerms: 'Villkor',
     }
@@ -273,13 +281,15 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
 
   /* ==================================================================
      Hälsodata
-     Sparas lokalt i webbläsaren, namnrymt per inloggat konto (uid) så
-     att olika konton på samma enhet inte blandas ihop.
+     Sparas i Supabase (tabellen `health_entries`, se
+     doginary-health-schema.sql) — kopplad till den inloggade
+     användarens hund, precis som dagbokens `entries`-tabell.
      ================================================================== */
   let data = [];
-  let storageKey = null;
   let currentUser = null;
+  let currentDog = null;
   let currentDogName = null;
+  let loadingEntries = false;
   let selected = iso(new Date()), view = 'week', cursor = new Date(), activeType = null;
 
   function iso(d){ return d.toLocaleDateString('sv-SE'); }
@@ -287,7 +297,6 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
   function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
   function label(s, opt = { weekday: 'long', day: 'numeric', month: 'long' }){ return cap(dateFrom(s).toLocaleDateString(LOCALE[lang], opt)); }
   function weekStartOf(d){ let x = new Date(d), n = (x.getDay() + 6) % 7; x.setDate(x.getDate() - n); x.setHours(0,0,0,0); return x; }
-  function save(){ if (!storageKey) return; localStorage.setItem(storageKey, JSON.stringify(data)); }
   function byDate(s){ return data.filter(x => x.date === s); }
   function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
   function entriesCountLabel(n){ return lang === 'sv' ? `${n} poster` : `${n} ${n === 1 ? 'entry' : 'entries'}`; }
@@ -333,15 +342,31 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
   }
 
   function renderEntries(){
-    const list = document.getElementById('entries'), items = byDate(selected).sort((a, b) => b.time.localeCompare(a.time));
+    const list = document.getElementById('entries'), items = byDate(selected).sort((a, b) => (a.time || '').localeCompare(b.time || '')).reverse();
     document.getElementById('dayTitle').textContent = label(selected);
-    document.getElementById('dayCount').textContent = items.length ? entriesCountLabel(items.length) : '';
+    document.getElementById('dayCount').textContent = (!loadingEntries && items.length) ? entriesCountLabel(items.length) : '';
+    if (loadingEntries) {
+      list.innerHTML = `<div class="empty-message">${t('loadingEntries')}</div>`;
+      return;
+    }
     if (!items.length) {
       list.innerHTML = `<div class="empty-message">${t('emptyMessage')}</div>`;
       return;
     }
     list.innerHTML = items.map(x => `<div class="entry"><span class="entry-icon" aria-hidden="true">${TYPE_ICONS[x.type]}</span><div><strong>${escapeHtml(typeTitle(x.type))} · ${escapeHtml(x.value)}</strong><p>${[x.extra, x.note, x.time].filter(Boolean).map(escapeHtml).join(' · ')}</p></div><button class="remove" data-id="${x.id}" aria-label="${t('removeLabel')}">✕</button></div>`).join('');
-    list.querySelectorAll('.remove').forEach(b => b.onclick = () => { data = data.filter(x => x.id !== b.dataset.id); save(); render(); });
+    list.querySelectorAll('.remove').forEach(b => b.onclick = () => removeEntry(b.dataset.id, b));
+  }
+
+  async function removeEntry(id, btn){
+    if (btn) btn.disabled = true;
+    try {
+      await DoginaryDB.removeHealthEntry(id);
+      data = data.filter(x => x.id !== id);
+      render();
+    } catch (err) {
+      alert(t('removeError'));
+      if (btn) btn.disabled = false;
+    }
   }
 
   function openModal(type){
@@ -360,11 +385,23 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
   document.getElementById('cancel').onclick = closeModal;
   document.getElementById('overlay').onclick = e => { if (e.target.id === 'overlay') closeModal(); };
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-  document.getElementById('healthForm').onsubmit = e => {
+  document.getElementById('healthForm').onsubmit = async e => {
     e.preventDefault();
-    let f = new FormData(e.target), value = f.get('value'), extra = f.get('extra') || '', note = document.getElementById('note').value.trim();
-    data.push({ id: crypto.randomUUID(), date: selected, time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }), type: activeType, value, extra, note });
-    save(); closeModal(); render();
+    if (!currentDog) return;
+    const saveBtn = e.target.querySelector('.save');
+    const f = new FormData(e.target), value = f.get('value'), extra = f.get('extra') || '', note = document.getElementById('note').value.trim();
+    const entry = { date: selected, time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }), type: activeType, value, extra, note };
+    saveBtn.disabled = true;
+    try {
+      const saved = await DoginaryDB.addHealthEntry(currentDog.id, currentUser.id, entry);
+      data.push(saved);
+      closeModal();
+      render();
+    } catch (err) {
+      alert(t('saveError'));
+    } finally {
+      saveBtn.disabled = false;
+    }
   };
 
   document.querySelectorAll('.toggle button').forEach(b => b.onclick = () => {
@@ -388,30 +425,41 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
   const openAuthBtn = document.getElementById('openAuthBtn');
   openAuthBtn.addEventListener('click', () => DoginaryAuthUI.open('signup'));
 
-  function loadDataForUser(uid){
-    storageKey = 'doginary-health-entries-v1:' + uid;
-    try { data = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { data = []; }
+  async function refreshEntries(){
+    if (!currentDog) return;
+    loadingEntries = true;
+    render();
+    try {
+      data = await DoginaryDB.loadHealthEntries(currentDog.id);
+    } catch (err) {
+      data = [];
+      alert(t('loadError'));
+    } finally {
+      loadingEntries = false;
+      render();
+    }
   }
 
   async function enterApp(session){
     currentUser = session.user;
-    loadDataForUser(currentUser.id);
+    data = [];
     authScreen.hidden = true;
     appScreen.hidden = false;
     cursor = new Date();
     selected = iso(cursor);
     try {
       const dog = await DoginaryAuthUI.getCurrentDog();
+      currentDog = dog || null;
       currentDogName = (dog && dog.name) ? dog.name : null;
-    } catch { currentDogName = null; }
+    } catch { currentDog = null; currentDogName = null; }
     updateIntro();
-    render();
+    await refreshEntries();
   }
 
   function showAuth(){
     currentUser = null;
+    currentDog = null;
     data = [];
-    storageKey = null;
     currentDogName = null;
     authScreen.hidden = false;
     appScreen.hidden = true;
@@ -427,6 +475,8 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
   // vi introtexten här i synk utan att sidan behöver laddas om.
   document.addEventListener('doginary:dogupdate', (e) => {
     if (!currentUser || !e.detail || !e.detail.dog) return;
+    if (currentDog && e.detail.dog.id !== currentDog.id) return;
+    currentDog = e.detail.dog;
     currentDogName = e.detail.dog.name || null;
     updateIntro();
   });

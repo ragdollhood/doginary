@@ -273,6 +273,81 @@
       });
   }
 
+  // ---------- Hälsocenter-rader (health.html) ----------
+  //
+  // Egen tabell, separat från `entries` ovan: hälsocentrets kategorier
+  // (symptom/medicin/vikt/veterinärbesök/vaccination/parasitskydd/
+  // tandvård/anteckning) är fria, kan förekomma flera gånger per dag och
+  // passar inte in i dagbokens en-rad-per-dag-modell som insiktsmotorn
+  // (doginary-data.js) förväntar sig. Kör doginary-health-schema.sql i
+  // SQL Editor EN gång innan detta fungerar skarpt — den skapar tabellen
+  // `health_entries` med samma RLS-mönster (auth.uid() = user_id) som
+  // resten av projektet.
+
+  function loadHealthEntries(dogId) {
+    return client
+      .from('health_entries')
+      .select('*')
+      .eq('dog_id', dogId)
+      .order('iso_date', { ascending: true })
+      .order('time', { ascending: true })
+      .then(function (res) {
+        if (res.error) throw res.error;
+        return (res.data || []).map(function (row) {
+          return {
+            id: row.id,
+            date: row.iso_date,
+            time: row.time,
+            type: row.type,
+            value: row.value,
+            extra: row.extra,
+            note: row.note
+          };
+        });
+      });
+  }
+
+  function addHealthEntry(dogId, userId, entry) {
+    var row = {
+      user_id: userId,
+      dog_id: dogId,
+      iso_date: entry.date || entry.isoDate || new Date().toISOString().slice(0, 10),
+      time: entry.time,
+      type: entry.type,
+      value: entry.value,
+      extra: entry.extra,
+      note: entry.note
+    };
+    return client
+      .from('health_entries')
+      .insert(row)
+      .select()
+      .single()
+      .then(function (res) {
+        if (res.error) throw res.error;
+        return {
+          id: res.data.id,
+          date: res.data.iso_date,
+          time: res.data.time,
+          type: res.data.type,
+          value: res.data.value,
+          extra: res.data.extra,
+          note: res.data.note
+        };
+      });
+  }
+
+  function removeHealthEntry(id) {
+    return client
+      .from('health_entries')
+      .delete()
+      .eq('id', id)
+      .then(function (res) {
+        if (res.error) throw res.error;
+        return true;
+      });
+  }
+
   global.DoginaryAuth = {
     client: client,
     getSession: getSession,
@@ -289,6 +364,9 @@
     updateDogProfile: updateDogProfile,
     loadEntries: loadEntries,
     addEntry: addEntry,
-    removeEntry: removeEntry
+    removeEntry: removeEntry,
+    loadHealthEntries: loadHealthEntries,
+    addHealthEntry: addHealthEntry,
+    removeHealthEntry: removeHealthEntry
   };
 })(window);

@@ -43,6 +43,8 @@ const currentEl = $('#current');
 const alertsEl = $('#alerts');
 const walkAdviceEl = $('#walkAdvice');
 const coatAdviceEl = $('#coatAdvice');
+const breedFactsPanelEl = $('#breedFactsPanel');
+const breedFactsEl = $('#breedFacts');
 const placeResultsEl = $('#placeResults');
 const updatedEl = $('#updated');
 const heroImgEl = $('#heroImg');
@@ -255,7 +257,27 @@ const STR = {
     sourceEvidensia: "Evidensia",
     sourceArkenZoo: "Arken Zoo",
     sourceVetPartner: "Veterinary Partner (VIN)",
-    sourceAkc: "American Kennel Club"
+    sourceAkc: "American Kennel Club",
+    sourceSkk: "Swedish Kennel Club (SKK)",
+
+    breedFactsHeading: "About the breed",
+    breedFactsFootnote: "General, breed-typical information — every dog is an individual, and this never replaces judgement from a vet or professional groomer.",
+    breedCoatTitle: "{name}'s coat",
+    breedCoatDouble: "has a double coat with a dense undercoat — insulating in the cold, but it also means the coat is shed out heavily (\u201cblowing coat\u201d) a couple of times a year and needs regular brushing to stay healthy.",
+    breedCoatShort: "has a short, close-lying coat. It sheds less than a long or double coat, but it also gives less insulation, so the dog can feel the cold sooner in low temperatures.",
+    breedCoatLong: "has a long coat that easily tangles and mats, especially around the ears, legs and behind — regular brushing is needed to prevent this, more so in wet weather.",
+    breedCoatCurly: "has a curly, non-shedding coat that needs regular trimming from a groomer. Curly coats mat easily when they get wet, so brushing it through after a rainy walk helps.",
+    breedCoatWire: "has a wiry, harsh outer coat. This coat type is traditionally hand-stripped rather than clipped to keep its texture, and it's a good idea to ask a professional groomer what's recommended for the breed.",
+    breedCoatHeatNote: "Today's warm weather means {name} can overheat faster than a shorter-coated dog — plan the walk for a cooler time of day and bring water.",
+    breedCoatShedNote: "This is peak shedding season for double-coated breeds like {name} — daily brushing helps loose fur come out at home instead of everywhere else.",
+    breedCoatColdNote: "In today's cold, a short coat like {name}'s gives limited insulation — consider a dog coat/jacket on the walk.",
+    breedCoatSunNote: "Sun and warmth today — keep an eye on {name}'s exposed skin (nose, ear tips), since a short or thin coat gives less natural sun protection.",
+    breedCoatWetNote: "Today's precipitation means {name}'s coat is more likely to tangle or mat — a thorough brush-through after the walk helps.",
+    breedCoatNormalNote: "No weather extremes to note today — the general coat-care tips above still apply.",
+    breedSkkLinkText: "Read more about the breed at SKK",
+    breedFactsSkkText: "{breed} is a dog breed recognized by the Swedish Kennel Club (SKK), the country's kennel club — see the breed page for its full breed standard, history and typical temperament.",
+    breedFactsBrachyTitle: "Brachycephalic breed — extra heat caution",
+    breedFactsBrachyText: "{name}'s breed has a shortened muzzle (brachycephalic), which research links to a higher risk of heat-related illness. In today's warm conditions, choose a cooler time of day, an easy pace, and bring water."
   },
   sv: {
     pageTitle: "Doginary — Väder för hundpromenader, komfortindex & hundvård",
@@ -442,7 +464,27 @@ const STR = {
     sourceEvidensia: "Evidensia",
     sourceArkenZoo: "Arken Zoo",
     sourceVetPartner: "Veterinary Partner (VIN)",
-    sourceAkc: "American Kennel Club"
+    sourceAkc: "American Kennel Club",
+    sourceSkk: "Svenska Kennelklubben (SKK)",
+
+    breedFactsHeading: "Om rasen",
+    breedFactsFootnote: "Generell, rastypisk information — varje hund är en individ, och det här ersätter aldrig bedömning från veterinär eller professionell trimmare.",
+    breedCoatTitle: "{name}s päls",
+    breedCoatDouble: "har dubbelpäls med tät underull — isolerande i kylan, men det innebär också att pälsen fälls kraftigt (\u201cfäller\u201d) ett par gånger om året och behöver borstas regelbundet för att hålla sig frisk.",
+    breedCoatShort: "har kort, tätt liggande päls. Den fäller mindre än en lång eller dubbelpäls, men ger också mindre isolering, så hunden kan känna av kylan snabbare vid låga temperaturer.",
+    breedCoatLong: "har lång päls som lätt trasslar och tovar sig, särskilt vid öron, ben och bak — regelbunden borstning behövs för att förebygga det, ännu mer i blött väder.",
+    breedCoatCurly: "har lockig, icke-fällande päls som behöver klippas regelbundet av en trimmare. Lockig päls tovar sig lätt när den blir blöt, så en genomborstning efter en regnig promenad hjälper.",
+    breedCoatWire: "har strävhårig, grov ytterpäls. Den här pälstypen plockas traditionellt (handtrimmas) istället för att klippas för att behålla sin struktur — fråga gärna en professionell trimmare vad som rekommenderas för rasen.",
+    breedCoatHeatNote: "Dagens varma väder gör att {name} kan bli överhettad snabbare än en korthårig hund — lägg promenaden på en svalare tid på dygnet och ta med vatten.",
+    breedCoatShedNote: "Det här är högsäsong för fällning hos dubbelpälsade raser som {name} — daglig borstning gör att den lösa pälsen hamnar hemma istället för överallt annars.",
+    breedCoatColdNote: "I dagens kyla ger en kort päls som {name}s begränsad isolering — fundera på hundtäcke/jacka på promenaden.",
+    breedCoatSunNote: "Sol och värme idag — håll koll på {name}s utsatta hud (nos, öronspetsar), eftersom kort eller tunn päls ger mindre naturligt solskydd.",
+    breedCoatWetNote: "Dagens nederbörd gör att {name}s päls lättare trasslar eller tovar sig — en ordentlig genomborstning efter promenaden hjälper.",
+    breedCoatNormalNote: "Inga väderextremer att notera idag — de allmänna pälsvårdsråden ovan gäller ändå.",
+    breedSkkLinkText: "Läs mer om rasen hos SKK",
+    breedFactsSkkText: "{breed} är en hundras erkänd av Svenska Kennelklubben (SKK), landets kennelklubb — se rassidan för rasstandard, historia och typiskt temperament.",
+    breedFactsBrachyTitle: "Kortnosig ras — extra värmeförsiktighet",
+    breedFactsBrachyText: "{name}s ras har kort nos (brachycephal), vilket i forskning kopplas till högre risk för värmerelaterad sjukdom. Välj en svalare tid på dygnet, ett lugnt tempo och ta med vatten i dagens värme."
   }
 };
 
@@ -1354,69 +1396,98 @@ function normalizeDogProfile(profile) {
 // vanligaste raserna i Sverige/internationellt — otäckta raser hamnar under
 // "Annan ras", blandraser under "Blandras".
 const DOG_BREED_OPTIONS = [
-  { id: 'labrador', sv: 'Labrador retriever', en: 'Labrador Retriever' },
-  { id: 'golden', sv: 'Golden retriever', en: 'Golden Retriever' },
-  { id: 'tysk-schaferhund', sv: 'Tysk schäferhund', en: 'German Shepherd' },
-  { id: 'fransk-bulldogg', sv: 'Fransk bulldogg', en: 'French Bulldog' },
-  { id: 'engelsk-bulldogg', sv: 'Engelsk bulldogg', en: 'English Bulldog' },
-  { id: 'mops', sv: 'Mops', en: 'Pug' },
-  { id: 'boston-terrier', sv: 'Boston terrier', en: 'Boston Terrier' },
-  { id: 'pekingeser', sv: 'Pekingeser', en: 'Pekingese' },
-  { id: 'shih-tzu', sv: 'Shih tzu', en: 'Shih Tzu' },
-  { id: 'beagle', sv: 'Beagle', en: 'Beagle' },
-  { id: 'border-collie', sv: 'Border collie', en: 'Border Collie' },
-  { id: 'malinois', sv: 'Belgisk vallhund (malinois)', en: 'Belgian Malinois' },
-  { id: 'cocker-spaniel', sv: 'Cocker spaniel', en: 'Cocker Spaniel' },
-  { id: 'cavalier', sv: 'Cavalier King Charles spaniel', en: 'Cavalier King Charles Spaniel' },
-  { id: 'tax', sv: 'Tax', en: 'Dachshund' },
-  { id: 'chihuahua', sv: 'Chihuahua', en: 'Chihuahua' },
-  { id: 'pudel', sv: 'Pudel', en: 'Poodle' },
-  { id: 'schnauzer', sv: 'Schnauzer', en: 'Schnauzer' },
-  { id: 'rottweiler', sv: 'Rottweiler', en: 'Rottweiler' },
-  { id: 'dobermann', sv: 'Dobermann', en: 'Doberman' },
-  { id: 'boxer', sv: 'Boxer', en: 'Boxer' },
-  { id: 'australian-shepherd', sv: 'Australian shepherd', en: 'Australian Shepherd' },
-  { id: 'husky', sv: 'Sibirisk husky', en: 'Siberian Husky' },
-  { id: 'malamute', sv: 'Alaskan malamute', en: 'Alaskan Malamute' },
-  { id: 'akita', sv: 'Akita', en: 'Akita' },
-  { id: 'shiba', sv: 'Shiba inu', en: 'Shiba Inu' },
-  { id: 'jack-russell', sv: 'Jack Russell terrier', en: 'Jack Russell Terrier' },
-  { id: 'staffordshire', sv: 'Staffordshire bullterrier', en: 'Staffordshire Bull Terrier' },
-  { id: 'amstaff', sv: 'American staffordshire terrier', en: 'American Staffordshire Terrier' },
-  { id: 'berner-sennen', sv: 'Berner sennenhund', en: 'Bernese Mountain Dog' },
-  { id: 'sanktbernhard', sv: 'Sankt bernhardshund', en: 'Saint Bernard' },
-  { id: 'newfoundlandshund', sv: 'Newfoundlandshund', en: 'Newfoundland' },
-  { id: 'leonberger', sv: 'Leonberger', en: 'Leonberger' },
-  { id: 'schaferhund-vit', sv: 'Vit herdehund', en: 'White Swiss Shepherd' },
-  { id: 'weimaraner', sv: 'Weimaraner', en: 'Weimaraner' },
-  { id: 'vizsla', sv: 'Vizsla', en: 'Vizsla' },
-  { id: 'pointer', sv: 'Pointer', en: 'Pointer' },
-  { id: 'setter', sv: 'Engelsk setter', en: 'English Setter' },
-  { id: 'flatcoated', sv: 'Flatcoated retriever', en: 'Flat-Coated Retriever' },
-  { id: 'welsh-corgi', sv: 'Welsh corgi', en: 'Welsh Corgi' },
-  { id: 'shetland-sheepdog', sv: 'Shetland sheepdog', en: 'Shetland Sheepdog' },
-  { id: 'collie', sv: 'Collie', en: 'Collie' },
-  { id: 'greyhound', sv: 'Greyhound', en: 'Greyhound' },
-  { id: 'whippet', sv: 'Whippet', en: 'Whippet' },
-  { id: 'basset-hound', sv: 'Basset hound', en: 'Basset Hound' },
-  { id: 'bichon-frise', sv: 'Bichon frisé', en: 'Bichon Frisé' },
-  { id: 'malteser', sv: 'Malteser', en: 'Maltese' },
-  { id: 'yorkshire', sv: 'Yorkshireterrier', en: 'Yorkshire Terrier' },
-  { id: 'west-highland', sv: 'West highland white terrier', en: 'West Highland White Terrier' },
-  { id: 'cairn-terrier', sv: 'Cairnterrier', en: 'Cairn Terrier' },
-  { id: 'schaffer-belgisk', sv: 'Belgisk vallhund (groenendael)', en: 'Belgian Sheepdog' },
-  { id: 'bernedoodle', sv: 'Bernedoodle', en: 'Bernedoodle' },
-  { id: 'labradoodle', sv: 'Labradoodle', en: 'Labradoodle' },
-  { id: 'goldendoodle', sv: 'Goldendoodle', en: 'Goldendoodle' },
-  { id: 'cane-corso', sv: 'Cane corso', en: 'Cane Corso' },
-  { id: 'schaferhund-kaukasisk', sv: 'Kaukasisk ovtjarka', en: 'Caucasian Shepherd' },
-  { id: 'vastgotaspets', sv: 'Västgötaspets', en: 'Swedish Vallhund' },
-  { id: 'lapphund', sv: 'Svensk lapphund', en: 'Swedish Lapphund' },
-  { id: 'jamthund', sv: 'Jämthund', en: 'Jämthund' },
-  { id: 'norsk-algehund', sv: 'Norsk älghund', en: 'Norwegian Elkhound' },
-  { id: 'finsk-spets', sv: 'Finsk spets', en: 'Finnish Spitz' },
-  { id: 'drever', sv: 'Drever', en: 'Drever' }
+  { id: 'labrador', sv: 'Labrador retriever', en: 'Labrador Retriever', coatType: 'double' },
+  { id: 'golden', sv: 'Golden retriever', en: 'Golden Retriever', coatType: 'double' },
+  { id: 'tysk-schaferhund', sv: 'Tysk schäferhund', en: 'German Shepherd', coatType: 'double' },
+  { id: 'fransk-bulldogg', sv: 'Fransk bulldogg', en: 'French Bulldog', coatType: 'short' },
+  { id: 'engelsk-bulldogg', sv: 'Engelsk bulldogg', en: 'English Bulldog', coatType: 'short' },
+  { id: 'mops', sv: 'Mops', en: 'Pug', coatType: 'short' },
+  { id: 'boston-terrier', sv: 'Boston terrier', en: 'Boston Terrier', coatType: 'short' },
+  { id: 'pekingeser', sv: 'Pekingeser', en: 'Pekingese', coatType: 'long' },
+  { id: 'shih-tzu', sv: 'Shih tzu', en: 'Shih Tzu', coatType: 'long' },
+  { id: 'beagle', sv: 'Beagle', en: 'Beagle', coatType: 'short' },
+  { id: 'border-collie', sv: 'Border collie', en: 'Border Collie', coatType: 'double' },
+  { id: 'malinois', sv: 'Belgisk vallhund (malinois)', en: 'Belgian Malinois', coatType: 'short' },
+  { id: 'cocker-spaniel', sv: 'Cocker spaniel', en: 'Cocker Spaniel', coatType: 'long' },
+  { id: 'cavalier', sv: 'Cavalier King Charles spaniel', en: 'Cavalier King Charles Spaniel', coatType: 'long' },
+  { id: 'tax', sv: 'Tax', en: 'Dachshund', coatType: 'short' },
+  { id: 'chihuahua', sv: 'Chihuahua', en: 'Chihuahua', coatType: 'short' },
+  { id: 'pudel', sv: 'Pudel', en: 'Poodle', coatType: 'curly' },
+  { id: 'schnauzer', sv: 'Schnauzer', en: 'Schnauzer', coatType: 'wire' },
+  { id: 'rottweiler', sv: 'Rottweiler', en: 'Rottweiler', coatType: 'short' },
+  { id: 'dobermann', sv: 'Dobermann', en: 'Doberman', coatType: 'short' },
+  { id: 'boxer', sv: 'Boxer', en: 'Boxer', coatType: 'short' },
+  { id: 'australian-shepherd', sv: 'Australian shepherd', en: 'Australian Shepherd', coatType: 'double' },
+  { id: 'husky', sv: 'Sibirisk husky', en: 'Siberian Husky', coatType: 'double' },
+  { id: 'malamute', sv: 'Alaskan malamute', en: 'Alaskan Malamute', coatType: 'double' },
+  { id: 'akita', sv: 'Akita', en: 'Akita', coatType: 'double' },
+  { id: 'shiba', sv: 'Shiba inu', en: 'Shiba Inu', coatType: 'double' },
+  { id: 'jack-russell', sv: 'Jack Russell terrier', en: 'Jack Russell Terrier', coatType: 'short' },
+  { id: 'staffordshire', sv: 'Staffordshire bullterrier', en: 'Staffordshire Bull Terrier', coatType: 'short' },
+  { id: 'amstaff', sv: 'American staffordshire terrier', en: 'American Staffordshire Terrier', coatType: 'short' },
+  { id: 'berner-sennen', sv: 'Berner sennenhund', en: 'Bernese Mountain Dog', coatType: 'long' },
+  { id: 'sanktbernhard', sv: 'Sankt bernhardshund', en: 'Saint Bernard', coatType: 'double' },
+  { id: 'newfoundlandshund', sv: 'Newfoundlandshund', en: 'Newfoundland', coatType: 'double' },
+  { id: 'leonberger', sv: 'Leonberger', en: 'Leonberger', coatType: 'double' },
+  { id: 'schaferhund-vit', sv: 'Vit herdehund', en: 'White Swiss Shepherd', coatType: 'double' },
+  { id: 'weimaraner', sv: 'Weimaraner', en: 'Weimaraner', coatType: 'short' },
+  { id: 'vizsla', sv: 'Vizsla', en: 'Vizsla', coatType: 'short' },
+  { id: 'pointer', sv: 'Pointer', en: 'Pointer', coatType: 'short' },
+  { id: 'setter', sv: 'Engelsk setter', en: 'English Setter', coatType: 'long' },
+  { id: 'flatcoated', sv: 'Flatcoated retriever', en: 'Flat-Coated Retriever', coatType: 'long' },
+  { id: 'welsh-corgi', sv: 'Welsh corgi', en: 'Welsh Corgi', coatType: 'double' },
+  { id: 'shetland-sheepdog', sv: 'Shetland sheepdog', en: 'Shetland Sheepdog', coatType: 'long' },
+  { id: 'collie', sv: 'Collie', en: 'Collie', coatType: 'long' },
+  { id: 'greyhound', sv: 'Greyhound', en: 'Greyhound', coatType: 'short' },
+  { id: 'whippet', sv: 'Whippet', en: 'Whippet', coatType: 'short' },
+  { id: 'basset-hound', sv: 'Basset hound', en: 'Basset Hound', coatType: 'short' },
+  { id: 'bichon-frise', sv: 'Bichon frisé', en: 'Bichon Frisé', coatType: 'curly' },
+  { id: 'malteser', sv: 'Malteser', en: 'Maltese', coatType: 'long' },
+  { id: 'yorkshire', sv: 'Yorkshireterrier', en: 'Yorkshire Terrier', coatType: 'long' },
+  { id: 'west-highland', sv: 'West highland white terrier', en: 'West Highland White Terrier', coatType: 'wire' },
+  { id: 'cairn-terrier', sv: 'Cairnterrier', en: 'Cairn Terrier', coatType: 'wire' },
+  { id: 'schaffer-belgisk', sv: 'Belgisk vallhund (groenendael)', en: 'Belgian Sheepdog', coatType: 'long' },
+  { id: 'bernedoodle', sv: 'Bernedoodle', en: 'Bernedoodle', coatType: 'curly' },
+  { id: 'labradoodle', sv: 'Labradoodle', en: 'Labradoodle', coatType: 'curly' },
+  { id: 'goldendoodle', sv: 'Goldendoodle', en: 'Goldendoodle', coatType: 'curly' },
+  { id: 'cane-corso', sv: 'Cane corso', en: 'Cane Corso', coatType: 'short' },
+  { id: 'schaferhund-kaukasisk', sv: 'Kaukasisk ovtjarka', en: 'Caucasian Shepherd', coatType: 'double' },
+  { id: 'vastgotaspets', sv: 'Västgötaspets', en: 'Swedish Vallhund', coatType: 'double' },
+  { id: 'lapphund', sv: 'Svensk lapphund', en: 'Swedish Lapphund', coatType: 'double' },
+  { id: 'jamthund', sv: 'Jämthund', en: 'Jämthund', coatType: 'double' },
+  { id: 'norsk-algehund', sv: 'Norsk älghund', en: 'Norwegian Elkhound', coatType: 'double' },
+  { id: 'finsk-spets', sv: 'Finsk spets', en: 'Finnish Spitz', coatType: 'double' },
+  { id: 'drever', sv: 'Drever', en: 'Drever', coatType: 'short' }
 ];
+
+// Rasidentitetsfakta länkas till Svenska Kennelklubbens rassida
+// (skk.se/hundraser/<slug>/) — en seriös, officiell källa som täcker
+// praktiskt taget alla erkända raser. Slugen räknas fram enligt SKKs
+// egna URL-mönster, verifierat mot flera raser (t.ex. labrador-retriever,
+// golden-retriever, fransk-bulldogg, cavalier-king-charles-spaniel, tax,
+// jamthund [å/ä→a], vastgotaspets [ö→o]).
+// Raser som INTE är erkända av SKK/FCI (blandraser/"doodles") eller där
+// SKKs sidstruktur är oklar (t.ex. varianter av belgisk vallhund) hoppar
+// vi hellre över än gissar en länk — se NO_SKK_BREED_IDS.
+const NO_SKK_BREED_IDS = new Set(['bernedoodle', 'labradoodle', 'goldendoodle', 'malinois', 'schaffer-belgisk']);
+
+function skkBreedUrl(breedNameSv) {
+  const slug = String(breedNameSv || '')
+    .toLocaleLowerCase('sv-SE')
+    .replace(/å/g, 'a').replace(/ä/g, 'a').replace(/ö/g, 'o')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return `https://www.skk.se/hundraser/${slug}/`;
+}
+
+// Hittar DOG_BREED_OPTIONS-posten för det ras-id som är sparat på
+// profilkortets rullmeny (dogProfileBreedEl.dataset.breedId), om något —
+// dvs endast för raser i vår lista, aldrig för "Blandras"/"Annan ras".
+function getSelectedBreedOption() {
+  const id = dogProfileBreedEl && dogProfileBreedEl.dataset.breedId;
+  if (!id || id === 'mixed' || id === 'other') return null;
+  return DOG_BREED_OPTIONS.find(opt => opt.id === id) || null;
+}
 
 // Extra val som inte är enskilda raser men behövs i listan.
 const DOG_BREED_SPECIAL_OPTIONS = {
@@ -2357,7 +2428,57 @@ function computeCoatAdvisories(cur) {
     items.push({ icon: ICONS.sun, title: t('coatSunTitle'), level: 'caution', text: t('coatSunText'), sources: [COAT_SOURCES.vetPartnerSun, COAT_SOURCES.akcSun] });
   }
 
+  // 6. Rasspecifikt pälsråd – bara om en ras med känd pälstyp är vald.
+  // Använder samma redan källbelagda källor som ovan (Agria/Evidensia/
+  // Arken Zoo/Veterinary Partner) — ingen ny, overifierad källa behövs
+  // eftersom rådet bygger på pälstyp + dagens väder, inte på ett
+  // ras-specifikt påstående i sig.
+  const breedTip = computeBreedCoatTip(cur, month);
+  if (breedTip) items.push(breedTip);
+
   return items;
+}
+
+const BREED_COAT_TEXT_KEYS = {
+  double: 'breedCoatDouble', short: 'breedCoatShort', long: 'breedCoatLong',
+  curly: 'breedCoatCurly', wire: 'breedCoatWire'
+};
+
+function computeBreedCoatTip(cur, month) {
+  const breedOpt = getSelectedBreedOption();
+  if (!breedOpt || !breedOpt.coatType || !BREED_COAT_TEXT_KEYS[breedOpt.coatType]) return null;
+  const dogName = getDogDisplayName(dogProfile, lang);
+  const apparent = cur.apparentTemp != null ? cur.apparentTemp : cur.temp;
+  const precip = cur.precip || 0;
+  const isSunnyish = ['clear', 'mostlyClear', 'partlyCloudy'].includes(cur.condition);
+  const sheddingSeason = [3, 4, 5, 9, 10, 11].includes(month);
+  const coatType = breedOpt.coatType;
+
+  const baseText = t(BREED_COAT_TEXT_KEYS[coatType]);
+  let noteKey = 'breedCoatNormalNote';
+  let level = 'ok';
+  let source = COAT_SOURCES.agriaPalsvard;
+
+  if (coatType === 'double' && apparent != null && apparent >= 22) {
+    noteKey = 'breedCoatHeatNote'; level = 'caution'; source = COAT_SOURCES.arkenZooSommar;
+  } else if (coatType === 'double' && sheddingSeason) {
+    noteKey = 'breedCoatShedNote'; level = 'ok'; source = COAT_SOURCES.evidensiaHudPals;
+  } else if (coatType === 'short' && apparent != null && apparent <= -5) {
+    noteKey = 'breedCoatColdNote'; level = 'caution'; source = COAT_SOURCES.agriaKoldkramp;
+  } else if (coatType === 'short' && isSunnyish && apparent != null && apparent >= 16) {
+    noteKey = 'breedCoatSunNote'; level = 'caution'; source = COAT_SOURCES.vetPartnerSun;
+  } else if ((coatType === 'long' || coatType === 'curly') && precip >= 0.5) {
+    noteKey = 'breedCoatWetNote'; level = 'caution'; source = COAT_SOURCES.evidensiaHudPals;
+  }
+
+  const noteText = noteKey === 'breedCoatNormalNote' ? t('breedCoatNormalNote') : t(noteKey, { name: dogName });
+  return {
+    icon: ICONS.comb,
+    title: t('breedCoatTitle', { name: dogName }),
+    level,
+    text: `${baseText} ${noteText}`,
+    sources: [source]
+  };
 }
 
 /* ==================================================================================
@@ -2491,6 +2612,65 @@ function renderCoatAdvice(cur) {
   }).join('');
 }
 
+/* ---------- "Om rasen" — generella fakta för vald ras, under profilkortet ----------
+   Visas bara för raser i vår lista (aldrig Blandras/Annan ras) och bara med
+   källhänvisning på varje kort:
+   1. Identitetsfakta — länk till Svenska Kennelklubbens (SKK) rassida.
+      Hoppas över för raser som inte är SKK/FCI-erkända eller där vi är
+      osäkra på SKK:s exakta sidstruktur, se NO_SKK_BREED_IDS.
+   2. Extra värmevarning för kortnosiga (brachycephala) raser vid varmt
+      väder — återanvänder samma ras-matchning (resolveBreedProfile) och
+      källa (RVC/VetCompass) som redan används i komfortindexets
+      ras-justeringar, se DOGINARY_PROFILE_SOURCES ovan. */
+function renderBreedFacts(cur) {
+  if (!breedFactsPanelEl || !breedFactsEl) return;
+  const breedOpt = getSelectedBreedOption();
+  if (!breedOpt) {
+    breedFactsPanelEl.hidden = true;
+    breedFactsEl.innerHTML = '';
+    return;
+  }
+
+  const dogName = getDogDisplayName(dogProfile, lang);
+  const breedName = breedOpt[lang];
+  const cards = [];
+
+  if (!NO_SKK_BREED_IDS.has(breedOpt.id)) {
+    const skkUrl = skkBreedUrl(breedOpt.sv);
+    cards.push({
+      title: breedName,
+      text: t('breedFactsSkkText', { breed: breedName }),
+      sourceHtml: `<a href="${escapeHtml(skkUrl)}" target="_blank" rel="noopener">${escapeHtml(t('sourceSkk'))} ↗</a>`
+    });
+  }
+
+  const resolved = resolveBreedProfile(breedOpt.sv);
+  const apparent = cur.apparentTemp != null ? cur.apparentTemp : cur.temp;
+  if (resolved.matched && resolved.traits.brachycephalic && apparent != null && apparent >= 20) {
+    const rvc = DOGINARY_PROFILE_SOURCES['rvc-brachycephalic-heat'];
+    cards.push({
+      title: t('breedFactsBrachyTitle'),
+      text: t('breedFactsBrachyText', { name: dogName }),
+      sourceHtml: `<a href="${escapeHtml(rvc.url)}" target="_blank" rel="noopener">${escapeHtml(rvc.organization)} ↗</a>`
+    });
+  }
+
+  if (!cards.length) {
+    breedFactsPanelEl.hidden = true;
+    breedFactsEl.innerHTML = '';
+    return;
+  }
+
+  breedFactsPanelEl.hidden = false;
+  breedFactsEl.innerHTML = cards.map(c => `
+    <article class="advice-card">
+      <h4>${escapeHtml(c.title)}</h4>
+      <p>${escapeHtml(c.text)}</p>
+      <p class="advice-source">${escapeHtml(t('sourceLabel'))} ${c.sourceHtml}</p>
+    </article>
+  `).join('');
+}
+
 function render(weatherData, loc, source) {
   const cur = weatherData.current;
   const [icon, desc] = conditionInfo(cur.condition);
@@ -2552,6 +2732,7 @@ function render(weatherData, loc, source) {
   renderAlerts(cur);
   renderDailyTip(cur);
   renderCoatAdvice(cur);
+  renderBreedFacts(cur);
   renderBestWalk(weatherData, unit);
   renderWalkAdvisories(cur, comfort, hasReliableTickData);
   renderDaily(weatherData, unit);

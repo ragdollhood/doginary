@@ -328,6 +328,18 @@
     </form>
   </div>
 
+  <!-- Rasfakta för vald ras: allmänna, korta fakta om rasen kopplade till
+       dagens väder när det är relevant. Byggs av renderBreedFacts() i
+       app.js utifrån dogProfile.breed — dold helt om ingen ras är vald,
+       om rasen är Blandras/Annan ras, eller om rasen inte finns i vår
+       källverifierade lista (BREED_FACTS_DATA i app.js) — vi visar hellre
+       inget än ett obekräftat påstående. Varje kort har alltid en
+       källänk. -->
+  <div class="panel-plain breed-facts-panel" id="breedFactsPanel" hidden>
+    <h3 class="subheading" data-i18n="breedFactsHeading">About the breed</h3>
+    <div id="breedFacts" class="advice-grid breed-facts-grid"></div>
+  </div>
+
   <!-- Bekräftelsemodal: visas direkt efter att en GÄST (ej inloggad) sparat
        profilen lokalt i webbläsaren. Kontot är helt frivilligt — profilen
        fungerar redan (localStorage) oavsett vad man väljer här.

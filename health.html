@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doginary — Hälsocenter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ECE6D9;--surface:#F8F5EC;--surface-2:#F1ECDF;--ink:#2B241C;--soft:#6E6455;--ink-soft:#6E6455;--hair:#DCD3BF;--rust:#A15C38;--rust-soft:#EADACB;--teal:#33505A;--teal-soft:#DDE6E5;--green:#4B6B3E;--green-soft:#DEE7D5;--reward:#4B6B3E;--red:#9C3B2C;--red-soft:#F1DCD5;--warn:#9C3B2C;--purple:#4E4272;--purple-soft:#E2DEEF;--radius:22px;--radius-lg:22px;--radius-sm:12px}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.jpg');background-image:image-set(url('assets/fur-white.webp') type('image/webp'),url('assets/fur-white.jpg') type('image/jpeg'));background-repeat:repeat;color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5}
+
+/* ---------- Delad crossnav (samma uppbyggnad som logga.html) ---------- */
+.crossnav{height:76px;padding:0 max(20px,5vw);background:var(--surface);border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.crossnav-home{display:inline-flex;align-items:center;gap:8px;color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;border:1.5px solid currentColor;border-radius:999px;padding:6px 14px}
+.crossnav-logo{height:30px;width:auto;display:block;border-radius:6px}
+.crossnav-right{display:flex;align-items:center;gap:15px}
+.crossnav-links{display:flex;align-items:center;gap:15px}
+.crossnav-links a{font-size:13px;color:var(--teal);text-decoration:none}
+.crossnav-links a:hover{text-decoration:underline}
+.premium{background:var(--rust);color:#fff!important;text-decoration:none!important;border-radius:999px;padding:8px 13px;font-weight:600}
+.lang-switch{display:flex;align-items:center}
+.lang-btn{border:0;background:var(--surface-2);border-radius:999px;width:34px;height:34px;font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease}
+.lang-btn:hover,.lang-btn:focus-visible{background:var(--hair);outline:none}
+.flag-icon{border-radius:3px;display:block}
+.crossnav #doginaryAuthRoot{font-size:13.5px}
+
+/* ---------- Inloggningsskärm ---------- */
+.auth-page{max-width:560px;margin:auto;padding:40px 20px 90px}
+
+.page{max-width:960px;margin:auto;padding:30px 20px 90px}.top{margin-bottom:24px}.eyebrow{margin:0 0 4px;color:var(--rust);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}.top h1,.section-title,h2,h3{font-family:Fraunces,serif;font-weight:500}.top h1{font-size:clamp(29px,6vw,43px);line-height:1.08;margin:0}.top .intro{color:var(--soft);max-width:620px;margin:10px 0 0}.notice{display:flex;gap:10px;align-items:flex-start;background:var(--teal-soft);border:1px solid #c6d5d3;border-radius:14px;padding:12px 14px;font-size:12.5px;color:var(--teal);margin:18px 0 28px}.quick-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:13px}.quick-head h2,.entries-head h2{font-size:20px;margin:0}.quick-head p{font-size:13px;color:var(--soft);margin:2px 0 0}.selected-date{font-size:12px;font-weight:600;color:var(--rust);background:var(--rust-soft);padding:5px 11px;border-radius:999px;white-space:nowrap}.health-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:34px}.health-card{border:1px solid var(--hair);border-radius:18px;background:var(--surface);padding:18px 13px 15px;min-height:148px;cursor:pointer;text-align:left;color:var(--ink);font:inherit;transition:.15s;position:relative}.health-card:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(43,36,28,.08);border-color:#c7baa2}.health-card:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--teal);outline-offset:2px}.card-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;margin-bottom:12px}.health-card h3{font-size:16px;margin:0 0 3px}.health-card p{font-size:12px;color:var(--soft);margin:0}.health-card[data-type="symptom"] .card-icon{background:var(--red-soft)}.health-card[data-type="medicine"] .card-icon{background:var(--teal-soft)}.health-card[data-type="weight"] .card-icon{background:var(--green-soft)}.health-card[data-type="vet"] .card-icon{background:var(--rust-soft)}.health-card[data-type="vaccine"] .card-icon{background:var(--purple-soft)}.health-card[data-type="parasite"] .card-icon{background:#E3E6C9}.health-card[data-type="dental"] .card-icon{background:#D6E3F5}.health-card[data-type="note"] .card-icon{background:var(--surface-2)}
+.entries-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.toggle{display:inline-flex;background:var(--surface-2);border:1px solid var(--hair);border-radius:999px;padding:3px}.toggle button{border:0;background:none;color:var(--soft);border-radius:999px;padding:6px 14px;font:500 13px Inter;cursor:pointer}.toggle button.active{background:var(--ink);color:var(--surface)}.cal-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.cal-nav{display:flex;align-items:center;gap:10px}.round{width:30px;height:30px;border:1px solid var(--hair);border-radius:50%;background:var(--surface);cursor:pointer}.period{min-width:180px;text-align:center;font-size:14px;font-weight:500}.today{border:0;border-radius:999px;background:var(--teal-soft);color:var(--teal);padding:7px 15px;font-weight:600;cursor:pointer}.calendar{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px;margin-bottom:16px}.week-grid,.month-grid,.weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.week-day,.month-day{border:1.5px solid transparent;background:var(--surface-2);border-radius:14px;min-width:0;cursor:pointer;font-family:Inter;color:var(--ink)}.week-day{min-height:108px;padding:14px 4px;display:flex;flex-direction:column;align-items:center;gap:5px}.dow{font-size:10px;text-transform:uppercase;color:var(--soft);font-weight:600}.num{font:500 25px Fraunces}.markers{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;font-size:13px}.week-day.today,.month-day.today{border-color:var(--teal)}.week-day.selected,.month-day.selected{background:var(--teal-soft);border-color:var(--teal)}.week-day.has,.month-day.has{box-shadow:inset 0 -4px 0 var(--rust)}.weekdays{margin-bottom:6px}.weekdays span{text-align:center;font-size:11px;color:var(--soft)}.month-day{aspect-ratio:1;padding:5px;display:flex;flex-direction:column;align-items:center;justify-content:center}.month-day.empty{background:none;cursor:default}.day-card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:17px}.day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}.day-head h3{margin:0;font-size:17px}.day-head span{font-size:12px;color:var(--soft)}.empty-message{text-align:center;background:var(--surface-2);color:var(--soft);padding:18px;border-radius:12px;font-size:14px}.entry{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;background:var(--surface-2);border-radius:13px;padding:11px 12px;margin-top:8px}.entry-icon{width:36px;height:36px;background:var(--surface);border-radius:11px;display:grid;place-items:center}.entry strong{font-size:13.5px}.entry p{font-size:12.5px;color:var(--soft);margin:1px 0 0}.remove{border:1px solid var(--hair);background:var(--surface);color:var(--soft);border-radius:50%;width:25px;height:25px;cursor:pointer}.overlay{position:fixed;inset:0;background:rgba(43,36,28,.48);z-index:20;display:grid;place-items:center;padding:20px}.overlay[hidden]{display:none}.modal{background:var(--surface);width:min(440px,100%);border-radius:var(--radius);padding:22px;box-shadow:0 20px 60px rgba(43,36,28,.25)}.modal-head{display:flex;align-items:start;justify-content:space-between}.modal h2{font-size:21px;margin:0}.modal-sub{font-size:13px;color:var(--soft);margin:3px 0 17px}.close{border:0;background:var(--surface-2);border-radius:50%;width:31px;height:31px;cursor:pointer}.field{margin-top:12px}.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--hair);border-radius:10px;background:var(--surface-2);padding:10px 12px;font:14px Inter;color:var(--ink)}.field textarea{min-height:75px;resize:vertical}.modal-actions{display:flex;gap:10px;margin-top:18px}.save{flex:1;border:0;background:var(--ink);color:var(--surface);border-radius:999px;padding:12px;font:600 14px Inter;cursor:pointer}.cancel{border:1px solid var(--hair);background:none;border-radius:999px;padding:11px 18px;cursor:pointer}
+
+/* ---------- Sidfot: villkor, ansvarsfriskrivning, kontakt (samma som logga.html) ---------- */
+.doginary-footer{max-width:720px;margin:48px auto 24px;padding:22px 20px 0;border-top:1px solid var(--hair);text-align:center}
+.doginary-footer__disclaimer{font-size:12.5px;line-height:1.6;color:var(--ink-soft);max-width:600px;margin:0 auto 14px}
+.doginary-footer__links{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:13px}
+.doginary-footer__links a{color:var(--teal);text-decoration:underline;text-underline-offset:2px}
+.doginary-footer__links a:hover{color:var(--ink)}
+.doginary-footer__copyright{font-size:11.5px;color:var(--ink-soft);margin:12px 0 0}
+
+@media(max-width:760px){.crossnav-links a:not(.premium){display:none}.health-grid{grid-template-columns:repeat(2,1fr)}.calendar{padding:10px}.week-grid{gap:4px}.week-day{min-height:84px;padding:9px 2px}.num{font-size:19px}.markers{font-size:10px}.page{padding-inline:14px}}
+@media(max-width:390px){.health-grid{gap:9px}.health-card{min-height:137px;padding:14px 10px}.period{min-width:130px}.calendar{padding:8px}.entries-head{align-items:flex-start}}
+</style>
+<link rel="stylesheet" href="doginary-auth-ui.css">
+</head>
+<body>
+
+<nav class="crossnav">
+  <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
+  <div class="crossnav-right">
+    <div class="crossnav-links">
+      <a href="logga.html" data-i18n="navDiary">Dagbok</a>
+      <a href="insikter.html" data-i18n="navInsights">Insikter</a>
+      <a class="premium" href="#" data-i18n="navPremium">Premium</a>
+    </div>
+    <div class="lang-switch">
+      <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="20" height="13" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
+      <button type="button" id="langBtnEn" class="lang-btn" aria-label="Show the page in English" title="English" hidden><svg class="flag-icon" viewBox="0 0 60 30" width="20" height="13" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-clip-halso)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="uk-clip-halso"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
+    </div>
+    <div id="doginaryAuthRoot"></div>
+  </div>
+</nav>
+
+<!-- ---------- Inloggning (visas tills en session finns) ---------- -->
+<div id="authScreen">
+  <div class="auth-page">
+    <header class="top">
+      <p class="eyebrow" data-i18n="authEyebrow">Doginary</p>
+      <h1 data-i18n="authTitle">Logga in för att öppna hälsocentret</h1>
+    </header>
+    <div class="doginary-loggedout-card">
+      <h2 data-i18n="authCardTitle">Skapa konto eller logga in</h2>
+      <p data-i18n="authCardText">Hälsocentret är en del av Doginary Premium. Logga in eller skapa ett konto för att börja logga din hunds hälsa.</p>
+      <button type="button" id="openAuthBtn" data-i18n="authCardBtn">Skapa konto / Logga in</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Hälsocentret (visas när man är inloggad) ---------- -->
+<main class="page" id="appScreen" hidden>
+<header class="top"><p class="eyebrow" data-i18n="eyebrow">Doginary Premium</p><h1 data-i18n="pageTitle">Hälsocenter</h1><p class="intro" id="introText">Samla din hunds vikt, symptom, behandlingar och viktiga hälsohändelser på ett tryggt och överskådligt ställe.</p></header>
+<div class="notice"><span aria-hidden="true">ⓘ</span><span data-i18n="notice">Hälsocentret hjälper dig att dokumentera och komma ihåg. Det ersätter inte veterinärmedicinsk rådgivning. Kontakta veterinär vid oro eller akuta symptom.</span></div>
+<section><div class="quick-head"><div><h2 data-i18n="quickTitle">Snabblogga hälsa</h2><p data-i18n="quickIntro">Välj vad du vill lägga till för det markerade datumet.</p></div><span class="selected-date" id="selectedLabel"></span></div>
+<div class="health-grid">
+<button class="health-card" data-type="symptom"><span class="card-icon" aria-hidden="true">🩺</span><h3 data-i18n="card_symptom_title">Symptom</h3><p data-i18n="card_symptom_desc">Notera förändringar eller besvär</p></button>
+<button class="health-card" data-type="medicine"><span class="card-icon" aria-hidden="true">💊</span><h3 data-i18n="card_medicine_title">Medicin</h3><p data-i18n="card_medicine_desc">Dos, behandling och tid</p></button>
+<button class="health-card" data-type="weight"><span class="card-icon" aria-hidden="true">⚖️</span><h3 data-i18n="card_weight_title">Vikt</h3><p data-i18n="card_weight_desc">Följ viktutvecklingen</p></button>
+<button class="health-card" data-type="vet"><span class="card-icon" aria-hidden="true">🏥</span><h3 data-i18n="card_vet_title">Veterinärbesök</h3><p data-i18n="card_vet_desc">Besök, bedömning och uppföljning</p></button>
+<button class="health-card" data-type="vaccine"><span class="card-icon" aria-hidden="true">💉</span><h3 data-i18n="card_vaccine_title">Vaccination</h3><p data-i18n="card_vaccine_desc">Registrera vaccin och nästa dos</p></button>
+<button class="health-card" data-type="parasite"><span class="card-icon" aria-hidden="true">🛡️</span><h3 data-i18n="card_parasite_title">Parasitskydd</h3><p data-i18n="card_parasite_desc">Fästing, mask och behandling</p></button>
+<button class="health-card" data-type="dental"><span class="card-icon" aria-hidden="true">🦷</span><h3 data-i18n="card_dental_title">Tandvård</h3><p data-i18n="card_dental_desc">Borstning, kontroll och åtgärd</p></button>
+<button class="health-card" data-type="note"><span class="card-icon" aria-hidden="true">📝</span><h3 data-i18n="card_note_title">Hälsoanteckning</h3><p data-i18n="card_note_desc">Övrigt du vill komma ihåg</p></button>
+</div></section>
+<section><div class="entries-head"><h2 data-i18n="calendarTitle">Hälsokalender</h2><div class="toggle"><button class="active" data-view="week" data-i18n="viewWeek">Vecka</button><button data-view="month" data-i18n="viewMonth">Månad</button></div></div>
+<div class="cal-controls"><div class="cal-nav"><button class="round" id="prev" aria-label="Föregående" data-i18n-aria-label="prevLabel">‹</button><span class="period" id="period"></span><button class="round" id="next" aria-label="Nästa" data-i18n-aria-label="nextLabel">›</button></div><button class="today" id="todayBtn" data-i18n="todayBtn">Idag</button></div>
+<div class="calendar"><div id="weekView" class="week-grid"></div><div id="monthView" hidden><div class="weekdays"><span data-i18n="wdMon">Mån</span><span data-i18n="wdTue">Tis</span><span data-i18n="wdWed">Ons</span><span data-i18n="wdThu">Tor</span><span data-i18n="wdFri">Fre</span><span data-i18n="wdSat">Lör</span><span data-i18n="wdSun">Sön</span></div><div class="month-grid" id="monthGrid"></div></div></div>
+<div class="day-card"><div class="day-head"><h3 id="dayTitle"></h3><span id="dayCount"></span></div><div id="entries"></div></div></section>
+</main>
+
+<footer class="doginary-footer">
+  <p class="doginary-footer__disclaimer" data-i18n="footerDisclaimer">Doginary ger inte veterinärmedicinsk rådgivning. Kontakta alltid veterinär om du är orolig för din hunds hälsa.</p>
+  <div class="doginary-footer__links">
+    <a href="terms.html" data-i18n="footerTerms">Villkor</a>
+    <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>
+  </div>
+  <p class="doginary-footer__copyright">© 2026 Malin Larsson (Doginary)</p>
+</footer>
+
+<div class="overlay" id="overlay" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><div><h2 id="modalTitle"></h2><p class="modal-sub" id="modalDate"></p></div><button class="close" id="close" aria-label="Stäng" data-i18n-aria-label="closeLabel">✕</button></div><form id="healthForm"><div id="dynamicFields"></div><div class="field"><label for="note" data-i18n="noteLabel">Anteckning</label><textarea id="note" maxlength="500" placeholder="Lägg till en kort anteckning (valfritt)" data-i18n-placeholder="notePlaceholder"></textarea></div><div class="modal-actions"><button type="button" class="cancel" id="cancel" data-i18n="cancelBtn">Avbryt</button><button class="save" type="submit" data-i18n="saveBtn">Spara i hälsokalendern</button></div></form></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="doginary-supabase.js"></script>
+<script src="doginary-auth.js"></script>
+<script>
+(function(){
+
+  /* ==================================================================
+     Language / i18n
+     Delar "dogWeatherLang" i localStorage med index.html/logga.html så
+     att språkvalet följer med mellan sidorna.
+     ================================================================== */
+  const LOCALE = { en: 'en-GB', sv: 'sv-SE' };
+
+  let lang = (() => {
+    try {
+      const saved = localStorage.getItem('dogWeatherLang');
+      if (saved === 'en' || saved === 'sv') return saved;
+    } catch { /* localStorage kan saknas */ }
+    return 'en';
+  })();
+
+  const STR = {
+    en: {
+      docTitle: 'Doginary — Health Center',
+      navDiary: 'Diary', navInsights: 'Insights', navPremium: 'Premium',
+      authEyebrow: 'Doginary',
+      authTitle: 'Log in to open the health center',
+      authCardTitle: 'Create an account or log in',
+      authCardText: 'The health center is part of Doginary Premium. Log in or create an account to start logging your dog’s health — entries are saved in this browser, tied to your account.',
+      authCardBtn: 'Create account / Log in',
+      eyebrow: 'Doginary Premium',
+      pageTitle: 'Health Center',
+      introGeneric: 'Keep track of your dog’s weight, symptoms, treatments and important health events in one safe, organised place.',
+      introWithName: name => `Keep track of ${name}’s weight, symptoms, treatments and important health events in one safe, organised place.`,
+      notice: 'The health center helps you document and remember. It doesn’t replace veterinary advice. Contact a vet if you’re concerned or if symptoms are acute.',
+      quickTitle: 'Quick health log',
+      quickIntro: 'Choose what you want to add for the selected date.',
+      todayLabel: 'Today',
+      card_symptom_title: 'Symptom', card_symptom_desc: 'Note changes or discomfort',
+      card_medicine_title: 'Medication', card_medicine_desc: 'Dose, treatment and timing',
+      card_weight_title: 'Weight', card_weight_desc: 'Track weight over time',
+      card_vet_title: 'Vet visit', card_vet_desc: 'Visit, assessment and follow-up',
+      card_vaccine_title: 'Vaccination', card_vaccine_desc: 'Log vaccine and next dose',
+      card_parasite_title: 'Parasite protection', card_parasite_desc: 'Ticks, worms and treatment',
+      card_dental_title: 'Dental care', card_dental_desc: 'Brushing, check-ups and treatment',
+      card_note_title: 'Health note', card_note_desc: 'Anything else worth remembering',
+      calendarTitle: 'Health calendar',
+      viewWeek: 'Week', viewMonth: 'Month', todayBtn: 'Today',
+      prevLabel: 'Previous', nextLabel: 'Next',
+      wdMon: 'Mon', wdTue: 'Tue', wdWed: 'Wed', wdThu: 'Thu', wdFri: 'Fri', wdSat: 'Sat', wdSun: 'Sun',
+      noteLabel: 'Note', notePlaceholder: 'Add a short note (optional)',
+      cancelBtn: 'Cancel', saveBtn: 'Save to health calendar',
+      closeLabel: 'Close', removeLabel: 'Remove',
+      emptyMessage: 'No health info logged this day.',
+      footerDisclaimer: 'Doginary does not provide veterinary advice. Always contact a vet if you’re concerned about your dog’s health.',
+      footerTerms: 'Terms',
+    },
+    sv: {
+      docTitle: 'Doginary — Hälsocenter',
+      navDiary: 'Dagbok', navInsights: 'Insikter', navPremium: 'Premium',
+      authEyebrow: 'Doginary',
+      authTitle: 'Logga in för att öppna hälsocentret',
+      authCardTitle: 'Skapa konto eller logga in',
+      authCardText: 'Hälsocentret är en del av Doginary Premium. Logga in eller skapa ett konto för att börja logga din hunds hälsa — anteckningarna sparas i den här webbläsaren, kopplade till ditt konto.',
+      authCardBtn: 'Skapa konto / Logga in',
+      eyebrow: 'Doginary Premium',
+      pageTitle: 'Hälsocenter',
+      introGeneric: 'Samla din hunds vikt, symptom, behandlingar och viktiga hälsohändelser på ett tryggt och överskådligt ställe.',
+      introWithName: name => `Samla ${name}s vikt, symptom, behandlingar och viktiga hälsohändelser på ett tryggt och överskådligt ställe.`,
+      notice: 'Hälsocentret hjälper dig att dokumentera och komma ihåg. Det ersätter inte veterinärmedicinsk rådgivning. Kontakta veterinär vid oro eller akuta symptom.',
+      quickTitle: 'Snabblogga hälsa',
+      quickIntro: 'Välj vad du vill lägga till för det markerade datumet.',
+      todayLabel: 'Idag',
+      card_symptom_title: 'Symptom', card_symptom_desc: 'Notera förändringar eller besvär',
+      card_medicine_title: 'Medicin', card_medicine_desc: 'Dos, behandling och tid',
+      card_weight_title: 'Vikt', card_weight_desc: 'Följ viktutvecklingen',
+      card_vet_title: 'Veterinärbesök', card_vet_desc: 'Besök, bedömning och uppföljning',
+      card_vaccine_title: 'Vaccination', card_vaccine_desc: 'Registrera vaccin och nästa dos',
+      card_parasite_title: 'Parasitskydd', card_parasite_desc: 'Fästing, mask och behandling',
+      card_dental_title: 'Tandvård', card_dental_desc: 'Borstning, kontroll och åtgärd',
+      card_note_title: 'Hälsoanteckning', card_note_desc: 'Övrigt du vill komma ihåg',
+      calendarTitle: 'Hälsokalender',
+      viewWeek: 'Vecka', viewMonth: 'Månad', todayBtn: 'Idag',
+      prevLabel: 'Föregående', nextLabel: 'Nästa',
+      wdMon: 'Mån', wdTue: 'Tis', wdWed: 'Ons', wdThu: 'Tor', wdFri: 'Fre', wdSat: 'Lör', wdSun: 'Sön',
+      noteLabel: 'Anteckning', notePlaceholder: 'Lägg till en kort anteckning (valfritt)',
+      cancelBtn: 'Avbryt', saveBtn: 'Spara i hälsokalendern',
+      closeLabel: 'Stäng', removeLabel: 'Ta bort',
+      emptyMessage: 'Ingen hälsoinformation registrerad den här dagen.',
+      footerDisclaimer: 'Doginary ger inte veterinärmedicinsk rådgivning. Kontakta alltid veterinär om du är orolig för din hunds hälsa.',
+      footerTerms: 'Villkor',
+    }
+  };
+
+  function t(key){
+    const val = (STR[lang] && STR[lang][key] !== undefined) ? STR[lang][key] : STR.sv[key];
+    return val;
+  }
+
+  // Fält i snabbloggformuläret, per typ och språk. Etiketter, placeholders
+  // och select-alternativ byts direkt när språket ändras.
+  const FIELDS = {
+    sv: {
+      symptom: '<div class="field"><label>Symptom</label><input name="value" required placeholder="T.ex. klåda, hosta eller hälta"></div><div class="field"><label>Grad</label><select name="extra"><option>Milt</option><option>Måttligt</option><option>Kraftigt</option></select></div>',
+      medicine: '<div class="field"><label>Läkemedel</label><input name="value" required placeholder="Namn på medicinen"></div><div class="field"><label>Dos</label><input name="extra" placeholder="T.ex. 1 tablett"></div>',
+      weight: '<div class="field"><label>Vikt (kg)</label><input name="value" type="number" min="0" max="120" step="0.1" required placeholder="T.ex. 24,5"></div>',
+      vet: '<div class="field"><label>Anledning</label><input name="value" required placeholder="T.ex. årskontroll"></div><div class="field"><label>Klinik eller veterinär</label><input name="extra" placeholder="Valfritt"></div>',
+      vaccine: '<div class="field"><label>Vaccin</label><input name="value" required placeholder="T.ex. DHP eller kennelhosta"></div><div class="field"><label>Nästa dos</label><input name="extra" type="date"></div>',
+      parasite: '<div class="field"><label>Behandling</label><input name="value" required placeholder="T.ex. fästingtablett"></div><div class="field"><label>Gäller till</label><input name="extra" type="date"></div>',
+      dental: '<div class="field"><label>Åtgärd</label><select name="value"><option>Tandborstning</option><option>Tandkontroll</option><option>Tandstensborttagning</option><option>Annan åtgärd</option></select></div>',
+      note: '<div class="field"><label>Rubrik</label><input name="value" required placeholder="Vad gäller anteckningen?"></div>'
+    },
+    en: {
+      symptom: '<div class="field"><label>Symptom</label><input name="value" required placeholder="E.g. itching, coughing or limping"></div><div class="field"><label>Severity</label><select name="extra"><option>Mild</option><option>Moderate</option><option>Severe</option></select></div>',
+      medicine: '<div class="field"><label>Medication</label><input name="value" required placeholder="Name of the medication"></div><div class="field"><label>Dose</label><input name="extra" placeholder="E.g. 1 tablet"></div>',
+      weight: '<div class="field"><label>Weight (kg)</label><input name="value" type="number" min="0" max="120" step="0.1" required placeholder="E.g. 24.5"></div>',
+      vet: '<div class="field"><label>Reason</label><input name="value" required placeholder="E.g. annual check-up"></div><div class="field"><label>Clinic or vet</label><input name="extra" placeholder="Optional"></div>',
+      vaccine: '<div class="field"><label>Vaccine</label><input name="value" required placeholder="E.g. DHP or kennel cough"></div><div class="field"><label>Next dose</label><input name="extra" type="date"></div>',
+      parasite: '<div class="field"><label>Treatment</label><input name="value" required placeholder="E.g. tick tablet"></div><div class="field"><label>Valid until</label><input name="extra" type="date"></div>',
+      dental: '<div class="field"><label>Action</label><select name="value"><option>Toothbrushing</option><option>Dental check-up</option><option>Tartar removal</option><option>Other</option></select></div>',
+      note: '<div class="field"><label>Title</label><input name="value" required placeholder="What\u2019s the note about?"></div>'
+    }
+  };
+
+  const TYPE_ICONS = { symptom:'🩺', medicine:'💊', weight:'⚖️', vet:'🏥', vaccine:'💉', parasite:'🛡️', dental:'🦷', note:'📝' };
+  function typeTitle(type){ return t('card_' + type + '_title'); }
+
+  const langBtnSvEl = document.getElementById('langBtnSv');
+  const langBtnEnEl = document.getElementById('langBtnEn');
+
+  function applyI18n(){
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const val = t(key);
+      if (typeof val === 'string') el.textContent = val;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+      el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label')));
+    });
+    if (langBtnSvEl) langBtnSvEl.hidden = lang !== 'en';
+    if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';
+    document.title = t('docTitle');
+    updateIntro();
+  }
+
+  function setLang(l){
+    if (l !== 'en' && l !== 'sv') return;
+    lang = l;
+    try { localStorage.setItem('dogWeatherLang', lang); } catch { /* ignore */ }
+    applyI18n();
+    render();
+  }
+
+  langBtnSvEl?.addEventListener('click', () => setLang('sv'));
+  langBtnEnEl?.addEventListener('click', () => setLang('en'));
+
+  /* ==================================================================
+     Hälsodata
+     Sparas lokalt i webbläsaren, namnrymt per inloggat konto (uid) så
+     att olika konton på samma enhet inte blandas ihop.
+     ================================================================== */
+  let data = [];
+  let storageKey = null;
+  let currentUser = null;
+  let currentDogName = null;
+  let selected = iso(new Date()), view = 'week', cursor = new Date(), activeType = null;
+
+  function iso(d){ return d.toLocaleDateString('sv-SE'); }
+  function dateFrom(s){ const [y,m,dd] = s.split('-').map(Number); return new Date(y, m - 1, dd); }
+  function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+  function label(s, opt = { weekday: 'long', day: 'numeric', month: 'long' }){ return cap(dateFrom(s).toLocaleDateString(LOCALE[lang], opt)); }
+  function weekStartOf(d){ let x = new Date(d), n = (x.getDay() + 6) % 7; x.setDate(x.getDate() - n); x.setHours(0,0,0,0); return x; }
+  function save(){ if (!storageKey) return; localStorage.setItem(storageKey, JSON.stringify(data)); }
+  function byDate(s){ return data.filter(x => x.date === s); }
+  function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+  function entriesCountLabel(n){ return lang === 'sv' ? `${n} poster` : `${n} ${n === 1 ? 'entry' : 'entries'}`; }
+
+  function updateIntro(){
+    const el = document.getElementById('introText');
+    if (!el) return;
+    el.textContent = currentDogName ? t('introWithName')(currentDogName) : t('introGeneric');
+  }
+
+  function render(){
+    document.getElementById('selectedLabel').textContent = selected === iso(new Date()) ? t('todayLabel') : label(selected, { day: 'numeric', month: 'short' });
+    view === 'week' ? renderWeek() : renderMonth();
+    renderEntries();
+  }
+
+  function dayButton(d, cls){
+    const s = iso(d), items = byDate(s), b = document.createElement('button');
+    b.type = 'button';
+    b.className = cls + (s === iso(new Date()) ? ' today' : '') + (s === selected ? ' selected' : '') + (items.length ? ' has' : '');
+    b.innerHTML = cls === 'week-day'
+      ? `<span class="dow">${d.toLocaleDateString(LOCALE[lang], { weekday: 'short' }).replace('.', '')}</span><span class="num">${d.getDate()}</span><span class="markers">${[...new Set(items.map(x => TYPE_ICONS[x.type]))].slice(0, 3).join('')}</span>`
+      : `<span>${d.getDate()}</span><span class="markers">${[...new Set(items.map(x => TYPE_ICONS[x.type]))].slice(0, 2).join('')}</span>`;
+    b.onclick = () => { selected = s; render(); };
+    return b;
+  }
+
+  function renderWeek(){
+    const start = weekStartOf(cursor), grid = document.getElementById('weekView');
+    grid.innerHTML = '';
+    for (let i = 0; i < 7; i++) { let d = new Date(start); d.setDate(d.getDate() + i); grid.appendChild(dayButton(d, 'week-day')); }
+    let end = new Date(start); end.setDate(end.getDate() + 6);
+    document.getElementById('period').textContent = `${start.getDate()}–${end.getDate()} ${end.toLocaleDateString(LOCALE[lang], { month: 'short', year: 'numeric' }).replace('.', '')}`;
+  }
+
+  function renderMonth(){
+    const y = cursor.getFullYear(), m = cursor.getMonth(), grid = document.getElementById('monthGrid');
+    grid.innerHTML = '';
+    document.getElementById('period').textContent = cap(cursor.toLocaleDateString(LOCALE[lang], { month: 'long', year: 'numeric' }));
+    let first = new Date(y, m, 1), offset = (first.getDay() + 6) % 7;
+    for (let i = 0; i < offset; i++) { let e = document.createElement('div'); e.className = 'month-day empty'; grid.appendChild(e); }
+    for (let n = 1; n <= new Date(y, m + 1, 0).getDate(); n++) grid.appendChild(dayButton(new Date(y, m, n), 'month-day'));
+  }
+
+  function renderEntries(){
+    const list = document.getElementById('entries'), items = byDate(selected).sort((a, b) => b.time.localeCompare(a.time));
+    document.getElementById('dayTitle').textContent = label(selected);
+    document.getElementById('dayCount').textContent = items.length ? entriesCountLabel(items.length) : '';
+    if (!items.length) {
+      list.innerHTML = `<div class="empty-message">${t('emptyMessage')}</div>`;
+      return;
+    }
+    list.innerHTML = items.map(x => `<div class="entry"><span class="entry-icon" aria-hidden="true">${TYPE_ICONS[x.type]}</span><div><strong>${escapeHtml(typeTitle(x.type))} · ${escapeHtml(x.value)}</strong><p>${[x.extra, x.note, x.time].filter(Boolean).map(escapeHtml).join(' · ')}</p></div><button class="remove" data-id="${x.id}" aria-label="${t('removeLabel')}">✕</button></div>`).join('');
+    list.querySelectorAll('.remove').forEach(b => b.onclick = () => { data = data.filter(x => x.id !== b.dataset.id); save(); render(); });
+  }
+
+  function openModal(type){
+    activeType = type;
+    document.getElementById('modalTitle').textContent = `${TYPE_ICONS[type]} ${typeTitle(type)}`;
+    document.getElementById('modalDate').textContent = label(selected);
+    document.getElementById('dynamicFields').innerHTML = FIELDS[lang][type];
+    document.getElementById('note').value = '';
+    document.getElementById('overlay').hidden = false;
+    setTimeout(() => document.querySelector('#dynamicFields input, #dynamicFields select')?.focus(), 0);
+  }
+  function closeModal(){ document.getElementById('overlay').hidden = true; activeType = null; }
+
+  document.querySelectorAll('.health-card').forEach(b => b.onclick = () => openModal(b.dataset.type));
+  document.getElementById('close').onclick = closeModal;
+  document.getElementById('cancel').onclick = closeModal;
+  document.getElementById('overlay').onclick = e => { if (e.target.id === 'overlay') closeModal(); };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  document.getElementById('healthForm').onsubmit = e => {
+    e.preventDefault();
+    let f = new FormData(e.target), value = f.get('value'), extra = f.get('extra') || '', note = document.getElementById('note').value.trim();
+    data.push({ id: crypto.randomUUID(), date: selected, time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }), type: activeType, value, extra, note });
+    save(); closeModal(); render();
+  };
+
+  document.querySelectorAll('.toggle button').forEach(b => b.onclick = () => {
+    view = b.dataset.view;
+    document.querySelectorAll('.toggle button').forEach(x => x.classList.toggle('active', x === b));
+    document.getElementById('weekView').hidden = view !== 'week';
+    document.getElementById('monthView').hidden = view !== 'month';
+    render();
+  });
+  document.getElementById('prev').onclick = () => { view === 'week' ? cursor.setDate(cursor.getDate() - 7) : cursor.setMonth(cursor.getMonth() - 1); render(); };
+  document.getElementById('next').onclick = () => { view === 'week' ? cursor.setDate(cursor.getDate() + 7) : cursor.setMonth(cursor.getMonth() + 1); render(); };
+  document.getElementById('todayBtn').onclick = () => { cursor = new Date(); selected = iso(cursor); render(); };
+
+  /* ==================================================================
+     Inloggning — samma delade modal/kontoknapp som logga.html
+     (doginary-auth.js). Den här sidan lyssnar bara på "doginary:auth"
+     och växlar mellan inloggningskortet och själva hälsocentret.
+     ================================================================== */
+  const authScreen = document.getElementById('authScreen');
+  const appScreen = document.getElementById('appScreen');
+  const openAuthBtn = document.getElementById('openAuthBtn');
+  openAuthBtn.addEventListener('click', () => DoginaryAuthUI.open('signup'));
+
+  function loadDataForUser(uid){
+    storageKey = 'doginary-health-entries-v1:' + uid;
+    try { data = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { data = []; }
+  }
+
+  async function enterApp(session){
+    currentUser = session.user;
+    loadDataForUser(currentUser.id);
+    authScreen.hidden = true;
+    appScreen.hidden = false;
+    cursor = new Date();
+    selected = iso(cursor);
+    try {
+      const dog = await DoginaryAuthUI.getCurrentDog();
+      currentDogName = (dog && dog.name) ? dog.name : null;
+    } catch { currentDogName = null; }
+    updateIntro();
+    render();
+  }
+
+  function showAuth(){
+    currentUser = null;
+    data = [];
+    storageKey = null;
+    currentDogName = null;
+    authScreen.hidden = false;
+    appScreen.hidden = true;
+  }
+
+  document.addEventListener('doginary:auth', (ev) => {
+    const session = ev.detail.session;
+    if (session && !currentUser) { enterApp(session); }
+    else if (!session && currentUser) { showAuth(); }
+  });
+
+  // Om hundens namn ändras via kontomenyn (delad över alla sidor) håller
+  // vi introtexten här i synk utan att sidan behöver laddas om.
+  document.addEventListener('doginary:dogupdate', (e) => {
+    if (!currentUser || !e.detail || !e.detail.dog) return;
+    currentDogName = e.detail.dog.name || null;
+    updateIntro();
+  });
+
+  applyI18n();
+})();
+</script>
+</body>
+</html>

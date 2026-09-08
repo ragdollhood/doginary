@@ -251,6 +251,41 @@
   var dogAgeMenuInput = null;
   var dogMenuStatus = null;
 
+  // Rullmeny istället för fritext för ras — tryggare/mer korrekt indata.
+  // Samma raslista (på svenska) som index.html:s profilkort använder
+  // (DOG_BREED_OPTIONS i app.js) — hålls i synk manuellt, se kommentar där.
+  var DOG_BREEDS_SV = [
+    'Labrador retriever', 'Golden retriever', 'Tysk schäferhund', 'Fransk bulldogg',
+    'Engelsk bulldogg', 'Mops', 'Boston terrier', 'Pekingeser', 'Shih tzu', 'Beagle',
+    'Border collie', 'Belgisk vallhund (malinois)', 'Cocker spaniel',
+    'Cavalier King Charles spaniel', 'Tax', 'Chihuahua', 'Pudel', 'Schnauzer',
+    'Rottweiler', 'Dobermann', 'Boxer', 'Australian shepherd', 'Sibirisk husky',
+    'Alaskan malamute', 'Akita', 'Shiba inu', 'Jack Russell terrier',
+    'Staffordshire bullterrier', 'American staffordshire terrier', 'Berner sennenhund',
+    'Sankt bernhardshund', 'Newfoundlandshund', 'Leonberger', 'Vit herdehund',
+    'Weimaraner', 'Vizsla', 'Pointer', 'Engelsk setter', 'Flatcoated retriever',
+    'Welsh corgi', 'Shetland sheepdog', 'Collie', 'Greyhound', 'Whippet',
+    'Basset hound', 'Bichon frisé', 'Malteser', 'Yorkshireterrier',
+    'West highland white terrier', 'Cairnterrier', 'Belgisk vallhund (groenendael)',
+    'Bernedoodle', 'Labradoodle', 'Goldendoodle', 'Cane corso',
+    'Kaukasisk ovtjarka', 'Västgötaspets', 'Svensk lapphund', 'Jämthund',
+    'Norsk älghund', 'Finsk spets', 'Drever'
+  ].sort(function (a, b) { return a.localeCompare(b, 'sv'); });
+
+  // Bygger <option>-listan för rasrullmenyn: en tom platshållare, sedan
+  // "Blandras" (vanligt val), sedan raserna i bokstavsordning, sist
+  // "Annan ras" som uppsamlingsval för raser som inte finns listade.
+  function dogBreedOptionsHtml(selectedBreed) {
+    var html = '<option value="" disabled' + (selectedBreed ? '' : ' selected') + '>Välj ras</option>';
+    html += '<option value="Blandras"' + (selectedBreed === 'Blandras' ? ' selected' : '') + '>Blandras</option>';
+    DOG_BREEDS_SV.forEach(function (breed) {
+      html += '<option value="' + escapeHtml(breed) + '"' + (selectedBreed === breed ? ' selected' : '') + '>' + escapeHtml(breed) + '</option>';
+    });
+    var isOther = selectedBreed && selectedBreed !== 'Blandras' && DOG_BREEDS_SV.indexOf(selectedBreed) === -1;
+    html += '<option value="' + (isOther ? escapeHtml(selectedBreed) : 'Annan ras') + '"' + (isOther ? ' selected' : '') + '>Annan ras</option>';
+    return html;
+  }
+
   function closeAccountMenu() {
     if (menuEl) menuEl.classList.remove('show');
     menuOpen = false;
@@ -261,7 +296,7 @@
   // Fyller i namn/ras/ålder-fälten i kontomenyn utifrån en hund-rad.
   function fillDogFormFields(dog) {
     if (dogNameMenuInput) dogNameMenuInput.value = (dog && dog.name) || '';
-    if (dogBreedMenuInput) dogBreedMenuInput.value = (dog && dog.breed) || '';
+    if (dogBreedMenuInput) dogBreedMenuInput.innerHTML = dogBreedOptionsHtml((dog && dog.breed) || '');
     if (dogAgeMenuInput) dogAgeMenuInput.value = (dog && dog.age) || 'adult';
   }
 
@@ -327,7 +362,7 @@
           '<label class="doginaryAccountMenu__label" for="doginaryAccountDogName">Hundens namn</label>' +
           '<input type="text" id="doginaryAccountDogName" placeholder="Hundens namn" maxlength="40">' +
           '<label class="doginaryAccountMenu__label" for="doginaryAccountDogBreed">Ras</label>' +
-          '<input type="text" id="doginaryAccountDogBreed" placeholder="T.ex. Golden retriever" maxlength="40">' +
+          '<select id="doginaryAccountDogBreed">' + dogBreedOptionsHtml('') + '</select>' +
           '<label class="doginaryAccountMenu__label" for="doginaryAccountDogAge">Ålder</label>' +
           '<select id="doginaryAccountDogAge">' +
             '<option value="puppy">Valp (under 1 år)</option>' +
@@ -357,9 +392,6 @@
       });
       document.getElementById('doginaryAccountDogSave').addEventListener('click', saveDogProfileFromMenu);
       dogNameMenuInput.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Enter') { ev.preventDefault(); saveDogProfileFromMenu(); }
-      });
-      dogBreedMenuInput.addEventListener('keydown', function (ev) {
         if (ev.key === 'Enter') { ev.preventDefault(); saveDogProfileFromMenu(); }
       });
 

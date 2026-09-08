@@ -84,7 +84,7 @@ const STR = {
     profileNameLabel: "Name (optional)",
     profileNamePlaceholder: "E.g. Bella",
     profileBreedLabel: "Breed",
-    profileBreedPlaceholder: "E.g. Golden retriever",
+    profileBreedPlaceholder: "Choose breed",
     profileAgeLabel: "Age",
     profileAgePuppy: "Puppy (under 1)",
     profileAgeAdult: "Adult",
@@ -271,7 +271,7 @@ const STR = {
     profileNameLabel: "Namn (valfritt)",
     profileNamePlaceholder: "T.ex. Bella",
     profileBreedLabel: "Ras",
-    profileBreedPlaceholder: "T.ex. Golden retriever",
+    profileBreedPlaceholder: "Välj ras",
     profileAgeLabel: "Ålder",
     profileAgePuppy: "Valp (under 1 år)",
     profileAgeAdult: "Vuxen",
@@ -544,6 +544,7 @@ function applyStaticTranslations() {
   updateLogTitle();
   renderDailyDogFact();
   renderKnowledgeHub();
+  populateBreedSelects();
 }
 
 function updateHeroTitle() {
@@ -1285,7 +1286,7 @@ async function syncDogProfileWithAccount(session) {
 
   if (dogProfile) {
     dogProfileNameEl.value = dogProfile.name || '';
-    dogProfileBreedEl.value = dogProfile.breed || '';
+    setBreedSelectValue(dogProfile.breed || '');
     dogProfileAgeEl.value = dogProfile.age || 'adult';
   }
   renderDogProfileUI();
@@ -1343,6 +1344,134 @@ function normalizeDogProfile(profile) {
   const age = ['puppy', 'adult', 'senior'].includes(profile?.age) ? profile.age : null;
   return { name: String(profile?.name || '').trim(), breed: String(profile?.breed || '').trim(), age };
 }
+
+// =============================================================================
+// Breed dropdown (rullmeny istället för fritext)
+// -----------------------------------------------------------------------------
+// En rullmeny ger tryggare, mer korrekt indata än fritext (rättstavat,
+// matchar `BREED_ALIASES`-listan ovan för de raser vi ger särskilda råd om,
+// och undviker stavfel/dubbletter i statistiken). Listan täcker de
+// vanligaste raserna i Sverige/internationellt — otäckta raser hamnar under
+// "Annan ras", blandraser under "Blandras".
+const DOG_BREED_OPTIONS = [
+  { id: 'labrador', sv: 'Labrador retriever', en: 'Labrador Retriever' },
+  { id: 'golden', sv: 'Golden retriever', en: 'Golden Retriever' },
+  { id: 'tysk-schaferhund', sv: 'Tysk schäferhund', en: 'German Shepherd' },
+  { id: 'fransk-bulldogg', sv: 'Fransk bulldogg', en: 'French Bulldog' },
+  { id: 'engelsk-bulldogg', sv: 'Engelsk bulldogg', en: 'English Bulldog' },
+  { id: 'mops', sv: 'Mops', en: 'Pug' },
+  { id: 'boston-terrier', sv: 'Boston terrier', en: 'Boston Terrier' },
+  { id: 'pekingeser', sv: 'Pekingeser', en: 'Pekingese' },
+  { id: 'shih-tzu', sv: 'Shih tzu', en: 'Shih Tzu' },
+  { id: 'beagle', sv: 'Beagle', en: 'Beagle' },
+  { id: 'border-collie', sv: 'Border collie', en: 'Border Collie' },
+  { id: 'malinois', sv: 'Belgisk vallhund (malinois)', en: 'Belgian Malinois' },
+  { id: 'cocker-spaniel', sv: 'Cocker spaniel', en: 'Cocker Spaniel' },
+  { id: 'cavalier', sv: 'Cavalier King Charles spaniel', en: 'Cavalier King Charles Spaniel' },
+  { id: 'tax', sv: 'Tax', en: 'Dachshund' },
+  { id: 'chihuahua', sv: 'Chihuahua', en: 'Chihuahua' },
+  { id: 'pudel', sv: 'Pudel', en: 'Poodle' },
+  { id: 'schnauzer', sv: 'Schnauzer', en: 'Schnauzer' },
+  { id: 'rottweiler', sv: 'Rottweiler', en: 'Rottweiler' },
+  { id: 'dobermann', sv: 'Dobermann', en: 'Doberman' },
+  { id: 'boxer', sv: 'Boxer', en: 'Boxer' },
+  { id: 'australian-shepherd', sv: 'Australian shepherd', en: 'Australian Shepherd' },
+  { id: 'husky', sv: 'Sibirisk husky', en: 'Siberian Husky' },
+  { id: 'malamute', sv: 'Alaskan malamute', en: 'Alaskan Malamute' },
+  { id: 'akita', sv: 'Akita', en: 'Akita' },
+  { id: 'shiba', sv: 'Shiba inu', en: 'Shiba Inu' },
+  { id: 'jack-russell', sv: 'Jack Russell terrier', en: 'Jack Russell Terrier' },
+  { id: 'staffordshire', sv: 'Staffordshire bullterrier', en: 'Staffordshire Bull Terrier' },
+  { id: 'amstaff', sv: 'American staffordshire terrier', en: 'American Staffordshire Terrier' },
+  { id: 'berner-sennen', sv: 'Berner sennenhund', en: 'Bernese Mountain Dog' },
+  { id: 'sanktbernhard', sv: 'Sankt bernhardshund', en: 'Saint Bernard' },
+  { id: 'newfoundlandshund', sv: 'Newfoundlandshund', en: 'Newfoundland' },
+  { id: 'leonberger', sv: 'Leonberger', en: 'Leonberger' },
+  { id: 'schaferhund-vit', sv: 'Vit herdehund', en: 'White Swiss Shepherd' },
+  { id: 'weimaraner', sv: 'Weimaraner', en: 'Weimaraner' },
+  { id: 'vizsla', sv: 'Vizsla', en: 'Vizsla' },
+  { id: 'pointer', sv: 'Pointer', en: 'Pointer' },
+  { id: 'setter', sv: 'Engelsk setter', en: 'English Setter' },
+  { id: 'flatcoated', sv: 'Flatcoated retriever', en: 'Flat-Coated Retriever' },
+  { id: 'welsh-corgi', sv: 'Welsh corgi', en: 'Welsh Corgi' },
+  { id: 'shetland-sheepdog', sv: 'Shetland sheepdog', en: 'Shetland Sheepdog' },
+  { id: 'collie', sv: 'Collie', en: 'Collie' },
+  { id: 'greyhound', sv: 'Greyhound', en: 'Greyhound' },
+  { id: 'whippet', sv: 'Whippet', en: 'Whippet' },
+  { id: 'basset-hound', sv: 'Basset hound', en: 'Basset Hound' },
+  { id: 'bichon-frise', sv: 'Bichon frisé', en: 'Bichon Frisé' },
+  { id: 'malteser', sv: 'Malteser', en: 'Maltese' },
+  { id: 'yorkshire', sv: 'Yorkshireterrier', en: 'Yorkshire Terrier' },
+  { id: 'west-highland', sv: 'West highland white terrier', en: 'West Highland White Terrier' },
+  { id: 'cairn-terrier', sv: 'Cairnterrier', en: 'Cairn Terrier' },
+  { id: 'schaffer-belgisk', sv: 'Belgisk vallhund (groenendael)', en: 'Belgian Sheepdog' },
+  { id: 'bernedoodle', sv: 'Bernedoodle', en: 'Bernedoodle' },
+  { id: 'labradoodle', sv: 'Labradoodle', en: 'Labradoodle' },
+  { id: 'goldendoodle', sv: 'Goldendoodle', en: 'Goldendoodle' },
+  { id: 'cane-corso', sv: 'Cane corso', en: 'Cane Corso' },
+  { id: 'schaferhund-kaukasisk', sv: 'Kaukasisk ovtjarka', en: 'Caucasian Shepherd' },
+  { id: 'vastgotaspets', sv: 'Västgötaspets', en: 'Swedish Vallhund' },
+  { id: 'lapphund', sv: 'Svensk lapphund', en: 'Swedish Lapphund' },
+  { id: 'jamthund', sv: 'Jämthund', en: 'Jämthund' },
+  { id: 'norsk-algehund', sv: 'Norsk älghund', en: 'Norwegian Elkhound' },
+  { id: 'finsk-spets', sv: 'Finsk spets', en: 'Finnish Spitz' },
+  { id: 'drever', sv: 'Drever', en: 'Drever' }
+];
+
+// Extra val som inte är enskilda raser men behövs i listan.
+const DOG_BREED_SPECIAL_OPTIONS = {
+  mixed: { sv: 'Blandras', en: 'Mixed breed' },
+  other: { sv: 'Annan ras', en: 'Other breed' }
+};
+
+// Hittar det raс-id (om något) vars namn på nuvarande eller motsatt språk
+// matchar en tidigare fritextsparad ras — så gamla profiler väljs rätt
+// automatiskt i rullmenyn första gången den fylls.
+function findBreedIdForText(breedText) {
+  const normalized = normalizeBreedName(breedText);
+  if (!normalized) return '';
+  if (['blandras', 'mixed breed'].includes(normalized)) return 'mixed';
+  const match = DOG_BREED_OPTIONS.find(opt =>
+    normalizeBreedName(opt.sv) === normalized || normalizeBreedName(opt.en) === normalized);
+  if (match) return match.id;
+  return normalized ? 'other' : '';
+}
+
+// Fyller alla rasrullmenyer (för närvarande bara profilkortets) med
+// alternativ på rätt språk. Körs vid start och varje gång språket byts,
+// så det aktuella valet (sparat i data-breed-id) behålls över bytet.
+function populateBreedSelects() {
+  document.querySelectorAll('select[data-breed-select]').forEach(select => {
+    const keepId = select.dataset.breedId || '';
+    const sorted = [...DOG_BREED_OPTIONS].sort((a, b) => a[lang].localeCompare(b[lang], lang));
+    const optionsHtml = [
+      `<option value="" disabled ${keepId ? '' : 'selected'}>${escapeHtml(t('profileBreedPlaceholder'))}</option>`,
+      `<option value="${escapeHtml(DOG_BREED_SPECIAL_OPTIONS.mixed[lang])}" data-breed-id="mixed" ${keepId === 'mixed' ? 'selected' : ''}>${escapeHtml(DOG_BREED_SPECIAL_OPTIONS.mixed[lang])}</option>`,
+      ...sorted.map(opt => `<option value="${escapeHtml(opt[lang])}" data-breed-id="${opt.id}" ${keepId === opt.id ? 'selected' : ''}>${escapeHtml(opt[lang])}</option>`),
+      `<option value="${escapeHtml(DOG_BREED_SPECIAL_OPTIONS.other[lang])}" data-breed-id="other" ${keepId === 'other' ? 'selected' : ''}>${escapeHtml(DOG_BREED_SPECIAL_OPTIONS.other[lang])}</option>`
+    ].join('');
+    select.innerHTML = optionsHtml;
+  });
+}
+
+// Håller data-breed-id i synk när användaren själv väljer i menyn, så
+// t.ex. ett språkbyte efteråt behåller rätt val.
+document.querySelectorAll('select[data-breed-select]').forEach(select => {
+  select.addEventListener('change', () => {
+    const chosen = select.options[select.selectedIndex];
+    select.dataset.breedId = (chosen && chosen.dataset.breedId) || '';
+  });
+});
+
+// Sätter ett sparat ras-värde (fritext från äldre profiler, eller kontots
+// data) på profilkortets rullmeny genom att slå upp/spara motsvarande id
+// och rendera om alternativen på rätt språk.
+function setBreedSelectValue(breedText) {
+  const id = findBreedIdForText(breedText);
+  dogProfileBreedEl.dataset.breedId = id;
+  populateBreedSelects();
+}
+
 function getDogDisplayName(profile, language) {
   return String(profile?.name || '').trim() || (language === 'sv' ? 'din hund' : 'your dog');
 }
@@ -1764,6 +1893,8 @@ dogProfileEditBtn?.addEventListener('click', () => {
 dogProfileClearBtn?.addEventListener('click', async () => {
   await clearDogProfile();
   dogProfileForm.reset();
+  dogProfileBreedEl.dataset.breedId = '';
+  populateBreedSelects();
   renderDogProfileUI();
   updateHeroTitle();
   updateLogTitle();
@@ -1841,7 +1972,7 @@ if (window.DoginaryAuthUI) {
     if (!dog || !isDoginaryLoggedIn()) return;
     dogProfile = dogProfileFromAccountDog(dog);
     dogProfileNameEl.value = dog.name || '';
-    dogProfileBreedEl.value = dog.breed || '';
+    setBreedSelectValue(dog.breed || '');
     dogProfileAgeEl.value = dog.age || 'adult';
     renderDogProfileUI();
     updateHeroTitle();

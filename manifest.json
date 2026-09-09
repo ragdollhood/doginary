@@ -1,0 +1,74 @@
+{
+  "name": "Doginary — Your dog's best day, every day",
+  "short_name": "Doginary",
+  "description": "Your dog's best day, every day",
+  "id": "/",
+  "start_url": "/index.html?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "theme_color": "#33505A",
+  "background_color": "#ECE6D9",
+  "lang": "sv",
+  "dir": "ltr",
+  "categories": ["lifestyle", "health", "weather"],
+  "icons": [
+    { "src": "icons/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-152.png", "sizes": "152x152", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/screenshot-home-narrow.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dagens vädret och komfortindex för din hund"
+    },
+    {
+      "src": "screenshots/screenshot-log-narrow.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Daglig loggbok för din hund"
+    },
+    {
+      "src": "screenshots/screenshot-home-wide.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Doginary på större skärm"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Logga dagen",
+      "short_name": "Logga",
+      "description": "Öppna dagens loggbok direkt",
+      "url": "/logga.html?source=pwa_shortcut",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Insikter",
+      "short_name": "Insikter",
+      "description": "Se trender och insikter över tid",
+      "url": "/insikter.html?source=pwa_shortcut",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Hälsocenter",
+      "short_name": "Hälsa",
+      "description": "Vikt, symptom och hälsohändelser",
+      "url": "/health.html?source=pwa_shortcut",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ]
+}

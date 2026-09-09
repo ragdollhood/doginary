@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doginary — Offline</title>
+<meta name="theme-color" content="#33505A">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<style>
+  :root{
+    --bg: #ECE6D9;
+    --surface: #F8F5EC;
+    --surface-2: #F1ECDF;
+    --ink: #2B241C;
+    --ink-soft: #6E6455;
+    --hair: #DCD3BF;
+    --teal: #33505A;
+    --radius-lg: 22px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    display:flex; align-items:center; justify-content:center;
+    background: var(--bg);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    color: var(--ink);
+    padding: 24px;
+  }
+  .offline-card{
+    width:min(420px,100%);
+    background: var(--surface);
+    border:1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 38px 30px 32px;
+    text-align:center;
+    box-shadow: 0 18px 50px rgba(43,36,28,.10);
+  }
+  .offline-icon{
+    width:64px; height:64px; margin:0 auto 18px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%; background: var(--surface-2); color: var(--teal);
+  }
+  .offline-icon svg{ width:30px; height:30px; }
+  h1{
+    font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:23px;
+    margin: 0 0 10px;
+  }
+  p{
+    font-size:14.5px; line-height:1.6; color: var(--ink-soft); margin: 0 0 26px;
+  }
+  .offline-actions{ display:flex; flex-direction:column; gap:10px; }
+  button, a.btn{
+    font-family:inherit; font-size:15px; font-weight:500;
+    color:#fff; background: var(--ink); border:none;
+    border-radius:30px; padding:12px 20px; cursor:pointer;
+    text-decoration:none; display:inline-block;
+  }
+  button:hover, a.btn:hover{ background:#3A322A; }
+  .offline-note{
+    margin-top:22px; font-size:12.5px; color: var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+  <div class="offline-card">
+    <div class="offline-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 8.5a17 17 0 0 1 20 0M5 12.5a12 12 0 0 1 14 0M8.5 16.5a7 7 0 0 1 7 0"/>
+        <line x1="3" y1="3" x2="21" y2="21"/>
+        <circle cx="12" cy="20" r="1"/>
+      </svg>
+    </div>
+    <h1>Du är offline just nu</h1>
+    <p>Tidigare visad information finns fortfarande tillgänglig. Anslut till internet igen för att hämta senaste vädret och synka din hunds logg.</p>
+    <div class="offline-actions">
+      <button type="button" onclick="location.reload()">Försök igen</button>
+      <a class="btn" href="/index.html" style="background:var(--surface-2);color:var(--ink)">Till startsidan</a>
+    </div>
+    <p class="offline-note">Sidor och data du redan öppnat cachas automatiskt så att Doginary fungerar även utan uppkoppling.</p>
+  </div>
+</body>
+</html>

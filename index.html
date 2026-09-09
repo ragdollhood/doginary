@@ -74,6 +74,12 @@
   </script>
   <link rel="icon" type="image/png" href="assets/icon.png">
   <link rel="apple-touch-icon" href="assets/icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Doginary">
+  <script defer src="pwa.js"></script>
   <link rel="preload" as="image" href="assets/hero-sun.webp" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -560,6 +566,10 @@ const VISIT_SUPABASE_KEY = "sb_publishable_94seiOtGg1rsEr2Vve6BoA_H1bv4zxo";
 /* owner's own visitor IDs — never counted as visits */
 const EXCLUDED_VISITOR_IDS = [];
 
+/* owner's own accounts — visits while logged in as any of these are
+   never counted, regardless of which device/browser (visitor_id) it is */
+const EXCLUDED_VISITOR_EMAILS = ["doginary@gmail.com", "ragdollhood@gmail.com"];
+
 function getVisitorId() {
   let id = localStorage.getItem("visitor_id");
 
@@ -589,6 +599,18 @@ async function registerVisit() {
   const visitorId = getVisitorId();
   if (EXCLUDED_VISITOR_IDS.includes(visitorId)) {
     return;
+  }
+
+  // Räkna inte besök som sker medan man är inloggad på något av
+  // ägarens egna konton (oavsett enhet/webbläsare).
+  try {
+    const session = await DoginaryAuth.getSession();
+    const email = session && session.user && session.user.email;
+    if (email && EXCLUDED_VISITOR_EMAILS.includes(email)) {
+      return;
+    }
+  } catch (error) {
+    // Ej inloggad eller sessionen gick inte att läsa — räkna besöket som vanligt.
   }
 
   try {

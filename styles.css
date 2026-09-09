@@ -329,10 +329,11 @@ footer{flex-wrap:wrap}
 .donate-banner p{margin:0;color:var(--ink);line-height:1.6;max-width:640px}
 .donate-banner p b{color:var(--pine)}
 .donate-btn{background:var(--amber);color:#1b2a25;font-weight:700;padding:12px 22px;border-radius:12px;text-decoration:none;white-space:nowrap}
-.log-cta{text-align:center;padding:56px 24px}
+.log-cta{padding:56px 24px}
 .log-cta-text{max-width:520px;margin:0 auto 26px;color:var(--muted);font-size:16px;line-height:1.6}
 .log-cta-btn{display:inline-block;background:var(--pine);color:#fff;font-weight:700;font-size:18px;padding:18px 40px;border-radius:999px;text-decoration:none;box-shadow:0 14px 30px rgba(15,59,87,.25);transition:transform .15s ease,box-shadow .15s ease}
 .log-cta-btn:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(15,59,87,.32)}
+.log-cta:not(.log-cta--with-image){text-align:center}
 @media(max-width:520px){.log-cta{padding:40px 18px}.log-cta-btn{width:100%;font-size:16px;padding:16px 24px}}
 .donate-btn:hover{opacity:.92}
 .donate-image-block{max-width:1400px;margin:0 auto;padding:0 max(24px,6vw) 50px;text-align:center}
@@ -340,29 +341,30 @@ footer{flex-wrap:wrap}
 .donate-image-block img{max-width:360px;width:100%;border-radius:20px;box-shadow:0 16px 40px #0002;transition:transform .2s ease;display:block;margin:0 auto}
 .donate-image-block img:hover{transform:translateY(-3px)}
 
-.dagbok-sign-block{max-width:1400px;margin:0 auto;padding:0 max(24px,6vw) 90px;text-align:center}
-.dagbok-sign-heading-link{display:inline-flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;margin-bottom:22px}
-.dagbok-sign-heading-link .kicker{display:block}
-.dagbok-sign-heading{margin:0;font:700 clamp(28px,4vw,42px)/1.05 Fraunces,serif;color:var(--pine);transition:color .15s ease}
-.dagbok-sign-heading-link:hover .dagbok-sign-heading,.dagbok-sign-heading-link:focus-visible .dagbok-sign-heading{color:var(--pine2)}
-.dagbok-sign-link{position:relative;display:inline-block;border-radius:24px;container-type:inline-size}
-.dagbok-sign-link img{max-width:420px;width:100%;border-radius:24px;box-shadow:0 18px 44px #0f3b5726;transition:transform .2s ease,box-shadow .2s ease;display:block;margin:0 auto}
-.dagbok-sign-link:hover img,.dagbok-sign-link:focus-visible img{transform:translateY(-4px);box-shadow:0 22px 50px #0f3b5736}
-.dagbok-sign-link:hover .dagbok-sign-overlay,.dagbok-sign-link:focus-visible .dagbok-sign-overlay{transform:translateY(-4px)}
-.dagbok-sign-overlay{position:absolute;top:46%;left:8%;right:8%;bottom:10%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;pointer-events:none;transition:transform .2s ease}
-.dagbok-sign-overlay{gap:clamp(8px,3cqw,16px)}
-.dagbok-sign-overlay-text{font:800 22px/1.2 "DM Sans",sans-serif;letter-spacing:.01em;text-transform:uppercase;color:var(--pine);text-align:center}
-.dagbok-sign-overlay-text{font-size:clamp(15px,7.4cqw,30px)}
-.dagbok-sign-overlay-bar{width:40%;height:5px;border-radius:4px;background:var(--amber)}
-.dagbok-sign-overlay-bar{height:clamp(3px,1cqw,6px)}
+/* Skylten (log-cta--with-image): bilden ligger HELT inuti samma
+   panel-plain-kort som CTA-texten/knappen, aldrig utanför. */
+.log-cta--with-image{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,220px);gap:clamp(20px,4vw,36px);align-items:center;text-align:left}
+.log-cta--with-image .log-cta-text{margin:0 0 20px;max-width:none}
+.log-cta-copy{min-width:0}
+.log-cta-sign{position:relative;display:block;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 14px 34px #0f3b5726;transition:transform .2s ease,box-shadow .2s ease;container-type:inline-size}
+.log-cta-sign img{display:block;width:100%;height:auto;border-radius:20px}
+.log-cta-sign:hover,.log-cta-sign:focus-visible{transform:translateY(-4px);box-shadow:0 18px 40px #0f3b5736;outline:none}
+.log-cta-sign-overlay{position:absolute;top:46%;left:8%;right:8%;bottom:10%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none}
+.log-cta-sign-overlay{gap:clamp(4px,2cqw,8px)}
+.log-cta-sign-overlay-text{font:800 13px/1.2 "DM Sans",sans-serif;letter-spacing:.01em;text-transform:uppercase;color:var(--pine);text-align:center}
+.log-cta-sign-overlay-text{font-size:clamp(9px,7.4cqw,17px)}
+.log-cta-sign-overlay-bar{width:44%;height:3px;border-radius:3px;background:var(--amber)}
+.log-cta-sign-overlay-bar{height:clamp(2px,0.8cqw,4px)}
 @supports not (container-type: inline-size){
-  .dagbok-sign-overlay-text{font-size:clamp(15px,6.5vw,30px)}
-  .dagbok-sign-overlay-bar{height:4px}
-  .dagbok-sign-overlay{gap:12px}
+  .log-cta-sign-overlay-text{font-size:clamp(9px,3.6vw,17px)}
 }
-.dagbok-sign-caption{max-width:380px;margin:18px auto 0;color:var(--muted);font-size:14.5px;line-height:1.6}
-@media(max-width:520px){.dagbok-sign-block{padding:0 18px 64px}}
+@media(max-width:700px){
+  .log-cta--with-image{grid-template-columns:1fr;text-align:center;justify-items:center}
+  .log-cta--with-image .log-cta-text{margin:0 auto 20px}
+  .log-cta-sign{max-width:220px}
+}
 .donate-note{color:var(--muted);font-size:13px;margin-top:12px}
 .donate-inline{color:var(--pine2);font-weight:700;text-decoration:none}
 .donate-inline:hover{text-decoration:underline}
 @media(max-width:520px){.donate-banner{padding:20px}}
+

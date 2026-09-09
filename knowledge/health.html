@@ -105,11 +105,13 @@
   .back-to-top a{color:var(--pine2);font-weight:700;text-decoration:none;font-size:14px}
   .back-to-top a:hover{text-decoration:underline}
   @media(max-width:700px){.article-toc ol{columns:1}.cta-inner{flex-direction:column;align-items:flex-start}}
-  .panel--with-photo{display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
-  .panel--with-photo .panel-inner{max-width:520px}
-  .panel-photo{flex:0 0 260px;width:260px;height:190px;border-radius:18px;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.28)}
-  .panel-photo img{width:100%;height:100%;object-fit:cover;display:block}
-  @media(max-width:820px){.panel-photo{width:100%;flex:1 1 100%;height:200px;order:2}}
+  .panel--with-photo{
+    position:relative;
+    background-image:linear-gradient(100deg,rgba(8,14,20,.78) 0%,rgba(8,14,20,.55) 45%,rgba(8,14,20,.22) 100%),url("/assets/dog-vet.jpg");
+    background-image:linear-gradient(100deg,rgba(8,14,20,.78) 0%,rgba(8,14,20,.55) 45%,rgba(8,14,20,.22) 100%),image-set(url("/assets/dog-vet.webp") type("image/webp"),url("/assets/dog-vet.jpg") type("image/jpeg"));
+    background-size:cover;
+    background-position:center;
+  }
   .health-tool-callout p a{color:#8a5a1c;font-weight:700;text-decoration:underline}
 </style>
 </head>
@@ -173,10 +175,6 @@
       <h2 data-i18n="whyHeading">Why health monitoring matters</h2>
       <p data-i18n="whyPanelText">Small, regular checks catch problems long before they become emergencies.</p>
     </div>
-    <picture class="panel-photo">
-      <source srcset="/assets/dog-vet.webp" type="image/webp">
-      <img src="/assets/dog-vet.jpg" alt="Veterinarian checking a dog during a routine health check" loading="lazy" decoding="async" width="260" height="190">
-    </picture>
   </div>
   <article class="article-prose">
     <p data-i18n="whyEarlyTitle"><b>Early detection</b></p>

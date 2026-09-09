@@ -195,6 +195,16 @@
         if (mode === 'signup' && result && result.needsConfirmation) {
           showMessage('Kontot är skapat! Kolla din inkorg och klicka på bekräftelselänken, logga sedan in här.', 'success');
           setMode('signin');
+        } else if (mode === 'signup' && result && result.session) {
+          // Kontot skapades och loggades in direkt (Supabase-projektets
+          // "Confirm email" är avstängt, se filens header) — ta
+          // användaren direkt till "Logga en dag" istället för att bara
+          // stänga rutan och lämna kvar dem på sidan de stod på.
+          // onAuthStateChange (längre ner) stänger modalen; vi behöver
+          // bara sköta själva navigeringen här.
+          if (!/(^|\/)logga\.html$/i.test(global.location.pathname)) {
+            global.location.href = 'logga.html';
+          }
         }
       }).catch(function (err) {
         showMessage((err && err.message) ? err.message : 'Något gick fel — försök igen.', 'error');

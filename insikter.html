@@ -33,7 +33,13 @@
 
   body{
     margin: 0;
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: url('assets/fur-white2.jpg');
+    background-image: image-set(
+      url('assets/fur-white2.webp') type('image/webp'),
+      url('assets/fur-white2.jpg') type('image/jpeg')
+    );
+    background-repeat: repeat;
     color: var(--ink);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -68,7 +74,16 @@
     position: relative;
     padding: 30px 26px 34px;
     border-radius: var(--radius-lg);
-    background: linear-gradient(160deg, #3A2C22 0%, #2B241C 62%, #241E17 100%);
+    background-color: #2B241C;
+    background-image:
+      linear-gradient(100deg, rgba(35,29,22,.12) 0%, rgba(35,29,22,.62) 42%, rgba(30,25,19,.88) 100%),
+      url('assets/dog-fog.jpg');
+    background-image:
+      linear-gradient(100deg, rgba(35,29,22,.12) 0%, rgba(35,29,22,.62) 42%, rgba(30,25,19,.88) 100%),
+      image-set(url('assets/dog-fog.webp') type('image/webp'), url('assets/dog-fog.jpg') type('image/jpeg'));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: cover;
     color: #F3ECDF;
     overflow: hidden;
     margin-bottom: 28px;
@@ -83,12 +98,14 @@
 
   .hero__top{
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: baseline;
+    gap: 10px;
     font-size: 14px;
     color: #C9BBA4;
     margin-bottom: 22px;
     position: relative;
+    text-shadow: 0 1px 8px rgba(20,16,11,.5);
   }
 
   .hero__date{ letter-spacing: 0.01em; }
@@ -104,15 +121,19 @@
     font-size: clamp(26px, 6vw, 34px);
     line-height: 1.18;
     max-width: 22ch;
-    margin: 0 0 16px;
+    margin: 0 0 16px auto;
+    text-align: right;
+    text-shadow: 0 1px 12px rgba(20,16,11,.5);
     position: relative;
   }
 
   .hero__sub{
     color: #C9BBA4;
     font-size: 15px;
-    max-width: 34ch;
-    margin: 0;
+    max-width: 30ch;
+    margin: 0 0 0 auto;
+    text-align: right;
+    text-shadow: 0 1px 10px rgba(20,16,11,.5);
     position: relative;
   }
 

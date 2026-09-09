@@ -593,6 +593,40 @@
   }
   .lang-btn:hover, .lang-btn:focus-visible{ background:var(--hair); outline:none; }
   .flag-icon{ border-radius:3px; display:block; }
+
+  /* ---------- Mobilmeny (hamburgare) i crossnav ---------- */
+  .crossnav-menu-btn{
+    display:none; width:36px; height:36px; padding:0; flex-shrink:0;
+    align-items:center; justify-content:center; border-radius:10px;
+    border:1px solid var(--hair); background:var(--surface-2); color:var(--ink);
+    cursor:pointer;
+  }
+  .crossnav-menu-btn svg{ width:19px; height:19px; display:block; }
+  .crossnav-menu-btn:hover{ background:var(--hair); }
+  .crossnav-menu-btn[aria-expanded="true"]{ background:var(--teal); border-color:var(--teal); color:var(--surface); }
+
+  .crossnav-mobile-menu{
+    display:none; flex-direction:column;
+    background:var(--surface); border-bottom:1px solid var(--hair);
+    padding:4px max(24px, 5vw) 10px;
+  }
+  .crossnav-mobile-menu.show{ display:flex; }
+  .crossnav-mobile-menu a{
+    padding:12px 2px; font-size:14.5px; color:var(--teal);
+    text-decoration:none; border-bottom:1px solid var(--hair);
+  }
+  .crossnav-mobile-menu a:last-child{ border-bottom:none; }
+  .crossnav-mobile-menu a[aria-current="page"]{ color:#B8860B; font-weight:700; }
+
+  @media (max-width: 700px){
+    .crossnav{ position:relative; }
+    .crossnav-menu-btn{ display:inline-flex; }
+    .crossnav-home{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+    .crossnav-home span[aria-hidden]{ display:none; }
+    .crossnav-links{ display:none; }
+    .crossnav-right{ margin-left:auto; }
+  }
+
   .emptycard{
     background: var(--surface);
     border: 1px dashed var(--hair);
@@ -717,6 +751,9 @@
 <body>
 
 <nav class="crossnav">
+  <button type="button" id="crossnavMenuBtn" class="crossnav-menu-btn" aria-label="Meny" aria-expanded="false" aria-controls="crossnavMobileMenu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
   <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
   <div class="crossnav-right">
     <div class="crossnav-links">
@@ -732,6 +769,35 @@
     <div id="doginaryAuthRoot"></div>
   </div>
 </nav>
+<div id="crossnavMobileMenu" class="crossnav-mobile-menu">
+  <a href="logga.html" data-i18n="navDiary">Dagbok</a>
+  <a href="health.html" data-i18n="navHealth">Hälsocenter</a>
+  <a href="insikter.html" data-i18n="navInsights" aria-current="page">Insikter</a>
+  <a href="guidelines.html" data-i18n="navGuidelines">Riktlinjer</a>
+</div>
+<script>
+(function(){
+  var btn = document.getElementById('crossnavMenuBtn');
+  var menu = document.getElementById('crossnavMobileMenu');
+  if(!btn || !menu) return;
+  btn.addEventListener('click', function(){
+    var open = menu.classList.toggle('show');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  menu.addEventListener('click', function(e){
+    if(e.target.tagName === 'A'){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('click', function(e){
+    if(menu.classList.contains('show') && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
 
 <div class="page">
 

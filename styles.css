@@ -169,6 +169,20 @@
 .tabbar-item.is-active{color:var(--pine)}
 .tabbar-item.is-active .tabbar-icon{color:var(--amber)}
 
+/* ===== Header mobile menu (hamburger, top-left) — same 5 links on every page ===== */
+.nav-menu-btn{display:none;width:36px;height:36px;padding:0;flex-shrink:0;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.nav-menu-btn svg{width:19px;height:19px;display:block}
+.nav-menu-btn:hover{background:var(--cream)}
+.nav-menu-btn[aria-expanded="true"]{background:var(--pine);border-color:var(--pine);color:#fff}
+.nav-mobile-menu{display:none;flex-direction:column;background:#fff;border-bottom:1px solid var(--line);padding:4px max(24px,5vw) 10px}
+.nav-mobile-menu.show{display:flex}
+.nav-mobile-menu a{padding:12px 2px;font-size:14.5px;color:var(--pine2);text-decoration:none;border-bottom:1px solid var(--line);font-weight:600}
+.nav-mobile-menu a:last-child{border-bottom:none}
+.nav-mobile-menu a[aria-current="page"]{color:var(--amber);font-weight:700}
+@media(max-width:900px){
+  .nav-menu-btn{display:inline-flex}
+}
+
 /* ===== Daily log & calendar ===== */
 .log-section{padding:90px max(24px,6vw);max-width:1400px;margin:auto}
 .panel-plain{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px clamp(18px,3.5vw,38px)}

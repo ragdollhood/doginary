@@ -110,6 +110,9 @@
 <body>
 <a class="skip" href="#main" data-i18n="skipLink">Skip to content</a>
 <header class="topbar">
+  <button type="button" id="navMenuBtn" class="nav-menu-btn" aria-label="Meny" aria-expanded="false" aria-controls="navMobileMenu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
   <a class="brand" href="/"><img class="brand-logo" src="/assets/title-doginary.png" alt="DOGINARY"></a>
   <div class="topbar-right">
     <nav aria-label="Main menu">
@@ -124,6 +127,36 @@
     </div>
   </div>
 </header>
+<div id="navMobileMenu" class="nav-mobile-menu">
+  <a href="/" data-i18n="navWeather">Weather</a>
+  <a href="/logga.html" data-i18n="navDiary">Diary</a>
+  <a href="/health.html" data-i18n="navHealth">Health center</a>
+  <a href="/insikter.html" data-i18n="navInsights">Insights</a>
+  <a href="/guidelines.html" data-i18n="navGuidelines">Guidelines</a>
+</div>
+<script>
+(function(){
+  var btn = document.getElementById('navMenuBtn');
+  var menu = document.getElementById('navMobileMenu');
+  if(!btn || !menu) return;
+  btn.addEventListener('click', function(){
+    var open = menu.classList.toggle('show');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  menu.addEventListener('click', function(e){
+    if(e.target.tagName === 'A'){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('click', function(e){
+    if(menu.classList.contains('show') && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
 
 <main id="main">
 
@@ -293,6 +326,7 @@ const STR = {
     metaDescription: "How much should dogs walk, and how often? Evidence-based guidance on daily movement by life stage, plus the physical, mental and behavioral benefits of regular walks.",
     skipLink: "Skip to content",
     navForecast: "Today", navLog: "Log", navDogAdvice: "Health & coat", navKnowledge: "Knowledge",
+    navWeather: "Weather", navDiary: "Diary", navHealth: "Health center", navInsights: "Insights", navGuidelines: "Guidelines",
     crumbHome: "Doginary", crumbKnowledge: "Dog Knowledge", crumbWalking: "Walking",
     h1: "Dog Walking: Daily Movement for Long-Term Health",
     lead: "Walking is one of the simplest, most reliable things you can do for your dog's health. This guide covers why daily movement matters, how much dogs actually need at each life stage, and the signs that tell you whether to walk more or less.",
@@ -347,6 +381,7 @@ const STR = {
     metaDescription: "Hur mycket bör hundar promeneras, och hur ofta? Evidensbaserad vägledning om daglig rörelse per livsfas, samt de fysiska, mentala och beteendemässiga fördelarna med regelbundna promenader.",
     skipLink: "Hoppa till innehållet",
     navForecast: "Idag", navLog: "Logg", navDogAdvice: "Hälsa & päls", navKnowledge: "Kunskap",
+    navWeather: "Väder", navDiary: "Dagbok", navHealth: "Hälsocenter", navInsights: "Insikter", navGuidelines: "Riktlinjer",
     crumbHome: "Doginary", crumbKnowledge: "Hundkunskap", crumbWalking: "Promenader",
     h1: "Hundpromenader: Daglig rörelse för långsiktig hälsa",
     lead: "Promenader är en av de enklaste och mest pålitliga sakerna du kan göra för din hunds hälsa. Den här guiden går igenom varför daglig rörelse spelar roll, hur mycket hundar faktiskt behöver i olika livsfaser, och tecknen som visar om det behövs mer eller mindre promenad.",

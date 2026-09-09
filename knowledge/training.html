@@ -110,6 +110,9 @@
 <body>
 <a class="skip" href="#main" data-i18n="skipLink">Skip to content</a>
 <header class="topbar">
+  <button type="button" id="navMenuBtn" class="nav-menu-btn" aria-label="Meny" aria-expanded="false" aria-controls="navMobileMenu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
   <a class="brand" href="/"><img class="brand-logo" src="/assets/title-doginary.png" alt="DOGINARY"></a>
   <div class="topbar-right">
     <nav aria-label="Main menu">
@@ -124,6 +127,36 @@
     </div>
   </div>
 </header>
+<div id="navMobileMenu" class="nav-mobile-menu">
+  <a href="/" data-i18n="navWeather">Weather</a>
+  <a href="/logga.html" data-i18n="navDiary">Diary</a>
+  <a href="/health.html" data-i18n="navHealth">Health center</a>
+  <a href="/insikter.html" data-i18n="navInsights">Insights</a>
+  <a href="/guidelines.html" data-i18n="navGuidelines">Guidelines</a>
+</div>
+<script>
+(function(){
+  var btn = document.getElementById('navMenuBtn');
+  var menu = document.getElementById('navMobileMenu');
+  if(!btn || !menu) return;
+  btn.addEventListener('click', function(){
+    var open = menu.classList.toggle('show');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  menu.addEventListener('click', function(e){
+    if(e.target.tagName === 'A'){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('click', function(e){
+    if(menu.classList.contains('show') && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
 
 <main id="main">
 
@@ -280,6 +313,7 @@ const STR = {
     metaDescription: "A science-based guide to dog training: positive reinforcement, mental enrichment, training routines for puppies and adult dogs, and how exercise supports learning. With sources.",
     skipLink: "Skip to content",
     navForecast: "Today", navLog: "Log", navDogAdvice: "Health & coat", navKnowledge: "Knowledge",
+    navWeather: "Weather", navDiary: "Diary", navHealth: "Health center", navInsights: "Insights", navGuidelines: "Guidelines",
     crumbHome: "Doginary", crumbKnowledge: "Dog Knowledge", crumbTraining: "Training",
     h1: "The Complete Guide to Dog Training: Building Healthy Habits for a Smarter, Happier Dog",
     lead: "Dog training is one of the best investments you can make in your dog's long-term wellbeing. Modern, science-based training improves behaviour, reduces stress, and strengthens the bond between dogs and their people. This guide covers positive reinforcement, mental enrichment, and training routines for both puppies and adult dogs — based on research and guidance from veterinary behaviour organisations.",
@@ -333,6 +367,7 @@ const STR = {
     metaDescription: "En vetenskapligt grundad guide till hundträning: positiv förstärkning, mental stimulans, träningsrutiner för valpar och vuxna hundar, och hur motion stödjer inlärning. Med källor.",
     skipLink: "Hoppa till innehållet",
     navForecast: "Idag", navLog: "Logg", navDogAdvice: "Hälsa & päls", navKnowledge: "Kunskap",
+    navWeather: "Väder", navDiary: "Dagbok", navHealth: "Hälsocenter", navInsights: "Insikter", navGuidelines: "Riktlinjer",
     crumbHome: "Doginary", crumbKnowledge: "Hundkunskap", crumbTraining: "Träning",
     h1: "Den kompletta guiden till hundträning: Bygg goda vanor för en smartare, gladare hund",
     lead: "Hundträning är en av de bästa investeringarna du kan göra för din hunds långsiktiga välmående. Modern, vetenskapligt grundad träning förbättrar beteende, minskar stress och stärker bandet mellan hund och människa. Den här guiden går igenom positiv förstärkning, mental stimulans och träningsrutiner för både valpar och vuxna hundar — baserat på forskning och råd från veterinärbeteendeorganisationer.",

@@ -106,6 +106,9 @@
 <body>
 <a class="skip" href="#main" data-i18n="skipLink">Skip to content</a>
 <header class="topbar">
+  <button type="button" id="navMenuBtn" class="nav-menu-btn" aria-label="Meny" aria-expanded="false" aria-controls="navMobileMenu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
   <a class="brand" href="/"><img class="brand-logo" src="/assets/title-doginary.png" alt="DOGINARY"></a>
   <div class="topbar-right">
     <nav aria-label="Main menu">
@@ -120,6 +123,36 @@
     </div>
   </div>
 </header>
+<div id="navMobileMenu" class="nav-mobile-menu">
+  <a href="/" data-i18n="navWeather">Weather</a>
+  <a href="/logga.html" data-i18n="navDiary">Diary</a>
+  <a href="/health.html" data-i18n="navHealth">Health center</a>
+  <a href="/insikter.html" data-i18n="navInsights">Insights</a>
+  <a href="/guidelines.html" data-i18n="navGuidelines">Guidelines</a>
+</div>
+<script>
+(function(){
+  var btn = document.getElementById('navMenuBtn');
+  var menu = document.getElementById('navMobileMenu');
+  if(!btn || !menu) return;
+  btn.addEventListener('click', function(){
+    var open = menu.classList.toggle('show');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  menu.addEventListener('click', function(e){
+    if(e.target.tagName === 'A'){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('click', function(e){
+    if(menu.classList.contains('show') && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
 
 <main id="main">
 
@@ -347,6 +380,7 @@ const STR = {
     metaDescription: "Learn how hot weather, cold temperatures, rain, wind, snow and storms affect dogs. Expert-backed dog weather safety tips to help keep your dog safe and comfortable year-round.",
     skipLink: "Skip to content",
     navForecast: "Today", navLog: "Log", navDogAdvice: "Health & coat", navKnowledge: "Knowledge",
+    navWeather: "Weather", navDiary: "Diary", navHealth: "Health center", navInsights: "Insights", navGuidelines: "Guidelines",
     crumbHome: "Doginary", crumbKnowledge: "Dog Knowledge", crumbWeather: "Weather",
     h1: "Dog Weather Safety Guide: How Every Season Affects Your Dog",
     lead: "The best weather for dogs isn't the same for every dog. Temperature, humidity, wind, rain, snow and even air quality all affect how safe and comfortable a walk really is. This guide covers dog safety in hot weather, dog safety in cold weather, and everything in between — based on advice from veterinary and animal welfare organisations.",
@@ -413,6 +447,7 @@ const STR = {
     metaDescription: "Lär dig hur värme, kyla, regn, blåst, snö och oväder påverkar hundar. Expertgrundade väderråd som hjälper dig hålla din hund säker och bekväm året runt.",
     skipLink: "Hoppa till innehållet",
     navForecast: "Idag", navLog: "Logg", navDogAdvice: "Hälsa & päls", navKnowledge: "Kunskap",
+    navWeather: "Väder", navDiary: "Dagbok", navHealth: "Hälsocenter", navInsights: "Insikter", navGuidelines: "Riktlinjer",
     crumbHome: "Doginary", crumbKnowledge: "Hundkunskap", crumbWeather: "Väder",
     h1: "Väderguide för hundar: Så påverkar varje årstid din hund",
     lead: "Det bästa vädret för hundar ser inte likadant ut för alla hundar. Temperatur, luftfuktighet, blåst, regn, snö och till och med luftkvalitet avgör hur säker och behaglig en promenad faktiskt är. Den här guiden går igenom hundsäkerhet i värme, hundsäkerhet i kyla och allt däremellan — baserat på råd från veterinär- och djurskyddsorganisationer.",

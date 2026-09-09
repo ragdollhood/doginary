@@ -17,7 +17,7 @@
    någon cachad fil. Gamla cachar städas bort i "activate".
    ======================================================================= */
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const APP_SHELL_CACHE = `doginary-shell-${CACHE_VERSION}`;
 const DATA_CACHE = `doginary-data-${CACHE_VERSION}`;
 const CURRENT_CACHES = [APP_SHELL_CACHE, DATA_CACHE];
@@ -50,6 +50,7 @@ const APP_SHELL_FILES = [
   '/icons/icon-192-maskable.png',
   '/icons/icon-512-maskable.png',
   '/icons/apple-touch-icon.png',
+  '/apple-touch-icon.png',
   '/assets/icon.png',
   '/assets/preview.jpg',
   '/assets/title-doginary.png',

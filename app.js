@@ -226,6 +226,9 @@ const STR = {
     errOpenMeteoNoData: "The forecast is missing data.",
 
     navLog: "Log",
+    navInsights: "Insights",
+    navGuidelines: "Guidelines",
+    navHealth: "Health center",
     logKicker: "DAILY LOG",
     logTitle: "Log {name}'s day",
     logSubtitle: "Walks, bathroom breaks, grooming, appetite, mood and sleep — logged in one calm daily journal, with gentle insights over time.",
@@ -433,6 +436,9 @@ const STR = {
     errOpenMeteoNoData: "Prognosen saknar data.",
 
     navLog: "Logga",
+    navInsights: "Insikter",
+    navGuidelines: "Riktlinjer",
+    navHealth: "Hälsocenter",
     logKicker: "DAGBOK",
     logTitle: "Logga dagen för {name}",
     logSubtitle: "Promenader, uteliv, pälsvård, aptit, humör och sömn — loggat i en lugn dagbok, med försiktiga insikter över tid.",

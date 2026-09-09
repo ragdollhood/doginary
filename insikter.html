@@ -578,6 +578,7 @@
     border-radius: 8px;
   }
   .crossnav-right{ display: flex; align-items: center; gap: 14px; }
+  .crossnav-links{ display: flex; align-items: center; gap: 15px; }
   .lang-switch{ display:flex; align-items:center; }
   .lang-btn{
     border:0; background:var(--surface-2); border-radius:999px;
@@ -703,8 +704,12 @@
 
 <nav class="crossnav">
   <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
-  <a href="logga.html" data-i18n="navLogday">Logga en dag</a>
   <div class="crossnav-right">
+    <div class="crossnav-links">
+      <a href="logga.html" data-i18n="navDiary">Dagbok</a>
+      <a href="guidelines.html" data-i18n="navGuidelines">Riktlinjer</a>
+      <a href="health.html" data-i18n="navHealth">Hälsocenter</a>
+    </div>
     <div class="lang-switch">
       <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="20" height="13" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
       <button type="button" id="langBtnEn" class="lang-btn" aria-label="Show the page in English" title="English" hidden><svg class="flag-icon" viewBox="0 0 60 30" width="20" height="13" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-clip-insikter)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="uk-clip-insikter"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
@@ -840,7 +845,7 @@
 
   const STR = {
     en: {
-      navLogday: 'Log a day',
+      navDiary: 'Diary', navGuidelines: 'Guidelines', navHealth: 'Health center',
       authCardTitle: 'Create an account or log in',
       authCardText: 'The same account you log your dog’s days with — log in to see the insights.',
       authCardBtn: 'Create account / Log in',
@@ -914,7 +919,7 @@
       loadError: 'Couldn’t load your dog’s data right now — please reload the page.',
     },
     sv: {
-      navLogday: 'Logga en dag',
+      navDiary: 'Dagbok', navGuidelines: 'Riktlinjer', navHealth: 'Hälsocenter',
       authCardTitle: 'Skapa konto eller logga in',
       authCardText: 'Samma konto som du loggar din hunds dagar på — logga in för att se insikterna.',
       authCardBtn: 'Skapa konto / Logga in',

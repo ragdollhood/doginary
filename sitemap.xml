@@ -6,6 +6,33 @@
     <priority>1.0</priority>
   </url>
 
+    
+  <url>
+    <loc>https://doginary.com/health</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>https://doginary.com/guidelines</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+    
+  <url>
+    <loc>https://doginary.com/logga</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>https://doginary.com/insikter</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+
 <url>
     <loc>https://doginary.com/knowledge/training</loc>
     <changefreq>daily</changefreq>
@@ -42,11 +69,11 @@
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  
 <url>
     <loc>https://doginary.com/knowledge/walking</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  
+
 </urlset>

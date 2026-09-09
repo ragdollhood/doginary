@@ -69,6 +69,12 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
 .sources-section{margin-top:34px;border-top:1px solid var(--hair);padding-top:20px}
 .sources-section h2{font-size:17px;margin:0 0 4px}
 .sources-section > p{font-size:12.5px;color:var(--soft);margin:0 0 12px}
+.knowledge-divider{margin:40px 0 22px;padding-top:26px;border-top:2px dashed var(--hair);text-align:center}
+.knowledge-divider .kicker{display:block;color:var(--rust);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.knowledge-divider p{font-size:13px;color:var(--soft);max-width:480px;margin:0 auto}
+.knowledge-hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.knowledge-hub-tile{display:block;background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius-sm,12px);padding:14px 16px;font-size:13.5px;font-weight:600;color:var(--ink);text-decoration:none;text-align:center;transition:border-color .15s,color .15s}
+.knowledge-hub-tile:hover{border-color:var(--teal);color:var(--teal)}
 .sources-list{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .sources-list li{font-size:12.5px}
 .sources-list a{color:var(--teal);text-decoration:underline;text-underline-offset:2px}
@@ -204,6 +210,22 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
     <ul class="sources-list" id="sourcesList"></ul>
   </div>
 </section>
+
+<section class="knowledge-section">
+  <div class="knowledge-divider">
+    <span class="kicker" data-i18n="knowledgeDividerKicker">ALLMÄN HUNDKUNSKAP</span>
+    <p data-i18n="knowledgeDividerText">Från och med här är innehållet inte längre anpassat efter din hunds ras eller ålder — det här är allmänna, praktiska texter som gäller alla hundar.</p>
+  </div>
+  <div class="knowledge-hub-grid">
+    <a class="knowledge-hub-tile" href="/knowledge/health" data-i18n="knowHealth">Hälsa</a>
+    <a class="knowledge-hub-tile" href="/knowledge/safety" data-i18n="knowSafety">Säkerhet</a>
+    <a class="knowledge-hub-tile" href="/knowledge/walking" data-i18n="knowWalking">Promenad</a>
+    <a class="knowledge-hub-tile" href="/knowledge/weather" data-i18n="knowWeather">Väder</a>
+    <a class="knowledge-hub-tile" href="/knowledge/training" data-i18n="knowTraining">Träning</a>
+    <a class="knowledge-hub-tile" href="/knowledge/puppies" data-i18n="knowPuppies">Valpar</a>
+    <a class="knowledge-hub-tile" href="/knowledge/seniors" data-i18n="knowSeniors">Äldre hundar</a>
+  </div>
+</section>
 </main>
 
 <footer class="doginary-footer">
@@ -265,6 +287,10 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
       ageLabelPuppy: 'Puppy', ageLabelAdult: 'Adult', ageLabelSenior: 'Senior',
       sizeLabelSmall: 'Small', sizeLabelMedium: 'Medium', sizeLabelLarge: 'Large', sizeLabelGiant: 'Giant',
       dogNameFallback: 'Your dog', noBreedLabel: 'Breed not set',
+      knowledgeDividerKicker: 'GENERAL DOG KNOWLEDGE',
+      knowledgeDividerText: 'From here on, the content is no longer tailored to your dog\u2019s breed or age — these are general, practical reads that apply to all dogs.',
+      knowHealth: 'Health', knowSafety: 'Safety', knowWalking: 'Walking', knowWeather: 'Weather',
+      knowTraining: 'Training', knowPuppies: 'Puppies', knowSeniors: 'Senior dogs',
     },
     sv: {
       docTitle: 'Doginary — Riktlinjer',
@@ -295,6 +321,10 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
       ageLabelPuppy: 'Valp', ageLabelAdult: 'Vuxen', ageLabelSenior: 'Senior',
       sizeLabelSmall: 'Liten', sizeLabelMedium: 'Mellan', sizeLabelLarge: 'Stor', sizeLabelGiant: 'Jättestor',
       dogNameFallback: 'Din hund', noBreedLabel: 'Ras ej angiven',
+      knowledgeDividerKicker: 'ALLMÄN HUNDKUNSKAP',
+      knowledgeDividerText: 'Från och med här är innehållet inte längre anpassat efter din hunds ras eller ålder — det här är allmänna, praktiska texter som gäller alla hundar.',
+      knowHealth: 'Hälsa', knowSafety: 'Säkerhet', knowWalking: 'Promenad', knowWeather: 'Väder',
+      knowTraining: 'Träning', knowPuppies: 'Valpar', knowSeniors: 'Äldre hundar',
     }
   };
 

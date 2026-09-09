@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doginary — Riktlinjer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ECE6D9;--surface:#F8F5EC;--surface-2:#F1ECDF;--ink:#2B241C;--soft:#6E6455;--ink-soft:#6E6455;--hair:#DCD3BF;--rust:#A15C38;--rust-soft:#EADACB;--teal:#33505A;--teal-soft:#DDE6E5;--green:#4B6B3E;--green-soft:#DEE7D5;--reward:#4B6B3E;--red:#9C3B2C;--red-soft:#F1DCD5;--warn:#9C3B2C;--purple:#4E4272;--purple-soft:#E2DEEF;--radius:22px;--radius-lg:22px;--radius-sm:12px}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.jpg');background-image:image-set(url('assets/fur-white.webp') type('image/webp'),url('assets/fur-white.jpg') type('image/jpeg'));background-repeat:repeat;color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5}
+
+/* ---------- Delad crossnav (samma uppbyggnad som health.html/logga.html) ---------- */
+.crossnav{height:76px;padding:0 max(20px,5vw);background:var(--surface);border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.crossnav-home{display:inline-flex;align-items:center;gap:8px;color:var(--teal);text-decoration:none;font-size:13px;font-weight:600}
+.crossnav-logo{height:30px;width:auto;display:block;border-radius:6px}
+.crossnav-right{display:flex;align-items:center;gap:15px}
+.crossnav-links{display:flex;align-items:center;gap:15px}
+.crossnav-links a{font-size:13px;color:var(--teal);text-decoration:none}
+.crossnav-links a:hover{text-decoration:underline}
+.lang-switch{display:flex;align-items:center}
+.lang-btn{border:0;background:var(--surface-2);border-radius:999px;width:34px;height:34px;font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease}
+.lang-btn:hover,.lang-btn:focus-visible{background:var(--hair);outline:none}
+.flag-icon{border-radius:3px;display:block}
+.crossnav #doginaryAuthRoot{font-size:13.5px}
+
+/* ---------- Inloggningsskärm ---------- */
+.auth-page{max-width:560px;margin:auto;padding:40px 20px 90px}
+
+.page{max-width:820px;margin:auto;padding:30px 20px 90px}.top{margin-bottom:24px}.eyebrow{margin:0 0 4px;color:var(--rust);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}.top h1,.section-title,h2,h3{font-family:Fraunces,serif;font-weight:500}.top h1{font-size:clamp(29px,6vw,43px);line-height:1.08;margin:0}.top .intro{color:var(--soft);max-width:620px;margin:10px 0 0}.notice{display:flex;gap:10px;align-items:flex-start;background:var(--teal-soft);border:1px solid #c6d5d3;border-radius:14px;padding:12px 14px;font-size:12.5px;color:var(--teal);margin:18px 0 28px}
+
+/* ---------- Hundprofil-kort ---------- */
+.profile-card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px 20px;margin-bottom:26px;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-end}
+.profile-field{display:flex;flex-direction:column;gap:5px;min-width:150px}
+.profile-field label{font-size:11.5px;font-weight:600;color:var(--soft);text-transform:uppercase;letter-spacing:.03em}
+.profile-field select{border:1px solid var(--hair);border-radius:10px;background:var(--surface-2);padding:8px 10px;font:14px Inter;color:var(--ink)}
+.profile-summary{flex:1;min-width:220px}
+.profile-summary strong{font-size:17px;font-family:Fraunces,serif;font-weight:500;display:block;margin-bottom:2px}
+.profile-summary span{font-size:12.5px;color:var(--soft)}
+.profile-hint{font-size:12px;color:var(--soft);width:100%;margin-top:-6px}
+
+.no-profile-card{background:var(--rust-soft);border:1px solid #e2c8ae;border-radius:var(--radius);padding:20px;margin-bottom:26px}
+.no-profile-card h2{margin:0 0 6px;font-size:18px}
+.no-profile-card p{margin:0;font-size:13.5px;color:var(--ink-soft)}
+
+/* ---------- Riktlinjekort ---------- */
+.guide-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px}
+.guide-card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px}
+.guide-card .card-icon{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-size:20px;margin-bottom:10px;background:var(--teal-soft)}
+.guide-card h3{font-size:16px;margin:0 0 6px}
+.guide-card p{font-size:13.5px;color:var(--ink-soft);margin:0}
+.guide-card .src-link{display:inline-block;margin-top:10px;font-size:11.5px;color:var(--teal);text-decoration:none}
+.guide-card .src-link:hover{text-decoration:underline}
+
+.watch-section h2{margin:0 0 4px}
+.watch-section > p{font-size:13px;color:var(--soft);margin:0 0 14px}
+.watch-card{display:flex;gap:14px;background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px}
+.watch-card .card-icon{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:20px;background:var(--rust-soft)}
+.watch-card h3{font-size:15.5px;margin:0 0 5px}
+.watch-card p{font-size:13.5px;color:var(--ink-soft);margin:0 0 8px}
+.watch-card .src-link{font-size:11.5px;color:var(--teal);text-decoration:none}
+.watch-card .src-link:hover{text-decoration:underline}
+.watch-empty{font-size:13.5px;color:var(--soft);background:var(--surface-2);border-radius:14px;padding:16px;text-align:center}
+
+/* ---------- Källor ---------- */
+.sources-section{margin-top:34px;border-top:1px solid var(--hair);padding-top:20px}
+.sources-section h2{font-size:17px;margin:0 0 4px}
+.sources-section > p{font-size:12.5px;color:var(--soft);margin:0 0 12px}
+.sources-list{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.sources-list li{font-size:12.5px}
+.sources-list a{color:var(--teal);text-decoration:underline;text-underline-offset:2px}
+.sources-list a:hover{color:var(--ink)}
+
+/* ---------- Sidfot: villkor, ansvarsfriskrivning, kontakt (samma som health.html) ---------- */
+.doginary-footer{max-width:720px;margin:48px auto 24px;padding:22px 20px 0;border-top:1px solid var(--hair);text-align:center}
+.doginary-footer__disclaimer{font-size:12.5px;line-height:1.6;color:var(--ink-soft);max-width:600px;margin:0 auto 14px}
+.doginary-footer__links{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:13px}
+.doginary-footer__links a{color:var(--teal);text-decoration:underline;text-underline-offset:2px}
+.doginary-footer__links a:hover{color:var(--ink)}
+.doginary-footer__copyright{font-size:11.5px;color:var(--ink-soft);margin:12px 0 0}
+
+@media(max-width:760px){.guide-grid{grid-template-columns:1fr}.page{padding-inline:14px}.profile-card{flex-direction:column;align-items:stretch}}
+</style>
+<link rel="stylesheet" href="doginary-auth-ui.css">
+</head>
+<body>
+
+<nav class="crossnav">
+  <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
+  <div class="crossnav-right">
+    <div class="crossnav-links">
+      <a href="logga.html" data-i18n="navDiary">Dagbok</a>
+      <a href="insikter.html" data-i18n="navInsights">Insikter</a>
+      <a href="health.html" data-i18n="navHealth">Hälsocenter</a>
+    </div>
+    <div class="lang-switch">
+      <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="20" height="13" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
+      <button type="button" id="langBtnEn" class="lang-btn" aria-label="Show the page in English" title="English" hidden><svg class="flag-icon" viewBox="0 0 60 30" width="20" height="13" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-clip-guide)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="uk-clip-guide"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
+    </div>
+    <div id="doginaryAuthRoot"></div>
+  </div>
+</nav>
+
+<!-- ---------- Inloggning (visas tills en session finns) ---------- -->
+<div id="authScreen">
+  <div class="auth-page">
+    <header class="top">
+      <p class="eyebrow" data-i18n="authEyebrow">Doginary</p>
+      <h1 data-i18n="authTitle">Logga in för att öppna riktlinjerna</h1>
+    </header>
+    <div class="doginary-loggedout-card">
+      <h2 data-i18n="authCardTitle">Skapa konto eller logga in</h2>
+      <p data-i18n="authCardText">Riktlinjerna anpassas efter din hunds ras och ålder från din profil. Logga in eller skapa ett konto för att se dem.</p>
+      <button type="button" id="openAuthBtn" data-i18n="authCardBtn">Skapa konto / Logga in</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Riktlinjer (visas när man är inloggad) ---------- -->
+<main class="page" id="appScreen" hidden>
+<header class="top"><p class="eyebrow" data-i18n="eyebrow">Doginary</p><h1 data-i18n="pageTitle">Riktlinjer</h1><p class="intro" id="introText" data-i18n="introGeneric">Allmänna rekommendationer för motion, ensamtid, mat och sömn utifrån din hunds ras och ålder.</p></header>
+<div class="notice"><span aria-hidden="true">ⓘ</span><span data-i18n="notice">Det här är allmänna riktlinjer sammanställda från etablerade djurhälso- och veterinärorganisationer. De ersätter inte rådgivning från din egen veterinär, och varje hund är unik.</span></div>
+
+<div id="noProfileCard" class="no-profile-card" hidden>
+  <h2 data-i18n="noProfileTitle">Fyll i din hunds profil</h2>
+  <p data-i18n="noProfileText">Vi hittar ingen ras eller ålder på din hund ännu. Fyll i det i kontomenyn uppe till höger så visar vi anpassade riktlinjer här.</p>
+</div>
+
+<div id="profileCard" class="profile-card" hidden>
+  <div class="profile-summary">
+    <strong id="profileSummaryName"></strong>
+    <span id="profileSummaryMeta"></span>
+  </div>
+  <div class="profile-field">
+    <label for="ageOverride" data-i18n="ageOverrideLabel">Livsfas</label>
+    <select id="ageOverride">
+      <option value="puppy" data-i18n="agePuppy">Valp</option>
+      <option value="adult" data-i18n="ageAdult">Vuxen</option>
+      <option value="senior" data-i18n="ageSenior">Senior</option>
+    </select>
+  </div>
+  <div class="profile-field">
+    <label for="sizeOverride" data-i18n="sizeOverrideLabel">Storlek</label>
+    <select id="sizeOverride">
+      <option value="small" data-i18n="sizeSmall">Liten</option>
+      <option value="medium" data-i18n="sizeMedium">Mellan</option>
+      <option value="large" data-i18n="sizeLarge">Stor</option>
+      <option value="giant" data-i18n="sizeGiant">Jättestor</option>
+    </select>
+  </div>
+  <p class="profile-hint" data-i18n="profileHint">Vi har gissat livsfas och storlek utifrån din profil — justera gärna om det inte stämmer.</p>
+</div>
+
+<section id="guideSection" hidden>
+  <div class="guide-grid">
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🐾</span>
+      <h3 data-i18n="exerciseTitle">Motion</h3>
+      <p id="exerciseText"></p>
+      <a class="src-link" id="exerciseSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🚪</span>
+      <h3 data-i18n="aloneTitle">Ensam hemma</h3>
+      <p id="aloneText"></p>
+      <a class="src-link" id="aloneSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🍽️</span>
+      <h3 data-i18n="foodTitle">Mat</h3>
+      <p id="foodText"></p>
+      <a class="src-link" id="foodSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">💤</span>
+      <h3 data-i18n="sleepTitle">Sömn</h3>
+      <p id="sleepText"></p>
+      <a class="src-link" id="sleepSrc" target="_blank" rel="noopener"></a>
+    </div>
+  </div>
+
+  <div class="watch-section">
+    <h2 data-i18n="watchTitle">Rasspecifikt att hålla koll på</h2>
+    <p data-i18n="watchIntro">Vanliga, väldokumenterade riskfaktorer för din ras — inte en fullständig lista. Fråga alltid veterinären om du är osäker.</p>
+    <div id="watchList"></div>
+  </div>
+
+  <div class="sources-section">
+    <h2 data-i18n="sourcesTitle">Källor</h2>
+    <p data-i18n="sourcesIntro">All information ovan är sammanställd och omskriven utifrån följande organisationer och lärosäten.</p>
+    <ul class="sources-list" id="sourcesList"></ul>
+  </div>
+</section>
+</main>
+
+<footer class="doginary-footer">
+  <p class="doginary-footer__disclaimer" data-i18n="footerDisclaimer">Doginary ger inte veterinärmedicinsk rådgivning. Kontakta alltid veterinär om du är orolig för din hunds hälsa.</p>
+  <div class="doginary-footer__links">
+    <a href="terms.html" data-i18n="footerTerms">Villkor</a>
+    <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>
+  </div>
+  <p class="doginary-footer__copyright">© 2026 Malin Larsson (Doginary)</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="doginary-supabase.js"></script>
+<script src="doginary-auth.js"></script>
+<script>
+(function(){
+
+  /* ==================================================================
+     Language / i18n — delar "dogWeatherLang" i localStorage med de
+     andra sidorna så att språkvalet följer med.
+     ================================================================== */
+  const LOCALE = { en: 'en-GB', sv: 'sv-SE' };
+
+  let lang = (() => {
+    try {
+      const saved = localStorage.getItem('dogWeatherLang');
+      if (saved === 'en' || saved === 'sv') return saved;
+    } catch { /* localStorage kan saknas */ }
+    return 'en';
+  })();
+
+  const STR = {
+    en: {
+      docTitle: 'Doginary — Guidelines',
+      navDiary: 'Diary', navInsights: 'Insights', navHealth: 'Health center',
+      authEyebrow: 'Doginary',
+      authTitle: 'Log in to open the guidelines',
+      authCardTitle: 'Create an account or log in',
+      authCardText: 'The guidelines are tailored to your dog\u2019s breed and age from your profile. Log in or create an account to see them.',
+      authCardBtn: 'Create account / Log in',
+      eyebrow: 'Doginary',
+      pageTitle: 'Guidelines',
+      introGeneric: 'General recommendations for exercise, alone time, food and sleep based on your dog\u2019s breed and age.',
+      introWithName: (name, breed) => breed ? `General recommendations for ${name} (${breed}), based on breed and age.` : `General recommendations for ${name}, based on breed and age.`,
+      notice: 'These are general guidelines compiled from established animal welfare and veterinary organisations. They don\u2019t replace advice from your own vet, and every dog is an individual.',
+      noProfileTitle: 'Fill in your dog\u2019s profile',
+      noProfileText: 'We can\u2019t find a breed or age for your dog yet. Add it from the account menu in the top right, and tailored guidelines will show up here.',
+      ageOverrideLabel: 'Life stage', agePuppy: 'Puppy', ageAdult: 'Adult', ageSenior: 'Senior',
+      sizeOverrideLabel: 'Size', sizeSmall: 'Small', sizeMedium: 'Medium', sizeLarge: 'Large', sizeGiant: 'Giant',
+      profileHint: 'We\u2019ve guessed the life stage and size from your profile — feel free to adjust if it\u2019s not quite right.',
+      exerciseTitle: 'Exercise', aloneTitle: 'Alone time', foodTitle: 'Food', sleepTitle: 'Sleep',
+      watchTitle: 'Breed-specific things to watch for',
+      watchIntro: 'Common, well-documented risk factors for your breed — not an exhaustive list. Always ask your vet if you\u2019re unsure.',
+      watchEmpty: 'No commonly flagged breed-specific risk factors matched for this breed in our list — that doesn\u2019t mean there are none. Check your national kennel club\u2019s breed health pages or ask your vet.',
+      sourcesTitle: 'Sources',
+      sourcesIntro: 'All information above has been summarised and rewritten based on the following organisations and universities.',
+      footerDisclaimer: 'Doginary does not provide veterinary advice. Always contact a vet if you\u2019re concerned about your dog\u2019s health.',
+      footerTerms: 'Terms',
+      ageLabelPuppy: 'Puppy', ageLabelAdult: 'Adult', ageLabelSenior: 'Senior',
+      sizeLabelSmall: 'Small', sizeLabelMedium: 'Medium', sizeLabelLarge: 'Large', sizeLabelGiant: 'Giant',
+      dogNameFallback: 'Your dog', noBreedLabel: 'Breed not set',
+    },
+    sv: {
+      docTitle: 'Doginary — Riktlinjer',
+      navDiary: 'Dagbok', navInsights: 'Insikter', navHealth: 'Hälsocenter',
+      authEyebrow: 'Doginary',
+      authTitle: 'Logga in för att öppna riktlinjerna',
+      authCardTitle: 'Skapa konto eller logga in',
+      authCardText: 'Riktlinjerna anpassas efter din hunds ras och ålder från din profil. Logga in eller skapa ett konto för att se dem.',
+      authCardBtn: 'Skapa konto / Logga in',
+      eyebrow: 'Doginary',
+      pageTitle: 'Riktlinjer',
+      introGeneric: 'Allmänna rekommendationer för motion, ensamtid, mat och sömn utifrån din hunds ras och ålder.',
+      introWithName: (name, breed) => breed ? `Allmänna rekommendationer för ${name} (${breed}), utifrån ras och ålder.` : `Allmänna rekommendationer för ${name}, utifrån ras och ålder.`,
+      notice: 'Det här är allmänna riktlinjer sammanställda från etablerade djurhälso- och veterinärorganisationer. De ersätter inte rådgivning från din egen veterinär, och varje hund är unik.',
+      noProfileTitle: 'Fyll i din hunds profil',
+      noProfileText: 'Vi hittar ingen ras eller ålder på din hund ännu. Fyll i det i kontomenyn uppe till höger så visar vi anpassade riktlinjer här.',
+      ageOverrideLabel: 'Livsfas', agePuppy: 'Valp', ageAdult: 'Vuxen', ageSenior: 'Senior',
+      sizeOverrideLabel: 'Storlek', sizeSmall: 'Liten', sizeMedium: 'Mellan', sizeLarge: 'Stor', sizeGiant: 'Jättestor',
+      profileHint: 'Vi har gissat livsfas och storlek utifrån din profil — justera gärna om det inte stämmer.',
+      exerciseTitle: 'Motion', aloneTitle: 'Ensam hemma', foodTitle: 'Mat', sleepTitle: 'Sömn',
+      watchTitle: 'Rasspecifikt att hålla koll på',
+      watchIntro: 'Vanliga, väldokumenterade riskfaktorer för din ras — inte en fullständig lista. Fråga alltid veterinären om du är osäker.',
+      watchEmpty: 'Vi har inga vanliga rasspecifika riskfaktorer i vår lista som matchar den här rasen — det betyder inte att det inte finns några. Kolla din kennelklubbs rasspecifika hälsoinformation eller fråga veterinären.',
+      sourcesTitle: 'Källor',
+      sourcesIntro: 'All information ovan är sammanställd och omskriven utifrån följande organisationer och lärosäten.',
+      footerDisclaimer: 'Doginary ger inte veterinärmedicinsk rådgivning. Kontakta alltid veterinär om du är orolig för din hunds hälsa.',
+      footerTerms: 'Villkor',
+      ageLabelPuppy: 'Valp', ageLabelAdult: 'Vuxen', ageLabelSenior: 'Senior',
+      sizeLabelSmall: 'Liten', sizeLabelMedium: 'Mellan', sizeLabelLarge: 'Stor', sizeLabelGiant: 'Jättestor',
+      dogNameFallback: 'Din hund', noBreedLabel: 'Ras ej angiven',
+    }
+  };
+
+  function t(key){
+    const val = (STR[lang] && STR[lang][key] !== undefined) ? STR[lang][key] : STR.sv[key];
+    return val;
+  }
+
+  const langBtnSvEl = document.getElementById('langBtnSv');
+  const langBtnEnEl = document.getElementById('langBtnEn');
+
+  function applyI18n(){
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const val = t(key);
+      if (typeof val === 'string') el.textContent = val;
+    });
+    if (langBtnSvEl) langBtnSvEl.hidden = lang !== 'en';
+    if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';
+    document.title = t('docTitle');
+    renderAll();
+  }
+
+  function setLang(l){
+    if (l !== 'en' && l !== 'sv') return;
+    lang = l;
+    try { localStorage.setItem('dogWeatherLang', lang); } catch { /* ignore */ }
+    applyI18n();
+  }
+
+  langBtnSvEl?.addEventListener('click', () => setLang('sv'));
+  langBtnEnEl?.addEventListener('click', () => setLang('en'));
+
+  /* ==================================================================
+     Källor — verifierade, riktiga länkar till erkända organisationer
+     och lärosäten. Används både i "Källa"-länkarna under varje kort
+     och i den samlade källförteckningen längst ner.
+     ================================================================== */
+  const SOURCES = {
+    pdsa_exercise: { url: 'https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/how-much-exercise-does-your-dog-need', label: { sv: 'PDSA — Hur mycket motion behöver din hund', en: 'PDSA — How much exercise does your dog need' } },
+    rspca_alone: { url: 'https://www.rspca.org.uk/adviceandwelfare/pets/dogs/training/leftalone', label: { sv: 'RSPCA — Att träna din hund att vara ensam hemma', en: 'RSPCA — Training your dog to be left home alone' } },
+    akc_puppy_feeding: { url: 'https://www.akc.org/expert-advice/nutrition/puppy-feeding-fundamentals/', label: { sv: 'American Kennel Club — Grunderna i valpfodring', en: 'American Kennel Club — Puppy feeding fundamentals' } },
+    akc_puppy_sleep: { url: 'https://www.akc.org/expert-advice/health/how-much-do-puppies-sleep/', label: { sv: 'American Kennel Club — Hur mycket sover valpar', en: 'American Kennel Club — How much do puppies sleep' } },
+    akc_senior_sleep: { url: 'https://www.akc.org/expert-advice/health/senior-dog-sleep-too-much/', label: { sv: 'American Kennel Club — Kan äldre hundar sova för mycket', en: 'American Kennel Club — Can senior dogs sleep too much' } },
+    sleepfoundation_adult: { url: 'https://www.sleepfoundation.org/animals-and-sleep/how-much-do-dogs-sleep', label: { sv: 'Sleep Foundation — Hur mycket sover hundar', en: 'Sleep Foundation — How much do dogs sleep' } },
+    akc_hip: { url: 'https://www.akc.org/expert-advice/health/hip-dysplasia-in-dogs/', label: { sv: 'American Kennel Club — Höftledsdysplasi hos hund', en: 'American Kennel Club — Hip dysplasia in dogs' } },
+    cornell_boas: { url: 'https://www.vet.cornell.edu/departments-centers-and-institutes/riney-canine-health-center/canine-health-topics/brachycephalic-obstructive-airway-syndrome-boas', label: { sv: 'Cornell University College of Veterinary Medicine — Brakycefalt luftvägssyndrom (BOAS)', en: 'Cornell University College of Veterinary Medicine — Brachycephalic obstructive airway syndrome (BOAS)' } },
+    cornell_ivdd: { url: 'https://www.vet.cornell.edu/departments-centers-and-institutes/riney-canine-health-center/canine-health-topics/intervertebral-disc-disease', label: { sv: 'Cornell University College of Veterinary Medicine — Diskbråck (IVDD) hos hund', en: 'Cornell University College of Veterinary Medicine — Intervertebral disc disease (IVDD)' } },
+    akc_bloat: { url: 'https://www.akc.org/expert-advice/health/bloat-in-dogs/', label: { sv: 'American Kennel Club — Uppblåst mage / magvridning (GDV) hos hund', en: 'American Kennel Club — Bloat (GDV) in dogs' } },
+    kc_cavalier_heart: { url: 'https://www.royalkennelclub.com/health-and-dog-care/health-dog-care/health/getting-started-with-health-testing-and-screening/heart-scheme-for-cavalier-king-charles-spaniels/', label: { sv: 'The Kennel Club — Hjärtprogram för Cavalier King Charles Spaniel', en: 'The Kennel Club — Heart scheme for Cavalier King Charles Spaniels' } }
+  };
+
+  function srcLink(id){
+    const s = SOURCES[id];
+    return { url: s.url, label: s.label[lang] || s.label.sv };
+  }
+
+  /* ==================================================================
+     Riktlinjetexter per livsfas — omskrivna med egna ord utifrån
+     källorna ovan (se SOURCES och sources-listan längst ner på sidan).
+     ================================================================== */
+  const EXERCISE = {
+    sv: {
+      puppy: 'Låt valpen röra sig i korta, lugna pass utspridda över dagen snarare än en lång promenad — en vanlig tumregel är cirka 5 minuters promenad/lek per levnadsmånad, 1–2 gånger om dagen, som utgångspunkt. Undvik långa löprundor, hopp och trappor tills tillväxten är klar, särskilt för större raser.',
+      adult: 'De flesta vuxna hundar mår bra av minst 1–2 promenader om dagen, och totalt ungefär 30 minuter till 2 timmar aktivitet per dag beroende på ras och energinivå. Blanda gärna lugna, undersökande promenader med mer intensiv lek eller träning.',
+      senior: 'Fortsätt med daglig rörelse, men kortare och skonsammare — minst omkring 30 minuter per dag, gärna uppdelat på flera korta promenader. Prioritera skonsamma underlag och överväg simning, som avlastar lederna.'
+    },
+    en: {
+      puppy: 'Give your puppy short, calm bursts of activity spread across the day rather than one long walk — a common rule of thumb is roughly 5 minutes of walking/play per month of age, once or twice a day, as a starting point. Avoid long runs, jumping and stairs until growth is complete, especially for larger breeds.',
+      adult: 'Most adult dogs do well with at least 1–2 walks a day, totalling roughly 30 minutes to 2 hours of activity per day depending on breed and energy level. Mix calmer, sniff-and-explore walks with more energetic play or training.',
+      senior: 'Keep up daily movement, but shorter and gentler — at least around 30 minutes a day, ideally split into several short walks. Favour easy, joint-friendly surfaces and consider swimming.'
+    }
+  };
+  const ALONE = {
+    sv: {
+      puppy: 'Valpar har små blåsor och behöver rastas ofta — räkna med en paus ungefär varje 1–3 timme beroende på ålder, och öka tiden ensam gradvis istället för att lämna dem länge direkt.',
+      adult: 'Djurskyddsorganisationen RSPCA rekommenderar att vuxna hundar inte lämnas ensamma längre än fyra timmar åt gången, så att de får möjlighet att röra på sig, gå på toaletten och umgås.',
+      senior: 'Äldre hundar kan behöva lika korta intervall som valpar, särskilt vid ledbesvär eller inkontinens. Anpassa tiden ensam efter din hunds individuella behov, och prata med veterinären om du är osäker.'
+    },
+    en: {
+      puppy: 'Puppies have small bladders and need frequent toilet breaks — plan for a break roughly every 1–3 hours depending on age, and increase alone time gradually rather than leaving them for long stretches right away.',
+      adult: 'The RSPCA recommends not leaving adult dogs alone for more than four hours at a time, so they get the chance to move around, go to the toilet and socialise.',
+      senior: 'Older dogs may need intervals as short as a puppy\u2019s, especially with joint problems or incontinence. Tailor alone time to your dog\u2019s individual needs, and check with your vet if you\u2019re unsure.'
+    }
+  };
+  const FOOD = {
+    sv: {
+      puppy: 'Mängden beror på vikt och foder (följ alltid förpackningens rekommendation och veterinärens råd), men antalet mål minskar med åldern: ofta 3–4 mål per dag upp till cirka 3–6 månaders ålder, och därefter en gradvis övergång mot 2 mål per dag kring ett års ålder.',
+      adult: 'De flesta vuxna hundar äter bra med 2 mål om dagen. Exakt mängd bör baseras på hundens vikt, aktivitetsnivå och fodrets näringsinnehåll — följ foderförpackningens riktlinjer och stäm av med veterinären om vikten förändras.',
+      senior: 'Många äldre hundar fortsätter med 2 mål om dagen, men energibehovet minskar ofta med åldern och en del mår bra av en senior- eller ledvänlig kost. Håll koll på vikten och rådgör med veterinären vid foderbyte.'
+    },
+    en: {
+      puppy: 'The right amount depends on weight and food type (always follow the pack\u2019s guidance and your vet\u2019s advice), but the number of meals decreases with age: often 3–4 meals a day up to around 3–6 months, moving gradually towards 2 meals a day by around a year old.',
+      adult: 'Most adult dogs do well with 2 meals a day. The exact amount should be based on the dog\u2019s weight, activity level and the food\u2019s nutritional content — follow the food packaging\u2019s guidelines and check with your vet if weight changes.',
+      senior: 'Many older dogs continue with 2 meals a day, but energy needs often drop with age and some do well on a senior or joint-friendly diet. Monitor weight and discuss any diet changes with your vet.'
+    }
+  };
+  const SLEEP = {
+    sv: {
+      puppy: 'Valpar sover mycket — räkna med ungefär 18–20 timmar per dygn, uppdelat på nattsömn och flera tupplurar. Låt valpen sova ostört; det är viktigt för utveckling av hjärna, immunförsvar och muskler.',
+      adult: 'Vuxna hundar sover i genomsnitt ungefär 8–14 timmar per dygn, ofta i kortare pass utspridda över dygnet.',
+      senior: 'Äldre hundar tenderar att sova mer igen, ofta 12–18 timmar per dygn. Kontakta veterinär om sömnen plötsligt ökar kraftigt eller hunden verkar hängig.'
+    },
+    en: {
+      puppy: 'Puppies sleep a lot — expect roughly 18–20 hours a day, split between overnight sleep and several naps. Let your puppy sleep undisturbed; it\u2019s important for brain, immune system and muscle development.',
+      adult: 'Adult dogs sleep on average roughly 8–14 hours a day, often in shorter bouts spread across day and night.',
+      senior: 'Older dogs tend to sleep more again, often 12–18 hours a day. Contact your vet if sleep suddenly increases a lot or your dog seems lethargic.'
+    }
+  };
+  const EXERCISE_SRC = 'pdsa_exercise', ALONE_SRC = 'rspca_alone';
+  const FOOD_SRC = { puppy: 'akc_puppy_feeding', adult: 'akc_puppy_feeding', senior: 'akc_puppy_feeding' };
+  const SLEEP_SRC = { puppy: 'akc_puppy_sleep', adult: 'sleepfoundation_adult', senior: 'akc_senior_sleep' };
+
+  /* ==================================================================
+     Rasspecifikt — matchning mot kända, väldokumenterade riskgrupper.
+     En ras kan matcha flera grupper samtidigt (t.ex. boxer).
+     ================================================================== */
+  const BREED_GROUPS = [
+    { id: 'brachy', src: 'cornell_boas',
+      keywords: ['mops','pug','fransk bulldogg','french bulldog','engelsk bulldogg','engelsk bulldog','english bulldog','bulldog','boston terrier','shih tzu','shih-tzu','pekingese','pekingeser','lhasa apso','boxer','cavalier'],
+      title: { sv: 'Kort nos — var uppmärksam på andningen', en: 'Short muzzle — watch the breathing' },
+      text: { sv: 'Din hund tillhör en kortnosig (brakycefal) ras, som kan vara känsligare för andningsproblem, snarkningar och värme. Undvik ansträngning i värme, håll en hälsosam vikt, och kontakta veterinär vid tydliga andningsljud eller snabb uttröttbarhet.',
+              en: 'Your dog belongs to a flat-faced (brachycephalic) breed, which can be more prone to breathing difficulties, snoring and heat sensitivity. Avoid exertion in the heat, keep a healthy weight, and contact your vet if you notice laboured breathing or reduced stamina.' } },
+    { id: 'longback', src: 'cornell_ivdd',
+      keywords: ['tax','dachshund','corgi','basset'],
+      title: { sv: 'Lång rygg — skona ryggen', en: 'Long back — protect the spine' },
+      text: { sv: 'Raser med lång rygg och korta ben har en högre risk för diskbråck (IVDD). Undvik hopp upp och ner från möbler, använd ramp eller trappsteg, och håll hunden i god vikt för att avlasta ryggen.',
+              en: 'Breeds with a long back and short legs carry a higher risk of intervertebral disc disease (IVDD). Avoid jumping on and off furniture, use a ramp or steps, and keep your dog at a healthy weight to protect the spine.' } },
+    { id: 'deepchest', src: 'akc_bloat',
+      keywords: ['grand danois','great dane','schäfer','tysk schäfer','german shepherd','dobermann','doberman','weimaraner','berner sennenhund','bernese mountain','sankt bernhardshund','saint bernard','st. bernard','newfoundlandshund','newfoundland','irländsk setter','irish setter','gordonsetter','gordon setter','akita','pudel','poodle','standardpudel','boxer'],
+      title: { sv: 'Djup bröstkorg — känn till tecken på magvridning', en: 'Deep chest — know the signs of bloat' },
+      text: { sv: 'Stora raser med djup bröstkorg har en förhöjd risk för uppblåst mage/magvridning (GDV), ett akut livshotande tillstånd. Överväg flera mindre mål istället för ett stort, undvik hård aktivitet direkt efter måltid, och sök akut veterinärvård om magen ser uppspänd ut och hunden är rastlös eller kräks utan resultat.',
+              en: 'Large breeds with a deep chest carry a higher risk of bloat / gastric dilatation-volvulus (GDV), a life-threatening emergency. Consider several smaller meals instead of one large one, avoid hard exercise right after eating, and seek emergency vet care if the belly looks swollen and the dog seems restless or retches without bringing anything up.' } },
+    { id: 'hip', src: 'akc_hip',
+      keywords: ['labrador','golden retriever','schäfer','tysk schäfer','german shepherd','rottweiler','berner sennenhund','bernese mountain','grand danois','great dane','sankt bernhardshund','saint bernard','st. bernard','newfoundlandshund','newfoundland','engelsk bobtail','old english sheepdog'],
+      title: { sv: 'Stor ras — håll koll på höfterna', en: 'Large breed — watch the hips' },
+      text: { sv: 'Din ras tillhör dem som oftare drabbas av höftledsdysplasi. Håll valpen smal under uppväxten, undvik överdriven hopp- och språngträning innan tillväxten är klar, och kontakta veterinär vid stelhet, hälta eller ovilja att resa sig.',
+              en: 'Your breed is among those more often affected by hip dysplasia. Keep your puppy lean while growing, avoid excessive jumping or high-impact exercise before growth is complete, and contact your vet if you notice stiffness, limping or reluctance to get up.' } },
+    { id: 'cavalier', src: 'kc_cavalier_heart',
+      keywords: ['cavalier'],
+      title: { sv: 'Cavalier King Charles Spaniel — hjärtat', en: 'Cavalier King Charles Spaniel — the heart' },
+      text: { sv: 'Rasen har en väldokumenterad, kraftigt förhöjd risk för hjärtklaffsjukdom (mitralisklaffdegeneration). Kennelklubbar rekommenderar årlig hjärtlyssning hos veterinär från ett års ålder för att upptäcka blåsljud tidigt.',
+              en: 'The breed has a well-documented, markedly increased risk of mitral valve disease. Kennel clubs recommend an annual vet heart check from one year of age to catch murmurs early.' } }
+  ];
+
+  function matchBreedGroups(breed){
+    if (!breed) return [];
+    const b = breed.toLowerCase();
+    return BREED_GROUPS.filter(g => g.keywords.some(k => b.includes(k)));
+  }
+
+  /* ==================================================================
+     Tolka fritextfälten "age" och "size" från hundprofilen till en
+     livsfas (puppy/adult/senior) och storleksgrupp (small..giant).
+     Går inte att tolka? Då faller vi tillbaka på en gissning som
+     användaren kan justera manuellt i profilkortet ovan.
+     ================================================================== */
+  function guessSize(sizeText){
+    const s = (sizeText || '').toLowerCase();
+    if (/liten|small|tiny|toy|mini/.test(s)) return 'small';
+    if (/stor|large|big/.test(s) && !/jätte|giant/.test(s)) return 'large';
+    if (/jätte|giant/.test(s)) return 'giant';
+    if (/medel|mellan|medium/.test(s)) return 'medium';
+    return null;
+  }
+
+  function guessAge(ageText, sizeGroup){
+    const a = (ageText || '').toLowerCase().trim();
+    if (!a) return null;
+    if (/valp|puppy|pup\b/.test(a)) return 'puppy';
+    if (/senior|äldre|gammal/.test(a)) return 'senior';
+    let m = a.match(/(\d+(?:[.,]\d+)?)\s*(vecka|veckor|week)/);
+    if (m) return 'puppy';
+    m = a.match(/(\d+(?:[.,]\d+)?)\s*(m[åa]nad|month)/);
+    if (m) { const months = parseFloat(m[1].replace(',', '.')); return months < 12 ? 'puppy' : classifyYears(months / 12, sizeGroup); }
+    m = a.match(/(\d+(?:[.,]\d+)?)\s*(år|year|yr)/);
+    if (m) return classifyYears(parseFloat(m[1].replace(',', '.')), sizeGroup);
+    m = a.match(/^(\d+(?:[.,]\d+)?)$/);
+    if (m) return classifyYears(parseFloat(m[1].replace(',', '.')), sizeGroup);
+    return null;
+  }
+
+  function classifyYears(years, sizeGroup){
+    if (years < 1) return 'puppy';
+    const seniorAt = (sizeGroup === 'large' || sizeGroup === 'giant') ? 6 : 7;
+    return years >= seniorAt ? 'senior' : 'adult';
+  }
+
+  /* ==================================================================
+     State + rendering
+     ================================================================== */
+  let currentUser = null;
+  let currentDog = null;
+  let ageGroup = 'adult';
+  let sizeGroup = 'medium';
+  let userAdjustedAge = false;
+  let userAdjustedSize = false;
+
+  const ageOverrideEl = document.getElementById('ageOverride');
+  const sizeOverrideEl = document.getElementById('sizeOverride');
+
+  ageOverrideEl.addEventListener('change', () => { ageGroup = ageOverrideEl.value; userAdjustedAge = true; renderGuides(); });
+  sizeOverrideEl.addEventListener('change', () => { sizeGroup = sizeOverrideEl.value; userAdjustedSize = true; renderGuides(); });
+
+  function updateProfileUI(){
+    const noProfileCard = document.getElementById('noProfileCard');
+    const profileCard = document.getElementById('profileCard');
+    const guideSection = document.getElementById('guideSection');
+    const introEl = document.getElementById('introText');
+
+    const dog = currentDog || {};
+    const hasBreedOrAge = !!(dog.breed || dog.age);
+
+    if (!hasBreedOrAge) {
+      noProfileCard.hidden = false;
+      profileCard.hidden = true;
+      guideSection.hidden = true;
+      introEl.textContent = t('introGeneric');
+      return;
+    }
+    noProfileCard.hidden = true;
+    profileCard.hidden = false;
+    guideSection.hidden = false;
+
+    const name = dog.name || t('dogNameFallback');
+    introEl.textContent = t('introWithName')(name, dog.breed || '');
+    document.getElementById('profileSummaryName').textContent = name;
+    document.getElementById('profileSummaryMeta').textContent = dog.breed || t('noBreedLabel');
+
+    if (!userAdjustedSize) {
+      const guessedSize = guessSize(dog.size);
+      sizeGroup = guessedSize || sizeGroup || 'medium';
+    }
+    if (!userAdjustedAge) {
+      const guessedAge = guessAge(dog.age, sizeGroup);
+      ageGroup = guessedAge || ageGroup || 'adult';
+    }
+    ageOverrideEl.value = ageGroup;
+    sizeOverrideEl.value = sizeGroup;
+    renderGuides();
+  }
+
+  function renderGuides(){
+    if (document.getElementById('guideSection').hidden) return;
+
+    document.getElementById('exerciseText').textContent = EXERCISE[lang][ageGroup];
+    document.getElementById('aloneText').textContent = ALONE[lang][ageGroup];
+    document.getElementById('foodText').textContent = FOOD[lang][ageGroup];
+    document.getElementById('sleepText').textContent = SLEEP[lang][ageGroup];
+
+    const exSrc = srcLink(EXERCISE_SRC), alSrc = srcLink(ALONE_SRC), foSrc = srcLink(FOOD_SRC[ageGroup]), slSrc = srcLink(SLEEP_SRC[ageGroup]);
+    setSrcLink('exerciseSrc', exSrc);
+    setSrcLink('aloneSrc', alSrc);
+    setSrcLink('foodSrc', foSrc);
+    setSrcLink('sleepSrc', slSrc);
+
+    renderWatchList();
+    renderSourcesList();
+  }
+
+  function setSrcLink(id, src){
+    const el = document.getElementById(id);
+    el.href = src.url;
+    el.textContent = src.label;
+  }
+
+  function renderWatchList(){
+    const container = document.getElementById('watchList');
+    const groups = matchBreedGroups((currentDog && currentDog.breed) || '');
+    if (!groups.length) {
+      container.innerHTML = `<div class="watch-empty">${escapeHtml(t('watchEmpty'))}</div>`;
+      return;
+    }
+    container.innerHTML = groups.map(g => {
+      const src = srcLink(g.src);
+      return `<div class="watch-card"><span class="card-icon" aria-hidden="true">⚠️</span><div><h3>${escapeHtml(g.title[lang] || g.title.sv)}</h3><p>${escapeHtml(g.text[lang] || g.text.sv)}</p><a class="src-link" href="${src.url}" target="_blank" rel="noopener">${escapeHtml(src.label)}</a></div></div>`;
+    }).join('');
+  }
+
+  function renderSourcesList(){
+    const list = document.getElementById('sourcesList');
+    const usedIds = new Set([EXERCISE_SRC, ALONE_SRC, FOOD_SRC[ageGroup], SLEEP_SRC[ageGroup], ...matchBreedGroups((currentDog && currentDog.breed) || '').map(g => g.src)]);
+    // Visa alltid hela källförteckningen (inte bara de som används just nu)
+    // så att sidan är transparent kring varifrån all information kan komma.
+    list.innerHTML = Object.keys(SOURCES).map(id => {
+      const s = srcLink(id);
+      return `<li><a href="${s.url}" target="_blank" rel="noopener">${escapeHtml(s.label)}</a></li>`;
+    }).join('');
+  }
+
+  function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+
+  function renderAll(){
+    updateProfileUI();
+  }
+
+  /* ==================================================================
+     Inloggning — samma delade modal/kontoknapp som övriga sidor
+     (doginary-auth.js). Lyssnar på "doginary:auth" och växlar mellan
+     inloggningskortet och riktlinjerna.
+     ================================================================== */
+  const authScreen = document.getElementById('authScreen');
+  const appScreen = document.getElementById('appScreen');
+  const openAuthBtn = document.getElementById('openAuthBtn');
+  openAuthBtn.addEventListener('click', () => DoginaryAuthUI.open('signup'));
+
+  async function enterApp(session){
+    currentUser = session.user;
+    authScreen.hidden = true;
+    appScreen.hidden = false;
+    userAdjustedAge = false;
+    userAdjustedSize = false;
+    try {
+      const dog = await DoginaryAuthUI.getCurrentDog();
+      currentDog = dog || null;
+    } catch { currentDog = null; }
+    renderAll();
+  }
+
+  function showAuth(){
+    currentUser = null;
+    currentDog = null;
+    authScreen.hidden = false;
+    appScreen.hidden = true;
+  }
+
+  document.addEventListener('doginary:auth', (ev) => {
+    const session = ev.detail.session;
+    if (session && !currentUser) { enterApp(session); }
+    else if (!session && currentUser) { showAuth(); }
+  });
+
+  // Om hundens profil (ras/ålder/storlek) ändras via kontomenyn på en
+  // annan flik/sida håller vi den här sidan i synk utan omladdning.
+  document.addEventListener('doginary:dogupdate', (e) => {
+    if (!currentUser || !e.detail || !e.detail.dog) return;
+    if (currentDog && e.detail.dog.id !== currentDog.id) return;
+    currentDog = e.detail.dog;
+    userAdjustedAge = false;
+    userAdjustedSize = false;
+    renderAll();
+  });
+
+  applyI18n();
+})();
+</script>
+</body>
+</html>

@@ -134,10 +134,15 @@
 .comfort-disclaimer{font-size:12px;line-height:1.5;color:#c9dce8;margin:0}
 @media(max-width:900px){nav{display:none}.hero{min-height:720px}.hero h1 br{display:none}.hero-inner--split{grid-template-columns:1fr;width:91%}.hero-weather{max-width:380px}.search{flex-wrap:wrap}.search input{height:52px;flex-basis:100%}.search button{flex:1}.section-head{display:block}.current{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}.daily{grid-template-columns:repeat(2,1fr)}.story-grid,.science{grid-template-columns:1fr}.tips,.sources .source-grid{grid-template-columns:1fr}.science{gap:30px}footer{align-items:flex-start;flex-direction:column}.panel{padding:30px 22px}.hero-logo{height:56px}body{padding-bottom:calc(60px + env(safe-area-inset-bottom))}.tabbar{display:flex}}@media(max-width:520px){.weather-wrap,.advice-section,.sources{padding:64px 18px}.hero-inner{width:91%}.hero h1{font-size:48px}.current{padding:22px}.temp{font-size:58px}.metrics{grid-template-columns:1fr}.daily{grid-template-columns:1fr}.story img{height:240px}.panel{padding:24px 16px;margin-top:32px}.best-walk-highlight{flex-direction:column;align-items:flex-start;gap:12px}.panel--random{min-height:170px;flex-direction:column;align-items:flex-start;gap:14px}.panel-fact{position:static;max-width:100%}}
 .dog-profile-panel{position:relative;isolation:isolate;overflow:hidden;margin:0 0 28px}
-.breed-facts-panel{margin:0 0 28px}
+.breed-facts-panel{position:relative;isolation:isolate;overflow:hidden;margin:0 0 28px;background:none}
 .breed-facts-panel .subheading{margin:0 0 18px}
 .dog-profile-panel::before{content:"";position:absolute;inset:0;z-index:-2;background-image:url("assets/fur-white.jpg");background-image:-webkit-image-set(url("assets/fur-white.webp") 1x);background-image:image-set(url("assets/fur-white.webp") 1x,url("assets/fur-white.jpg") 1x);background-position:center;background-size:cover}
 .dog-profile-panel::after{content:"";position:absolute;inset:0;z-index:-1;background:rgba(255,253,248,.72)}
+.breed-facts-panel::before{content:"";position:absolute;inset:0;z-index:-2;background-image:url("assets/bg-blur.jpg");background-image:-webkit-image-set(url("assets/bg-blur.webp") 1x);background-image:image-set(url("assets/bg-blur.webp") 1x,url("assets/bg-blur.jpg") 1x);background-position:center;background-size:cover}
+.breed-facts-panel::after{content:"";position:absolute;inset:0;z-index:-1;background:rgba(255,253,248,.85)}
+.breed-facts-link{margin:22px 0 0;padding-top:18px;border-top:1px solid var(--line);text-align:right}
+.breed-facts-link a{color:var(--pine2);font-weight:700;text-decoration:none;font-size:14.5px}
+.breed-facts-link a:hover{text-decoration:underline}
 .dog-profile-heading{margin:0 0 6px;font:600 20px "Fraunces",serif}
 .dog-profile-intro{margin:0 0 18px;color:var(--muted);font-size:14px;max-width:56ch}
 .dog-profile-fields{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -333,6 +338,17 @@ footer{flex-wrap:wrap}
 .donate-image-block a{display:inline-block}
 .donate-image-block img{max-width:360px;width:100%;border-radius:20px;box-shadow:0 16px 40px #0002;transition:transform .2s ease;display:block;margin:0 auto}
 .donate-image-block img:hover{transform:translateY(-3px)}
+
+.dagbok-sign-block{max-width:1400px;margin:0 auto;padding:0 max(24px,6vw) 90px;text-align:center}
+.dagbok-sign-heading-link{display:inline-flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;margin-bottom:22px}
+.dagbok-sign-heading-link .kicker{display:block}
+.dagbok-sign-heading{margin:0;font:700 clamp(28px,4vw,42px)/1.05 Fraunces,serif;color:var(--pine);transition:color .15s ease}
+.dagbok-sign-heading-link:hover .dagbok-sign-heading,.dagbok-sign-heading-link:focus-visible .dagbok-sign-heading{color:var(--pine2)}
+.dagbok-sign-link{display:inline-block;border-radius:24px}
+.dagbok-sign-link img{max-width:420px;width:100%;border-radius:24px;box-shadow:0 18px 44px #0f3b5726;transition:transform .2s ease,box-shadow .2s ease;display:block;margin:0 auto}
+.dagbok-sign-link:hover img,.dagbok-sign-link:focus-visible img{transform:translateY(-4px);box-shadow:0 22px 50px #0f3b5736}
+.dagbok-sign-caption{max-width:380px;margin:18px auto 0;color:var(--muted);font-size:14.5px;line-height:1.6}
+@media(max-width:520px){.dagbok-sign-block{padding:0 18px 64px}}
 .donate-note{color:var(--muted);font-size:13px;margin-top:12px}
 .donate-inline{color:var(--pine2);font-weight:700;text-decoration:none}
 .donate-inline:hover{text-decoration:underline}

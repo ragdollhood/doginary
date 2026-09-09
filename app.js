@@ -205,6 +205,9 @@ const STR = {
     gettingLocation: "Getting your location…",
     errWeatherForYourLocation: "Couldn't fetch the weather for your location right now.",
     geoDenied: "Location access was denied. Search for a place instead.",
+    geoUnavailable: "Couldn't determine your location. Search for a place instead.",
+    geoTimeout: "Getting your location took too long. Search for a place instead.",
+    geoOsBlockedHint: "Location access is allowed in the browser, but your device didn't return a position — check that location services are turned on for this device and browser in its system settings.",
     placeListHint: "Several places match your search. Choose the right one:",
     bestWalkEvenComfort: "Comfort is fairly even for the rest of the day — most of it works well for a walk.",
     bestWalkBestWindow: "The best walking window for the rest of the day, compared with the other coming hours.",
@@ -416,6 +419,9 @@ const STR = {
     gettingLocation: "Hämtar din position…",
     errWeatherForYourLocation: "Kunde inte hämta väder för din position just nu.",
     geoDenied: "Platsåtkomst nekades. Sök efter ort i stället.",
+    geoUnavailable: "Kunde inte fastställa din position. Sök efter ort i stället.",
+    geoTimeout: "Det tog för lång tid att hämta din position. Sök efter ort i stället.",
+    geoOsBlockedHint: "Platsåtkomst är tillåten i webbläsaren, men enheten kunde inte lämna någon position — kontrollera att platstjänster är påslagna för både den här enheten och webbläsaren i systeminställningarna.",
     placeListHint: "Flera platser matchar sökningen. Välj rätt plats:",
     bestWalkEvenComfort: "Jämn komfort den närmaste tiden — det mesta av dagen fungerar bra för en promenad.",
     bestWalkBestWindow: "Det bästa promenadfönstret den närmaste tiden, jämfört med övriga kommande timmar.",
@@ -2803,6 +2809,17 @@ async function forecast(loc) {
   } catch { /* localStorage kan vara otillgängligt, det är okej att ignorera */ }
 }
 
+/* Tolkar en GeolocationPositionError till rätt textnyckel:
+   1 = PERMISSION_DENIED (nekad av besökaren eller webbläsaren)
+   2 = POSITION_UNAVAILABLE (webbläsaren fick behörighet men enheten kunde
+       inte lämna en position — ofta datorns/telefonens platsinställningar)
+   3 = TIMEOUT (svarade inte i tid) */
+function geoErrorMessageKey(err) {
+  if (err && err.code === 1) return 'geoDenied';
+  if (err && err.code === 3) return 'geoTimeout';
+  return 'geoUnavailable';
+}
+
 /* ---------- Händelser ---------- */
 
 $('#searchForm').addEventListener('submit', async e => {
@@ -2842,7 +2859,7 @@ $('#locate').addEventListener('click', () => {
         statusEl.textContent = t('errWeatherForYourLocation');
       }
     },
-    () => { statusEl.textContent = t('geoDenied'); },
+    err => { statusEl.textContent = t(geoErrorMessageKey(err)); },
     { enableHighAccuracy: false, timeout: 10000 }
   );
 });
@@ -2922,6 +2939,23 @@ applyStaticTranslations();
   } catch { /* ogiltig sparad plats – fortsätt till automatisk platsdetektering nedan */ }
 
   if (!navigator.geolocation) return;
+
+  // Om webbläsaren redan har beviljad platsbehörighet sen tidigare
+  // ("granted") men getCurrentPosition ändå misslyckas med
+  // POSITION_UNAVAILABLE nedan, är det en stark signal att det INTE är
+  // besökarens val i webbläsaren som är problemet — utan snarare att
+  // platstjänster är avstängda på själva datorn/telefonen, eller att
+  // webbläsarappen saknar platsbehörighet i operativsystemets
+  // inställningar. Då visar vi en diskret hint istället för att bara
+  // vara tysta som vid en vanlig nekad/väntande behörighet.
+  let permissionAlreadyGranted = false;
+  try {
+    if (navigator.permissions && navigator.permissions.query) {
+      const status = await navigator.permissions.query({ name: 'geolocation' });
+      permissionAlreadyGranted = status.state === 'granted';
+    }
+  } catch { /* Permissions API stöds inte överallt (t.ex. Safari) – ignorera tyst */ }
+
   navigator.geolocation.getCurrentPosition(
     async pos => {
       try {
@@ -2930,7 +2964,15 @@ applyStaticTranslations();
         await forecast({ lat, lon, name, countryCode });
       } catch { /* nätverksfel vid automatisk platsdetektering – lämna tyst i "välj plats"-läget */ }
     },
-    () => { /* nekad eller otillgänglig – lämna tyst i "välj plats"-läget, ingen felruta för ett tyst bakgrundsförsök */ },
+    err => {
+      if (permissionAlreadyGranted && err && err.code === 2) {
+        // Behörigheten var redan given, men ingen position gick att hämta
+        // — visa hinten om enhetens platsinställningar.
+        statusEl.textContent = t('geoOsBlockedHint');
+      }
+      // Annars (nekad/väntande behörighet, eller timeout vid ett tyst
+      // bakgrundsförsök): lämna tyst i "välj plats"-läget som tidigare.
+    },
     { enableHighAccuracy: false, timeout: 10000 }
   );
 })();

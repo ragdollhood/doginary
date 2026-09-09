@@ -113,6 +113,23 @@
     background-position:center;
   }
   .health-tool-callout p a{color:#8a5a1c;font-weight:700;text-decoration:underline}
+  .cta-panel-top{max-width:1400px;margin:26px auto 0;padding:0 max(24px,6vw)}
+  .cta-inner-photo{
+    position:relative;
+    background-image:linear-gradient(100deg,rgba(8,14,20,.82) 0%,rgba(8,14,20,.6) 45%,rgba(8,14,20,.25) 100%),url("/assets/dog-vet.jpg");
+    background-image:linear-gradient(100deg,rgba(8,14,20,.82) 0%,rgba(8,14,20,.6) 45%,rgba(8,14,20,.25) 100%),image-set(url("/assets/dog-vet.webp") type("image/webp"),url("/assets/dog-vet.jpg") type("image/jpeg"));
+    background-size:cover;
+    background-position:center;
+    border-radius:var(--radius);
+    padding:38px clamp(24px,5vw,52px);
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;
+    color:#fff;
+  }
+  .cta-inner-photo span.eyebrow{display:block;font-size:12px;letter-spacing:.14em;font-weight:700;color:#f5c472;text-transform:uppercase;margin-bottom:8px}
+  .cta-inner-photo h2{font:700 clamp(22px,2.8vw,30px)/1.2 Fraunces,serif;margin:0 0 8px}
+  .cta-inner-photo p{color:#e7eef2;margin:0;max-width:480px;line-height:1.6}
+  .cta-inner-photo a.cta-btn{background:var(--amber);color:#1b2a25;font-weight:700;text-decoration:none;padding:15px 26px;border-radius:12px;white-space:nowrap;flex-shrink:0}
+  @media(max-width:700px){.cta-inner-photo{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -149,6 +166,17 @@
     <span data-i18n="tagPrevent">Preventive care</span>
   </div>
 </section>
+
+<div class="cta-panel-top">
+  <div class="cta-inner-photo">
+    <div>
+      <span class="eyebrow" data-i18n="healthPromoKicker">NEVER FORGET AGAIN</span>
+      <h2 data-i18n="healthPromoHeading">One place for everything that matters to your dog's health</h2>
+      <p data-i18n="healthPromoText">Vaccinations, medications, vet visits, allergies, weight — log it all in Doginary's health journal so nothing falls through the cracks. Free, always at hand, and ready to show your vet the moment they ask.</p>
+    </div>
+    <a class="cta-btn" href="/health.html" data-i18n="healthPromoButton">Open the health journal →</a>
+  </div>
+</div>
 
 <nav class="article-toc" aria-label="Table of contents" data-i18n-aria-label="tocAriaLabel">
   <h2 data-i18n="tocHeading">In this guide</h2>
@@ -382,6 +410,10 @@ const STR = {
     checkWeightTitle: "Weight & body condition", checkWeightText: "You should feel the ribs easily without pressing hard. A healthy weight is strongly linked to a longer lifespan.",
     checkMobilityTitle: "Mobility", checkMobilityText: "Watch how your dog walks, sits and lies down. Stiffness or limping can indicate joint pain or arthritis.",
     checkMoodTitle: "Behavior & mood", checkMoodText: "Changes in energy, sleep or social behavior can signal discomfort or illness.",
+    healthPromoKicker: "NEVER FORGET AGAIN",
+    healthPromoHeading: "One place for everything that matters to your dog's health",
+    healthPromoText: "Vaccinations, medications, vet visits, allergies, weight — log it all in Doginary's health journal so nothing falls through the cracks. Free, always at hand, and ready to show your vet the moment they ask.",
+    healthPromoButton: "Open the health journal →",
     healthToolTitle: "Keep a record, not just a memory",
     healthToolText: "A single check only tells you how your dog is doing today. Save it in Doginary's <a href=\"/health.html\">health log</a> and you'll start to see whether things are improving or slipping over weeks and months — which is exactly the kind of change that's easy to miss day by day but important for your vet to know about. It takes about a minute each week.",
     habitsKicker: "EVERY DAY", habitsHeading: "Daily habits that support long-term health",
@@ -454,6 +486,10 @@ const STR = {
     checkWeightTitle: "Vikt & hull", checkWeightText: "Du ska lätt kunna känna revbenen utan att trycka hårt. En hälsosam vikt är starkt kopplad till längre livslängd.",
     checkMobilityTitle: "Rörlighet", checkMobilityText: "Observera hur hunden går, sätter sig och lägger sig. Stelhet eller hälta kan tyda på ledsmärta eller artros.",
     checkMoodTitle: "Beteende & humör", checkMoodText: "Förändringar i energi, sömn eller socialt beteende kan signalera obehag eller sjukdom.",
+    healthPromoKicker: "GLÖM ALDRIG BORT",
+    healthPromoHeading: "Ett ställe för allt som spelar roll för din hunds hälsa",
+    healthPromoText: "Vaccinationer, mediciner, veterinärbesök, allergier, vikt — logga allt i Doginarys hälsojournal så halkar ingenting mellan stolarna. Gratis, alltid nära till hands, och redo att visa veterinären precis när det behövs.",
+    healthPromoButton: "Öppna hälsojournalen →",
     healthToolTitle: "Håll koll över tid, inte bara i minnet",
     healthToolText: "En enskild kontroll visar bara hur din hund mår just nu. Spara den i Doginarys <a href=\"/health.html\">hälsologg</a> så börjar du se om det blir bättre eller sämre över veckor och månader — precis den typen av förändring som är lätt att missa dag för dag men viktig för din veterinär att veta om. Det tar en minut i veckan.",
     habitsKicker: "VARJE DAG", habitsHeading: "Dagliga vanor som stödjer långsiktig hälsa",

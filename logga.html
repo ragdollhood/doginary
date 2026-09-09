@@ -68,6 +68,11 @@
     align-items: center;
     gap: 14px;
   }
+  .crossnav-links a[aria-current="page"]{
+    color: #B8860B;
+    font-weight: 700;
+    text-shadow: 0 0 12px rgba(184,134,11,.35);
+  }
 
   .crossnav-links{
     display: flex;
@@ -1154,9 +1159,10 @@
   <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
   <div class="crossnav-right">
     <div class="crossnav-links">
+      <a href="logga.html" data-i18n="navDiary" aria-current="page">Dagbok</a>
+      <a href="health.html" data-i18n="navHealth">Hälsocenter</a>
       <a href="insikter.html" data-i18n="navInsights">Insikter</a>
       <a href="guidelines.html" data-i18n="navGuidelines">Riktlinjer</a>
-      <a href="health.html" data-i18n="navHealth">Hälsocenter</a>
     </div>
     <div class="lang-switch">
       <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="20" height="13" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
@@ -1482,7 +1488,7 @@
   const STR = {
     en: {
       pageTitleDefault: 'Doginary — Log your dog’s day',
-      navInsights: 'Insights', navGuidelines: 'Guidelines', navHealth: 'Health center',
+      navDiary: 'Diary', navInsights: 'Insights', navGuidelines: 'Guidelines', navHealth: 'Health center',
       authTitle: 'Log in to save your log',
       authCardTitle: 'Create an account or log in',
       authCardText: 'Your dog’s diary is saved to your account and syncs across your devices. Takes under a minute.',
@@ -1554,7 +1560,7 @@
     },
     sv: {
       pageTitleDefault: 'Doginary — Logga din hunds dag',
-      navInsights: 'Insikter', navGuidelines: 'Riktlinjer', navHealth: 'Hälsocenter',
+      navDiary: 'Dagbok', navInsights: 'Insikter', navGuidelines: 'Riktlinjer', navHealth: 'Hälsocenter',
       authTitle: 'Logga in för att spara loggen',
       authCardTitle: 'Skapa konto eller logga in',
       authCardText: 'Din hunds dagbok sparas på ditt konto och syncar mellan dina enheter. Tar under en minut.',

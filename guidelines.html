@@ -15,11 +15,12 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
 /* ---------- Delad crossnav (samma uppbyggnad som health.html/logga.html) ---------- */
 .crossnav{height:76px;padding:0 max(20px,5vw);background:var(--surface);border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .crossnav-home{display:inline-flex;align-items:center;gap:8px;color:var(--teal);text-decoration:none;font-size:13px;font-weight:600}
-.crossnav-logo{height:30px;width:auto;display:block;border-radius:6px}
+.crossnav-logo{height:34px;width:auto;display:block;border-radius:8px}
 .crossnav-right{display:flex;align-items:center;gap:15px}
 .crossnav-links{display:flex;align-items:center;gap:15px}
 .crossnav-links a{font-size:13px;color:var(--teal);text-decoration:none}
 .crossnav-links a:hover{text-decoration:underline}
+.crossnav-links a[aria-current="page"]{color:#B8860B;font-weight:700;text-shadow:0 0 12px rgba(184,134,11,.35)}
 .lang-switch{display:flex;align-items:center}
 .lang-btn{border:0;background:var(--surface-2);border-radius:999px;width:34px;height:34px;font-size:17px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease}
 .lang-btn:hover,.lang-btn:focus-visible{background:var(--hair);outline:none}
@@ -101,8 +102,9 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
   <div class="crossnav-right">
     <div class="crossnav-links">
       <a href="logga.html" data-i18n="navDiary">Dagbok</a>
-      <a href="insikter.html" data-i18n="navInsights">Insikter</a>
       <a href="health.html" data-i18n="navHealth">Hälsocenter</a>
+      <a href="insikter.html" data-i18n="navInsights">Insikter</a>
+      <a href="guidelines.html" data-i18n="navGuidelines" aria-current="page">Riktlinjer</a>
     </div>
     <div class="lang-switch">
       <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="20" height="13" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
@@ -236,7 +238,7 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
   const STR = {
     en: {
       docTitle: 'Doginary — Guidelines',
-      navDiary: 'Diary', navInsights: 'Insights', navHealth: 'Health center',
+      navDiary: 'Diary', navInsights: 'Insights', navGuidelines: 'Guidelines', navHealth: 'Health center',
       authEyebrow: 'Doginary',
       authTitle: 'Log in to open the guidelines',
       authCardTitle: 'Create an account or log in',
@@ -266,7 +268,7 @@ body{margin:0;background-color:var(--bg);background-image:url('assets/fur-white.
     },
     sv: {
       docTitle: 'Doginary — Riktlinjer',
-      navDiary: 'Dagbok', navInsights: 'Insikter', navHealth: 'Hälsocenter',
+      navDiary: 'Dagbok', navInsights: 'Insikter', navGuidelines: 'Riktlinjer', navHealth: 'Hälsocenter',
       authEyebrow: 'Doginary',
       authTitle: 'Logga in för att öppna riktlinjerna',
       authCardTitle: 'Skapa konto eller logga in',

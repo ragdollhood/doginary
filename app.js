@@ -80,6 +80,8 @@ const STR = {
     navForecast: "Today",
     navDogAdvice: "Health & coat",
     navKnowledge: "Knowledge",
+    navWeather: "Weather",
+    navDiary: "Diary",
 
     profileHeading: "Your dog's profile",
     profileIntro: "Add a few details and the comfort index and tips below will be nudged to fit your dog specifically — smarter dog walking decisions, made for your dog.",
@@ -294,6 +296,8 @@ const STR = {
     navForecast: "Idag",
     navDogAdvice: "Hälsa & päls",
     navKnowledge: "Kunskap",
+    navWeather: "Väder",
+    navDiary: "Dagbok",
 
     profileHeading: "Din hunds profil",
     profileIntro: "Fyll i några detaljer så justeras komfortindexet och råden nedan efter just din hund — smartare promenadbeslut, anpassade för din hund.",

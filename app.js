@@ -120,6 +120,7 @@ const STR = {
     heroQuickLog: "🐾 Log a walk",
     emptyTitle: "Ready when you are",
     emptyText: "Choose a place to get temperature, precipitation, wind and dog-friendly advice — comfort-based forecasts for happier walks.",
+    awaitingLocationHint: "Choose your location above to see personalized tips and forecasts here.",
     heroImgAlt: "Dog out on a walk",
     weatherPhotoCaption: "A little walk inspiration for today.",
     logPhotoCaption: "Every walk and little moment counts.",
@@ -330,6 +331,7 @@ const STR = {
     heroQuickLog: "🐾 Logga en promenad",
     emptyTitle: "Redo när du är",
     emptyText: "Välj en plats för att få temperatur, nederbörd, vind och hundanpassade råd — komfortbaserade prognoser för gladare promenader.",
+    awaitingLocationHint: "Välj din plats ovan för att se individanpassade tips och prognoser här.",
     heroImgAlt: "Hund ute på promenad",
     weatherPhotoCaption: "Lite promenadinspiration för dagen.",
     logPhotoCaption: "Varje promenad och liten stund räknas.",
@@ -2896,15 +2898,40 @@ applyStaticTranslations();
   }
 })();
 
-/* Återställ senaste sökta plats vid sidladdning */
+/* Återställ senaste sökta plats vid sidladdning. Finns ingen sparad plats
+   sen tidigare provar vi istället att hämta besökarens position automatiskt
+   via webbläsarens platstjänst, så vädret (och alla väderberoende rutor)
+   visas direkt utan att man behöver klicka på ◎ själv.
+
+   Detta ber ALLTID besökaren om lov först — det är webbläsarens egen
+   behörighetsdialog för getCurrentPosition() som sköter det, precis som
+   när man trycker på platsknappen manuellt. Har besökaren redan nekat
+   permanent frågar webbläsaren inte igen, och sidan faller då tyst
+   tillbaka på "välj din plats"-läget nedan — inget felmeddelande visas
+   för ett automatiskt försök i bakgrunden. */
 (async () => {
   try {
     const raw = localStorage.getItem('dogWeatherLocation');
-    if (!raw) return;
-    const loc = JSON.parse(raw);
-    if (loc && typeof loc.lat === 'number' && typeof loc.lon === 'number') {
-      await forecast(loc);
+    if (raw) {
+      const loc = JSON.parse(raw);
+      if (loc && typeof loc.lat === 'number' && typeof loc.lon === 'number') {
+        await forecast(loc);
+        return;
+      }
     }
-  } catch { /* ogiltig eller saknad sparad plats – ignorera tyst */ }
+  } catch { /* ogiltig sparad plats – fortsätt till automatisk platsdetektering nedan */ }
+
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    async pos => {
+      try {
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        const { name, countryCode } = await reverseGeocode(lat, lon);
+        await forecast({ lat, lon, name, countryCode });
+      } catch { /* nätverksfel vid automatisk platsdetektering – lämna tyst i "välj plats"-läget */ }
+    },
+    () => { /* nekad eller otillgänglig – lämna tyst i "välj plats"-läget, ingen felruta för ett tyst bakgrundsförsök */ },
+    { enableHighAccuracy: false, timeout: 10000 }
+  );
 })();
 

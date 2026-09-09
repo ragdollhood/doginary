@@ -371,13 +371,13 @@
     </div>
   </div>
   <div id="alerts" class="alerts" aria-live="polite"></div>
-  <div id="dailyTip" class="daily-tip"><div class="skeleton" style="min-height:64px;border-radius:16px"></div></div>
-  <div id="bestWalk" class="best-walk"><div class="skeleton" style="min-height:104px;border-radius:20px"></div></div>
+  <div id="dailyTip" class="daily-tip"><div class="awaiting-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><p data-i18n="awaitingLocationHint">Choose your location above to see personalized tips and forecasts here.</p></div></div>
+  <div id="bestWalk" class="best-walk"><div class="awaiting-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><p data-i18n="awaitingLocationHint">Choose your location above to see personalized tips and forecasts here.</p></div></div>
   <p class="best-walk-footnote" data-i18n="bestWalkFootnote">The ranking is based on the same Dog Comfort Index as above, calculated hour by hour for the coming hours from SMHI/Open-Meteo's hourly forecast (temperature, feels-like temperature, precipitation, wind and snowfall) — the hour with the highest score is highlighted. No AI model, just the same rule-based calculation. <a href="#komfortindex-forklaring">How the index is calculated *</a></p>
   <div class="panel coat-advice-panel panel--fur-orange">
     <h3 class="subheading coat-advice-heading" data-i18n="coatCareHeading">Coat care for today's weather</h3>
     <div id="coatAdvice" class="advice-grid coat-advice-grid">
-      <div class="skeleton advice-skeleton"></div><div class="skeleton advice-skeleton"></div>
+      <div class="awaiting-location-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><p data-i18n="awaitingLocationHint">Choose your location above to see personalized tips and forecasts here.</p></div>
     </div>
     <p class="advice-disclaimer" data-i18n="coatCareFootnote">These grooming tips are calculated automatically from today's weather (temperature, precipitation, humidity and sun) and time of year. Each tip links to its source below it — no AI model, and it never replaces judgement from a vet or professional groomer.</p>
   </div>
@@ -395,13 +395,13 @@
   <div class="panel panel--advice">
     <h3 class="subheading" data-i18n="adviceHeading">Weather interpretation for your dog</h3>
     <div id="walkAdvice" class="advice-grid">
-      <div class="skeleton advice-skeleton"></div><div class="skeleton advice-skeleton"></div><div class="skeleton advice-skeleton"></div><div class="skeleton advice-skeleton"></div><div class="skeleton advice-skeleton"></div><div class="skeleton advice-skeleton"></div><div class="skeleton advice-skeleton"></div>
+      <div class="awaiting-location-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><p data-i18n="awaitingLocationHint">Choose your location above to see personalized tips and forecasts here.</p></div>
     </div>
     <p class="advice-disclaimer" data-i18n="adviceDisclaimer">These assessments are calculated automatically from weather data (temperature, precipitation, wind) and time of year — no AI model and no connection to real pollen or tick measurements. See current pollen levels at the <a href="https://www.nrm.se/natur--och-miljoovervakning/pollenovervakning/pollenrapporten" target="_blank" rel="noopener">Pollen Report (Swedish Museum of Natural History)</a> and the current tick situation at <a href="https://www.sva.se/aktuellt/insamlingar/rapportera-faesting/karta-och-tabell-oever-faestingfynd/" target="_blank" rel="noopener">SVA's tick map</a> (Swedish-language sites). Read more about how the Dog Comfort Index is calculated <a href="#komfortindex-forklaring">here</a>.</p>
   </div>
   <div class="panel panel--daily">
     <h3 class="subheading" data-i18n="dailyHeading">Upcoming days</h3>
-    <div id="daily" class="daily"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+    <div id="daily" class="daily"><div class="awaiting-location-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><p data-i18n="awaitingLocationHint">Choose your location above to see personalized tips and forecasts here.</p></div></div>
     <div id="dayHours" class="day-hours" hidden>
       <div class="day-hours-head">
         <h4 id="dayHoursTitle"></h4>

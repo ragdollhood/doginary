@@ -54,6 +54,27 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 .top--photo .eyebrow{color:#F5C472}
 .top--photo h1{color:#fff}
 .top--photo .intro{color:#EFE7DA}
+
+/* ---------- Rutor med bakgrundsfoto (snabblogga / sammanfattning / kalender / dagbok-cta) ---------- */
+.photo-box{position:relative;border-radius:var(--radius-lg);padding:22px 26px;box-shadow:0 4px 18px rgba(43,36,28,.14);background-size:cover;background-position:center;color:#fff}
+.photo-box h2{color:#fff;margin:0}
+.photo-box p{color:#EFE7DA}
+.photo-box .selected-date{background:rgba(248,245,236,.92)}
+.quick-head.photo-box{background-image:linear-gradient(100deg,rgba(43,36,28,.85) 0%,rgba(43,36,28,.56) 55%,rgba(43,36,28,.16) 100%),url("assets/puppy12.jpg");background-image:linear-gradient(100deg,rgba(43,36,28,.85) 0%,rgba(43,36,28,.56) 55%,rgba(43,36,28,.16) 100%),image-set(url("assets/puppy12.webp") type("image/webp"),url("assets/puppy12.jpg") type("image/jpeg"));margin-bottom:18px;align-items:center}
+#summaryHead.photo-box{background-image:linear-gradient(100deg,rgba(43,36,28,.85) 0%,rgba(43,36,28,.5) 60%,rgba(43,36,28,.1) 100%),url("assets/puppy10.jpg");background-image:linear-gradient(100deg,rgba(43,36,28,.85) 0%,rgba(43,36,28,.5) 60%,rgba(43,36,28,.1) 100%),image-set(url("assets/puppy10.webp") type("image/webp"),url("assets/puppy10.jpg") type("image/jpeg"));margin-bottom:12px}
+#summaryHead.photo-box h2{font-size:20px}
+#calendarHead.photo-box{background-image:linear-gradient(100deg,rgba(43,36,28,.85) 0%,rgba(43,36,28,.5) 60%,rgba(43,36,28,.1) 100%),url("assets/puppy11.jpg");background-image:linear-gradient(100deg,rgba(43,36,28,.85) 0%,rgba(43,36,28,.5) 60%,rgba(43,36,28,.1) 100%),image-set(url("assets/puppy11.webp") type("image/webp"),url("assets/puppy11.jpg") type("image/jpeg"));margin-bottom:12px}
+#calendarHead.photo-box h2{font-size:20px}
+.photo-box .toggle{background:rgba(248,245,236,.16);border-color:rgba(255,255,255,.4)}
+.photo-box .toggle button{color:#EFE7DA}
+.photo-box .toggle button.active{background:#fff;color:var(--ink)}
+.diary-box{margin-top:30px;padding:34px 30px;min-height:180px;display:flex;flex-direction:column;justify-content:center;gap:10px;background-image:linear-gradient(100deg,rgba(43,36,28,.86) 0%,rgba(43,36,28,.6) 48%,rgba(43,36,28,.2) 100%),url("assets/puppy6.jpg");background-image:linear-gradient(100deg,rgba(43,36,28,.86) 0%,rgba(43,36,28,.6) 48%,rgba(43,36,28,.2) 100%),image-set(url("assets/puppy6.webp") type("image/webp"),url("assets/puppy6.jpg") type("image/jpeg"))}
+.diary-box .eyebrow{color:#F5C472;margin:0 0 2px}
+.diary-box h2{margin:0;color:#fff;font-size:clamp(21px,4vw,27px)}
+.diary-box p{margin:0;color:#EFE7DA;max-width:520px;font-size:14px}
+.diary-box .diary-link{align-self:flex-start;margin-top:8px;display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--ink);border-radius:999px;padding:11px 22px;font:600 14px Inter;text-decoration:none}
+.diary-box .diary-link:hover{background:#EFE7DA}
+@media(max-width:760px){.photo-box{padding:18px 18px}.diary-box{padding:26px 20px}}
 .entries-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.toggle{display:inline-flex;background:var(--surface-2);border:1px solid var(--hair);border-radius:999px;padding:3px}.toggle button{border:0;background:none;color:var(--soft);border-radius:999px;padding:6px 14px;font:500 13px Inter;cursor:pointer}.toggle button.active{background:var(--ink);color:var(--surface)}.cal-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.cal-nav{display:flex;align-items:center;gap:10px}.round{width:30px;height:30px;border:1px solid var(--hair);border-radius:50%;background:var(--surface);cursor:pointer}.period{min-width:180px;text-align:center;font-size:14px;font-weight:500}.today{border:0;border-radius:999px;background:var(--teal-soft);color:var(--teal);padding:7px 15px;font-weight:600;cursor:pointer}.calendar{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px;margin-bottom:16px}.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}.summary-card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:16px}.summary-card h3{font-size:15px;margin:0 0 12px}.weight-chart-svg{width:100%;height:auto;display:block}.summary-empty{font-size:12.5px;color:var(--soft);margin:0}.summary-note{font-size:12px;color:var(--soft);margin:10px 0 0}.summary-list-item{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-bottom:1px solid var(--hair)}.summary-list-item:last-child{border-bottom:none}.summary-list-item strong{font-size:13.5px}.summary-list-item span{font-size:12px;color:var(--soft)}
 .week-grid,.month-grid,.weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}#weekView[hidden],#monthView[hidden]{display:none}.week-day,.month-day{border:1.5px solid transparent;background:var(--surface-2);border-radius:14px;min-width:0;cursor:pointer;font-family:Inter;color:var(--ink)}.week-day{min-height:108px;padding:14px 4px;display:flex;flex-direction:column;align-items:center;gap:5px}.dow{font-size:10px;text-transform:uppercase;color:var(--soft);font-weight:600}.num{font:500 25px Fraunces}.markers{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;font-size:13px}.week-day.today,.month-day.today{border-color:var(--teal)}.week-day.selected,.month-day.selected{background:var(--teal-soft);border-color:var(--teal)}.week-day.has,.month-day.has{box-shadow:inset 0 -4px 0 var(--rust)}.weekdays{margin-bottom:6px}.weekdays span{text-align:center;font-size:11px;color:var(--soft)}.month-day{aspect-ratio:1;padding:5px;display:flex;flex-direction:column;align-items:center;justify-content:center}.month-day.empty{background:none;cursor:default}.day-card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:17px}.day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}.day-head h3{margin:0;font-size:17px}.day-head span{font-size:12px;color:var(--soft)}.empty-message{text-align:center;background:var(--surface-2);color:var(--soft);padding:18px;border-radius:12px;font-size:14px}.entry{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;background:var(--surface-2);border-radius:13px;padding:11px 12px;margin-top:8px}.entry-icon{width:36px;height:36px;background:var(--surface);border-radius:11px;display:grid;place-items:center}.entry strong{font-size:13.5px}.entry p{font-size:12.5px;color:var(--soft);margin:1px 0 0}.remove{border:1px solid var(--hair);background:var(--surface);color:var(--soft);border-radius:50%;width:25px;height:25px;cursor:pointer}.overlay{position:fixed;inset:0;background:rgba(43,36,28,.48);z-index:20;display:grid;place-items:center;padding:20px}.overlay[hidden]{display:none}.modal{background:var(--surface);width:min(440px,100%);border-radius:var(--radius);padding:22px;box-shadow:0 20px 60px rgba(43,36,28,.25)}.modal-head{display:flex;align-items:start;justify-content:space-between}.modal h2{font-size:21px;margin:0}.modal-sub{font-size:13px;color:var(--soft);margin:3px 0 17px}.close{border:0;background:var(--surface-2);border-radius:50%;width:31px;height:31px;cursor:pointer}.field{margin-top:12px}.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--hair);border-radius:10px;background:var(--surface-2);padding:10px 12px;font:14px Inter;color:var(--ink)}.field textarea{min-height:75px;resize:vertical}.modal-actions{display:flex;gap:10px;margin-top:18px}.save{flex:1;border:0;background:var(--ink);color:var(--surface);border-radius:999px;padding:12px;font:600 14px Inter;cursor:pointer}.cancel{border:1px solid var(--hair);background:none;border-radius:999px;padding:11px 18px;cursor:pointer}
 
@@ -151,7 +172,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 <main class="page" id="appScreen" hidden>
 <header class="top top--photo"><p class="eyebrow" data-i18n="eyebrow">Doginary Premium</p><h1 data-i18n="pageTitle">Hälsocenter</h1><p class="intro" id="introText">Samla din hunds vikt, symptom, behandlingar och viktiga hälsohändelser på ett tryggt och överskådligt ställe.</p></header>
 <div class="notice"><span aria-hidden="true">ⓘ</span><span data-i18n="notice">Hälsocentret hjälper dig att dokumentera och komma ihåg. Det ersätter inte veterinärmedicinsk rådgivning. Kontakta veterinär vid oro eller akuta symptom.</span></div>
-<section><div class="quick-head"><div><h2 data-i18n="quickTitle">Snabblogga hälsa</h2><p data-i18n="quickIntro">Välj vad du vill lägga till för det markerade datumet.</p></div><span class="selected-date" id="selectedLabel"></span></div>
+<section><div class="quick-head photo-box"><div><h2 data-i18n="quickTitle">Snabblogga hälsa</h2><p data-i18n="quickIntro">Välj vad du vill lägga till för det markerade datumet.</p></div><span class="selected-date" id="selectedLabel"></span></div>
 <div class="health-grid">
 <button class="health-card" data-type="symptom"><span class="card-icon" aria-hidden="true">🩺</span><h3 data-i18n="card_symptom_title">Symptom</h3><p data-i18n="card_symptom_desc">Notera förändringar eller besvär</p></button>
 <button class="health-card" data-type="medicine"><span class="card-icon" aria-hidden="true">💊</span><h3 data-i18n="card_medicine_title">Medicin</h3><p data-i18n="card_medicine_desc">Dos, behandling och tid</p></button>
@@ -162,7 +183,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 <button class="health-card" data-type="dental"><span class="card-icon" aria-hidden="true">🦷</span><h3 data-i18n="card_dental_title">Tandvård</h3><p data-i18n="card_dental_desc">Borstning, kontroll och åtgärd</p></button>
 <button class="health-card" data-type="note"><span class="card-icon" aria-hidden="true">📝</span><h3 data-i18n="card_note_title">Hälsoanteckning</h3><p data-i18n="card_note_desc">Övrigt du vill komma ihåg</p></button>
 </div></section>
-<section><div class="entries-head"><h2 data-i18n="summaryTitle">Sammanfattning</h2></div>
+<section><div class="entries-head photo-box" id="summaryHead"><h2 data-i18n="summaryTitle">Sammanfattning</h2></div>
 <div class="summary-grid">
   <div class="summary-card">
     <h3 data-i18n="weightChartTitle">Viktutveckling</h3>
@@ -182,10 +203,17 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   </div>
 </div>
 </section>
-<section><div class="entries-head"><h2 data-i18n="calendarTitle">Hälsokalender</h2><div class="toggle"><button class="active" data-view="week" data-i18n="viewWeek">Vecka</button><button data-view="month" data-i18n="viewMonth">Månad</button></div></div>
+<section><div class="entries-head photo-box" id="calendarHead"><h2 data-i18n="calendarTitle">Hälsokalender</h2><div class="toggle"><button class="active" data-view="week" data-i18n="viewWeek">Vecka</button><button data-view="month" data-i18n="viewMonth">Månad</button></div></div>
 <div class="cal-controls"><div class="cal-nav"><button class="round" id="prev" aria-label="Föregående" data-i18n-aria-label="prevLabel">‹</button><span class="period" id="period"></span><button class="round" id="next" aria-label="Nästa" data-i18n-aria-label="nextLabel">›</button></div><button class="today" id="todayBtn" data-i18n="todayBtn">Idag</button></div>
 <div class="calendar"><div id="weekView" class="week-grid"></div><div id="monthView" hidden><div class="weekdays"><span data-i18n="wdMon">Mån</span><span data-i18n="wdTue">Tis</span><span data-i18n="wdWed">Ons</span><span data-i18n="wdThu">Tor</span><span data-i18n="wdFri">Fre</span><span data-i18n="wdSat">Lör</span><span data-i18n="wdSun">Sön</span></div><div class="month-grid" id="monthGrid"></div></div></div>
 <div class="day-card"><div class="day-head"><h3 id="dayTitle"></h3><span id="dayCount"></span></div><div id="entries"></div></div></section>
+
+<section class="diary-box" aria-labelledby="diaryBoxTitle">
+  <p class="eyebrow" data-i18n="diaryBoxEyebrow">Doginary</p>
+  <h2 id="diaryBoxTitle" data-i18n="diaryBoxTitle">Dagboken</h2>
+  <p data-i18n="diaryBoxText">Logga hundens vardag – promenader, mat, humör och roliga stunder – i dagboken.</p>
+  <a class="diary-link" href="logga.html" data-i18n="diaryBoxLink">Öppna dagboken →</a>
+</section>
 </main>
 
 <footer class="doginary-footer">
@@ -269,6 +297,10 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       removeError: 'Couldn’t remove right now — please try again.',
       footerDisclaimer: 'Doginary does not provide veterinary advice. Always contact a vet if you’re concerned about your dog’s health.',
       footerTerms: 'Terms',
+      diaryBoxEyebrow: 'Doginary',
+      diaryBoxTitle: 'The diary',
+      diaryBoxText: 'Log your dog’s everyday life — walks, meals, mood and fun moments — in the diary.',
+      diaryBoxLink: 'Open the diary →',
     },
     sv: {
       docTitle: 'Doginary — Hälsocenter',
@@ -318,6 +350,10 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       removeError: 'Kunde inte ta bort just nu — försök igen.',
       footerDisclaimer: 'Doginary ger inte veterinärmedicinsk rådgivning. Kontakta alltid veterinär om du är orolig för din hunds hälsa.',
       footerTerms: 'Villkor',
+      diaryBoxEyebrow: 'Doginary',
+      diaryBoxTitle: 'Dagboken',
+      diaryBoxText: 'Logga hundens vardag – promenader, mat, humör och roliga stunder – i dagboken.',
+      diaryBoxLink: 'Öppna dagboken →',
     }
   };
 

@@ -80,6 +80,9 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
 .watch-section h2{margin:0 0 4px}
 .watch-section > p{font-size:13px;color:var(--soft);margin:0 0 14px}
+.watch-intro-box{position:relative;border-radius:var(--radius);padding:18px 20px;margin:0 0 14px;background-image:linear-gradient(100deg,rgba(43,36,28,.82) 0%,rgba(43,36,28,.6) 55%,rgba(43,36,28,.35) 100%),url("assets/puppy7.jpg");background-image:linear-gradient(100deg,rgba(43,36,28,.82) 0%,rgba(43,36,28,.6) 55%,rgba(43,36,28,.35) 100%),image-set(url("assets/puppy7.webp") type("image/webp"),url("assets/puppy7.jpg") type("image/jpeg"));background-size:cover;background-position:center;box-shadow:0 4px 18px rgba(43,36,28,.15)}
+.watch-intro-box h2{color:#fff;font-size:17px}
+.watch-intro-box p{color:#EFE7DA;font-size:13px;margin:0}
 .watch-card{display:flex;gap:14px;background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px}
 .watch-card .card-icon{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:20px;background:var(--rust-soft)}
 .watch-card h3{font-size:15.5px;margin:0 0 5px}
@@ -256,8 +259,10 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   </div>
 
   <div class="watch-section">
-    <h2 data-i18n="watchTitle">Rasspecifikt att hålla koll på</h2>
-    <p data-i18n="watchIntro">Vanliga, väldokumenterade riskfaktorer för din ras — inte en fullständig lista. Fråga alltid veterinären om du är osäker.</p>
+    <div class="watch-intro-box">
+      <h2 data-i18n="watchTitle">Rasspecifikt att hålla koll på</h2>
+      <p data-i18n="watchIntro">Vanliga, väldokumenterade riskfaktorer för din ras — inte en fullständig lista. Fråga alltid veterinären om du är osäker.</p>
+    </div>
     <div id="watchList"></div>
   </div>
 

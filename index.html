@@ -14,14 +14,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0f3b57">
-  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="author" content="Doginary">
-  <meta name="description" content="Doginary's Dog Comfort Index blends SMHI and Open-Meteo forecasts into hundväder insights and hundtips for every walk. Free, no app needed.">
-  <title>Doginary — Dog Walk Weather, Comfort Index & Daily Dog Care</title>
+  <meta name="description" content="Free Dog Comfort Index from SMHI &amp; Open-Meteo forecasts: hundväder, walk timing and hundtips for every breed, all conditions. No app or sign-up needed.">
+  <title>Doginary — Hundväder, Dog Comfort Index &amp; Walk Advice</title>
   <link rel="canonical" href="https://doginary.com/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Doginary">
-  <meta property="og:title" content="Doginary — Dog Walk Weather, Comfort Index & Daily Dog Care">
+  <meta property="og:title" content="Doginary — Hundväder, Dog Comfort Index &amp; Walk Advice">
   <meta property="og:description" content="Doginary calculates a Dog Comfort Index from SMHI and Open-Meteo forecasts, so you get dog-friendly weather (hundväder) and practical care tips (hundtips) for every walk. Free, no app required.">
   <meta property="og:image" content="https://doginary.com/assets/preview.jpg">
   <meta property="og:image:alt" content="Doginary — dog walk weather and comfort index">
@@ -29,7 +29,7 @@
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="sv_SE">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Doginary — Dog Walk Weather, Comfort Index & Daily Dog Care">
+  <meta name="twitter:title" content="Doginary — Hundväder, Dog Comfort Index &amp; Walk Advice">
   <meta name="twitter:description" content="A Dog Comfort Index built from SMHI and Open-Meteo forecasts — dog-friendly weather (hundväder) and care tips (hundtips) for every walk.">
   <meta name="twitter:image" content="https://doginary.com/assets/preview.jpg">
   <script type="application/ld+json">
@@ -68,6 +68,56 @@
         "inLanguage": ["en", "sv"],
         "isPartOf": { "@id": "https://doginary.com/#website" },
         "publisher": { "@id": "https://doginary.com/#organization" }
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "@id": "https://doginary.com/#nav",
+        "name": ["Weather", "Diary", "Health center", "Insights", "Guidelines"],
+        "url": [
+          "https://doginary.com/index.html",
+          "https://doginary.com/logga.html",
+          "https://doginary.com/health.html",
+          "https://doginary.com/insikter.html",
+          "https://doginary.com/guidelines.html"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://doginary.com/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the Doginary Dog Comfort Index?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The Dog Comfort Index (0-10) is Doginary's own educational estimate, calculated locally from current SMHI and Open-Meteo weather data. It is not a clinical or scientifically established method, and it factors in perceived temperature, humidity, precipitation, snowfall, wind and gusts to estimate how suitable conditions are for a dog walk."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is the Dog Comfort Index calculated?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The score starts at 10 and is reduced based on perceived temperature (the biggest factor for intense heat or severe cold), humidity combined with heat, precipitation, snowfall, and wind or gusts. The result maps to five levels from Excellent to Unsuitable for longer activity, with hour-by-hour and day-by-day breakdowns."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are the signs of heatstroke in dogs?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Heavy panting, lethargy, wobbliness, vomiting, collapse or loss of consciousness can all be signs of heatstroke, which is acute and life-threatening. Move the dog to a cool place, offer water and contact a vet immediately."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How hot can a car get for a dog in Sweden?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Under Swedish Board of Agriculture (Jordbruksverket) rules, a dog must not be left unattended in a car if the inside temperature risks rising above 25°C (77°F). Damage can become life-threatening in as little as 20 to 50 minutes in a hot car."
+            }
+          }
+        ]
       }
     ]
   }

@@ -418,19 +418,6 @@
     </form>
   </div>
 
-  <!-- Rasfakta för vald ras: allmänna, korta fakta om rasen kopplade till
-       dagens väder när det är relevant. Byggs av renderBreedFacts() i
-       app.js utifrån dogProfile.breed — dold helt om ingen ras är vald,
-       om rasen är Blandras/Annan ras, eller om rasen inte finns i vår
-       källverifierade lista (BREED_FACTS_DATA i app.js) — vi visar hellre
-       inget än ett obekräftat påstående. Varje kort har alltid en
-       källänk. -->
-  <div class="panel-plain breed-facts-panel" id="breedFactsPanel" hidden>
-    <h3 class="subheading" data-i18n="breedFactsHeading">About the breed</h3>
-    <div id="breedFacts" class="advice-grid breed-facts-grid"></div>
-    <p class="breed-facts-link"><a href="guidelines.html" data-i18n="breedFactsGuidelinesLink">Read more about the breed on GUIDELINES →</a></p>
-  </div>
-
   <!-- Bekräftelsemodal: visas direkt efter att en GÄST (ej inloggad) sparat
        profilen lokalt i webbläsaren. Kontot är helt frivilligt — profilen
        fungerar redan (localStorage) oavsett vad man väljer här.
@@ -535,6 +522,20 @@
 <article><i>❄</i><div data-i18n="tip2Body"><h3>Cold, ice and salt</h3><p>Short-coated, young, senior or unwell dogs may need extra protection. Road salt dries out and can crack paw pads, so rinse and dry the paws thoroughly after the walk. Dog boots or paw balm can help but need careful, gradual introduction.</p><a href="https://www.agria.se/hund/artiklar/skotsel-och-vard/ta-hand-om-tassarna-vintertid/" target="_blank" rel="noopener">More on paws and road salt, Agria ↗</a></div></article>
 <article><i>⚡</i><div data-i18n="tip3Body"><h3>Thunder and anxiety</h3><p>Let your dog choose a safe spot indoors, dampen sound and light, and avoid forcing contact. Excessive comforting can reinforce stress in some dogs — stay calm and let your dog be. For severe fear, a vet can advise on sound training, calming aids or prescription medication.</p><a href="https://evidensia.se/djurvardguiden/skottradsla/" target="_blank" rel="noopener">Advice on noise and gunshot phobia, Evidensia ↗</a></div></article>
 </div></section>
+
+<!-- Rasfakta för vald ras: allmänna, korta fakta om rasen kopplade till
+     dagens väder när det är relevant. Byggs av renderBreedFacts() i
+     app.js utifrån dogProfile.breed — dold helt om ingen ras är vald,
+     om rasen är Blandras/Annan ras, eller om rasen inte finns i vår
+     källverifierade lista (BREED_FACTS_DATA i app.js) — vi visar hellre
+     inget än ett obekräftat påstående. Varje kort har alltid en
+     källänk. Flyttad hit (mellan "Gentle advice for all weather" och
+     "Explore by topic") från sin tidigare plats i väder-sektionen. -->
+<div class="panel-plain breed-facts-panel" id="breedFactsPanel" hidden>
+  <h3 class="subheading" data-i18n="breedFactsHeading">About the breed</h3>
+  <div id="breedFacts" class="advice-grid breed-facts-grid"></div>
+  <p class="breed-facts-link"><a href="guidelines.html" data-i18n="breedFactsGuidelinesLink">Read more about the breed on GUIDELINES →</a></p>
+</div>
 
 <section class="knowledge-hub"><div class="section-head"><div><span class="kicker" data-i18n="knowledgeHubKicker">DOG KNOWLEDGE</span><h2 data-i18n="knowledgeHubTitle">Explore by topic</h2></div><p data-i18n="knowledgeHubSubtitle">Short, practical reads on the things that matter most for your dog — more added over time.</p></div><div class="knowledge-hub-grid" id="knowledgeHubGrid"></div></section>
 <section id="kunskap" class="science"><div class="science-copy"><span class="kicker" data-i18n="scienceKicker">WHAT THE SCIENCE SAYS</span><h2 data-i18n="scienceTitle">Weather can change activity levels, but not all dogs react the same way</h2><p data-i18n="scienceText">Research based on owner surveys shows a link between weather and reported activity levels. It does not support the idea that weather affects every dog's "mood" the same way. So read your dog's body language and adapt the walk to the individual.</p><div class="stat" data-i18n="scienceStat"><b>3,153</b><span>dog owners took part in an international survey study on seasonal weather and dogs' activity levels.</span></div><div class="source-links" data-i18n="scienceLinks"><a href="https://www.mdpi.com/2076-2615/11/11/3302" target="_blank" rel="noopener">The study in Animals ↗</a><a href="https://www.frontiersin.org/journals/veterinary-science/articles/10.3389/fvets.2022.973574/full" target="_blank" rel="noopener">Study on extreme weather events ↗</a><a href="https://www.sva.se/djurhaelsa/djurslag-a-oe/sport-och-saellskapsdjur/hund/" target="_blank" rel="noopener">SVA on dog health ↗</a></div></div><aside class="note"><span data-i18n="noteKicker">IMPORTANT</span><h3 data-i18n="noteTitle">Heatstroke is acute and life-threatening</h3><p data-i18n="noteText">Heavy panting, lethargy, wobbliness, vomiting, collapse or loss of consciousness can be signs of heatstroke. Move your dog to a cool place, offer water and contact a vet immediately — the same applies if your dog becomes confused, shows clear breathing difficulty, or rapidly deteriorates for any other reason.</p><a href="https://evidensia.se/djurvardguiden/varmeslag-hund-ett-livshotande-tillstand/" target="_blank" rel="noopener" data-i18n="noteLink">Read more about heatstroke at Evidensia ↗</a></aside></section>

@@ -169,6 +169,69 @@
     color: var(--ink-soft);
   }
 
+  /* ---------- Rubrikbilder: Dagens/Veckans/Månadens ---------- */
+
+  .section__head--photo{
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    align-items: flex-end;
+    min-height: 104px;
+    background-color: #2B241C;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #F3ECDF;
+  }
+
+  .section__head--photo::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(100deg, rgba(35,29,22,.18) 0%, rgba(31,25,19,.58) 55%, rgba(25,21,16,.84) 100%);
+  }
+
+  .section__head--photo .section__title{
+    color: #F3ECDF;
+    text-shadow: 0 1px 10px rgba(20,16,11,.5);
+  }
+
+  .section__head--photo .section__meta{
+    color: #F3ECDF;
+    text-shadow: none;
+    background: rgba(20,16,11,.4);
+    padding: 4px 10px;
+    border-radius: 999px;
+    backdrop-filter: blur(1.5px);
+  }
+
+  .section__head--today{
+    background-image: url('assets/section-today.jpg');
+    background-image: -webkit-image-set(url('assets/section-today.webp') 1x);
+    background-image: image-set(url('assets/section-today.webp') 1x, url('assets/section-today.jpg') 1x);
+    background-position: right center;
+  }
+
+  .section__head--week{
+    background-image: url('assets/section-week.jpg');
+    background-image: -webkit-image-set(url('assets/section-week.webp') 1x);
+    background-image: image-set(url('assets/section-week.webp') 1x, url('assets/section-week.jpg') 1x);
+    background-position: right center;
+  }
+
+  .section__head--month{
+    background-image: url('assets/section-month.jpg');
+    background-image: -webkit-image-set(url('assets/section-month.webp') 1x);
+    background-image: image-set(url('assets/section-month.webp') 1x, url('assets/section-month.jpg') 1x);
+    background-position: center 40%;
+  }
+
+  @media (max-width: 420px){
+    .section__head--photo{ min-height: 92px; padding: 16px 18px; }
+  }
+
   /* ---------- Today: insight cards ---------- */
 
   .cardgrid{
@@ -902,7 +965,7 @@
   </div>
 
   <section id="today">
-    <div class="section__head">
+    <div class="section__head section__head--photo section__head--today">
       <h2 class="section__title" data-i18n="todayTitle">Dagens insikter</h2>
       <span class="section__meta" id="todayMeta"></span>
     </div>
@@ -911,7 +974,7 @@
   </section>
 
   <section id="week">
-    <div class="section__head">
+    <div class="section__head section__head--photo section__head--week">
       <h2 class="section__title" data-i18n="weekTitle">Veckans insikter</h2>
       <span class="section__meta" id="weekMeta"></span>
     </div>
@@ -919,7 +982,7 @@
   </section>
 
   <section id="month">
-    <div class="section__head">
+    <div class="section__head section__head--photo section__head--month">
       <h2 class="section__title" data-i18n="monthTitle">Månadens rapport</h2>
       <span class="section__meta" id="monthMeta"></span>
     </div>

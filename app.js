@@ -289,7 +289,8 @@ const STR = {
     breedSkkLinkText: "Read more about the breed at SKK",
     breedFactsSkkText: "{breed} is a dog breed recognized by the Swedish Kennel Club (SKK), the country's kennel club — see the breed page for its full breed standard, history and typical temperament.",
     breedFactsBrachyTitle: "Brachycephalic breed — extra heat caution",
-    breedFactsBrachyText: "{name}'s breed has a shortened muzzle (brachycephalic), which research links to a higher risk of heat-related illness. In today's warm conditions, choose a cooler time of day, an easy pace, and bring water."
+    breedFactsBrachyText: "{name}'s breed has a shortened muzzle (brachycephalic), which research links to a higher risk of heat-related illness. In today's warm conditions, choose a cooler time of day, an easy pace, and bring water.",
+    breedFactsGuidelinesLink: "Read more about the breed under Guidelines →"
   },
   sv: {
     pageTitle: "Doginary — Väder för hundpromenader, komfortindex & hundvård",
@@ -508,7 +509,8 @@ const STR = {
     breedSkkLinkText: "Läs mer om rasen hos SKK",
     breedFactsSkkText: "{breed} är en hundras erkänd av Svenska Kennelklubben (SKK), landets kennelklubb — se rassidan för rasstandard, historia och typiskt temperament.",
     breedFactsBrachyTitle: "Kortnosig ras — extra värmeförsiktighet",
-    breedFactsBrachyText: "{name}s ras har kort nos (brachycephal), vilket i forskning kopplas till högre risk för värmerelaterad sjukdom. Välj en svalare tid på dygnet, ett lugnt tempo och ta med vatten i dagens värme."
+    breedFactsBrachyText: "{name}s ras har kort nos (brachycephal), vilket i forskning kopplas till högre risk för värmerelaterad sjukdom. Välj en svalare tid på dygnet, ett lugnt tempo och ta med vatten i dagens värme.",
+    breedFactsGuidelinesLink: "Läs mer om rasen under Riktlinjer →"
   }
 };
 

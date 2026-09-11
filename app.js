@@ -605,6 +605,7 @@ function applyStaticTranslations() {
   renderDailyDogFact();
   renderKnowledgeHub();
   populateBreedSelects();
+  if (typeof renderDogProfileUI === 'function') renderDogProfileUI();
 }
 
 function updateHeroTitle() {
@@ -1561,6 +1562,18 @@ function setBreedSelectValue(breedText) {
   populateBreedSelects();
 }
 
+// Översätter en sparad ras-text (fritext från valfritt språk) till aktuellt
+// UI-språk, genom att återanvända samma id-uppslagning som rullmenyn.
+// Används där profile.breed visas som text (t.ex. profilsammanfattningen),
+// så att den inte fastnar i det språk som gällde när profilen sparades.
+function translateBreedText(breedText) {
+  const id = findBreedIdForText(breedText);
+  if (!id) return breedText;
+  if (id === 'mixed' || id === 'other') return DOG_BREED_SPECIAL_OPTIONS[id][lang];
+  const opt = DOG_BREED_OPTIONS.find(o => o.id === id);
+  return opt ? opt[lang] : breedText;
+}
+
 function getDogDisplayName(profile, language) {
   return String(profile?.name || '').trim() || (language === 'sv' ? 'din hund' : 'your dog');
 }
@@ -1884,7 +1897,7 @@ const profileSavedContinueBtn = $('#profileSavedContinueBtn');
 
 function dogProfileSummaryLabel(profile) {
   const ageKey = { puppy: 'profileAgePuppy', adult: 'profileAgeAdult', senior: 'profileAgeSenior' }[profile.age];
-  const bits = [profile.breed, ageKey ? t(ageKey).toLowerCase() : null].filter(Boolean);
+  const bits = [translateBreedText(profile.breed), ageKey ? t(ageKey).toLowerCase() : null].filter(Boolean);
   const who = profile.name || (lang === 'sv' ? 'din hund' : 'your dog');
   const suffix = bits.length ? ` — ${escapeHtml(bits.join(', '))}` : '';
   return `${escapeHtml(t('profileSummaryPrefix'))} <b>${escapeHtml(who)}</b>${suffix}`;

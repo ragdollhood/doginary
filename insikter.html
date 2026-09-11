@@ -236,7 +236,7 @@
 
   .cardgrid{
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
   }
 
@@ -678,7 +678,13 @@
   }
 
   @media (max-width: 420px){
-    .cardgrid{ grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cardgrid{ grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .icard{ padding: 10px 8px 9px; gap: 6px; }
+    .icard__icon{ width: 24px; height: 24px; border-radius: 7px; }
+    .icard__icon svg{ width: 13px; height: 13px; }
+    .icard__label{ font-size: 10.5px; }
+    .icard__text{ font-size: 11.5px; }
+    .trend{ font-size: 10px; padding: 2px 5px; }
     .sparklines{ grid-template-columns: 1fr; }
   }
 
@@ -1471,7 +1477,7 @@
       document.getElementById('heroSub').textContent = t('heroEmptySub');
     } else {
       todayCoverage.textContent = todayCoverageText(todayData.confidence, todayData.sampleSize);
-      todayData.cards.forEach(item => {
+      todayData.cards.filter(item => item.type !== 'energy').forEach(item => {
         const badge = trendBadge(item);
         const el = document.createElement('div');
         el.className = `icard icard--${item.type}`;

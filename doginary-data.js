@@ -62,6 +62,12 @@
       title: 'Somn har stor inverkan pa hundens valbefinnande',
       url: 'https://www.agria.se/hund/artiklar/forskning/somn-har-stor-inverkan-pa-hundens-valbefinnande/',
       supports: ['Publicerade dygnssiffror omfattar aven vila och tupplurar, inte bara nattsomn.']
+    },
+    'agria-exercise': {
+      organization: 'Agria',
+      title: 'Hundar far for lite motion - allvarligt halsohot',
+      url: 'https://news.cision.com/se/agria-djurforsakring/r/hundar-far-for-lite-motion---allvarligt-halsohot,c3555427',
+      supports: ['De flesta hundar mar bast av minst en till tva timmars sammanlagd motion varje dag; uteblivna promenader ar ett halsohot kopplat bland annat till overvikt.']
     }
   };
 
@@ -535,6 +541,26 @@
     };
   }
 
+  // Slår ihop svenska/engelska lagrade varianter av samma kategoriska värde
+  // (t.ex. "Låg" och "Low") till EN gemensam, svensk nyckel innan andelarna
+  // räknas ut. Utan detta kunde en fördelning bli felaktigt uppdelad och
+  // ge missvisande diagram/highlights bara för att språket växlats under
+  // loggningsperioden — se labelFor/ENERGI_LABELS m.fl. högre upp i filen.
+  function normalizedDistribution(period, field, labelMap) {
+    var counts = {};
+    var total = 0;
+    period.forEach(function (entry) {
+      var raw = entry && entry[field];
+      if (!raw) return;
+      var canonical = labelFor(labelMap, raw, 'sv') || raw;
+      counts[canonical] = (counts[canonical] || 0) + 1;
+      total += 1;
+    });
+    var result = {};
+    Object.keys(counts).forEach(function (key) { result[key] = counts[key] / total; });
+    return result;
+  }
+
   function computeMonth(entriesRaw, dogName, profile, lang) {
     lang = lang === 'en' ? 'en' : 'sv';
     var entries = normalizeEntries(entriesRaw);
@@ -543,8 +569,8 @@
     var name = subject(dogName, profile, lang);
     var walks = period.map(function (e) { return num(e.walkLength); }).filter(function (v) { return v !== null; });
     var weights = period.map(function (e) { return num(e.weight); }).filter(function (v) { return v !== null; });
-    var energyDist = distribution(period.map(function (e) { return e.energi; }));
-    var appetiteDist = distribution(period.map(function (e) { return e.aptit; }));
+    var energyDist = normalizedDistribution(period, 'energi', ENERGI_LABELS);
+    var appetiteDist = normalizedDistribution(period, 'aptit', APTIT_LABELS);
     var highlights = [lang === 'en' ? 'The report is based on ' + period.length + ' logged days.' : 'Rapporten bygger på ' + period.length + ' loggade dagar.'];
     var watch = [];
     var recommendations = [];
@@ -553,11 +579,11 @@
         ? 'The median walk was ' + Math.round(median(walks)) + ' minutes per logged day.'
         : 'Medianpromenaden var ' + Math.round(median(walks)) + ' minuter per loggad dag.');
     }
-    var energyMode = mode(period.map(function (e) { return e.energi; }));
-    if (energyMode) {
+    var energyModeCanonical = Object.keys(energyDist).sort(function (a, b) { return energyDist[b] - energyDist[a]; })[0];
+    if (energyModeCanonical) {
       highlights.push(lang === 'en'
-        ? 'The most commonly logged energy level was ' + labelFor(ENERGI_LABELS, energyMode, lang).toLowerCase() + '.'
-        : 'Vanligast loggade energinivå var ' + labelFor(ENERGI_LABELS, energyMode, lang).toLowerCase() + '.');
+        ? 'The most commonly logged energy level was ' + labelFor(ENERGI_LABELS, energyModeCanonical, lang).toLowerCase() + '.'
+        : 'Vanligast loggade energinivå var ' + labelFor(ENERGI_LABELS, energyModeCanonical, lang).toLowerCase() + '.');
     }
     if (weights.length >= 3) {
       var difference = weights[weights.length - 1] - weights[0];
@@ -567,6 +593,18 @@
       recommendations.push(lang === 'en'
         ? 'Track the weight trend over time and contact a vet if the change is unexpected or concerning.'
         : 'Följ viktens utveckling över tid och kontakta veterinär om förändringen är oväntad eller oroande.');
+    }
+    // Uteblivna promenader (explicit 0 minuter, inte bara ologgat) räknas
+    // och flaggas separat, eftersom promenadbrist är ett etablerat
+    // hälsohot (se agria-exercise-källan) och inte får gömmas i medianen.
+    var noWalkDays = period.filter(function (e) { return num(e.walkLength) === 0; }).length;
+    if (noWalkDays > 0) {
+      watch.push(lang === 'en'
+        ? 'No walk was logged on ' + noWalkDays + ' of the ' + period.length + ' logged days.'
+        : 'Ingen promenad loggades ' + noWalkDays + ' av de ' + period.length + ' loggade dagarna.');
+      recommendations.push(lang === 'en'
+        ? 'Most dogs do best with at least 1–2 hours of combined daily activity. If walks are regularly missed, look at whether that is by choice, routine, or the dog\u2019s condition.'
+        : 'De flesta hundar mår bäst av minst 1–2 timmars sammanlagd rörelse per dag. Om promenader ofta uteblir, se efter om det beror på val, rutin eller hundens tillstånd.');
     }
     if (period.length < ESTABLISHED_MIN_DAYS) {
       watch.push(lang === 'en'
@@ -578,6 +616,8 @@
       watch: watch,
       recommendations: recommendations,
       walkTrend: walks,
+      weightTrend: weights,
+      noWalkDays: noWalkDays,
       loggedDays: period.length,
       walkMedian: median(walks),
       firstWeight: weights.length >= 3 ? weights[0] : null,
@@ -587,7 +627,8 @@
       appetiteDistribution: appetiteDist,
       confidence: confidenceFor(period.length),
       profileContext: profileContext(profile),
-      dogName: name
+      dogName: name,
+      sourceIds: noWalkDays > 0 ? ['agria-exercise'] : []
     };
   }
 
@@ -700,9 +741,63 @@
           sourceIds: ['evidensia-fatigue'], isProductRule: true });
       }
     }
+    // Ensam dålig aptit (utan låg energi eller symptom, som redan täcks av
+    // reglerna ovan) missades tidigare helt i varningslistan — den syntes
+    // bara som ett kort under "Dagens insikter". Hundens hälsa ska alltid
+    // uppmärksammas här, så en enstaka dag flaggas som en mild observation.
+    if (latestPoorAppetite && !latestLow && !latestSymptoms) {
+      warnings.push({
+        severity: 'observation',
+        title: lang === 'en' ? 'Reduced appetite today' : 'Sämre aptit idag',
+        text: lang === 'en'
+          ? 'A single day of reduced appetite is usually not a cause for concern, but keep logging so a pattern can be seen. Contact a vet if ' + name + ' also seems unwell, stops eating for more than a day, or the poor appetite continues.'
+          : 'En enstaka dag med sämre aptit är oftast inget att oroa sig för, men fortsätt logga så att ett mönster kan upptäckas. Kontakta veterinär om ' + name + ' även verkar sjuk, slutar äta i mer än ett dygn, eller om den dåliga aptiten fortsätter.',
+        triggers: ['poor_appetite'], sampleSize: 1,
+        profileContext: profileContext(profile), sourceIds: [], isProductRule: true
+      });
+    }
+
+    // Uteblivna promenader: 0 loggade promenadminuter är ett medvetet
+    // sparat värde (se buildDailyEntries-kommentaren högst upp i filen),
+    // inte bara saknad data — så det går att flagga tryggt utan att skapa
+    // falska varningar för dagar som helt enkelt inte loggats än.
+    var latestNoWalk = num(latest.walkLength) === 0;
+    var recent3NoWalk = recent3.length === 3 && recent3.every(function (e) { return num(e.walkLength) === 0; });
+    if (recent3NoWalk) {
+      warnings.push({
+        severity: 'watch',
+        title: lang === 'en' ? 'No walk logged for three days in a row' : 'Ingen promenad loggad tre dagar i rad',
+        text: lang === 'en'
+          ? 'No walk has been logged for ' + name + ' for three days in a row. Most dogs need regular daily activity for their physical and mental health — check whether this reflects reluctance, pain, or stiffness, and contact a vet if ' + name + ' seems unwilling or unable to walk.'
+          : 'Ingen promenad har loggats för ' + name + ' tre dagar i rad. De flesta hundar behöver regelbunden daglig rörelse för både fysisk och mental hälsa — se efter om det beror på ovilja, smärta eller stelhet, och kontakta veterinär om ' + name + ' verkar ovillig eller oförmögen att gå.',
+        triggers: ['no_walk_3_days'], sampleSize: 3,
+        profileContext: profileContext(profile), sourceIds: ['agria-exercise'], isProductRule: true
+      });
+    } else if (latestNoWalk) {
+      warnings.push({
+        severity: 'observation',
+        title: lang === 'en' ? 'No walk logged today' : 'Ingen promenad loggad idag',
+        text: lang === 'en'
+          ? 'No walk was logged for ' + name + ' today. An occasional rest day is normal, but regular daily activity matters for most dogs\u2019 wellbeing — keep an eye on whether this repeats.'
+          : 'Ingen promenad loggades för ' + name + ' idag. En enstaka vilodag är normalt, men regelbunden daglig rörelse har betydelse för de flesta hundars välmående — håll koll på om det upprepas.',
+        triggers: ['no_walk'], sampleSize: 1,
+        profileContext: profileContext(profile), sourceIds: ['agria-exercise'], isProductRule: true
+      });
+    }
+
     warnings.forEach(function (warning) {
       if (!warning.confidence) warning.confidence = confidenceFor(warning.sampleSize || 0);
       warning.sourceIds = unique(warning.sourceIds || []);
+    });
+    // Hundens hälsa är alltid det viktigaste: sortera så att "kontakta
+    // veterinär" och "håll uppsikt" alltid visas före lindrigare
+    // observationer, oavsett i vilken ordning reglerna ovan råkade lägga
+    // till dem.
+    var severityRank = { contact_vet: 0, watch: 1, observation: 2 };
+    warnings.sort(function (a, b) {
+      var ra = severityRank[a.severity] != null ? severityRank[a.severity] : 3;
+      var rb = severityRank[b.severity] != null ? severityRank[b.severity] : 3;
+      return ra - rb;
     });
     return warnings;
   }

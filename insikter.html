@@ -405,11 +405,65 @@
   .dot--teal{ background: var(--teal); }
   .dot--warn{ background: var(--warn); }
 
+  .monthchart-block{
+    margin-top: 18px;
+  }
+
+  .monthchart-label{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 0 0 6px;
+  }
+
   .monthchart{
     margin-top: 4px;
   }
 
   .monthchart svg{ width: 100%; height: 64px; display: block; }
+
+  /* ---------- Fördelningsstaplar (energi/aptit över perioden) ---------- */
+
+  .monthdist-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+  }
+
+  .distbar-block{ min-width: 0; }
+
+  .distbar__track{
+    display: flex;
+    width: 100%;
+    height: 14px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--surface-2);
+  }
+
+  .distbar__seg{ height: 100%; display: block; }
+  .distbar__seg + .distbar__seg{ border-left: 1px solid rgba(255,255,255,.55); }
+
+  .distbar__legend{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .distbar__legend-item{ display: inline-flex; align-items: center; gap: 5px; }
+
+  .distbar__dot{
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 420px){
+    .monthdist-grid{ grid-template-columns: 1fr; }
+  }
 
   .coverage-note{
     font-size: 12.5px;
@@ -897,6 +951,7 @@
         <li data-i18n="aboutLi2"><strong>Sömn</strong> loggas som nattsömn, men vetenskapliga sömnsiffror (8–16 timmar/dygn för en vuxen hund) gäller hela dygnet inklusive tupplurar. Därför jämförs sömn mot hundens eget snitt istället för en fast gräns.</li>
         <li data-i18n="aboutLi3"><strong>Motion:</strong> de flesta hundar mår bäst av minst 1–2 timmars sammanlagd rörelse per dag. Eftersom bara en promenad loggas per dag är det ett riktmärke att ha i bakhuvudet, inte något appen räknar automatiskt på.</li>
         <li data-i18n="aboutLi4"><strong>Varningen om "3 dagar med låg energi"</strong> är en gräns vi satt själva som en försiktig påminnelse — inte ett medicinskt fastställt tal. Kontakta veterinär tidigare om tröttheten kommer plötsligt eller kraftigt, eller följs av t.ex. minskad aptit, kräkningar, diarré eller onormala törst-/kissvanor.</li>
+        <li data-i18n="aboutLi5"><strong>Sämre aptit och uteblivna promenader</strong> flaggas alltid, även en enstaka gång — som en mild observation vid ett enskilt tillfälle, och som en tydligare varning om det upprepas tre dagar i rad. Detta för att hundens hälsa alltid ska uppmärksammas, inte bara vid stora förändringar.</li>
       </ul>
       <p class="infobox__sources"><span data-i18n="sourcesLabel">Källor:</span> <a href="https://www.agria.se/hund/artiklar/forskning/somn-har-stor-inverkan-pa-hundens-valbefinnande/" target="_blank" rel="noopener" data-i18n="source1">Agria — hundens sömnbehov</a> · <a href="https://news.cision.com/se/agria-djurforsakring/r/hundar-far-for-lite-motion---allvarligt-halsohot,c3555427" target="_blank" rel="noopener" data-i18n="source2">Agria Vårdguide — motionsbehov</a> · <a href="https://evidensia.se/djurvardguiden/" target="_blank" rel="noopener" data-i18n="source3">Evidensia — djurvårdsguide</a></p>
     </div>
@@ -964,6 +1019,7 @@
       aboutLi2: '<strong>Sleep</strong> is logged as night sleep, but scientific sleep figures (8–16 hours/day for an adult dog) apply to the whole day including naps. That’s why sleep is compared against the dog’s own average instead of a fixed limit.',
       aboutLi3: '<strong>Exercise:</strong> most dogs do best with at least 1–2 hours of combined activity per day. Since only one walk is logged per day, this is a benchmark to keep in mind, not something the app calculates automatically.',
       aboutLi4: 'The <strong>"3 days of low energy" warning</strong> is a limit we’ve set ourselves as a cautious reminder — not a medically established figure. Contact a vet sooner if the fatigue is sudden or severe, or is followed by e.g. reduced appetite, vomiting, diarrhoea, or unusual thirst/urination habits.',
+      aboutLi5: '<strong>Reduced appetite and missed walks</strong> are always flagged, even a single time — as a mild observation for one occasion, and as a clearer warning if it repeats three days in a row. This is so your dog’s health is always kept in view, not only at large changes.',
       sourcesLabel: 'Sources:',
       source1: 'Agria — dogs’ need for sleep',
       source2: 'Agria Care Guide — exercise needs',
@@ -1018,6 +1074,11 @@
       monthRecommendationEmpty: 'Carry on as usual — everything looks stable.',
       monthCoverage: (n, low) => `${n} days logged during this period${low ? ' — low data coverage, the patterns below are preliminary.' : '.'}`,
       monthChartAria: median => `Walk length over the logged period, median ${median} minutes`,
+      monthWalkChartLabel: 'Walk length (minutes)',
+      monthWeightChartLabel: 'Weight (kg)',
+      monthWeightChartAria: kg => `Weight over the logged period, latest measurement ${kg} kg`,
+      monthEnergyDistLabel: 'Energy level, share of logged days',
+      monthAppetiteDistLabel: 'Appetite, share of logged days',
       warningsEmpty: 'No clear changes have been detected in the logged information. This is not a medical assessment.',
       rewardsEmpty: 'Log a few days in a row to start collecting rewards.',
       loadError: 'Couldn’t load your dog’s data right now — please reload the page.',
@@ -1038,6 +1099,7 @@
       aboutLi2: '<strong>Sömn</strong> loggas som nattsömn, men vetenskapliga sömnsiffror (8–16 timmar/dygn för en vuxen hund) gäller hela dygnet inklusive tupplurar. Därför jämförs sömn mot hundens eget snitt istället för en fast gräns.',
       aboutLi3: '<strong>Motion:</strong> de flesta hundar mår bäst av minst 1–2 timmars sammanlagd rörelse per dag. Eftersom bara en promenad loggas per dag är det ett riktmärke att ha i bakhuvudet, inte något appen räknar automatiskt på.',
       aboutLi4: '<strong>Varningen om "3 dagar med låg energi"</strong> är en gräns vi satt själva som en försiktig påminnelse — inte ett medicinskt fastställt tal. Kontakta veterinär tidigare om tröttheten kommer plötsligt eller kraftigt, eller följs av t.ex. minskad aptit, kräkningar, diarré eller onormala törst-/kissvanor.',
+      aboutLi5: '<strong>Sämre aptit och uteblivna promenader</strong> flaggas alltid, även en enstaka gång — som en mild observation vid ett enskilt tillfälle, och som en tydligare varning om det upprepas tre dagar i rad. Detta för att hundens hälsa alltid ska uppmärksammas, inte bara vid stora förändringar.',
       sourcesLabel: 'Källor:',
       source1: 'Agria — hundens sömnbehov',
       source2: 'Agria Vårdguide — motionsbehov',
@@ -1092,6 +1154,11 @@
       monthRecommendationEmpty: 'Fortsätt som vanligt — allt ser stabilt ut.',
       monthCoverage: (n, low) => `${n} dagar loggade under den här perioden${low ? ' — låg datatäckning, mönstren nedan är preliminära.' : '.'}`,
       monthChartAria: median => `Promenadlängd över den loggade perioden, median ${median} minuter`,
+      monthWalkChartLabel: 'Promenadlängd (minuter)',
+      monthWeightChartLabel: 'Vikt (kg)',
+      monthWeightChartAria: kg => `Vikt över den loggade perioden, senaste mätningen ${kg} kg`,
+      monthEnergyDistLabel: 'Energinivå, andel av loggade dagar',
+      monthAppetiteDistLabel: 'Aptit, andel av loggade dagar',
       warningsEmpty: 'Inga tydliga förändringar har upptäckts i den information som har loggats. Detta är inte en medicinsk bedömning.',
       rewardsEmpty: 'Logga några dagar i rad för att börja samla belöningar.',
       loadError: 'Kunde inte hämta din hunds data just nu — ladda om sidan.',
@@ -1221,6 +1288,25 @@
       </svg>
     `;
     container.appendChild(wrap);
+  }
+
+  // Vågrät, staplad fördelningsstapel (uppgift: diagram där det är
+  // möjligt) för kategoriska värden som energi/aptit över perioden.
+  // `dist` är redan språk-normaliserad av DoginaryData.computeMonth
+  // (samma svenska nyckel oavsett vilket språk raden loggades på).
+  function renderDistBar(containerId, blockId, dist, order, translateLabel, colors){
+    const container = document.getElementById(containerId);
+    const block = document.getElementById(blockId);
+    if (!container || !block) return;
+    const keys = order.filter(k => dist[k] > 0);
+    if (!keys.length) return;
+    block.hidden = false;
+    const segs = keys.map(k => `<span class="distbar__seg" style="width:${(dist[k] * 100).toFixed(1)}%;background:${colors[k]}"></span>`).join('');
+    const legend = keys.map(k => `<span class="distbar__legend-item"><span class="distbar__dot" style="background:${colors[k]}"></span>${esc(translateLabel(k))} · ${Math.round(dist[k] * 100)}%</span>`).join('');
+    container.innerHTML = `
+      <div class="distbar__track" role="img" aria-label="${esc(keys.map(k => translateLabel(k) + ' ' + Math.round(dist[k] * 100) + '%').join(', '))}">${segs}</div>
+      <div class="distbar__legend">${legend}</div>
+    `;
   }
 
   function renderSourceLinks(sourceIds, isProductRule){
@@ -1418,14 +1504,34 @@
               <ul>${monthData.recommendations.length ? list(monthData.recommendations, 'dot--rust') : `<li><span class="dot dot--rust"></span>${t('monthRecommendationEmpty')}</li>`}</ul>
             </div>
           </div>
-          <div class="monthchart" id="monthChart"></div>
+          <div class="monthchart-block" id="monthChartBlock" hidden>
+            <p class="monthchart-label">${t('monthWalkChartLabel')}</p>
+            <div class="monthchart" id="monthChart"></div>
+          </div>
+          <div class="monthchart-block" id="monthWeightBlock" hidden>
+            <p class="monthchart-label">${t('monthWeightChartLabel')}</p>
+            <div class="monthchart" id="monthWeightChart"></div>
+          </div>
+          <div class="monthdist-grid">
+            <div class="distbar-block" id="monthEnergyDistBlock" hidden>
+              <p class="monthchart-label">${t('monthEnergyDistLabel')}</p>
+              <div id="monthEnergyDist"></div>
+            </div>
+            <div class="distbar-block" id="monthAppetiteDistBlock" hidden>
+              <p class="monthchart-label">${t('monthAppetiteDistLabel')}</p>
+              <div id="monthAppetiteDist"></div>
+            </div>
+          </div>
           <p class="coverage-note ${lowCoverage ? 'coverage-note--low' : ''}">${t('monthCoverage')(monthData.loggedDays, lowCoverage)}</p>
+          ${renderSourceLinks(monthData.sourceIds, false)}
         </div>
       `;
       if (monthData.walkTrend.length > 1) {
+        const monthChartBlock = document.getElementById('monthChartBlock');
         const monthChart = document.getElementById('monthChart');
         const mv = monthData.walkTrend.filter(v => Number.isFinite(v));
         if (mv.length > 1) {
+          monthChartBlock.hidden = false;
           const mw = 560, mh = 64, mpad = 6;
           const linePath = sparklinePath(mv, mw, mh, mpad);
           const areaPath = `${linePath} L${mw - mpad},${mh - mpad} L${mpad},${mh - mpad} Z`;
@@ -1437,6 +1543,28 @@
           `;
         }
       }
+      // Viktdiagram — bara om minst 3 mätningar är loggade under perioden
+      // (samma tröskel som DoginaryData redan använder för viktjämförelser).
+      if (monthData.weightTrend.length >= 3) {
+        const weightBlock = document.getElementById('monthWeightBlock');
+        const weightChart = document.getElementById('monthWeightChart');
+        const wv = monthData.weightTrend.filter(v => Number.isFinite(v));
+        if (wv.length >= 3) {
+          weightBlock.hidden = false;
+          const ww = 560, wh = 64, wpad = 6;
+          const linePath = sparklinePath(wv, ww, wh, wpad);
+          const areaPath = `${linePath} L${ww - wpad},${wh - wpad} L${wpad},${wh - wpad} Z`;
+          const latestW = wv[wv.length - 1];
+          weightChart.innerHTML = `
+            <svg viewBox="0 0 ${ww} ${wh}" preserveAspectRatio="none" role="img" aria-label="${esc(t('monthWeightChartAria')(latestW.toFixed(1)))}">
+              <path d="${areaPath}" fill="#33505A" opacity="0.12"/>
+              <path d="${linePath}" fill="none" stroke="#33505A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          `;
+        }
+      }
+      renderDistBar('monthEnergyDist', 'monthEnergyDistBlock', monthData.energyDistribution, ['Låg', 'Normal', 'Hög'], v => DoginaryData.displayEnergi(v, lang), { 'Låg': '#8A6A1E', 'Normal': '#33505A', 'Hög': '#A15C38' });
+      renderDistBar('monthAppetiteDist', 'monthAppetiteDistBlock', monthData.appetiteDistribution, ['Dålig', 'Normal', 'Stark'], v => DoginaryData.displayAptit(v, lang), { 'Dålig': '#9C3B2C', 'Normal': '#33505A', 'Stark': '#4B6B3E' });
     }
 
     // ---- Varningar ----

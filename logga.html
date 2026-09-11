@@ -53,7 +53,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg: #ECE6D9;
@@ -170,6 +170,30 @@
     .crossnav-right{ margin-left:auto; }
     header.top{ text-align:center; }
     header.top p.eyebrow{ justify-content:center; }
+  }
+
+  /* ---------- Enhetlig text i toppmenyn (laptop/desktop), matchar index.html/styles.css ---------- */
+  @media (min-width:901px){
+    .crossnav-links a{
+      font-family:"DM Sans",sans-serif;
+      font-size:14px;
+      font-weight:600;
+      color:#14212b;
+      text-decoration:none;
+      letter-spacing:.01em;
+    }
+    .crossnav-links a:hover{
+      color:#1f6f95;
+      text-decoration:none;
+    }
+    .crossnav-links a[aria-current="page"]{
+      color:#e9a84b;
+      font-weight:700;
+      text-shadow:0 0 12px rgba(233,168,75,.45);
+    }
+    .crossnav-right .lang-switch{
+      margin-left:34px;
+    }
   }
 
   *{ box-sizing: border-box; }

@@ -134,6 +134,7 @@
     display:flex; align-items:center; justify-content:center;
     transition:background .15s ease;
   }
+  .lang-btn[hidden]{ display:none; }
   .lang-btn:hover, .lang-btn:focus-visible{ background:var(--hair); outline:none; }
   .flag-icon{ border-radius:3px; display:block; }
 
@@ -174,7 +175,7 @@
 
   /* ---------- Enhetlig text i toppmenyn (laptop/desktop), matchar index.html/styles.css ---------- */
   @media (min-width:901px){
-    .crossnav-links a{
+    .crossnav-right .crossnav-links a{
       font-family:"DM Sans",sans-serif;
       font-size:14px;
       font-weight:600;
@@ -182,11 +183,11 @@
       text-decoration:none;
       letter-spacing:.01em;
     }
-    .crossnav-links a:hover{
+    .crossnav-right .crossnav-links a:hover{
       color:#1f6f95;
       text-decoration:none;
     }
-    .crossnav-links a[aria-current="page"]{
+    .crossnav-right .crossnav-links a[aria-current="page"]{
       color:#e9a84b;
       font-weight:700;
       text-shadow:0 0 12px rgba(233,168,75,.45);

@@ -66,6 +66,12 @@
     --warn-soft: #F1DCD5;
     --reward: #4B6B3E;
     --reward-soft: #DEE7D5;
+    --care: #6B4E8A;
+    --care-soft: #E7DFEE;
+    --activity: #2B5C7A;
+    --activity-soft: #DAE5EA;
+    --poop: #8A5A2E;
+    --poop-soft: #EFE1CE;
     --radius-lg: 22px;
     --radius-sm: 12px;
   }
@@ -336,6 +342,9 @@
   .icard--walk .icard__icon{ background: var(--teal-soft); color: var(--teal); }
   .icard--food .icard__icon{ background: var(--reward-soft); color: var(--reward); }
   .icard--sleep .icard__icon{ background: #E2DEEF; color: #4E4272; }
+  .icard--bodycare .icard__icon{ background: var(--care-soft); color: var(--care); }
+  .icard--activity .icard__icon{ background: var(--activity-soft); color: var(--activity); }
+  .icard--poop .icard__icon{ background: var(--poop-soft); color: var(--poop); }
 
   .trend{
     font-size: 12px;
@@ -1230,6 +1239,23 @@
       warningsEmpty: 'No clear changes have been detected in the logged information. This is not a medical assessment.',
       rewardsEmpty: 'Log a few days in a row to start collecting rewards.',
       loadError: 'Couldn’t load your dog’s data right now — please reload the page.',
+      bodyCareTitle: 'Body care',
+      careBathLabel: 'Bath',
+      careBrushLabel: 'Brushing',
+      careClawLabel: 'Nails',
+      careToday: 'Today',
+      careYesterday: 'Yesterday',
+      careDaysAgo: n => `${n} days ago`,
+      careNeverLogged: 'Not logged yet',
+      careBodyCareFreq: n => `Body care logged ${n} time${n === 1 ? '' : 's'} in the last 30 days.`,
+      careBodyCareFreqZero: 'No body care logged in the last 30 days.',
+      activityTitle: 'Activity',
+      activityLearnLabel: 'Training',
+      activityPlayLabel: 'Play',
+      loggedDaysOf: (n, total) => `Logged ${n} of the last ${total} days.`,
+      poopTitle: 'Poop',
+      poopLabel: 'Latest',
+      poopSummary7d: (good, loose, hard, missing) => `Last 7 days: ${good} good, ${loose} loose, ${hard} hard${missing > 0 ? `, ${missing} not logged` : ''}.`,
     },
     sv: {
       navWeather: 'Väder', navDiary: 'Dagbok', navInsights: 'Insikter', navGuidelines: 'Riktlinjer', navHealth: 'Hälsocenter',
@@ -1310,6 +1336,23 @@
       warningsEmpty: 'Inga tydliga förändringar har upptäckts i den information som har loggats. Detta är inte en medicinsk bedömning.',
       rewardsEmpty: 'Logga några dagar i rad för att börja samla belöningar.',
       loadError: 'Kunde inte hämta din hunds data just nu — ladda om sidan.',
+      bodyCareTitle: 'Kroppsvård',
+      careBathLabel: 'Bad',
+      careBrushLabel: 'Borstning',
+      careClawLabel: 'Klor',
+      careToday: 'Idag',
+      careYesterday: 'Igår',
+      careDaysAgo: n => `${n} dagar sedan`,
+      careNeverLogged: 'Inte loggat än',
+      careBodyCareFreq: n => `Kroppsvård loggad ${n} gång${n === 1 ? '' : 'er'} senaste 30 dagarna.`,
+      careBodyCareFreqZero: 'Ingen kroppsvård loggad senaste 30 dagarna.',
+      activityTitle: 'Aktivitet',
+      activityLearnLabel: 'Träning',
+      activityPlayLabel: 'Lek',
+      loggedDaysOf: (n, total) => `Loggat ${n} av de ${total} senaste dagarna.`,
+      poopTitle: 'Bajs',
+      poopLabel: 'Senast',
+      poopSummary7d: (good, loose, hard, missing) => `Senaste 7 dagarna: ${good} bra, ${loose} lös, ${hard} hård${missing > 0 ? `, ${missing} ej loggade` : ''}.`,
     }
   };
 
@@ -1349,7 +1392,10 @@
     energy: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg>',
     walk: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="2.4"/><circle cx="15" cy="4.5" r="2"/><circle cx="19" cy="9" r="1.8"/><ellipse cx="10.5" cy="15" rx="5.4" ry="4.3"/></svg>',
     food: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11a8 8 0 0 1 16 0"/><path d="M3 11h18v2a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2z"/></svg>',
-    sleep: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>'
+    sleep: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>',
+    bodycare: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/><path d="M19.2 15l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1z"/></svg>',
+    activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5c-2.3 3-2.3 14 0 17M3.5 12c3-2.3 14-2.3 17 0"/></svg>',
+    poop: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2c-1.3 0-2.2 1-2 2.2-1.5.2-2.5 1.5-2.2 3-1.4.4-2.2 1.7-1.8 3.1-1.3.8-1.7 2.5-.8 3.8C4.7 17.6 6.5 19 8.7 19h6.6c2.2 0 4-1.4 3.5-3.7.9-1.3.5-3-.8-3.8.4-1.4-.4-2.7-1.8-3.1.3-1.5-.7-2.8-2.2-3 .2-1.2-.7-2.2-2-2.2z"/></svg>'
   };
 
   // Etikett + ikon för varje varningsnivå (uppgift 8) — text + färg +
@@ -1547,6 +1593,187 @@
     return t('todayCoverageEstablished')(sampleSize);
   }
 
+  /* ------------------------------------------------------------------
+     Kroppsvård / Aktivitet / Bajs — tre extra kort i "Dagens insikter".
+     Bad, borstning, kloklippning, lek och träning ingår inte i de
+     dagliga strukturerade fälten som DoginaryData.buildDailyEntries slår
+     ihop (den filen rör vi inte här) — de finns bara som enskilda
+     snabbloggnings-poster ({ type, detail, isoDate }) i rådatan. De här
+     korten läser därför rådatan direkt, precis som logga.html:s egna
+     snabbloggskort sparar den, och samlar den på ett översiktligt sätt.
+     Ingen ny information hittas på: allt som visas är sådant som redan
+     loggats, bara sammanställt (senast loggat, hur ofta, vilket utfall).
+  ------------------------------------------------------------------ */
+
+  const CARE_OPTION_LABELS_EN = {
+    bath:  { 'Helbad': 'Full bath', 'Snabbdusch': 'Quick rinse', 'Torrschampo': 'Dry shampoo' },
+    brush: { 'Kort borstning': 'Quick brush', 'Grundlig borstning': 'Thorough brush' },
+    claw:  { 'Klippta': 'Trimmed', 'Filade': 'Filed' },
+    learn: { 'Gick bra': 'Went well', 'Blandat': 'Mixed', 'Utmanande': 'Challenging' },
+    play:  { 'Mindre än vanligt': 'Less than usual', 'Som vanligt': 'As usual', 'Mer än vanligt': 'More than usual' },
+    poop:  { 'Bra': 'Good', 'Lös': 'Loose', 'Hård': 'Hard' }
+  };
+  // Rådatan sparas alltid på svenska (se logga.html) — bara visningstexten
+  // växlar med språket, på samma sätt som quicklogOptionDisplay() där.
+  function careOptionLabel(type, svValue){
+    if (!svValue) return '';
+    const table = CARE_OPTION_LABELS_EN[type];
+    return (lang === 'en' && table && table[svValue]) ? table[svValue] : svValue;
+  }
+
+  function careTodayISO(){
+    return new Date().toLocaleDateString('sv-SE'); // ÅÅÅÅ-MM-DD, samma som logga.html
+  }
+  function careParseISO(iso){
+    if (!iso) return null;
+    const p = String(iso).split('-').map(Number);
+    if (p.length !== 3 || p.some(n => !Number.isFinite(n))) return null;
+    return new Date(p[0], p[1] - 1, p[2]);
+  }
+  function careISOFromDate(d){
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  function careDaysAgo(iso, todayIso){
+    const d = careParseISO(iso), t0 = careParseISO(todayIso);
+    if (!d || !t0) return null;
+    return Math.round((t0 - d) / 86400000);
+  }
+  function careISONDaysAgo(todayIso, n){
+    const d = careParseISO(todayIso);
+    if (!d) return null;
+    d.setDate(d.getDate() - n);
+    return careISOFromDate(d);
+  }
+  // Senaste posten av given typ (kan förekomma flera ggr/dag — "time" avgör
+  // ordning inom samma dag).
+  function careLatestByTypes(rawEntries, types){
+    let best = null;
+    (rawEntries || []).forEach(e => {
+      if (!e || typeof e !== 'object' || !e.isoDate || types.indexOf(e.type) === -1) return;
+      if (!best || e.isoDate > best.isoDate || (e.isoDate === best.isoDate && (e.time || '') >= (best.time || ''))){
+        best = e;
+      }
+    });
+    return best;
+  }
+  function careDaysLoggedByTypesSince(rawEntries, types, sinceIso){
+    const days = {};
+    (rawEntries || []).forEach(e => {
+      if (e && e.isoDate && types.indexOf(e.type) !== -1 && e.isoDate >= sinceIso) days[e.isoDate] = true;
+    });
+    return Object.keys(days).length;
+  }
+  function careCountByTypesSince(rawEntries, types, sinceIso){
+    return (rawEntries || []).filter(e => e && e.isoDate && types.indexOf(e.type) !== -1 && e.isoDate >= sinceIso).length;
+  }
+  function careRecencyText(daysAgo){
+    if (daysAgo === 0) return t('careToday');
+    if (daysAgo === 1) return t('careYesterday');
+    return t('careDaysAgo')(daysAgo);
+  }
+  // En rad i kortets punktlista, t.ex. "🛁 Bad: Idag (Snabbdusch)".
+  function careLine(emoji, label, entry, todayIso){
+    if (!entry) return `${emoji} ${esc(label)}: ${esc(t('careNeverLogged'))}`;
+    const daysAgo = careDaysAgo(entry.isoDate, todayIso);
+    const detail = careOptionLabel(entry.type, entry.detail);
+    return `${emoji} ${esc(label)}: ${esc(careRecencyText(daysAgo))}${detail ? ` (${esc(detail)})` : ''}`;
+  }
+  // Enkel "hur färskt" -märkning, återanvänder samma gröna/neutrala/röda
+  // toner som trend-badgen i övriga kort — men betyder här bara "hur
+  // länge sedan", inte en jämförelse mot ett eget snitt.
+  function careBadgeFor(daysAgo){
+    if (daysAgo == null) return { cls: 'trend--flat', text: t('careNeverLogged') };
+    if (daysAgo <= 2) return { cls: 'trend--up', text: careRecencyText(daysAgo) };
+    if (daysAgo <= 13) return { cls: 'trend--flat', text: careRecencyText(daysAgo) };
+    return { cls: 'trend--down', text: careRecencyText(daysAgo) };
+  }
+
+  function buildBodyCareCard(rawEntries, todayIso){
+    const bath = careLatestByTypes(rawEntries, ['bath']);
+    const brush = careLatestByTypes(rawEntries, ['brush']);
+    const claw = careLatestByTypes(rawEntries, ['claw']);
+    const overall = careLatestByTypes(rawEntries, ['bath', 'brush', 'claw']);
+    const overallDaysAgo = overall ? careDaysAgo(overall.isoDate, todayIso) : null;
+    const since30 = careISONDaysAgo(todayIso, 29);
+    const count30 = careCountByTypesSince(rawEntries, ['bath', 'brush', 'claw'], since30);
+    return {
+      type: 'bodycare',
+      titleKey: 'bodyCareTitle',
+      badge: careBadgeFor(overallDaysAgo),
+      lines: [
+        careLine('🛁', t('careBathLabel'), bath, todayIso),
+        careLine('🪮', t('careBrushLabel'), brush, todayIso),
+        careLine('💅', t('careClawLabel'), claw, todayIso)
+      ],
+      meta: count30 > 0 ? t('careBodyCareFreq')(count30) : t('careBodyCareFreqZero')
+    };
+  }
+
+  function buildActivityCard(rawEntries, todayIso){
+    const learn = careLatestByTypes(rawEntries, ['learn']);
+    const play = careLatestByTypes(rawEntries, ['play']);
+    const overall = careLatestByTypes(rawEntries, ['learn', 'play']);
+    const overallDaysAgo = overall ? careDaysAgo(overall.isoDate, todayIso) : null;
+    const since7 = careISONDaysAgo(todayIso, 6);
+    const loggedDays7 = careDaysLoggedByTypesSince(rawEntries, ['learn', 'play'], since7);
+    return {
+      type: 'activity',
+      titleKey: 'activityTitle',
+      badge: careBadgeFor(overallDaysAgo),
+      lines: [
+        careLine('🎓', t('activityLearnLabel'), learn, todayIso),
+        careLine('🎾', t('activityPlayLabel'), play, todayIso)
+      ],
+      meta: t('loggedDaysOf')(loggedDays7, 7)
+    };
+  }
+
+  function buildPoopCard(rawEntries, todayIso){
+    const latest = careLatestByTypes(rawEntries, ['poop']);
+    const daysAgo = latest ? careDaysAgo(latest.isoDate, todayIso) : null;
+    const since7 = careISONDaysAgo(todayIso, 6);
+    const loggedDays7 = careDaysLoggedByTypesSince(rawEntries, ['poop'], since7);
+    const counts = { 'Bra': 0, 'Lös': 0, 'Hård': 0 };
+    (rawEntries || []).forEach(e => {
+      if (e && e.type === 'poop' && e.isoDate && e.isoDate >= since7 && counts.hasOwnProperty(e.detail)) counts[e.detail]++;
+    });
+    const missingDays = Math.max(0, 7 - loggedDays7);
+    // Badge: om senaste dygnets bajs var löst/hårt lyfts det fram istället
+    // för bara "idag", eftersom det är den mer relevanta informationen —
+    // men detta är en beskrivning, inte samma varningsregel som redan
+    // beräknas separat i Varningar-sektionen.
+    let badge;
+    if (!latest){
+      badge = { cls: 'trend--flat', text: t('careNeverLogged') };
+    } else if (daysAgo != null && daysAgo <= 1 && counts['Hård'] + counts['Lös'] > 0 && ['Lös', 'Hård'].indexOf(latest.detail) !== -1){
+      badge = { cls: 'trend--down', text: careOptionLabel('poop', latest.detail) };
+    } else {
+      badge = { cls: daysAgo != null && daysAgo <= 2 ? 'trend--up' : 'trend--flat', text: careRecencyText(daysAgo) };
+    }
+    return {
+      type: 'poop',
+      titleKey: 'poopTitle',
+      badge,
+      lines: [ careLine('💩', t('poopLabel'), latest, todayIso) ],
+      meta: t('poopSummary7d')(counts['Bra'], counts['Lös'], counts['Hård'], missingDays)
+    };
+  }
+
+  function renderCareCard(card){
+    const el = document.createElement('div');
+    el.className = `icard icard--${card.type}`;
+    el.innerHTML = `
+      <div class="icard__top">
+        <span class="icard__icon">${icons[card.type] || ''}</span>
+        <span class="trend ${card.badge.cls}">${esc(card.badge.text)}</span>
+      </div>
+      <span class="icard__label">${esc(t(card.titleKey))}</span>
+      <ul class="icard__text">${card.lines.map(l => `<li>${l}</li>`).join('')}</ul>
+      <p class="icard__coverage">${esc(card.meta)}</p>
+    `;
+    return el;
+  }
+
   async function renderInsights(dogName, rawEntries, profile){
     lastDogName = dogName;
     lastProfile = profile;
@@ -1594,6 +1821,16 @@
         todayGrid.appendChild(el);
       });
       wireWhyToggles(todayGrid);
+
+      // Kroppsvård / Aktivitet / Bajs — extra kort som samlar snabbloggens
+      // bad/borstning/klo, träning/lek respektive bajs på ett översiktligt
+      // sätt (se byggfunktionerna ovan för detaljer).
+      const careTodayIso = careTodayISO();
+      [
+        buildBodyCareCard(rawEntries, careTodayIso),
+        buildActivityCard(rawEntries, careTodayIso),
+        buildPoopCard(rawEntries, careTodayIso)
+      ].forEach(card => todayGrid.appendChild(renderCareCard(card)));
     }
 
     // ---- Varningar (beräknas här så att hero-texten ovan aldrig

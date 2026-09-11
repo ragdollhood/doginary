@@ -299,6 +299,36 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       <p id="sleepText"></p>
       <a class="src-link" id="sleepSrc" target="_blank" rel="noopener"></a>
     </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">💅</span>
+      <h3 data-i18n="nailsTitle">Kloklippning</h3>
+      <p id="nailsText"></p>
+      <a class="src-link" id="nailsSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🧼</span>
+      <h3 data-i18n="coatTitle">Pälsvård</h3>
+      <p id="coatText"></p>
+      <a class="src-link" id="coatSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🦷</span>
+      <h3 data-i18n="dentalTitle">Tandvård</h3>
+      <p id="dentalText"></p>
+      <a class="src-link" id="dentalSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">⚖️</span>
+      <h3 data-i18n="weightTitle">Vikt</h3>
+      <p id="weightText"></p>
+      <a class="src-link" id="weightSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">👂</span>
+      <h3 data-i18n="earsTitle">Öronvård</h3>
+      <p id="earsText"></p>
+      <a class="src-link" id="earsSrc" target="_blank" rel="noopener"></a>
+    </div>
   </div>
 
   <div class="watch-section">
@@ -382,6 +412,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       sizeOverrideLabel: 'Size', sizeSmall: 'Small', sizeMedium: 'Medium', sizeLarge: 'Large', sizeGiant: 'Giant',
       profileHint: 'We\u2019ve guessed the life stage and size from your profile — feel free to adjust if it\u2019s not quite right.',
       exerciseTitle: 'Exercise', aloneTitle: 'Alone time', foodTitle: 'Food', sleepTitle: 'Sleep',
+      nailsTitle: 'Nail trimming', coatTitle: 'Coat care', dentalTitle: 'Dental care', weightTitle: 'Weight', earsTitle: 'Ear care',
       watchTitle: 'Breed-specific things to watch for',
       watchIntro: 'Common, well-documented risk factors for your breed — not an exhaustive list. Always ask your vet if you\u2019re unsure.',
       watchEmpty: 'No commonly flagged breed-specific risk factors matched for this breed in our list — that doesn\u2019t mean there are none. Check your national kennel club\u2019s breed health pages or ask your vet.',
@@ -416,6 +447,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       sizeOverrideLabel: 'Storlek', sizeSmall: 'Liten', sizeMedium: 'Mellan', sizeLarge: 'Stor', sizeGiant: 'Jättestor',
       profileHint: 'Vi har gissat livsfas och storlek utifrån din profil — justera gärna om det inte stämmer.',
       exerciseTitle: 'Motion', aloneTitle: 'Ensam hemma', foodTitle: 'Mat', sleepTitle: 'Sömn',
+      nailsTitle: 'Kloklippning', coatTitle: 'Pälsvård', dentalTitle: 'Tandvård', weightTitle: 'Vikt', earsTitle: 'Öronvård',
       watchTitle: 'Rasspecifikt att hålla koll på',
       watchIntro: 'Vanliga, väldokumenterade riskfaktorer för din ras — inte en fullständig lista. Fråga alltid veterinären om du är osäker.',
       watchEmpty: 'Vi har inga vanliga rasspecifika riskfaktorer i vår lista som matchar den här rasen — det betyder inte att det inte finns några. Kolla din kennelklubbs rasspecifika hälsoinformation eller fråga veterinären.',
@@ -480,7 +512,12 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
     cornell_boas: { url: 'https://www.vet.cornell.edu/departments-centers-and-institutes/riney-canine-health-center/canine-health-topics/brachycephalic-obstructive-airway-syndrome-boas', label: { sv: 'Cornell University College of Veterinary Medicine — Brakycefalt luftvägssyndrom (BOAS)', en: 'Cornell University College of Veterinary Medicine — Brachycephalic obstructive airway syndrome (BOAS)' } },
     cornell_ivdd: { url: 'https://www.vet.cornell.edu/departments-centers-and-institutes/riney-canine-health-center/canine-health-topics/intervertebral-disc-disease', label: { sv: 'Cornell University College of Veterinary Medicine — Diskbråck (IVDD) hos hund', en: 'Cornell University College of Veterinary Medicine — Intervertebral disc disease (IVDD)' } },
     akc_bloat: { url: 'https://www.akc.org/expert-advice/health/bloat-in-dogs/', label: { sv: 'American Kennel Club — Uppblåst mage / magvridning (GDV) hos hund', en: 'American Kennel Club — Bloat (GDV) in dogs' } },
-    kc_cavalier_heart: { url: 'https://www.royalkennelclub.com/health-and-dog-care/health-dog-care/health/getting-started-with-health-testing-and-screening/heart-scheme-for-cavalier-king-charles-spaniels/', label: { sv: 'The Kennel Club — Hjärtprogram för Cavalier King Charles Spaniel', en: 'The Kennel Club — Heart scheme for Cavalier King Charles Spaniels' } }
+    kc_cavalier_heart: { url: 'https://www.royalkennelclub.com/health-and-dog-care/health-dog-care/health/getting-started-with-health-testing-and-screening/heart-scheme-for-cavalier-king-charles-spaniels/', label: { sv: 'The Kennel Club — Hjärtprogram för Cavalier King Charles Spaniel', en: 'The Kennel Club — Heart scheme for Cavalier King Charles Spaniels' } },
+    akc_nails: { url: 'https://www.akc.org/expert-advice/health/how-to-trim-dogs-nails-safely/', label: { sv: 'American Kennel Club — Så klipper du din hunds klor säkert', en: 'American Kennel Club — How to trim your dog\u2019s nails safely' } },
+    aspca_grooming: { url: 'https://www.aspca.org/pet-care/dog-care/dog-grooming-tips', label: { sv: 'ASPCA — Pälsvårdstips för hund', en: 'ASPCA — Dog grooming tips' } },
+    aaha_dental: { url: 'https://www.aaha.org/resources/your-pets-dental-care/', label: { sv: 'American Animal Hospital Association — Tandvård för din hund', en: 'American Animal Hospital Association — Your pet\u2019s dental care' } },
+    pdsa_weight: { url: 'https://www.pdsa.org.uk/get-involved/our-campaigns/weigh-up/your-dog/your-dogs-body-shape/your-dogs-body-condition-score', label: { sv: 'PDSA — Din hunds hullbedömning (Body Condition Score)', en: 'PDSA — Your dog\u2019s Body Condition Score' } },
+    akc_ears: { url: 'https://www.akc.org/expert-advice/health/tips-preventing-ear-infections/', label: { sv: 'American Kennel Club — Så förebygger du öroninflammation', en: 'American Kennel Club — How to help prevent dog ear infections' } }
   };
 
   function srcLink(id){
@@ -540,9 +577,70 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       senior: 'Older dogs tend to sleep more again, often 12–18 hours a day. Contact your vet if sleep suddenly increases a lot or your dog seems lethargic.'
     }
   };
+  const NAILS = {
+    sv: {
+      puppy: 'Vänj gärna valpen tidigt vid att få tassar och klor hanterade, i korta och positiva stunder — det gör kloklippning mycket enklare resten av hundens liv. Kolla klorna regelbundet så de inte hinner bli för långa.',
+      adult: 'De flesta hundar behöver klorna klippta ungefär var tredje till fjärde vecka. Ett enkelt sätt att avgöra om det är dags: om klorna hörs mot ett hårt golv eller når marken när hunden står stilla är de för långa.',
+      senior: 'Fortsätt kolla klorna regelbundet. Äldre hundar rör sig ofta mindre och nöter inte ner klorna lika mycket naturligt, samtidigt som stelhet eller ledbesvär kan göra klippningen mer känslig — gå försiktigt fram och ta gärna hjälp av veterinär eller trimmare vid behov.'
+    },
+    en: {
+      puppy: 'Get your puppy used to having their paws and nails handled early on, in short, positive sessions — this makes nail trims far easier for the rest of the dog\u2019s life. Check the nails regularly so they don\u2019t get too long.',
+      adult: 'Most dogs need their nails trimmed roughly every three to four weeks. A simple way to tell if it\u2019s time: if the nails click on a hard floor or touch the ground when the dog is standing still, they\u2019re too long.',
+      senior: 'Keep checking the nails regularly. Older dogs are often less active and wear their nails down less naturally, while stiffness or joint problems can make trimming more sensitive — go gently and get help from a vet or groomer if needed.'
+    }
+  };
+  const COAT = {
+    sv: {
+      puppy: 'Vänj valpen tidigt vid borstning i korta, lugna stunder så att det blir en positiv vana. Hur ofta du behöver borsta beror på pälstyp, men börja gärna med några minuter några gånger i veckan.',
+      adult: 'Borsta regelbundet utifrån pälstyp — en kort, slät päls klarar sig oftast med borstning ungefär en gång i veckan, medan längre eller tjockare pälsar behöver borstas oftare för att undvika tovor. Bada bara vid behov, för ofta upprepad badning kan torka ut hud och päls.',
+      senior: 'Fortsätt med regelbunden borstning — det är samtidigt ett bra tillfälle att känna efter nya knölar, sår eller ömma punkter, som kan vara vanligare hos äldre hundar. Var extra skonsam om hunden har öm hud eller en stel kropp.'
+    },
+    en: {
+      puppy: 'Get your puppy used to brushing early, in short, calm sessions, so it becomes a positive habit. How often you need to brush depends on coat type, but a few minutes a few times a week is a good start.',
+      adult: 'Brush regularly based on coat type — a short, smooth coat usually only needs brushing about once a week, while longer or thicker coats need brushing more often to prevent matting. Bathe only when needed, since bathing too often can dry out skin and coat.',
+      senior: 'Keep up regular brushing — it\u2019s also a good chance to feel for any new lumps, sores or tender spots, which can be more common in older dogs. Be extra gentle if your dog has sore skin or a stiff body.'
+    }
+  };
+  const DENTAL = {
+    sv: {
+      puppy: 'Vänj valpen tidigt vid att få munnen och tänderna berörda, gärna med en fingerborste och hundtandkräm (aldrig tandkräm för människor) — det gör det mycket lättare att borsta tänderna genom hela livet.',
+      adult: 'Daglig tandborstning är det mest effektiva sättet att minska tandsten och plackbildning. Tandvänliga tuggben och foder kan vara ett bra komplement, men de ersätter inte borstning eller regelbundna kontroller hos veterinären.',
+      senior: 'Fortsätt borsta tänderna regelbundet — tandproblem är vanliga hos äldre hundar och kan påverka både ätande och allmäntillstånd. Kontakta veterinär vid dålig andedräkt, svårigheter att äta eller synlig tandsten.'
+    },
+    en: {
+      puppy: 'Get your puppy used to having their mouth and teeth touched early, ideally with a finger brush and dog-specific toothpaste (never human toothpaste) — this makes brushing far easier for life.',
+      adult: 'Daily tooth brushing is the most effective way to reduce plaque and tartar build-up. Dental-friendly chews and food can be a good addition, but they don\u2019t replace brushing or regular veterinary checks.',
+      senior: 'Keep brushing the teeth regularly — dental problems are common in older dogs and can affect both eating and overall wellbeing. Contact your vet if you notice bad breath, trouble eating, or visible tartar.'
+    }
+  };
+  const WEIGHT = {
+    sv: {
+      puppy: 'Valpar växer snabbt och mår bäst av att hållas smala snarare än överviktiga under uppväxten, eftersom övervikt som valp kan öka risken för framtida led- och skelettproblem. Följ foderförpackningens rekommendationer och stäm av tillväxten med veterinären.',
+      adult: 'Känn regelbundet efter revben, midja och mage: du ska kunna känna revbenen utan ett tjockt fettlager, se en midja uppifrån och en lätt insvängning av magen från sidan. Går det inte att känna revbenen alls är det ett tecken på övervikt.',
+      senior: 'Vikten kan förändras med åldern åt båda hållen — en del äldre hundar går upp i vikt av minskad aktivitet, andra tappar hull vid sjukdom. Väg och hullbedöm hunden regelbundet och kontakta veterinär vid tydliga förändringar.'
+    },
+    en: {
+      puppy: 'Puppies grow quickly and do best staying lean rather than overweight during growth, since puppy obesity can raise the risk of future joint and skeletal problems. Follow the food packaging\u2019s guidance and check growth with your vet.',
+      adult: 'Regularly feel for ribs, waist and belly: you should be able to feel the ribs without a thick layer of fat, see a waist from above, and a slight tuck of the belly from the side. If you can\u2019t feel the ribs at all, that\u2019s a sign of excess weight.',
+      senior: 'Weight can shift with age in either direction — some older dogs gain weight from reduced activity, others lose condition due to illness. Weigh and body-condition-score your dog regularly and contact your vet about any clear changes.'
+    }
+  };
+  const EARS = {
+    sv: {
+      puppy: 'Vänj valpen tidigt vid att få öronen försiktigt undersökta och rörda, så blir det lättare att kontrollera och rengöra öronen genom livet.',
+      adult: 'Kontrollera öronen regelbundet och rengör dem vid behov, ungefär en gång i veckan upp till var tredje vecka beroende på hund — torra, rena öron minskar risken för öroninflammation. Var extra uppmärksam efter bad eller simning.',
+      senior: 'Fortsätt kontrollera öronen regelbundet. Kontakta veterinär vid skakningar på huvudet, kliande, dålig lukt, rodnad eller flytning — äldre hundar kan vara känsligare för öroninflammationer.'
+    },
+    en: {
+      puppy: 'Get your puppy used to having their ears gently examined and touched early on, so ear checks and cleaning stay easy throughout life.',
+      adult: 'Check the ears regularly and clean them when needed, roughly once a week to every three weeks depending on the dog — dry, clean ears reduce the risk of ear infections. Pay extra attention after baths or swimming.',
+      senior: 'Keep checking the ears regularly. Contact your vet if you notice head shaking, scratching, odour, redness or discharge — older dogs can be more prone to ear infections.'
+    }
+  };
   const EXERCISE_SRC = 'pdsa_exercise', ALONE_SRC = 'rspca_alone';
   const FOOD_SRC = { puppy: 'akc_puppy_feeding', adult: 'akc_puppy_feeding', senior: 'akc_puppy_feeding' };
   const SLEEP_SRC = { puppy: 'akc_puppy_sleep', adult: 'sleepfoundation_adult', senior: 'akc_senior_sleep' };
+  const NAILS_SRC = 'akc_nails', COAT_SRC = 'aspca_grooming', DENTAL_SRC = 'aaha_dental', WEIGHT_SRC = 'pdsa_weight', EARS_SRC = 'akc_ears';
 
   /* ==================================================================
      Rasspecifikt — matchning mot kända, väldokumenterade riskgrupper.
@@ -680,12 +778,22 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
     document.getElementById('aloneText').textContent = ALONE[lang][ageGroup];
     document.getElementById('foodText').textContent = FOOD[lang][ageGroup];
     document.getElementById('sleepText').textContent = SLEEP[lang][ageGroup];
+    document.getElementById('nailsText').textContent = NAILS[lang][ageGroup];
+    document.getElementById('coatText').textContent = COAT[lang][ageGroup];
+    document.getElementById('dentalText').textContent = DENTAL[lang][ageGroup];
+    document.getElementById('weightText').textContent = WEIGHT[lang][ageGroup];
+    document.getElementById('earsText').textContent = EARS[lang][ageGroup];
 
     const exSrc = srcLink(EXERCISE_SRC), alSrc = srcLink(ALONE_SRC), foSrc = srcLink(FOOD_SRC[ageGroup]), slSrc = srcLink(SLEEP_SRC[ageGroup]);
     setSrcLink('exerciseSrc', exSrc);
     setSrcLink('aloneSrc', alSrc);
     setSrcLink('foodSrc', foSrc);
     setSrcLink('sleepSrc', slSrc);
+    setSrcLink('nailsSrc', srcLink(NAILS_SRC));
+    setSrcLink('coatSrc', srcLink(COAT_SRC));
+    setSrcLink('dentalSrc', srcLink(DENTAL_SRC));
+    setSrcLink('weightSrc', srcLink(WEIGHT_SRC));
+    setSrcLink('earsSrc', srcLink(EARS_SRC));
 
     renderWatchList();
     renderSourcesList();
@@ -712,7 +820,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   function renderSourcesList(){
     const list = document.getElementById('sourcesList');
-    const usedIds = new Set([EXERCISE_SRC, ALONE_SRC, FOOD_SRC[ageGroup], SLEEP_SRC[ageGroup], ...matchBreedGroups((currentDog && currentDog.breed) || '').map(g => g.src)]);
+    const usedIds = new Set([EXERCISE_SRC, ALONE_SRC, FOOD_SRC[ageGroup], SLEEP_SRC[ageGroup], NAILS_SRC, COAT_SRC, DENTAL_SRC, WEIGHT_SRC, EARS_SRC, ...matchBreedGroups((currentDog && currentDog.breed) || '').map(g => g.src)]);
     // Visa alltid hela källförteckningen (inte bara de som används just nu)
     // så att sidan är transparent kring varifrån all information kan komma.
     list.innerHTML = Object.keys(SOURCES).map(id => {

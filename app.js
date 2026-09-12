@@ -42,6 +42,7 @@ const bestWalkEl = $('#bestWalk');
 const currentEl = $('#current');
 const alertsEl = $('#alerts');
 const walkAdviceEl = $('#walkAdvice');
+const adviceDisclaimerEl = $('#adviceDisclaimer');
 const coatAdviceEl = $('#coatAdvice');
 const breedFactsPanelEl = $('#breedFactsPanel');
 const breedFactsEl = $('#breedFacts');
@@ -134,6 +135,9 @@ const STR = {
     bestWalkFootnote: '<a href="#komfortindex-forklaring">How the index is calculated *</a>',
     adviceHeading: "Weather interpretation for your dog",
     adviceDisclaimer: 'These assessments are calculated automatically from weather data (temperature, precipitation, wind) and time of year — no AI model and no connection to real pollen or tick measurements. See current pollen levels at the <a href="https://www.nrm.se/natur--och-miljoovervakning/pollenovervakning/pollenrapporten" target="_blank" rel="noopener">Pollen Report (Swedish Museum of Natural History)</a> and the current tick situation at <a href="https://www.sva.se/aktuellt/insamlingar/rapportera-faesting/karta-och-tabell-oever-faestingfynd/" target="_blank" rel="noopener">SVA\'s tick map</a> (Swedish-language sites). Read more about how the Dog Comfort Index is calculated <a href="#komfortindex-forklaring">here</a>.',
+    adviceDisclaimerPollenOnly: 'These assessments are calculated automatically from weather data (temperature, precipitation, wind) and time of year — no AI model and no connection to real pollen measurements. Tick risk isn\'t shown for this location since there\'s no reliable data source for it yet. See current pollen levels at the <a href="https://www.nrm.se/natur--och-miljoovervakning/pollenovervakning/pollenrapporten" target="_blank" rel="noopener">Pollen Report (Swedish Museum of Natural History)</a> (Swedish-language site). Read more about how the Dog Comfort Index is calculated <a href="#komfortindex-forklaring">here</a>.',
+    adviceDisclaimerTicksOnly: 'These assessments are calculated automatically from weather data (temperature, precipitation, wind) and time of year — no AI model and no connection to real tick measurements. Pollen levels aren\'t shown for this location since there\'s no reliable data source for it yet. See the current tick situation at <a href="https://www.sva.se/aktuellt/insamlingar/rapportera-faesting/karta-och-tabell-oever-faestingfynd/" target="_blank" rel="noopener">SVA\'s tick map</a> (Swedish-language site). Read more about how the Dog Comfort Index is calculated <a href="#komfortindex-forklaring">here</a>.',
+    adviceDisclaimerNeither: 'These assessments are calculated automatically from weather data (temperature, precipitation, wind) and time of year — no AI model. Pollen and tick risk aren\'t shown for this location since there\'s no reliable data source for them yet. Read more about how the Dog Comfort Index is calculated <a href="#komfortindex-forklaring">here</a>.',
     dailyHeading: "Upcoming days",
     dayHoursCloseBtn: "Close",
     dailyFootnote: 'The Dog Comfort Index for each day is a daytime average (approx. 07:00–21:00), calculated the same way as above. Click or press Enter on a day to see the times of day and hour-by-hour index where available. <a href="#komfortindex-forklaring">How the index is calculated *</a>',
@@ -354,6 +358,9 @@ const STR = {
     bestWalkFootnote: '<a href="#komfortindex-forklaring">Så räknas indexet ut *</a>',
     adviceHeading: "Vädertolkning för hunden",
     adviceDisclaimer: 'Bedömningarna räknas fram automatiskt utifrån väderdata (temperatur, nederbörd, vind) och årstid — ingen AI-modell och ingen koppling till riktiga pollen- eller fästingmätningar. Se aktuell pollennivå hos <a href="https://www.nrm.se/natur--och-miljoovervakning/pollenovervakning/pollenrapporten" target="_blank" rel="noopener">Pollenrapporten (Naturhistoriska riksmuseet)</a> och fästingläget hos <a href="https://www.sva.se/aktuellt/insamlingar/rapportera-faesting/karta-och-tabell-oever-faestingfynd/" target="_blank" rel="noopener">SVA:s fästingkarta</a>. Läs mer om hur Hundkomfortindex räknas ut <a href="#komfortindex-forklaring">här</a>.',
+    adviceDisclaimerPollenOnly: 'Bedömningarna räknas fram automatiskt utifrån väderdata (temperatur, nederbörd, vind) och årstid — ingen AI-modell och ingen koppling till riktiga pollenmätningar. Fästingrisk visas inte för den här platsen eftersom det saknas en tillförlitlig datakälla för det än så länge. Se aktuell pollennivå hos <a href="https://www.nrm.se/natur--och-miljoovervakning/pollenovervakning/pollenrapporten" target="_blank" rel="noopener">Pollenrapporten (Naturhistoriska riksmuseet)</a> (svenskspråkig sida). Läs mer om hur Hundkomfortindex räknas ut <a href="#komfortindex-forklaring">här</a>.',
+    adviceDisclaimerTicksOnly: 'Bedömningarna räknas fram automatiskt utifrån väderdata (temperatur, nederbörd, vind) och årstid — ingen AI-modell och ingen koppling till riktiga fästingmätningar. Pollennivå visas inte för den här platsen eftersom det saknas en tillförlitlig datakälla för det än så länge. Se fästingläget hos <a href="https://www.sva.se/aktuellt/insamlingar/rapportera-faesting/karta-och-tabell-oever-faestingfynd/" target="_blank" rel="noopener">SVA:s fästingkarta</a> (svenskspråkig sida). Läs mer om hur Hundkomfortindex räknas ut <a href="#komfortindex-forklaring">här</a>.',
+    adviceDisclaimerNeither: 'Bedömningarna räknas fram automatiskt utifrån väderdata (temperatur, nederbörd, vind) och årstid — ingen AI-modell. Pollen- och fästingrisk visas inte för den här platsen eftersom det saknas en tillförlitlig datakälla för dem än så länge. Läs mer om hur Hundkomfortindex räknas ut <a href="#komfortindex-forklaring">här</a>.',
     dailyHeading: "Kommande dagar",
     dayHoursCloseBtn: "Stäng",
     dailyFootnote: 'Hundkomfortindex per dag är ett snitt för dagtid (ca 07–21), uträknat med samma metod som ovan. Klicka eller tryck Enter på en dag för att se klockslag och timme-för-timme-index där det finns tillgängligt. <a href="#komfortindex-forklaring">Så räknas indexet ut *</a>',
@@ -2287,7 +2294,7 @@ const ADVISORY_TEXT = {
   }
 };
 
-function computeWalkAdvisories(cur, comfort, showTicks) {
+function computeWalkAdvisories(cur, comfort, showTicks, showPollen) {
   const A = ADVISORY_TEXT[lang];
   const temp = cur.temp;
   const apparent = cur.apparentTemp != null ? cur.apparentTemp : temp;
@@ -2335,16 +2342,20 @@ function computeWalkAdvisories(cur, comfort, showTicks) {
     items.push({ icon: ICONS.wind, title: A.windySmall.title, level: 'ok', text: A.windySmall.ok });
   }
 
-  // 5. Pollen (grov uppskattning – se fotnot för riktig mätdata)
-  const pollenSeason = month >= 3 && month <= 8;
-  if (!pollenSeason) {
-    items.push({ icon: ICONS.flower, title: A.pollen.title, level: 'ok', text: A.pollen.offSeason });
-  } else if (precip >= 1) {
-    items.push({ icon: ICONS.flower, title: A.pollen.title, level: 'ok', text: A.pollen.rainy });
-  } else if ((cur.wind || 0) >= 3 && isSunnyish) {
-    items.push({ icon: ICONS.flower, title: A.pollen.title, level: 'risk', text: A.pollen.dryWindy });
-  } else {
-    items.push({ icon: ICONS.flower, title: A.pollen.title, level: 'caution', text: A.pollen.inSeason });
+  // 5. Pollen (grov uppskattning – se fotnot för riktig mätdata).
+  // Visas bara när platsen har tillförlitlig pollendata (för närvarande: Sverige/NRM).
+  // Utanför Sverige saknas underlag, så kortet utelämnas helt istället för att visa missvisande data.
+  if (showPollen) {
+    const pollenSeason = month >= 3 && month <= 8;
+    if (!pollenSeason) {
+      items.push({ icon: ICONS.flower, title: A.pollen.title, level: 'ok', text: A.pollen.offSeason });
+    } else if (precip >= 1) {
+      items.push({ icon: ICONS.flower, title: A.pollen.title, level: 'ok', text: A.pollen.rainy });
+    } else if ((cur.wind || 0) >= 3 && isSunnyish) {
+      items.push({ icon: ICONS.flower, title: A.pollen.title, level: 'risk', text: A.pollen.dryWindy });
+    } else {
+      items.push({ icon: ICONS.flower, title: A.pollen.title, level: 'caution', text: A.pollen.inSeason });
+    }
   }
 
   // 6. Fästingrisk (grov uppskattning – se fotnot för riktig mätdata).
@@ -2385,8 +2396,18 @@ function computeWalkAdvisories(cur, comfort, showTicks) {
   return items;
 }
 
-function renderWalkAdvisories(cur, comfort, showTicks) {
-  const items = computeWalkAdvisories(cur, comfort, showTicks);
+function renderWalkAdvisories(cur, comfort, showTicks, showPollen) {
+  const items = computeWalkAdvisories(cur, comfort, showTicks, showPollen);
+  if (adviceDisclaimerEl) {
+    const key = showPollen && showTicks ? 'adviceDisclaimer'
+      : showPollen ? 'adviceDisclaimerPollenOnly'
+      : showTicks ? 'adviceDisclaimerTicksOnly'
+      : 'adviceDisclaimerNeither';
+    // Uppdatera även data-i18n-attributet, så att språkbytet (applyStaticTranslations)
+    // återskapar rätt variant av texten istället för att falla tillbaka till standardtexten.
+    adviceDisclaimerEl.setAttribute('data-i18n', key);
+    adviceDisclaimerEl.innerHTML = t(key);
+  }
   walkAdviceEl.innerHTML = items.map(item => {
     const lvl = LEVELS[lang][item.level];
     return `<article class="advice-card" data-source-ids="${escapeHtml((item.sourceIds || []).join(','))}">
@@ -2763,17 +2784,20 @@ function render(weatherData, loc, source) {
     <p class="comfort-footnote"><a href="#komfortindex-forklaring">${escapeHtml(t('howIndexCalculated'))}</a></p>
   `;
 
-  // Fästingdata (SVA) finns bara tillförlitlig för Sverige, så kortet visas bara då.
+  // Fästing- (SVA) och pollendata (NRM) är bara tillförlitliga för Sverige, så korten visas bara då.
   // Lägg till fler landskoder här den dagen det finns en tillförlitlig källa för ett annat land.
   const RELIABLE_TICK_DATA_COUNTRIES = new Set(['SE']);
-  const hasReliableTickData = RELIABLE_TICK_DATA_COUNTRIES.has((loc.countryCode || '').toUpperCase());
+  const RELIABLE_POLLEN_DATA_COUNTRIES = new Set(['SE']);
+  const currentCountryCode = (loc.countryCode || '').toUpperCase();
+  const hasReliableTickData = RELIABLE_TICK_DATA_COUNTRIES.has(currentCountryCode);
+  const hasReliablePollenData = RELIABLE_POLLEN_DATA_COUNTRIES.has(currentCountryCode);
 
   renderAlerts(cur);
   renderDailyTip(cur);
   renderCoatAdvice(cur);
   renderBreedFacts(cur);
   renderBestWalk(weatherData, unit);
-  renderWalkAdvisories(cur, comfort, hasReliableTickData);
+  renderWalkAdvisories(cur, comfort, hasReliableTickData, hasReliablePollenData);
   renderDaily(weatherData, unit);
 
   const tz = weatherData.timezone || 'Europe/Stockholm';

@@ -7,56 +7,6 @@
 <meta name="author" content="Doginary">
 <meta name="description" content="Rasanpassade riktlinjer för motion, ensamtid, mat och sömn utifrån din hunds ras och ålder, plus rasspecifikt att hålla koll på — från Doginary.">
 <title>Doginary — Riktlinjer för motion, mat & sömn | Rasanpassade råd</title>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "@id": "https://doginary.com/guidelines.html#faq",
-  "inLanguage": "sv",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Hur mycket motion behöver en hund per dag?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "De flesta vuxna hundar mår bra av minst en till två timmars aktivitet per dag, fördelat på flera promenader plus fri rörelse och aktivering. Behovet varierar kraftigt med ras, ålder och hälsa — arbetande raser behöver ofta betydligt mer, medan valpar och seniorer behöver kortare och mer anpassade pass. Välj ras och livsfas ovan för en mer specifik rekommendation."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Hur länge kan en hund vara ensam hemma?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Som tumregel bör en vuxen, van hund inte lämnas ensam längre än fyra till sex timmar i sträck. Valpar klarar betydligt kortare stunder och behöver träna upp ensamhet gradvis. Svenska regler ställer krav på tillsyn, och en hund som visar stress vid ensamhet behöver träning snarare än längre pass."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Hur många gånger om dagen ska en hund äta?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Vuxna hundar äter oftast två mål om dagen. Valpar behöver fler och mindre mål — ofta tre till fyra — eftersom de växer och har mindre magsäck. Följ fodrets utfodringsrekommendation och justera efter hull, aktivitetsnivå och vikt."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Hur mycket sover en hund per dygn?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Vuxna hundar sover och vilar typiskt omkring tolv till fjorton timmar per dygn, valpar och seniorer betydligt mer — ofta arton till tjugo timmar. Sömnen tas i flera pass, och ostörd vila är lika viktig som aktiviteten."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Hur ofta ska man klippa hundens klor?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Kolla klorna ungefär varannan vecka och klipp när de börjar nå marken eller hörs mot golvet. Hur ofta det behövs beror på hur mycket hunden rör sig på hårt underlag. Vänj valpen vid att bli hanterad i tassarna tidigt, i korta och positiva pass."
-      }
-    }
-  ]
-}
-</script>
 <link rel="canonical" href="https://doginary.com/guidelines.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Doginary">
@@ -182,6 +132,8 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 .profile-summary strong{font-size:17px;font-family:Fraunces,serif;font-weight:500;display:block;margin-bottom:2px}
 .profile-summary span{font-size:12.5px;color:var(--soft)}
 .profile-hint{font-size:12px;color:var(--soft);width:100%;margin-top:-6px}
+#mixedBreedFields{display:contents}
+#mixedBreedFields[hidden]{display:none}
 
 .no-profile-card{background:var(--rust-soft);border:1px solid #e2c8ae;border-radius:var(--radius);padding:20px;margin-bottom:26px}
 .no-profile-card h2{margin:0 0 6px;font-size:18px}
@@ -196,8 +148,12 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 .guide-card .src-link{display:inline-block;margin-top:10px;font-size:11.5px;color:var(--teal);text-decoration:none}
 .guide-card .src-link:hover{text-decoration:underline}
 
+.watch-section{margin-bottom:30px}
 .watch-section h2{margin:0 0 4px}
 .watch-section > p{font-size:13px;color:var(--soft);margin:0 0 14px}
+.guide-heading{margin:0 0 14px}
+.guide-heading h2{margin:0 0 4px;font-size:17px}
+.guide-heading p{font-size:13px;color:var(--soft);margin:0}
 .watch-intro-box{position:relative;border-radius:var(--radius);padding:18px 20px;margin:0 0 14px;background-image:linear-gradient(100deg,rgba(43,36,28,.82) 0%,rgba(43,36,28,.6) 55%,rgba(43,36,28,.35) 100%),url("assets/puppy7.jpg");background-image:linear-gradient(100deg,rgba(43,36,28,.82) 0%,rgba(43,36,28,.6) 55%,rgba(43,36,28,.35) 100%),image-set(url("assets/puppy7.webp") type("image/webp"),url("assets/puppy7.jpg") type("image/jpeg"));background-size:cover;background-position:center;box-shadow:0 4px 18px rgba(43,36,28,.15)}
 .watch-intro-box h2{color:#fff;font-size:17px}
 .watch-intro-box p{color:#EFE7DA;font-size:13px;margin:0}
@@ -351,82 +307,109 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       <option value="senior" data-i18n="ageSenior">Senior</option>
     </select>
   </div>
-  <div class="profile-field">
-    <label for="sizeOverride" data-i18n="sizeOverrideLabel">Storlek</label>
-    <select id="sizeOverride">
-      <option value="small" data-i18n="sizeSmall">Liten</option>
-      <option value="medium" data-i18n="sizeMedium">Mellan</option>
-      <option value="large" data-i18n="sizeLarge">Stor</option>
-      <option value="giant" data-i18n="sizeGiant">Jättestor</option>
-    </select>
+  <!-- Storlek/nos/päls går att räkna ut från en namngiven ras, så de
+       fälten behövs bara när "Blandras" är vald — se isMixedBreed()
+       och renderGuides() nedan som visar/döljer den här gruppen. -->
+  <div id="mixedBreedFields" hidden>
+    <div class="profile-field">
+      <label for="sizeOverride" data-i18n="sizeOverrideLabel">Storlek</label>
+      <select id="sizeOverride">
+        <option value="small" data-i18n="sizeSmall">Liten</option>
+        <option value="medium" data-i18n="sizeMedium">Mellan</option>
+        <option value="large" data-i18n="sizeLarge">Stor</option>
+        <option value="giant" data-i18n="sizeGiant">Jättestor</option>
+      </select>
+    </div>
+    <div class="profile-field">
+      <label for="flatNoseOverride" data-i18n="flatNoseLabel">Platt nos</label>
+      <select id="flatNoseOverride">
+        <option value="unknown" data-i18n="flatNoseUnknown">Vet ej</option>
+        <option value="yes" data-i18n="flatNoseYes">Ja</option>
+        <option value="no" data-i18n="flatNoseNo">Nej</option>
+      </select>
+    </div>
+    <div class="profile-field">
+      <label for="coatLengthOverride" data-i18n="coatLengthLabel">Pälslängd</label>
+      <select id="coatLengthOverride">
+        <option value="unknown" data-i18n="coatLengthUnknown">Vet ej</option>
+        <option value="short" data-i18n="coatLengthShort">Kort</option>
+        <option value="medium" data-i18n="coatLengthMedium">Medellång</option>
+        <option value="long" data-i18n="coatLengthLong">Lång</option>
+      </select>
+    </div>
   </div>
-  <p class="profile-hint" data-i18n="profileHint">Vi har gissat livsfas och storlek utifrån din profil — justera gärna om det inte stämmer.</p>
+  <p class="profile-hint" data-i18n="profileHint">Vi har gissat livsfas utifrån din profil — justera gärna om det inte stämmer. Har du valt blandras kan du även ange storlek, nos och pälslängd ovan.</p>
 </div>
 
 <section id="guideSection" hidden>
-  <div class="guide-grid">
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">🐾</span>
-      <h3 data-i18n="exerciseTitle">Motion</h3>
-      <p id="exerciseText">De flesta vuxna hundar mår bra av minst 1–2 promenader om dagen, och totalt ungefär 30 minuter till 2 timmar aktivitet per dag beroende på ras och energinivå. Blanda gärna lugna, undersökande promenader med mer intensiv lek eller träning.</p>
-      <a class="src-link" id="exerciseSrc" target="_blank" rel="noopener"></a>
-    </div>
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">🚪</span>
-      <h3 data-i18n="aloneTitle">Ensam hemma</h3>
-      <p id="aloneText">Djurskyddsorganisationen RSPCA rekommenderar att vuxna hundar inte lämnas ensamma längre än fyra timmar åt gången, så att de får möjlighet att röra på sig, gå på toaletten och umgås.</p>
-      <a class="src-link" id="aloneSrc" target="_blank" rel="noopener"></a>
-    </div>
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">🍽️</span>
-      <h3 data-i18n="foodTitle">Mat</h3>
-      <p id="foodText">De flesta vuxna hundar äter bra med 2 mål om dagen. Exakt mängd bör baseras på hundens vikt, aktivitetsnivå och fodrets näringsinnehåll — följ foderförpackningens riktlinjer och stäm av med veterinären om vikten förändras.</p>
-      <a class="src-link" id="foodSrc" target="_blank" rel="noopener"></a>
-    </div>
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">💤</span>
-      <h3 data-i18n="sleepTitle">Sömn</h3>
-      <p id="sleepText">Vuxna hundar sover i genomsnitt ungefär 8–14 timmar per dygn, ofta i kortare pass utspridda över dygnet.</p>
-      <a class="src-link" id="sleepSrc" target="_blank" rel="noopener"></a>
-    </div>
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">💅</span>
-      <h3 data-i18n="nailsTitle">Kloklippning</h3>
-      <p id="nailsText">De flesta hundar behöver klorna klippta ungefär var tredje till fjärde vecka. Ett enkelt sätt att avgöra om det är dags: om klorna hörs mot ett hårt golv eller når marken när hunden står stilla är de för långa.</p>
-      <a class="src-link" id="nailsSrc" target="_blank" rel="noopener"></a>
-    </div>
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">🧼</span>
-      <h3 data-i18n="coatTitle">Pälsvård</h3>
-      <p id="coatText">Borsta regelbundet utifrån pälstyp — en kort, slät päls klarar sig oftast med borstning ungefär en gång i veckan, medan längre eller tjockare pälsar behöver borstas oftare för att undvika tovor. Bada bara vid behov, för ofta upprepad badning kan torka ut hud och päls.</p>
-      <a class="src-link" id="coatSrc" target="_blank" rel="noopener"></a>
-    </div>
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">🦷</span>
-      <h3 data-i18n="dentalTitle">Tandvård</h3>
-      <p id="dentalText">Daglig tandborstning är det mest effektiva sättet att minska tandsten och plackbildning. Tandvänliga tuggben och foder kan vara ett bra komplement, men de ersätter inte borstning eller regelbundna kontroller hos veterinären.</p>
-      <a class="src-link" id="dentalSrc" target="_blank" rel="noopener"></a>
-    </div>
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">⚖️</span>
-      <h3 data-i18n="weightTitle">Vikt</h3>
-      <p id="weightText">Känn regelbundet efter revben, midja och mage: du ska kunna känna revbenen utan ett tjockt fettlager, se en midja uppifrån och en lätt insvängning av magen från sidan. Går det inte att känna revbenen alls är det ett tecken på övervikt.</p>
-      <a class="src-link" id="weightSrc" target="_blank" rel="noopener"></a>
-    </div>
-    <div class="guide-card">
-      <span class="card-icon" aria-hidden="true">👂</span>
-      <h3 data-i18n="earsTitle">Öronvård</h3>
-      <p id="earsText">Kontrollera öronen regelbundet och rengör dem vid behov, ungefär en gång i veckan upp till var tredje vecka beroende på hund — torra, rena öron minskar risken för öroninflammation. Var extra uppmärksam efter bad eller simning.</p>
-      <a class="src-link" id="earsSrc" target="_blank" rel="noopener"></a>
-    </div>
-  </div>
-
   <div class="watch-section">
     <div class="watch-intro-box">
       <h2 data-i18n="watchTitle">Rasspecifikt att hålla koll på</h2>
       <p data-i18n="watchIntro">Vanliga, väldokumenterade riskfaktorer för din ras — inte en fullständig lista. Fråga alltid veterinären om du är osäker.</p>
     </div>
     <div id="watchList"></div>
+  </div>
+
+  <div class="guide-heading">
+    <h2 id="guideHeadingTitle" data-i18n="guideHeadingGeneric">Allmän information om hundar</h2>
+    <p data-i18n="guideHeadingIntro">Praktiska riktlinjer för motion, mat, sömn och skötsel, utifrån livsfas.</p>
+  </div>
+
+  <div class="guide-grid">
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🐾</span>
+      <h3 data-i18n="exerciseTitle">Motion</h3>
+      <p id="exerciseText"></p>
+      <a class="src-link" id="exerciseSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🚪</span>
+      <h3 data-i18n="aloneTitle">Ensam hemma</h3>
+      <p id="aloneText"></p>
+      <a class="src-link" id="aloneSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🍽️</span>
+      <h3 data-i18n="foodTitle">Mat</h3>
+      <p id="foodText"></p>
+      <a class="src-link" id="foodSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">💤</span>
+      <h3 data-i18n="sleepTitle">Sömn</h3>
+      <p id="sleepText"></p>
+      <a class="src-link" id="sleepSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">💅</span>
+      <h3 data-i18n="nailsTitle">Kloklippning</h3>
+      <p id="nailsText"></p>
+      <a class="src-link" id="nailsSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🧼</span>
+      <h3 data-i18n="coatTitle">Pälsvård</h3>
+      <p id="coatText"></p>
+      <a class="src-link" id="coatSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">🦷</span>
+      <h3 data-i18n="dentalTitle">Tandvård</h3>
+      <p id="dentalText"></p>
+      <a class="src-link" id="dentalSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">⚖️</span>
+      <h3 data-i18n="weightTitle">Vikt</h3>
+      <p id="weightText"></p>
+      <a class="src-link" id="weightSrc" target="_blank" rel="noopener"></a>
+    </div>
+    <div class="guide-card">
+      <span class="card-icon" aria-hidden="true">👂</span>
+      <h3 data-i18n="earsTitle">Öronvård</h3>
+      <p id="earsText"></p>
+      <a class="src-link" id="earsSrc" target="_blank" rel="noopener"></a>
+    </div>
   </div>
 
   <div class="sources-section">
@@ -460,40 +443,6 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 </div>
 </main>
 
-
-<style>
-/* ---------- Crawlbar innehållssektion (SEO + hjälp för nya besökare) ---------- */
-.doginary-seo{max-width:860px;margin:44px auto 8px;padding:0 max(20px,5vw);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--ink,#2B241C)}
-.doginary-seo h2{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(20px,2.6vw,26px);line-height:1.25;margin:0 0 14px}
-.doginary-seo p{font-size:15px;line-height:1.65;color:var(--ink-soft,#6E6455);margin:0 0 14px}
-.doginary-seo a{color:var(--teal,#33505A)}
-.doginary-seo h3{font-family:'Inter',-apple-system,sans-serif;font-size:15.5px;font-weight:600;line-height:1.4;margin:22px 0 6px;color:var(--ink,#2B241C)}
-.doginary-seo__faq{margin-top:26px;border-top:1px solid var(--hair,#DCD3BF);padding-top:6px}
-.doginary-seo__faq h2{font-size:clamp(18px,2.2vw,22px);margin-top:18px}
-@media(max-width:600px){.doginary-seo{margin-top:30px}}
-</style>
-
-<!-- ---------- Innehålls- och frågesektion ----------
-     Ligger i markupen (inte bara i JS) så att sökmotorer ser den
-     även utan att köra sidans script, och hjälper nya besökare att
-     förstå vad sidan gör innan de skapar konto. Texten byts till
-     engelska av applyI18n() via data-i18n-html. Frågorna nedan
-     motsvarar FAQPage-strukturdatan i <head>. -->
-<section class="doginary-seo" id="riktlinjer" data-i18n-html="seoContent">
-    <h2>Riktlinjer för hund — motion, ensamtid, mat och sömn efter ras och ålder</h2>
-    <p>Välj ras och livsfas i rullmenyerna ovan, så anpassas riktlinjerna direkt — du behöver inget konto för att läsa dem. Är du inloggad fylls fälten i automatiskt från din hunds profil.</p>
-    <p>Riktlinjerna täcker motion, hur länge en hund kan vara ensam hemma, mat och antal mål per dag, sömnbehov, klipp av klor, pälsvård, tandvård, vikt och öronkontroll — med olika rekommendationer för valp, vuxen hund och senior. Varje kort har en källänk till den djurhälso- eller veterinärorganisation rekommendationen bygger på.</p>
-    <p>Vissa raser har dessutom sådant som är extra värt att hålla koll på, till exempel kortnosiga raser i värme, långryggade raser och trappor, eller stora raser och leder. Det visas automatiskt när du valt ras. Vill du se hur din egen hunds vardag ligger till mot riktlinjerna kan du logga den i <a href="logga.html">hunddagboken</a> och följa upp i <a href="insikter.html">insikterna</a>.</p>
-    <div class="doginary-seo__faq">
-    <h2>Vanliga frågor</h2>
-    <h3>Hur mycket motion behöver en hund per dag?</h3><p>De flesta vuxna hundar mår bra av minst en till två timmars aktivitet per dag, fördelat på flera promenader plus fri rörelse och aktivering. Behovet varierar kraftigt med ras, ålder och hälsa — arbetande raser behöver ofta betydligt mer, medan valpar och seniorer behöver kortare och mer anpassade pass. Välj ras och livsfas ovan för en mer specifik rekommendation.</p>
-    <h3>Hur länge kan en hund vara ensam hemma?</h3><p>Som tumregel bör en vuxen, van hund inte lämnas ensam längre än fyra till sex timmar i sträck. Valpar klarar betydligt kortare stunder och behöver träna upp ensamhet gradvis. Svenska regler ställer krav på tillsyn, och en hund som visar stress vid ensamhet behöver träning snarare än längre pass.</p>
-    <h3>Hur många gånger om dagen ska en hund äta?</h3><p>Vuxna hundar äter oftast två mål om dagen. Valpar behöver fler och mindre mål — ofta tre till fyra — eftersom de växer och har mindre magsäck. Följ fodrets utfodringsrekommendation och justera efter hull, aktivitetsnivå och vikt.</p>
-    <h3>Hur mycket sover en hund per dygn?</h3><p>Vuxna hundar sover och vilar typiskt omkring tolv till fjorton timmar per dygn, valpar och seniorer betydligt mer — ofta arton till tjugo timmar. Sömnen tas i flera pass, och ostörd vila är lika viktig som aktiviteten.</p>
-    <h3>Hur ofta ska man klippa hundens klor?</h3><p>Kolla klorna ungefär varannan vecka och klipp när de börjar nå marken eller hörs mot golvet. Hur ofta det behövs beror på hur mycket hunden rör sig på hårt underlag. Vänj valpen vid att bli hanterad i tassarna tidigt, i korta och positiva pass.</p>
-    </div>
-</section>
-
 <footer class="doginary-footer">
   <p class="doginary-footer__disclaimer" data-i18n="footerDisclaimer">Doginary ger inte veterinärmedicinsk rådgivning. Kontakta alltid veterinär om du är orolig för din hunds hälsa.</p>
   <div class="doginary-footer__links">
@@ -525,20 +474,6 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   const STR = {
     en: {
-      // Innehålls-/frågesektionen längst ner på sidan (se markupen).
-      seoContent: `<h2>Dog guidelines — exercise, alone time, food and sleep by breed and age</h2>
-    <p>Pick a breed and life stage in the menus above and the guidelines adapt right away — you don’t need an account to read them. If you are logged in, the fields are filled in from your dog’s profile automatically.</p>
-    <p>The guidelines cover exercise, how long a dog can be left alone, food and meals per day, sleep needs, nail trims, coat care, dental care, weight and ear checks — with different recommendations for puppies, adult dogs and seniors. Every card links to the animal health or veterinary organisation the recommendation is based on.</p>
-    <p>Some breeds also have things worth extra attention, such as flat-faced breeds in heat, long-backed breeds and stairs, or large breeds and joints. That appears automatically once you pick a breed. To see how your own dog’s everyday life compares, log it in the <a href="logga.html">dog diary</a> and follow up in the <a href="insikter.html">insights</a>.</p>
-    <div class="doginary-seo__faq">
-    <h2>Frequently asked questions</h2>
-    <h3>How much exercise does a dog need per day?</h3><p>Most adult dogs do well with at least one to two hours of activity a day, split across several walks plus free movement and mental stimulation. The need varies a lot with breed, age and health — working breeds often need considerably more, while puppies and seniors need shorter, gentler sessions. Pick a breed and life stage above for a more specific recommendation.</p>
-    <h3>How long can a dog be left alone at home?</h3><p>As a rule of thumb an adult, settled dog should not be left alone for more than four to six hours at a stretch. Puppies manage far shorter periods and need to build up alone time gradually. A dog that shows stress when left alone needs training rather than longer sessions.</p>
-    <h3>How many meals a day should a dog have?</h3><p>Adult dogs usually eat two meals a day. Puppies need more, smaller meals — often three to four — because they are growing and have smaller stomachs. Follow the feeding recommendation on the food and adjust for body condition, activity level and weight.</p>
-    <h3>How much does a dog sleep in a day?</h3><p>Adult dogs typically sleep and rest around twelve to fourteen hours a day, while puppies and seniors need considerably more — often eighteen to twenty hours. Sleep is taken in several stretches, and undisturbed rest matters as much as the activity.</p>
-    <h3>How often should you trim a dog’s nails?</h3><p>Check the nails roughly every other week and trim when they start to reach the ground or click against the floor. How often depends on how much the dog moves on hard surfaces. Get puppies used to having their paws handled early, in short, positive sessions.</p>
-    </div>`,
-      metaDescription: 'How much exercise does a dog need? How long can it be left alone? Breed-aware guidelines for exercise, alone time, food, sleep, nails, coat, teeth and weight — puppy, adult and senior.',
       docTitle: 'Doginary — Guidelines',
       navWeather: 'Weather', navDiary: 'Diary', navInsights: 'Insights', navGuidelines: 'Guidelines', navHealth: 'Health center',
       authEyebrow: 'Doginary',
@@ -557,9 +492,14 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       profileHintLoggedOut: 'Choose breed and life stage to see the guidelines that fit your dog. Log in and the fields are filled in from your dog\u2019s profile automatically.',
       ageOverrideLabel: 'Life stage', agePuppy: 'Puppy', ageAdult: 'Adult', ageSenior: 'Senior',
       sizeOverrideLabel: 'Size', sizeSmall: 'Small', sizeMedium: 'Medium', sizeLarge: 'Large', sizeGiant: 'Giant',
-      profileHint: 'We\u2019ve guessed the life stage and size from your profile — feel free to adjust if it\u2019s not quite right.',
+      flatNoseLabel: 'Flat nose', flatNoseUnknown: 'Not sure', flatNoseYes: 'Yes', flatNoseNo: 'No',
+      coatLengthLabel: 'Coat length', coatLengthUnknown: 'Not sure', coatLengthShort: 'Short', coatLengthMedium: 'Medium', coatLengthLong: 'Long',
+      profileHint: 'We\u2019ve guessed the life stage from your profile — feel free to adjust if it\u2019s not quite right. If you\u2019ve picked mixed breed, you can also set size, nose shape and coat length above.',
       exerciseTitle: 'Exercise', aloneTitle: 'Alone time', foodTitle: 'Food', sleepTitle: 'Sleep',
       nailsTitle: 'Nail trimming', coatTitle: 'Coat care', dentalTitle: 'Dental care', weightTitle: 'Weight', earsTitle: 'Ear care',
+      guideHeadingGeneric: 'General information about dogs',
+      guideHeadingBreed: (breed) => `Adapted for ${breed}`,
+      guideHeadingIntro: 'Practical guidelines for exercise, food, sleep and care, based on life stage.',
       watchTitle: 'Breed-specific things to watch for',
       watchIntro: 'Common, well-documented risk factors for your breed — not an exhaustive list. Always ask your vet if you\u2019re unsure.',
       watchEmpty: 'No commonly flagged breed-specific risk factors matched for this breed in our list — that doesn\u2019t mean there are none. Check your national kennel club\u2019s breed health pages or ask your vet.',
@@ -579,19 +519,6 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       donateImageNote: 'Doginary stays free thanks to small contributions like this — every little bit helps.',
     },
     sv: {
-      seoContent: `<h2>Riktlinjer för hund — motion, ensamtid, mat och sömn efter ras och ålder</h2>
-    <p>Välj ras och livsfas i rullmenyerna ovan, så anpassas riktlinjerna direkt — du behöver inget konto för att läsa dem. Är du inloggad fylls fälten i automatiskt från din hunds profil.</p>
-    <p>Riktlinjerna täcker motion, hur länge en hund kan vara ensam hemma, mat och antal mål per dag, sömnbehov, klipp av klor, pälsvård, tandvård, vikt och öronkontroll — med olika rekommendationer för valp, vuxen hund och senior. Varje kort har en källänk till den djurhälso- eller veterinärorganisation rekommendationen bygger på.</p>
-    <p>Vissa raser har dessutom sådant som är extra värt att hålla koll på, till exempel kortnosiga raser i värme, långryggade raser och trappor, eller stora raser och leder. Det visas automatiskt när du valt ras. Vill du se hur din egen hunds vardag ligger till mot riktlinjerna kan du logga den i <a href="logga.html">hunddagboken</a> och följa upp i <a href="insikter.html">insikterna</a>.</p>
-    <div class="doginary-seo__faq">
-    <h2>Vanliga frågor</h2>
-    <h3>Hur mycket motion behöver en hund per dag?</h3><p>De flesta vuxna hundar mår bra av minst en till två timmars aktivitet per dag, fördelat på flera promenader plus fri rörelse och aktivering. Behovet varierar kraftigt med ras, ålder och hälsa — arbetande raser behöver ofta betydligt mer, medan valpar och seniorer behöver kortare och mer anpassade pass. Välj ras och livsfas ovan för en mer specifik rekommendation.</p>
-    <h3>Hur länge kan en hund vara ensam hemma?</h3><p>Som tumregel bör en vuxen, van hund inte lämnas ensam längre än fyra till sex timmar i sträck. Valpar klarar betydligt kortare stunder och behöver träna upp ensamhet gradvis. Svenska regler ställer krav på tillsyn, och en hund som visar stress vid ensamhet behöver träning snarare än längre pass.</p>
-    <h3>Hur många gånger om dagen ska en hund äta?</h3><p>Vuxna hundar äter oftast två mål om dagen. Valpar behöver fler och mindre mål — ofta tre till fyra — eftersom de växer och har mindre magsäck. Följ fodrets utfodringsrekommendation och justera efter hull, aktivitetsnivå och vikt.</p>
-    <h3>Hur mycket sover en hund per dygn?</h3><p>Vuxna hundar sover och vilar typiskt omkring tolv till fjorton timmar per dygn, valpar och seniorer betydligt mer — ofta arton till tjugo timmar. Sömnen tas i flera pass, och ostörd vila är lika viktig som aktiviteten.</p>
-    <h3>Hur ofta ska man klippa hundens klor?</h3><p>Kolla klorna ungefär varannan vecka och klipp när de börjar nå marken eller hörs mot golvet. Hur ofta det behövs beror på hur mycket hunden rör sig på hårt underlag. Vänj valpen vid att bli hanterad i tassarna tidigt, i korta och positiva pass.</p>
-    </div>`,
-      metaDescription: 'Hur mycket motion behöver en hund? Hur länge kan den vara ensam hemma? Rasanpassade riktlinjer för motion, ensamtid, mat, sömn, klor, päls, tänder och vikt — valp, vuxen och senior.',
       docTitle: 'Doginary — Riktlinjer',
       navWeather: 'Väder', navDiary: 'Dagbok', navInsights: 'Insikter', navGuidelines: 'Riktlinjer', navHealth: 'Hälsocenter',
       authEyebrow: 'Doginary',
@@ -610,9 +537,14 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       profileHintLoggedOut: 'Välj ras och livsfas för att se riktlinjerna som passar din hund. Loggar du in fylls fälten i automatiskt från hundens profil.',
       ageOverrideLabel: 'Livsfas', agePuppy: 'Valp', ageAdult: 'Vuxen', ageSenior: 'Senior',
       sizeOverrideLabel: 'Storlek', sizeSmall: 'Liten', sizeMedium: 'Mellan', sizeLarge: 'Stor', sizeGiant: 'Jättestor',
-      profileHint: 'Vi har gissat livsfas och storlek utifrån din profil — justera gärna om det inte stämmer.',
+      flatNoseLabel: 'Platt nos', flatNoseUnknown: 'Vet ej', flatNoseYes: 'Ja', flatNoseNo: 'Nej',
+      coatLengthLabel: 'Pälslängd', coatLengthUnknown: 'Vet ej', coatLengthShort: 'Kort', coatLengthMedium: 'Medellång', coatLengthLong: 'Lång',
+      profileHint: 'Vi har gissat livsfas utifrån din profil — justera gärna om det inte stämmer. Har du valt blandras kan du även ange storlek, nos och pälslängd ovan.',
       exerciseTitle: 'Motion', aloneTitle: 'Ensam hemma', foodTitle: 'Mat', sleepTitle: 'Sömn',
       nailsTitle: 'Kloklippning', coatTitle: 'Pälsvård', dentalTitle: 'Tandvård', weightTitle: 'Vikt', earsTitle: 'Öronvård',
+      guideHeadingGeneric: 'Allmän information om hundar',
+      guideHeadingBreed: (breed) => `Anpassat efter ${breed}`,
+      guideHeadingIntro: 'Praktiska riktlinjer för motion, mat, sömn och skötsel, utifrån livsfas.',
       watchTitle: 'Rasspecifikt att hålla koll på',
       watchIntro: 'Vanliga, väldokumenterade riskfaktorer för din ras — inte en fullständig lista. Fråga alltid veterinären om du är osäker.',
       watchEmpty: 'Vi har inga vanliga rasspecifika riskfaktorer i vår lista som matchar den här rasen — det betyder inte att det inte finns några. Kolla din kennelklubbs rasspecifika hälsoinformation eller fråga veterinären.',
@@ -643,26 +575,6 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   function applyI18n(){
     document.documentElement.lang = lang;
-    // Textblock som innehåller länkar/rubriker (innehållssektionen längst
-    // ner) — sätts som HTML istället för textContent.
-    document.querySelectorAll('[data-i18n-html]').forEach(el => {
-      const val = t(el.getAttribute('data-i18n-html'));
-      if (typeof val === 'string') el.innerHTML = val;
-    });
-    // Sidbeskrivningen (och delningstexterna) ska matcha språket besökaren
-    // faktiskt ser, inte bara det som står i markupen.
-    const metaDesc = t('metaDescription');
-    if (typeof metaDesc === 'string') {
-      [['meta[name="description"]', 'content'],
-       ['meta[property="og:description"]', 'content'],
-       ['meta[name="twitter:description"]', 'content']].forEach(([sel, attr]) => {
-        const el = document.querySelector(sel);
-        if (el) el.setAttribute(attr, metaDesc);
-      });
-      const ogLocale = document.querySelector('meta[property="og:locale"]');
-      if (ogLocale) ogLocale.setAttribute('content', lang === 'sv' ? 'sv_SE' : 'en_US');
-    }
-
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       const val = t(key);
@@ -883,6 +795,28 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
     return BREED_GROUPS.filter(g => g.keywords.some(k => b.includes(k)));
   }
 
+  // "Blandras"/"Mixed breed" är själva rasrullmenyns värde för blandras
+  // (satt av dogBreedOptionsHtml() i doginary-auth.js) — inte en egen
+  // kod, så vi känner igen den på texten, oavsett språk.
+  function isMixedBreed(breed){
+    const b = (breed || '').trim().toLowerCase();
+    return b === 'blandras' || b === 'mixed breed';
+  }
+
+  // Storlek/nos/päls går att räkna ut från en namngiven ras (se
+  // BREED_GROUPS och den fullständiga raslistan), men inte från
+  // "Blandras" — där behöver vi fråga användaren istället. En
+  // blandrashund med platt nos får därför samma "brachy"-kort som en
+  // namngiven kortnosig ras skulle fått.
+  function activeWatchGroups(breed){
+    let groups = matchBreedGroups(breed);
+    if (isMixedBreed(breed) && flatNose === 'yes') {
+      const brachy = BREED_GROUPS.find(g => g.id === 'brachy');
+      if (brachy && !groups.some(g => g.id === 'brachy')) groups = groups.concat(brachy);
+    }
+    return groups;
+  }
+
   /* ==================================================================
      Tolka fritextfälten "age" och "size" från hundprofilen till en
      livsfas (puppy/adult/senior) och storleksgrupp (small..giant).
@@ -927,38 +861,37 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   let currentDog = null;
   let ageGroup = 'adult';
   let sizeGroup = 'medium';
+  let flatNose = 'unknown';
+  let coatLength = 'unknown';
   let userAdjustedAge = false;
   let userAdjustedSize = false;
 
-  // Nya konton som skapas härifrån ska inte skickas vidare till en annan
-  // sida (se doginary-auth.js) — de val man gjort här ska finnas kvar.
-  window.DOGINARY_STAY_AFTER_SIGNUP = true;
-
-  // Ras/livsfas/storlek som en utloggad besökare valt själv sparas lokalt,
-  // så att riktlinjerna ser likadana ut nästa gång sidan öppnas. Loggar
-  // man in tar hundprofilen över.
-  const CHOICE_KEY = 'doginary_guidelines_choice';
-  function readChoice(){
-    try { return JSON.parse(localStorage.getItem(CHOICE_KEY) || 'null'); } catch (e) { return null; }
-  }
-  function saveChoice(){
-    try {
-      localStorage.setItem(CHOICE_KEY, JSON.stringify({
-        breed: userAdjustedBreed ? breedOverrideEl.value : '',
-        age: userAdjustedAge ? ageGroup : '',
-        size: userAdjustedSize ? sizeGroup : ''
-      }));
-    } catch (e) { /* ignore */ }
-  }
-
   const ageOverrideEl = document.getElementById('ageOverride');
   const sizeOverrideEl = document.getElementById('sizeOverride');
+  const flatNoseOverrideEl = document.getElementById('flatNoseOverride');
+  const coatLengthOverrideEl = document.getElementById('coatLengthOverride');
+  const mixedBreedFieldsEl = document.getElementById('mixedBreedFields');
   const breedOverrideEl = document.getElementById('breedOverride');
   let userAdjustedBreed = false;
 
-  ageOverrideEl.addEventListener('change', () => { ageGroup = ageOverrideEl.value; userAdjustedAge = true; saveChoice(); renderGuides(); });
-  sizeOverrideEl.addEventListener('change', () => { sizeGroup = sizeOverrideEl.value; userAdjustedSize = true; saveChoice(); renderGuides(); });
-  breedOverrideEl.addEventListener('change', () => { userAdjustedBreed = true; saveChoice(); updateProfileUI(); });
+  ageOverrideEl.addEventListener('change', () => { ageGroup = ageOverrideEl.value; userAdjustedAge = true; renderGuides(); });
+  sizeOverrideEl.addEventListener('change', () => { sizeGroup = sizeOverrideEl.value; userAdjustedSize = true; renderGuides(); });
+  flatNoseOverrideEl.addEventListener('change', () => { flatNose = flatNoseOverrideEl.value; renderGuides(); });
+  coatLengthOverrideEl.addEventListener('change', () => { coatLength = coatLengthOverrideEl.value; renderGuides(); });
+  breedOverrideEl.addEventListener('change', () => {
+    userAdjustedBreed = true;
+    // Storlek/nos/päls är bara relevant för blandras — nollställ dem så
+    // att ett tidigare ifyllt värde inte "läcker" in på en namngiven ras
+    // vars storlek etc. redan är känd via rasen själv.
+    if (!isMixedBreed(breedOverrideEl.value)) {
+      userAdjustedSize = false;
+      flatNose = 'unknown';
+      coatLength = 'unknown';
+      flatNoseOverrideEl.value = 'unknown';
+      coatLengthOverrideEl.value = 'unknown';
+    }
+    renderGuides();
+  });
 
   /* Rasrullmenyn använder samma raslista (och samma språk) som kontomenyn
      och index.html:s profilkort, via doginary-auth.js — så listan finns
@@ -1027,6 +960,12 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   function renderGuides(){
     if (document.getElementById('guideSection').hidden) return;
 
+    const breed = activeBreed();
+    mixedBreedFieldsEl.hidden = !isMixedBreed(breed);
+
+    const guideHeadingTitleEl = document.getElementById('guideHeadingTitle');
+    guideHeadingTitleEl.textContent = breed ? t('guideHeadingBreed')(breed) : t('guideHeadingGeneric');
+
     document.getElementById('exerciseText').textContent = EXERCISE[lang][ageGroup];
     document.getElementById('aloneText').textContent = ALONE[lang][ageGroup];
     document.getElementById('foodText').textContent = FOOD[lang][ageGroup];
@@ -1060,7 +999,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   function renderWatchList(){
     const container = document.getElementById('watchList');
-    const groups = matchBreedGroups(activeBreed());
+    const groups = activeWatchGroups(activeBreed());
     if (!groups.length) {
       container.innerHTML = `<div class="watch-empty">${escapeHtml(t('watchEmpty'))}</div>`;
       return;
@@ -1073,7 +1012,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   function renderSourcesList(){
     const list = document.getElementById('sourcesList');
-    const usedIds = new Set([EXERCISE_SRC, ALONE_SRC, FOOD_SRC[ageGroup], SLEEP_SRC[ageGroup], NAILS_SRC, COAT_SRC, DENTAL_SRC, WEIGHT_SRC, EARS_SRC, ...matchBreedGroups(activeBreed()).map(g => g.src)]);
+    const usedIds = new Set([EXERCISE_SRC, ALONE_SRC, FOOD_SRC[ageGroup], SLEEP_SRC[ageGroup], NAILS_SRC, COAT_SRC, DENTAL_SRC, WEIGHT_SRC, EARS_SRC, ...activeWatchGroups(activeBreed()).map(g => g.src)]);
     // Visa alltid hela källförteckningen (inte bara de som används just nu)
     // så att sidan är transparent kring varifrån all information kan komma.
     list.innerHTML = Object.keys(SOURCES).map(id => {
@@ -1138,14 +1077,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   // Visa riktlinjerna direkt, utan att vänta på inloggning: rullmenyerna
   // står på förvalen (vuxen/mellan, ingen ras) tills man väljer själv
   // eller loggar in.
-  const savedChoice = readChoice();
-  if (savedChoice) {
-    if (savedChoice.age) { ageGroup = savedChoice.age; userAdjustedAge = true; }
-    if (savedChoice.size) { sizeGroup = savedChoice.size; userAdjustedSize = true; }
-    if (savedChoice.breed) userAdjustedBreed = true;
-  }
-  populateBreedSelect((savedChoice && savedChoice.breed) || '');
-  if (savedChoice) { ageOverrideEl.value = ageGroup; sizeOverrideEl.value = sizeGroup; }
+  populateBreedSelect('');
   renderAll();
 
 })();

@@ -22,9 +22,9 @@
 // fil — annars sitter återvändande besökare kvar på den gamla versionen.
 // v4: insikter.html visar nu förhandsvisningskort ("More data needed")
 // utloggat/utan poster, doginary-data.js ändrad i samma release.
-// v5: insikter.html — statisk platshållartext i hero-rubriken bytt från
-// ett påhittat exempel ("Bella...") till den riktiga tomma-läget-texten,
-// så den inte blinkar till innan JS hunnit rita om den.
+// v5: guidelines.html — rasspecifika riskfaktorer flyttade högre upp,
+// ny rubrik som visar om innehållet är allmänt eller rasanpassat, och
+// storlek/nos/pälslängd visas nu bara för "Blandras" i profilkortet.
 const CACHE_VERSION = 'v5';
 const APP_SHELL_CACHE = `doginary-shell-${CACHE_VERSION}`;
 const DATA_CACHE = `doginary-data-${CACHE_VERSION}`;

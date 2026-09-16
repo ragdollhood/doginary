@@ -2,78 +2,97 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://doginary.com/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-09-16</lastmod>
+<changefreq>monthly/changefreq>
+<priority>1.0</priority>
   </url>
 
     
   <url>
     <loc>https://doginary.com/health</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+     <lastmod>2026-09-16</lastmod>
+<changefreq>monthly/changefreq>
+<priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://doginary.com/guidelines</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-09-16</lastmod>
+<changefreq>monthly/changefreq>
+<priority>0.8</priority>
   </url>
 
     
   <url>
     <loc>https://doginary.com/logga</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-09-16</lastmod>
+<changefreq>monthly/changefreq>
+<priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://doginary.com/insikter</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+  <lastmod>2026-09-16</lastmod>
+<changefreq>monthly/changefreq>
+<priority>0.8</priority>
   </url>
   
 
 <url>
     <loc>https://doginary.com/knowledge/training</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+  <lastmod>2026-09-16</lastmod>
+<changefreq>yearly</changefreq>
+<priority>0.2</priority>
   </url>
 
   <url>
     <loc>https://doginary.com/knowledge/weather</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+   <lastmod>2026-09-16</lastmod>
+<changefreq>yearly</changefreq>
+<priority>0.2</priority>
   </url>
 
   <url>
     <loc>https://doginary.com/knowledge/safety</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+ <lastmod>2026-09-16</lastmod>
+<changefreq>yearly</changefreq>
+<priority>0.2</priority>
   </url>
 
 <url>
     <loc>https://doginary.com/knowledge/seniors</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+<lastmod>2026-09-16</lastmod>
+<changefreq>yearly</changefreq>
+<priority>0.2</priority>
   </url>
   
   
 <url>
     <loc>https://doginary.com/knowledge/puppies</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+ <lastmod>2026-09-16</lastmod>
+<changefreq>yearly</changefreq>
+<priority>0.2</priority>
   </url>
 
   <url>
     <loc>https://doginary.com/knowledge/health</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+   <lastmod>2026-09-16</lastmod>
+<changefreq>yearly</changefreq>
+<priority>0.2</priority>
   </url>
   
 <url>
     <loc>https://doginary.com/knowledge/walking</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+  <lastmod>2026-09-16</lastmod>
+<changefreq>yearly</changefreq>
+<priority>0.2</priority>
   </url>
+
+  <url>
+<loc>https://doginary.com/terms.html</loc>
+<lastmod>2026-09-16</lastmod>
+<changefreq>yearly</changefreq>
+<priority>0.2</priority>
+</url>
 
 </urlset>

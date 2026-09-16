@@ -1995,6 +1995,14 @@
     // ev. strukturerade rader) slås ihop till en post per kalenderdag,
     // vilket är vad DoginaryData:s beräkningar förutsätter (uppgift 13).
     const allEntries = DoginaryData.buildDailyEntries(rawEntries);
+    // Har ÖVERHUVUDTAGET loggats en dag? Styr bara vilken hero-rubrik som
+    // visas (tom vs. lugn/varning) — själva kortgriden ritas likadant i
+    // båda fallen (se computeToday: en hund utan loggade dagar får samma
+    // kort som andra, fast med "inget loggat" i varje kort och "Mer data
+    // behövs" som märke). Det är så en utloggad besökare — och en helt ny
+    // inloggad användare — ser exakt vilka kort som väntar utan att behöva
+    // logga något först.
+    const hasAnyDay = allEntries.length > 0;
 
     const todayGrid = document.getElementById('todayGrid');
     const todayCoverage = document.getElementById('todayCoverage');
@@ -2007,10 +2015,11 @@
     }
 
     if (!todayData) {
+      // Når bara hit om computeToday faktiskt kastade ett fel — inte
+      // längre för "inga loggade dagar", det hanteras ovan. Kvar som en
+      // sista utväg så sidan aldrig står helt tom vid ett oväntat fel.
       todayCoverage.textContent = '';
       todayGrid.innerHTML = `<div class="emptycard" style="grid-column:1/-1">${t('emptyToday')(esc(displayName))}</div>`;
-      document.getElementById('heroHeadline').textContent = capitalize(t('heroEmptyHeadline')(displayName));
-      document.getElementById('heroSub').textContent = t('heroEmptySub');
     } else {
       todayCoverage.textContent = todayCoverageText(todayData.confidence, todayData.sampleSize);
       todayData.cards.filter(item => item.type !== 'energy').forEach(item => {
@@ -2033,7 +2042,9 @@
 
       // Kroppsvård / Aktivitet / Bajs — extra kort som samlar snabbloggens
       // bad/borstning/klo, träning/lek respektive bajs på ett översiktligt
-      // sätt (se byggfunktionerna ovan för detaljer).
+      // sätt (se byggfunktionerna ovan för detaljer). Fungerar redan fint
+      // med tom rådata (rawEntries === []) — varje kort visar då bara
+      // "Aldrig loggat" och nollställda summeringar, precis som önskat.
       const careTodayIso = careTodayISO();
       [
         buildBodyCareCard(rawEntries, careTodayIso),
@@ -2048,7 +2059,13 @@
     try { warnings = DoginaryData.computeWarnings(allEntries, dogName, profile, lang); } catch (e) { warnings = []; }
     const hasSeriousWarning = warnings.some(w => w.severity === 'watch' || w.severity === 'contact_vet');
 
-    if (todayData) {
+    if (!hasAnyDay) {
+      // Utloggad förhandsvisning eller ett helt nytt konto: samma
+      // hero-rubrik som tidigare ("väntar på sin första loggade dag"),
+      // trots att korten ovan nu visas i sin helhet.
+      document.getElementById('heroHeadline').textContent = capitalize(t('heroEmptyHeadline')(displayName));
+      document.getElementById('heroSub').textContent = t('heroEmptySub');
+    } else if (todayData) {
       if (hasSeriousWarning) {
         document.getElementById('heroHeadline').textContent = t('heroWarningHeadline')(displayName);
         document.getElementById('heroSub').textContent = t('heroWarningSub');

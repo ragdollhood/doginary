@@ -20,7 +20,9 @@
 // v3: inloggningsrutan översätts, alla sidor visas utloggade, crawlbara
 // innehållssektioner. Höj den här vid varje release som ändrar en cachad
 // fil — annars sitter återvändande besökare kvar på den gamla versionen.
-const CACHE_VERSION = 'v3';
+// v4: insikter.html visar nu förhandsvisningskort ("More data needed")
+// utloggat/utan poster, doginary-data.js ändrad i samma release.
+const CACHE_VERSION = 'v4';
 const APP_SHELL_CACHE = `doginary-shell-${CACHE_VERSION}`;
 const DATA_CACHE = `doginary-data-${CACHE_VERSION}`;
 const CURRENT_CACHES = [APP_SHELL_CACHE, DATA_CACHE];

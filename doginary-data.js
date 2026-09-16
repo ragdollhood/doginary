@@ -430,9 +430,16 @@
   function computeToday(entriesRaw, dogName, profile, lang) {
     lang = lang === 'en' ? 'en' : 'sv';
     var entries = normalizeEntries(entriesRaw);
-    if (!entries.length) return null;
-    var latest = entries[entries.length - 1];
-    var prior = entries.slice(0, -1);
+    // Ingen dag loggad alls (helt nytt konto, eller en utloggad
+    // förhandsvisning av insikter.html) — bygg ändå samma kort som
+    // vanligt istället för att ge upp. `latest` blir ett tomt objekt, så
+    // varje fälts befintliga "inget loggat"-text (se nedan) används
+    // automatiskt, och baslinjen får noll tidigare dagar precis som för
+    // en riktig, ny hund. Anropande sida avgör separat (utifrån om
+    // entries.length är noll) om hero-rubriken ska vara den tomma
+    // varianten eller den vanliga lugn/varning-varianten.
+    var latest = entries.length ? entries[entries.length - 1] : {};
+    var prior = entries.length ? entries.slice(0, -1) : [];
     var name = subject(dogName, profile, lang);
     var cards = [];
     var notSpecified = lang === 'en' ? 'not specified' : 'ej angiven';

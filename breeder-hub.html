@@ -526,12 +526,12 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
 // användaren tillhör. Normalt sköts detta av handle_new_kennel_user()
 // -triggern i SQL-schemat direkt vid registrering.
 async function getOrCreateKennelId(userId){
-  const { data: membership, error } = await sb.from('kennel_members').select('kennel_id').eq('user_id', userId).limit(1).maybeSingle();
+  const { data: membership, error } = await sb.from('bh_kennel_members').select('kennel_id').eq('user_id', userId).limit(1).maybeSingle();
   if(error) throw error;
   if(membership) return membership.kennel_id;
-  const { data: kennel, error: kErr } = await sb.from('kennels').insert({ owner_id:userId, name:'Min kennel' }).select().single();
+  const { data: kennel, error: kErr } = await sb.from('bh_kennels').insert({ owner_id:userId, name:'Min kennel' }).select().single();
   if(kErr) throw kErr;
-  await sb.from('kennel_members').insert({ kennel_id:kennel.id, user_id:userId, role:'owner' });
+  await sb.from('bh_kennel_members').insert({ kennel_id:kennel.id, user_id:userId, role:'owner' });
   return kennel.id;
 }
 
@@ -668,12 +668,12 @@ function seed(){
 
 async function loadDB(){
   try{
-    const { data, error } = await sb.from('kennel_data').select('data').eq('kennel_id', KENNEL_ID).maybeSingle();
+    const { data, error } = await sb.from('bh_kennel_data').select('data').eq('kennel_id', KENNEL_ID).maybeSingle();
     if(error) throw error;
     if(data && data.data && Object.keys(data.data).length) return data.data;
     // Tom rad (t.ex. precis skapad av signup-triggern) — seeda med startdata.
     const fresh = seed();
-    await sb.from('kennel_data').upsert({kennel_id:KENNEL_ID, data: fresh, updated_at:new Date().toISOString()});
+    await sb.from('bh_kennel_data').upsert({kennel_id:KENNEL_ID, data: fresh, updated_at:new Date().toISOString()});
     await savePublicSnapshot(fresh);
     return fresh;
   }catch(e){
@@ -684,7 +684,7 @@ async function loadDB(){
 }
 async function saveDB(){
   try{
-    const { error } = await sb.from('kennel_data').upsert({kennel_id:KENNEL_ID, data: DB, updated_at:new Date().toISOString()});
+    const { error } = await sb.from('bh_kennel_data').upsert({kennel_id:KENNEL_ID, data: DB, updated_at:new Date().toISOString()});
     if(error) throw error;
     await savePublicSnapshot(DB);
   }catch(e){
@@ -702,7 +702,7 @@ async function savePublicSnapshot(db){
     hips:d.hips, elbows:d.elbows, eyes:d.eyes, dna:d.dna, titles:d.titles, sire:d.sire, dam:d.dam
   }));
   try{
-    await sb.from('kennel_public').upsert({
+    await sb.from('bh_kennel_public').upsert({
       kennel_id:KENNEL_ID,
       data:{ kennelName: db.kennelName, dogs: publicDogs },
       updated_at:new Date().toISOString()

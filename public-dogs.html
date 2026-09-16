@@ -224,7 +224,7 @@ async function loadKennelData(){
   if(sb){
     try{
       const kennelParam = new URLSearchParams(location.search).get('kennel');
-      let query = sb.from('kennel_public').select('data, kennel_id, updated_at');
+      let query = sb.from('bh_kennel_public').select('data, kennel_id, updated_at');
       query = kennelParam ? query.eq('kennel_id', kennelParam).maybeSingle() : query.order('updated_at',{ascending:false}).limit(1).maybeSingle();
       const { data, error } = await query;
       if(error) throw error;

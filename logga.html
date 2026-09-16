@@ -1396,8 +1396,13 @@
 
 <div class="page">
 
-  <!-- ---------- Inloggning (visas tills en session finns) ---------- -->
-  <div id="authScreen">
+  <!-- ---------- Inloggning ----------
+       Dagboken visas numera för alla, även utloggade: man ska kunna se
+       hela sidan innan man skapar konto. Inloggningsrutan öppnas istället
+       först när man faktiskt trycker på en loggningsknapp (se
+       requireLogin() längst ner i sidans script). Kortet ligger kvar dolt
+       så att openAuthBtn och översättningarna fortsätter fungera. -->
+  <div id="authScreen" hidden>
     <header class="top">
       <p class="eyebrow">Doginary</p>
       <h1 data-i18n="authTitle">Logga in för att spara loggen</h1>
@@ -1409,8 +1414,8 @@
     </div>
   </div>
 
-  <!-- ---------- Appen (visas när man är inloggad) ---------- -->
-  <div id="appScreen" hidden>
+  <!-- ---------- Appen (visas alltid, även utloggad) ---------- -->
+  <div id="appScreen">
 
     <header class="top">
       <h1><span id="logDayPrefix" data-i18n="logDayPrefix">Logga dagen för</span> <span class="dogname-inline" id="dogNameInline" hidden></span></h1>
@@ -2439,6 +2444,7 @@
   }
 
   async function refreshEntries(){
+    if(!currentDog){ allEntries = []; renderCalendar(); renderDayCard(); renderQuickCounts(); fillMoreDetailsForSelectedDate(); return []; }
     const entries = await DoginaryDB.loadEntries(currentDog.id);
     allEntries = entries;
     renderCalendar();
@@ -2498,7 +2504,8 @@
   }
 
   async function quickLog(type, detail){
-    if(!currentDog || !currentUser) return;
+    if(!requireLogin()) return;
+    if(!currentDog) return;
     const targetISO = selectedISO;
 
     // Man kan nu logga bakåt/framåt i tiden genom att först markera ett
@@ -2581,7 +2588,8 @@
   });
 
   moredetailsSave.addEventListener('click', async () => {
-    if(!currentDog || !currentUser) return;
+    if(!requireLogin()) return;
+    if(!currentDog) return;
 
     const sleepRaw = sleepHoursInput.value.trim();
     const weightRaw = weightInput.value.trim();
@@ -2654,6 +2662,7 @@
   // "doginary:dogupdate" nedan så att sidan här hålls i synk.
   dogNameForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if(!requireLogin()) return;
     const trimmed = dogNameInput.value.trim();
     if(!trimmed) return;
     dogNameBtn.disabled = true;
@@ -2686,10 +2695,34 @@
   // Den här knappen öppnar bara samma ruta som kontoikonen i crossnav.
   openAuthBtn.addEventListener('click', () => DoginaryAuthUI.open('signup'));
 
+  // Hela dagboken är synlig utloggad — men i samma sekund man försöker
+  // SPARA något (snabblogga, fler detaljer, hundens namn) öppnas
+  // inloggningsrutan istället. Returnerar true om det är fritt fram.
+  function requireLogin(){
+    if(currentUser) return true;
+    DoginaryAuthUI.open('signup');
+    return false;
+  }
+
+  // Startvyn för en utloggad besökare: samma kalender, samma foto-kort,
+  // samma formulär som inloggad — bara utan sparade poster.
+  function initPublicView(){
+    const now = new Date();
+    calYear = now.getFullYear();
+    calMonth = now.getMonth();
+    weekStart = startOfWeek(now);
+    selectedISO = todayISO();
+    allEntries = [];
+    updateLogTargetUI();
+    renderCalendar();
+    renderDayCard();
+    renderQuickCounts();
+    fillMoreDetailsForSelectedDate();
+    updateDogChrome();
+  }
+
   async function enterApp(session){
     currentUser = session.user;
-    authScreen.hidden = true;
-    appScreen.hidden = false;
 
     const now = new Date();
     calYear = now.getFullYear();
@@ -2711,10 +2744,10 @@
   function showAuth(){
     currentUser = null;
     currentDog = null;
-    allEntries = [];
     quicklogStatus.textContent = '';
-    authScreen.hidden = false;
-    appScreen.hidden = true;
+    // Sidan ligger kvar synlig — vi går bara tillbaka till den tomma
+    // publika vyn istället för att gömma allt bakom ett inloggningskort.
+    initPublicView();
   }
 
   // doginary-auth.js sköter själva inloggningen/modalen. Den här sidan
@@ -2725,6 +2758,11 @@
     if(session && !currentUser){ await enterApp(session); }
     else if(!session && currentUser){ showAuth(); }
   });
+
+  // Rita upp den publika vyn direkt vid sidladdning, utan att vänta in
+  // inloggningsstatusen — är man inloggad ersätts den av enterApp() ovan
+  // så fort sessionen är läst.
+  initPublicView();
 </script>
 <script>
 const VISIT_SUPABASE_URL = "https://jjbziqsjapyiihdrlnsw.supabase.co";

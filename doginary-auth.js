@@ -719,6 +719,11 @@
     // i applyStaticTranslations()) — men finns här för sidor som byter
     // språk på något annat sätt.
     refreshLanguage: applyLanguage,
+    // Rasrullmenyn på sidans språk, så att andra sidor (t.ex.
+    // guidelines.html) kan visa exakt samma raslista utan att kopiera
+    // den — och utan att själva behöva hålla reda på språket.
+    breedOptionsHtml: dogBreedOptionsHtml,
+    breedInCurrentLang: breedInCurrentLang,
     // Slår an EN gång med den allra första inloggningsstatusen (session
     // eller null) så att andra script (t.ex. app.js) kan vänta in det
     // säkert, istället för att chansa på om "doginary:auth" redan hunnit

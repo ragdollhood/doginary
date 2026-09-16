@@ -1096,7 +1096,11 @@
 
   <h1 class="sr-only">Insikter om din hunds mående</h1>
 
-  <div id="authScreen">
+  <!-- Insikterna visas numera för alla, även utloggade: man ska kunna se
+       vilka rutor som finns och vad de skulle innehålla. Utan konto står
+       de tomma med sina vanliga "inget loggat än"-texter. Kortet ligger
+       kvar dolt så att openAuthBtn och översättningarna fungerar. -->
+  <div id="authScreen" hidden>
     <div class="doginary-loggedout-card">
       <h2 data-i18n="authCardTitle">Skapa konto eller logga in</h2>
       <p data-i18n="authCardText">Samma konto som du loggar din hunds dagar på — logga in för att se insikterna.</p>
@@ -1104,7 +1108,7 @@
     </div>
   </div>
 
-  <div id="appScreen" hidden>
+  <div id="appScreen">
 
   <div class="hero">
     <svg class="hero__paw" viewBox="0 0 100 100" fill="currentColor">
@@ -1463,6 +1467,9 @@
     applyI18n();
     if (signedIn && lastEntries && lastDogName !== null) {
       renderInsights(lastDogName, lastEntries, lastProfile);
+    } else if (typeof renderEmptyInsights === 'function') {
+      // Utloggad: rita om de tomma rutorna på det nya språket.
+      renderEmptyInsights();
     }
   }
 
@@ -2089,8 +2096,6 @@
   let lastDogId = null;
 
   async function enterApp(session){
-    authScreen.hidden = true;
-    appScreen.hidden = false;
     try{
       const dog = await DoginaryDB.getOrCreateDog(session.user.id);
       const dogName = (dog && dog.name) || DoginaryData.DEFAULT_NAME;
@@ -2112,8 +2117,18 @@
   }
 
   function showAuth(){
-    authScreen.hidden = false;
-    appScreen.hidden = true;
+    // Rutorna ligger kvar synliga — de ritas bara om tomma, med samma
+    // "inget loggat än"-texter som en inloggad utan poster ser.
+    lastEntries = null;
+    lastDogId = null;
+    renderEmptyInsights();
+  }
+
+  // Den publika vyn: exakt samma rutor och rubriker som inloggad, men
+  // utan poster. Insiktsmotorn (doginary-data.js) hanterar redan en tom
+  // dagbok och ger då sina generella "inget loggat än"-texter.
+  function renderEmptyInsights(){
+    return renderInsights(DoginaryData.DEFAULT_NAME, [], { name: '', breed: '', age: null });
   }
 
   // doginary-auth.js sköter själva inloggningen/modalen. Den här sidan
@@ -2125,6 +2140,11 @@
     if(session && !signedIn){ signedIn = true; await enterApp(session); }
     else if(!session && signedIn){ signedIn = false; showAuth(); }
   });
+
+  // Rita upp de tomma insikterna direkt vid sidladdning, utan att vänta
+  // in inloggningsstatusen — är man inloggad ersätts de av riktiga
+  // insikter så fort dagboken är hämtad.
+  renderEmptyInsights();
 
   // Hundens namn kan numera bytas i kontomenyn (kontoikonen högst upp till
   // höger, se doginary-auth.js) — rita om insikterna med det nya namnet

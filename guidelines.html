@@ -255,8 +255,12 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 })();
 </script>
 
-<!-- ---------- Inloggning (visas tills en session finns) ---------- -->
-<div id="authScreen">
+<!-- ---------- Inloggning ----------
+     Riktlinjerna visas numera för alla, även utloggade: man väljer själv
+     ras och livsfas i rullmenyerna nedan. Är man inloggad fylls de i
+     automatiskt från hundprofilen istället. Kortet ligger kvar dolt så
+     att openAuthBtn och översättningarna fortsätter fungera. -->
+<div id="authScreen" hidden>
   <div class="auth-page">
     <header class="top">
       <p class="eyebrow" data-i18n="authEyebrow">Doginary</p>
@@ -270,8 +274,8 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   </div>
 </div>
 
-<!-- ---------- Riktlinjer (visas när man är inloggad) ---------- -->
-<main class="page" id="appScreen" hidden>
+<!-- ---------- Riktlinjer (visas alltid, även utloggad) ---------- -->
+<main class="page" id="appScreen">
 <header class="top top--photo"><p class="eyebrow" data-i18n="eyebrow">Doginary</p><h1 data-i18n="pageTitle">Riktlinjer</h1><p class="intro" id="introText" data-i18n="introGeneric">Allmänna rekommendationer för motion, ensamtid, mat och sömn utifrån din hunds ras och ålder.</p></header>
 <div class="notice"><span aria-hidden="true">ⓘ</span><span data-i18n="notice">Det här är allmänna riktlinjer sammanställda från etablerade djurhälso- och veterinärorganisationer. De ersätter inte rådgivning från din egen veterinär, och varje hund är unik.</span></div>
 
@@ -284,6 +288,10 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   <div class="profile-summary">
     <strong id="profileSummaryName"></strong>
     <span id="profileSummaryMeta"></span>
+  </div>
+  <div class="profile-field">
+    <label for="breedOverride" data-i18n="breedOverrideLabel">Ras</label>
+    <select id="breedOverride"></select>
   </div>
   <div class="profile-field">
     <label for="ageOverride" data-i18n="ageOverrideLabel">Livsfas</label>
@@ -447,6 +455,8 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       notice: 'These are general guidelines compiled from established animal welfare and veterinary organisations. They don\u2019t replace advice from your own vet, and every dog is an individual.',
       noProfileTitle: 'Fill in your dog\u2019s profile',
       noProfileText: 'We can\u2019t find a breed or age for your dog yet. Add it from the account menu in the top right, and tailored guidelines will show up here.',
+      breedOverrideLabel: 'Breed',
+      profileHintLoggedOut: 'Choose breed and life stage to see the guidelines that fit your dog. Log in and the fields are filled in from your dog\u2019s profile automatically.',
       ageOverrideLabel: 'Life stage', agePuppy: 'Puppy', ageAdult: 'Adult', ageSenior: 'Senior',
       sizeOverrideLabel: 'Size', sizeSmall: 'Small', sizeMedium: 'Medium', sizeLarge: 'Large', sizeGiant: 'Giant',
       profileHint: 'We\u2019ve guessed the life stage and size from your profile — feel free to adjust if it\u2019s not quite right.',
@@ -485,6 +495,8 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       notice: 'Det här är allmänna riktlinjer sammanställda från etablerade djurhälso- och veterinärorganisationer. De ersätter inte rådgivning från din egen veterinär, och varje hund är unik.',
       noProfileTitle: 'Fyll i din hunds profil',
       noProfileText: 'Vi hittar ingen ras eller ålder på din hund ännu. Fyll i det i kontomenyn uppe till höger så visar vi anpassade riktlinjer här.',
+      breedOverrideLabel: 'Ras',
+      profileHintLoggedOut: 'Välj ras och livsfas för att se riktlinjerna som passar din hund. Loggar du in fylls fälten i automatiskt från hundens profil.',
       ageOverrideLabel: 'Livsfas', agePuppy: 'Valp', ageAdult: 'Vuxen', ageSenior: 'Senior',
       sizeOverrideLabel: 'Storlek', sizeSmall: 'Liten', sizeMedium: 'Mellan', sizeLarge: 'Stor', sizeGiant: 'Jättestor',
       profileHint: 'Vi har gissat livsfas och storlek utifrån din profil — justera gärna om det inte stämmer.',
@@ -544,6 +556,13 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
     lang = l;
     try { localStorage.setItem('dogWeatherLang', lang); } catch { /* ignore */ }
     applyI18n();
+    // Rasnamnen i rullmenyn kommer från doginary-auth.js och finns på
+    // båda språken — byt även dem, och behåll valet över språkbytet.
+    if (typeof breedOverrideEl !== 'undefined' && breedOverrideEl) {
+      if (window.DoginaryAuthUI && DoginaryAuthUI.refreshLanguage) DoginaryAuthUI.refreshLanguage();
+      populateBreedSelect(breedOverrideEl.value);
+      renderGuides();
+    }
   }
 
   langBtnSvEl?.addEventListener('click', () => setLang('sv'));
@@ -782,9 +801,34 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   const ageOverrideEl = document.getElementById('ageOverride');
   const sizeOverrideEl = document.getElementById('sizeOverride');
+  const breedOverrideEl = document.getElementById('breedOverride');
+  let userAdjustedBreed = false;
 
   ageOverrideEl.addEventListener('change', () => { ageGroup = ageOverrideEl.value; userAdjustedAge = true; renderGuides(); });
   sizeOverrideEl.addEventListener('change', () => { sizeGroup = sizeOverrideEl.value; userAdjustedSize = true; renderGuides(); });
+  breedOverrideEl.addEventListener('change', () => { userAdjustedBreed = true; renderGuides(); });
+
+  /* Rasrullmenyn använder samma raslista (och samma språk) som kontomenyn
+     och index.html:s profilkort, via doginary-auth.js — så listan finns
+     bara på ett ställe. Laddas den filen inte in faller vi tillbaka på
+     ett fritextfält, hellre än att menyn blir tom. */
+  function populateBreedSelect(selectedBreed){
+    if (window.DoginaryAuthUI && typeof DoginaryAuthUI.breedOptionsHtml === 'function') {
+      breedOverrideEl.innerHTML = DoginaryAuthUI.breedOptionsHtml(selectedBreed || '');
+    } else if (!breedOverrideEl.options.length) {
+      const opt = document.createElement('option');
+      opt.value = selectedBreed || '';
+      opt.textContent = selectedBreed || '';
+      breedOverrideEl.appendChild(opt);
+    }
+  }
+
+  // Rasen som riktlinjerna ska utgå från: användarens eget val i menyn
+  // om hen rört den, annars hundprofilens ras (inloggad).
+  function activeBreed(){
+    if (userAdjustedBreed) return breedOverrideEl.value || '';
+    return (currentDog && currentDog.breed) || breedOverrideEl.value || '';
+  }
 
   function updateProfileUI(){
     const noProfileCard = document.getElementById('noProfileCard');
@@ -795,21 +839,25 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
     const dog = currentDog || {};
     const hasBreedOrAge = !!(dog.breed || dog.age);
 
-    if (!hasBreedOrAge) {
-      noProfileCard.hidden = false;
-      profileCard.hidden = true;
-      guideSection.hidden = true;
-      introEl.textContent = t('introGeneric');
-      return;
-    }
+    // Riktlinjerna visas alltid, även utloggad och även utan hundprofil —
+    // då väljer man ras och livsfas själv i rullmenyerna. "Fyll i din
+    // hunds profil"-kortet behövs därför inte längre.
     noProfileCard.hidden = true;
     profileCard.hidden = false;
     guideSection.hidden = false;
 
-    const name = dog.name || t('dogNameFallback');
-    introEl.textContent = t('introWithName')(name, dog.breed || '');
-    document.getElementById('profileSummaryName').textContent = name;
-    document.getElementById('profileSummaryMeta').textContent = dog.breed || t('noBreedLabel');
+    if (!userAdjustedBreed) populateBreedSelect(dog.breed || '');
+
+    const name = hasBreedOrAge ? (dog.name || t('dogNameFallback')) : (dog.name || '');
+    if (hasBreedOrAge) {
+      introEl.textContent = t('introWithName')(name || t('dogNameFallback'), dog.breed || '');
+    } else {
+      introEl.textContent = t('introGeneric');
+    }
+    document.getElementById('profileSummaryName').textContent = name || t('dogNameFallback');
+    document.getElementById('profileSummaryMeta').textContent = dog.breed || activeBreed() || t('noBreedLabel');
+    const hintEl = document.querySelector('.profile-hint');
+    if (hintEl) hintEl.textContent = hasBreedOrAge ? t('profileHint') : t('profileHintLoggedOut');
 
     if (!userAdjustedSize) {
       const guessedSize = guessSize(dog.size);
@@ -860,7 +908,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   function renderWatchList(){
     const container = document.getElementById('watchList');
-    const groups = matchBreedGroups((currentDog && currentDog.breed) || '');
+    const groups = matchBreedGroups(activeBreed());
     if (!groups.length) {
       container.innerHTML = `<div class="watch-empty">${escapeHtml(t('watchEmpty'))}</div>`;
       return;
@@ -873,7 +921,7 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   function renderSourcesList(){
     const list = document.getElementById('sourcesList');
-    const usedIds = new Set([EXERCISE_SRC, ALONE_SRC, FOOD_SRC[ageGroup], SLEEP_SRC[ageGroup], NAILS_SRC, COAT_SRC, DENTAL_SRC, WEIGHT_SRC, EARS_SRC, ...matchBreedGroups((currentDog && currentDog.breed) || '').map(g => g.src)]);
+    const usedIds = new Set([EXERCISE_SRC, ALONE_SRC, FOOD_SRC[ageGroup], SLEEP_SRC[ageGroup], NAILS_SRC, COAT_SRC, DENTAL_SRC, WEIGHT_SRC, EARS_SRC, ...matchBreedGroups(activeBreed()).map(g => g.src)]);
     // Visa alltid hela källförteckningen (inte bara de som används just nu)
     // så att sidan är transparent kring varifrån all information kan komma.
     list.innerHTML = Object.keys(SOURCES).map(id => {
@@ -900,8 +948,6 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
   async function enterApp(session){
     currentUser = session.user;
-    authScreen.hidden = true;
-    appScreen.hidden = false;
     userAdjustedAge = false;
     userAdjustedSize = false;
     try {
@@ -914,8 +960,9 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   function showAuth(){
     currentUser = null;
     currentDog = null;
-    authScreen.hidden = false;
-    appScreen.hidden = true;
+    // Sidan ligger kvar synlig — riktlinjerna styrs då av rullmenyerna
+    // istället för av hundprofilen.
+    renderAll();
   }
 
   document.addEventListener('doginary:auth', (ev) => {
@@ -936,6 +983,12 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   });
 
   applyI18n();
+  // Visa riktlinjerna direkt, utan att vänta på inloggning: rullmenyerna
+  // står på förvalen (vuxen/mellan, ingen ras) tills man väljer själv
+  // eller loggar in.
+  populateBreedSelect('');
+  renderAll();
+
 })();
 </script>
 <script>

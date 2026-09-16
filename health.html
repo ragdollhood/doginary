@@ -228,8 +228,13 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 })();
 </script>
 
-<!-- ---------- Inloggning (visas tills en session finns) ---------- -->
-<div id="authScreen">
+<!-- ---------- Inloggning ----------
+     Hälsocentret visas numera för alla, även utloggade: man ska kunna se
+     vad sidan innehåller innan man skapar konto. Inloggningsrutan öppnas
+     istället först när man faktiskt försöker logga något (se
+     requireLogin() längre ner). Det här kortet ligger kvar dolt så att
+     openAuthBtn/översättningarna fortsätter fungera. -->
+<div id="authScreen" hidden>
   <div class="auth-page">
     <header class="top">
       <p class="eyebrow" data-i18n="authEyebrow">Doginary</p>
@@ -243,8 +248,8 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   </div>
 </div>
 
-<!-- ---------- Hälsocentret (visas när man är inloggad) ---------- -->
-<main class="page" id="appScreen" hidden>
+<!-- ---------- Hälsocentret (visas alltid, även utloggad) ---------- -->
+<main class="page" id="appScreen">
 <header class="top top--photo"><p class="eyebrow" data-i18n="eyebrow">Doginary Premium</p><h1 data-i18n="pageTitle">Hälsocenter</h1><p class="intro" id="introText">Samla din hunds vikt, symptom, behandlingar och viktiga hälsohändelser på ett tryggt och överskådligt ställe.</p></header>
 <div class="notice"><span aria-hidden="true">ⓘ</span><span data-i18n="notice">Hälsocentret hjälper dig att dokumentera och komma ihåg. Det ersätter inte veterinärmedicinsk rådgivning. Kontakta veterinär vid oro eller akuta symptom.</span></div>
 <section><div class="quick-head photo-box"><div><h2 data-i18n="quickTitle">Snabblogga hälsa</h2><p data-i18n="quickIntro">Välj vad du vill lägga till för det markerade datumet.</p></div><span class="selected-date" id="selectedLabel"></span></div>
@@ -706,14 +711,14 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   }
   function closeModal(){ document.getElementById('overlay').hidden = true; activeType = null; }
 
-  document.querySelectorAll('.health-card').forEach(b => b.onclick = () => openModal(b.dataset.type));
+  document.querySelectorAll('.health-card').forEach(b => b.onclick = () => { if (!requireLogin()) return; openModal(b.dataset.type); });
   document.getElementById('close').onclick = closeModal;
   document.getElementById('cancel').onclick = closeModal;
   document.getElementById('overlay').onclick = e => { if (e.target.id === 'overlay') closeModal(); };
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   document.getElementById('healthForm').onsubmit = async e => {
     e.preventDefault();
-    if (!currentUser) return;
+    if (!currentUser) { closeModal(); DoginaryAuthUI.open('signup'); return; }
     const saveBtn = e.target.querySelector('.save');
     const f = new FormData(e.target), value = f.get('value'), extra = f.get('extra') || '', note = document.getElementById('note').value.trim();
     const entry = { date: selected, time: new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }), type: activeType, value, extra, note };
@@ -757,6 +762,15 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   const openAuthBtn = document.getElementById('openAuthBtn');
   openAuthBtn.addEventListener('click', () => DoginaryAuthUI.open('signup'));
 
+  // Allt på sidan är synligt utloggad — men i samma sekund man försöker
+  // SPARA något öppnas inloggningsrutan istället. Returnerar true om det
+  // är fritt fram att fortsätta.
+  function requireLogin(){
+    if (currentUser) return true;
+    DoginaryAuthUI.open('signup');
+    return false;
+  }
+
   async function refreshEntries(){
     if (!currentDog) return;
     loadingEntries = true;
@@ -776,8 +790,6 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   async function enterApp(session){
     currentUser = session.user;
     data = [];
-    authScreen.hidden = true;
-    appScreen.hidden = false;
     cursor = new Date();
     selected = iso(cursor);
     try {
@@ -794,8 +806,10 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
     currentDog = null;
     data = [];
     currentDogName = null;
-    authScreen.hidden = false;
-    appScreen.hidden = true;
+    // Sidan ligger kvar synlig — bara innehållet töms, så en utloggad
+    // besökare fortfarande ser kalender, kort och tomma sammanfattningar.
+    updateIntro();
+    render();
   }
 
   document.addEventListener('doginary:auth', (ev) => {
@@ -815,6 +829,9 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   });
 
   applyI18n();
+  // Rita upp hela hälsocentret direkt, utan att vänta på inloggning:
+  // tom kalender, tomma listor och tomma sammanfattningar.
+  render();
 })();
 </script>
 <script>

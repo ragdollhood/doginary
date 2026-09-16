@@ -27,6 +27,15 @@
          DoginaryAuthUI.open('signup'); // eller 'signin'
        });
 
+  SPRÅK (svenska / engelska)
+  ----------------------------------------------------------------------
+  Rutan och kontomenyn följer sidans språkval automatiskt. Språket läses
+  från localStorage-nyckeln 'dogWeatherLang' ('sv' | 'en') som app.js
+  sparar, och i andra hand från <html lang>. Byter besökaren språk medan
+  sidan är öppen byts texterna direkt — ingen omladdning behövs, och
+  ingen ändring krävs i sidans egen kod. Se I18N-tabellen längst upp i
+  filen; nya texter läggs till i BÅDA språken där.
+
   OM SNABB INLOGGNING UTAN BEKRÄFTELSEMEJL (viktigt!)
   ----------------------------------------------------------------------
   Den här filen loggar in ett nytt konto DIREKT om Supabase skickar
@@ -49,6 +58,175 @@
     console.error('doginary-auth.js: DoginaryAuth/DoginaryDB saknas — kontrollera att doginary-supabase.js laddas före den här filen.');
     return;
   }
+
+  // ---------- Språk (svenska / engelska) ----------
+  //
+  // Inloggningsrutan och kontomenyn följer samma språkval som resten av
+  // sidan. Sidans egen kod (app.js på index.html) sparar valet i
+  // localStorage under 'dogWeatherLang' ('sv' | 'en') och sätter samtidigt
+  // <html lang="…">. Vi läser båda:
+  //
+  //   1. localStorage — ett MANUELLT val ska alltid gälla, på alla sidor.
+  //   2. <html lang> — täcker fallet när app.js själv valt språk utan att
+  //      spara det (t.ex. det automatiska "besökare i Sverige får svenska"
+  //      i app.js, som medvetet inte skriver till localStorage), och sidor
+  //      som bara finns på ett språk.
+  //   3. svenska som sista utväg.
+  //
+  // Byter användaren språk medan sidan är öppen upptäcks det nedan (både
+  // via <html lang>-observern och via 'storage' från andra flikar) och
+  // texterna byts direkt — även om rutan råkar stå öppen just då.
+
+  var I18N = {
+    sv: {
+      close: 'Stäng',
+      emailLabel: 'Mejladress',
+      emailPlaceholder: 'din@mejl.se',
+      passwordLabel: 'Lösenord',
+      passwordPlaceholder: 'Minst 6 tecken',
+      forgot: 'Glömt lösenord?',
+      signupTitle: 'Skapa konto',
+      signupDesc: 'Skapa ett konto med mejl och lösenord, så sparas din hunds dagbok och syncar mellan dina enheter.',
+      signupSubmit: 'Skapa konto',
+      signupToggle: 'Har du redan ett konto? Logga in',
+      signinTitle: 'Logga in',
+      signinDesc: 'Logga in med din mejladress och ditt lösenord.',
+      signinSubmit: 'Logga in',
+      signinToggle: 'Inget konto än? Skapa ett',
+      creating: 'Skapar konto …',
+      signingIn: 'Loggar in …',
+      needsConfirmation: 'Kontot är skapat! Kolla din inkorg och klicka på bekräftelselänken, logga sedan in här.',
+      enterEmailFirst: 'Skriv din mejladress i fältet ovan först.',
+      resetSent: 'Vi har skickat en länk för att återställa lösenordet till {email}.',
+      resetFailed: 'Kunde inte skicka återställningslänken just nu — försök igen.',
+      genericError: 'Något gick fel — försök igen.',
+      errInvalidCredentials: 'Fel mejladress eller lösenord.',
+      errEmailNotConfirmed: 'Kontot är inte bekräftat än — klicka på länken i mejlet först.',
+      errUserExists: 'Det finns redan ett konto med den mejladressen. Logga in istället.',
+      errWeakPassword: 'Lösenordet är för kort — använd minst 6 tecken.',
+      errRateLimit: 'För många försök just nu — vänta en stund och prova igen.',
+      accountMenuAria: 'Kontomeny',
+      loginAria: 'Logga in',
+      dogNameLabel: 'Hundens namn',
+      dogNamePlaceholder: 'Hundens namn',
+      breedLabel: 'Ras',
+      breedPlaceholder: 'Välj ras',
+      breedMixed: 'Blandras',
+      breedOther: 'Annan ras',
+      ageLabel: 'Ålder',
+      agePuppy: 'Valp (under 1 år)',
+      ageAdult: 'Vuxen',
+      ageSenior: 'Senior (8+ år)',
+      save: 'Spara',
+      saving: 'Sparar …',
+      saved: 'Sparat.',
+      saveFailed: 'Kunde inte spara just nu — försök igen.',
+      logout: 'Logga ut'
+    },
+    en: {
+      close: 'Close',
+      emailLabel: 'Email address',
+      emailPlaceholder: 'you@email.com',
+      passwordLabel: 'Password',
+      passwordPlaceholder: 'At least 6 characters',
+      forgot: 'Forgot your password?',
+      signupTitle: 'Create account',
+      signupDesc: 'Create an account with your email and a password, and your dog’s diary is saved and synced across your devices.',
+      signupSubmit: 'Create account',
+      signupToggle: 'Already have an account? Log in',
+      signinTitle: 'Log in',
+      signinDesc: 'Log in with your email address and password.',
+      signinSubmit: 'Log in',
+      signinToggle: 'No account yet? Create one',
+      creating: 'Creating account …',
+      signingIn: 'Logging in …',
+      needsConfirmation: 'Your account has been created! Check your inbox, click the confirmation link, then log in here.',
+      enterEmailFirst: 'Enter your email address in the field above first.',
+      resetSent: 'We’ve sent a password reset link to {email}.',
+      resetFailed: 'Couldn’t send the reset link right now — please try again.',
+      genericError: 'Something went wrong — please try again.',
+      errInvalidCredentials: 'Wrong email address or password.',
+      errEmailNotConfirmed: 'This account isn’t confirmed yet — click the link in the email first.',
+      errUserExists: 'An account with that email address already exists. Log in instead.',
+      errWeakPassword: 'That password is too short — use at least 6 characters.',
+      errRateLimit: 'Too many attempts right now — wait a moment and try again.',
+      accountMenuAria: 'Account menu',
+      loginAria: 'Log in',
+      dogNameLabel: 'Dog’s name',
+      dogNamePlaceholder: 'Dog’s name',
+      breedLabel: 'Breed',
+      breedPlaceholder: 'Choose breed',
+      breedMixed: 'Mixed breed',
+      breedOther: 'Other breed',
+      ageLabel: 'Age',
+      agePuppy: 'Puppy (under 1 year)',
+      ageAdult: 'Adult',
+      ageSenior: 'Senior (8+ years)',
+      save: 'Save',
+      saving: 'Saving …',
+      saved: 'Saved.',
+      saveFailed: 'Couldn’t save right now — please try again.',
+      logout: 'Log out'
+    }
+  };
+
+  function detectLang() {
+    try {
+      var saved = localStorage.getItem('dogWeatherLang');
+      if (saved === 'sv' || saved === 'en') return saved;
+    } catch (e) { /* localStorage kan vara avstängd */ }
+    var htmlLang = (document.documentElement.getAttribute('lang') || '').slice(0, 2).toLowerCase();
+    if (htmlLang === 'sv' || htmlLang === 'en') return htmlLang;
+    return 'sv';
+  }
+
+  var uiLang = detectLang();
+
+  function T(key, vars) {
+    var pack = I18N[uiLang] || I18N.sv;
+    var s = pack[key] != null ? pack[key] : (I18N.sv[key] != null ? I18N.sv[key] : key);
+    if (vars) {
+      for (var k in vars) {
+        if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.replace('{' + k + '}', vars[k]);
+      }
+    }
+    return s;
+  }
+
+  // Supabase svarar alltid på engelska. Här översätts de vanligaste
+  // felen till sidans språk; okända fel visas som de kommer (på engelska)
+  // hellre än att döljas bakom en intetsägande generisk text.
+  function translateAuthError(err) {
+    var raw = (err && err.message) ? String(err.message) : '';
+    var low = raw.toLowerCase();
+    if (low.indexOf('invalid login credentials') !== -1) return T('errInvalidCredentials');
+    if (low.indexOf('email not confirmed') !== -1) return T('errEmailNotConfirmed');
+    if (low.indexOf('already registered') !== -1 || low.indexOf('user already') !== -1) return T('errUserExists');
+    if (low.indexOf('password should be') !== -1 || low.indexOf('weak password') !== -1) return T('errWeakPassword');
+    if (low.indexOf('rate limit') !== -1 || low.indexOf('too many requests') !== -1) return T('errRateLimit');
+    return raw || T('genericError');
+  }
+
+  // Byt språk i redan byggd DOM. Anropas när <html lang> ändras (app.js
+  // gör det i applyStaticTranslations()), när en annan flik sparar ett
+  // nytt språkval, och om sidan själv skickar 'doginary:langchange'.
+  function applyLanguage() {
+    var next = detectLang();
+    if (next === uiLang) return;
+    uiLang = next;
+    if (modalEl) applyModalTexts();
+    renderAccountChip();
+  }
+
+  if (window.MutationObserver) {
+    new MutationObserver(applyLanguage).observe(document.documentElement, {
+      attributes: true, attributeFilter: ['lang']
+    });
+  }
+  global.addEventListener('storage', function (ev) {
+    if (!ev || ev.key === 'dogWeatherLang' || ev.key === null) applyLanguage();
+  });
+  document.addEventListener('doginary:langchange', applyLanguage);
 
   var currentSession = null;
   var currentDog = null; // hämtas lat, se getCurrentDog()
@@ -115,22 +293,24 @@
     modalEl.setAttribute('role', 'dialog');
     modalEl.setAttribute('aria-modal', 'true');
     modalEl.setAttribute('aria-labelledby', 'doginaryAuthTitle');
+    // Texterna sätts av applyModalTexts() längre ner, på sidans språk —
+    // markeringen här är bara stommen.
     modalEl.innerHTML =
       '<div id="doginaryAuthCard">' +
-        '<button type="button" id="doginaryAuthClose" aria-label="Stäng">&times;</button>' +
+        '<button type="button" id="doginaryAuthClose">&times;</button>' +
         '<p class="doginaryAuthEyebrow">Doginary</p>' +
-        '<h2 id="doginaryAuthTitle">Skapa konto</h2>' +
-        '<p id="doginaryAuthDesc">Skapa ett konto med mejl och lösenord, så sparas din hunds dagbok och syncar mellan dina enheter.</p>' +
+        '<h2 id="doginaryAuthTitle"></h2>' +
+        '<p id="doginaryAuthDesc"></p>' +
         '<form id="doginaryAuthForm" novalidate>' +
-          '<label for="doginaryAuthEmail">Mejladress</label>' +
-          '<input id="doginaryAuthEmail" type="email" autocomplete="email" required placeholder="din@mejl.se">' +
-          '<label for="doginaryAuthPassword">Lösenord</label>' +
-          '<input id="doginaryAuthPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="Minst 6 tecken">' +
+          '<label for="doginaryAuthEmail" id="doginaryAuthEmailLabel"></label>' +
+          '<input id="doginaryAuthEmail" type="email" autocomplete="email" required>' +
+          '<label for="doginaryAuthPassword" id="doginaryAuthPasswordLabel"></label>' +
+          '<input id="doginaryAuthPassword" type="password" autocomplete="new-password" required minlength="6">' +
           '<p id="doginaryAuthMessage" role="alert"></p>' +
-          '<button type="submit" id="doginaryAuthSubmit">Skapa konto</button>' +
+          '<button type="submit" id="doginaryAuthSubmit"></button>' +
         '</form>' +
-        '<p class="doginaryAuthSwitch"><button type="button" id="doginaryAuthToggle">Har du redan ett konto? Logga in</button></p>' +
-        '<p class="doginaryAuthSwitch"><button type="button" id="doginaryAuthForgot">Glömt lösenord?</button></p>' +
+        '<p class="doginaryAuthSwitch"><button type="button" id="doginaryAuthToggle"></button></p>' +
+        '<p class="doginaryAuthSwitch"><button type="button" id="doginaryAuthForgot"></button></p>' +
       '</div>';
     document.body.appendChild(modalEl);
 
@@ -160,14 +340,14 @@
     forgotBtn.addEventListener('click', function () {
       var email = emailInput.value.trim();
       if (!email) {
-        showMessage('Skriv din mejladress i fältet ovan först.', 'error');
+        showMessage(T('enterEmailFirst'), 'error');
         return;
       }
       forgotBtn.disabled = true;
       global.DoginaryAuth.resetPassword(email).then(function () {
-        showMessage('Vi har skickat en länk för att återställa lösenordet till ' + email + '.', 'success');
+        showMessage(T('resetSent', { email: email }), 'success');
       }).catch(function () {
-        showMessage('Kunde inte skicka återställningslänken just nu — försök igen.', 'error');
+        showMessage(T('resetFailed'), 'error');
       }).finally(function () {
         forgotBtn.disabled = false;
       });
@@ -180,7 +360,7 @@
       if (!email || !password) return;
 
       submitBtn.disabled = true;
-      showMessage(mode === 'signup' ? 'Skapar konto …' : 'Loggar in …', '');
+      showMessage(mode === 'signup' ? T('creating') : T('signingIn'), '');
 
       var action = mode === 'signup'
         ? global.DoginaryAuth.signUp(email, password)
@@ -193,7 +373,7 @@
         // onAuthStateChange (se längre ner) loggar in och stänger
         // rutan automatiskt — inget mer att göra här.
         if (mode === 'signup' && result && result.needsConfirmation) {
-          showMessage('Kontot är skapat! Kolla din inkorg och klicka på bekräftelselänken, logga sedan in här.', 'success');
+          showMessage(T('needsConfirmation'), 'success');
           setMode('signin');
         } else if (mode === 'signup' && result && result.session) {
           // Kontot skapades och loggades in direkt (Supabase-projektets
@@ -207,7 +387,7 @@
           }
         }
       }).catch(function (err) {
-        showMessage((err && err.message) ? err.message : 'Något gick fel — försök igen.', 'error');
+        showMessage(translateAuthError(err), 'error');
       }).finally(function () {
         submitBtn.disabled = false;
       });
@@ -221,25 +401,42 @@
     messageEl.className = type || '';
   }
 
+  // Skriver ALLA texter i rutan på sidans nuvarande språk, utan att röra
+  // det användaren redan hunnit skriva i fälten. Anropas både vid lägesbyte
+  // (skapa konto / logga in) och vid språkbyte medan rutan står öppen.
+  function applyModalTexts() {
+    if (!modalEl) return;
+    closeBtn.setAttribute('aria-label', T('close'));
+    document.getElementById('doginaryAuthEmailLabel').textContent = T('emailLabel');
+    document.getElementById('doginaryAuthPasswordLabel').textContent = T('passwordLabel');
+    emailInput.setAttribute('placeholder', T('emailPlaceholder'));
+    passwordInput.setAttribute('placeholder', T('passwordPlaceholder'));
+    forgotBtn.textContent = T('forgot');
+    if (mode === 'signup') {
+      titleEl.textContent = T('signupTitle');
+      descEl.textContent = T('signupDesc');
+      submitBtn.textContent = T('signupSubmit');
+      toggleBtn.textContent = T('signupToggle');
+    } else {
+      titleEl.textContent = T('signinTitle');
+      descEl.textContent = T('signinDesc');
+      submitBtn.textContent = T('signinSubmit');
+      toggleBtn.textContent = T('signinToggle');
+    }
+  }
+
   function setMode(newMode) {
     mode = newMode;
     showMessage('', '');
     emailInput.value = '';
     passwordInput.value = '';
-    if (mode === 'signup') {
-      titleEl.textContent = 'Skapa konto';
-      descEl.textContent = 'Skapa ett konto med mejl och lösenord, så sparas din hunds dagbok och syncar mellan dina enheter.';
-      submitBtn.textContent = 'Skapa konto';
-      toggleBtn.textContent = 'Har du redan ett konto? Logga in';
-    } else {
-      titleEl.textContent = 'Logga in';
-      descEl.textContent = 'Logga in med din mejladress och ditt lösenord.';
-      submitBtn.textContent = 'Logga in';
-      toggleBtn.textContent = 'Inget konto än? Skapa ett';
-    }
+    applyModalTexts();
   }
 
   function openModal(startMode) {
+    // Läs av språket på nytt precis innan rutan visas: den byggs lat, och
+    // sidans egen kod kan ha hunnit byta språk sedan sidladdningen.
+    uiLang = detectLang();
     buildModal();
     setMode(startMode === 'signin' ? 'signin' : 'signup');
     modalEl.classList.add('show');
@@ -262,37 +459,110 @@
   var dogMenuStatus = null;
 
   // Rullmeny istället för fritext för ras — tryggare/mer korrekt indata.
-  // Samma raslista (på svenska) som index.html:s profilkort använder
-  // (DOG_BREED_OPTIONS i app.js) — hålls i synk manuellt, se kommentar där.
-  var DOG_BREEDS_SV = [
-    'Labrador retriever', 'Golden retriever', 'Tysk schäferhund', 'Fransk bulldogg',
-    'Engelsk bulldogg', 'Mops', 'Boston terrier', 'Pekingeser', 'Shih tzu', 'Beagle',
-    'Border collie', 'Belgisk vallhund (malinois)', 'Cocker spaniel',
-    'Cavalier King Charles spaniel', 'Tax', 'Chihuahua', 'Pudel', 'Schnauzer',
-    'Rottweiler', 'Dobermann', 'Boxer', 'Australian shepherd', 'Sibirisk husky',
-    'Alaskan malamute', 'Akita', 'Shiba inu', 'Jack Russell terrier',
-    'Staffordshire bullterrier', 'American staffordshire terrier', 'Berner sennenhund',
-    'Sankt bernhardshund', 'Newfoundlandshund', 'Leonberger', 'Vit herdehund',
-    'Weimaraner', 'Vizsla', 'Pointer', 'Engelsk setter', 'Flatcoated retriever',
-    'Welsh corgi', 'Shetland sheepdog', 'Collie', 'Greyhound', 'Whippet',
-    'Basset hound', 'Bichon frisé', 'Malteser', 'Yorkshireterrier',
-    'West highland white terrier', 'Cairnterrier', 'Belgisk vallhund (groenendael)',
-    'Bernedoodle', 'Labradoodle', 'Goldendoodle', 'Cane corso',
-    'Kaukasisk ovtjarka', 'Västgötaspets', 'Svensk lapphund', 'Jämthund',
-    'Norsk älghund', 'Finsk spets', 'Drever'
-  ].sort(function (a, b) { return a.localeCompare(b, 'sv'); });
+  // Samma raslista som index.html:s profilkort använder (DOG_BREED_OPTIONS
+  // i app.js), nu med båda språken precis som där — hålls i synk manuellt,
+  // se kommentaren i app.js.
+  //
+  // Rasen sparas som text i databasen på det språk som var valt när den
+  // sparades. Det är ofarligt: app.js:s findBreedIdForText() matchar både
+  // det svenska och det engelska namnet, så en hund som sparats som
+  // "Tax" visas som "Dachshund" när sidan står på engelska och tvärtom.
+  var DOG_BREEDS = [
+    { sv: 'Labrador retriever', en: 'Labrador Retriever' },
+    { sv: 'Golden retriever', en: 'Golden Retriever' },
+    { sv: 'Tysk schäferhund', en: 'German Shepherd' },
+    { sv: 'Fransk bulldogg', en: 'French Bulldog' },
+    { sv: 'Engelsk bulldogg', en: 'English Bulldog' },
+    { sv: 'Mops', en: 'Pug' },
+    { sv: 'Boston terrier', en: 'Boston Terrier' },
+    { sv: 'Pekingeser', en: 'Pekingese' },
+    { sv: 'Shih tzu', en: 'Shih Tzu' },
+    { sv: 'Beagle', en: 'Beagle' },
+    { sv: 'Border collie', en: 'Border Collie' },
+    { sv: 'Belgisk vallhund (malinois)', en: 'Belgian Malinois' },
+    { sv: 'Cocker spaniel', en: 'Cocker Spaniel' },
+    { sv: 'Cavalier King Charles spaniel', en: 'Cavalier King Charles Spaniel' },
+    { sv: 'Tax', en: 'Dachshund' },
+    { sv: 'Chihuahua', en: 'Chihuahua' },
+    { sv: 'Pudel', en: 'Poodle' },
+    { sv: 'Schnauzer', en: 'Schnauzer' },
+    { sv: 'Rottweiler', en: 'Rottweiler' },
+    { sv: 'Dobermann', en: 'Doberman' },
+    { sv: 'Boxer', en: 'Boxer' },
+    { sv: 'Australian shepherd', en: 'Australian Shepherd' },
+    { sv: 'Sibirisk husky', en: 'Siberian Husky' },
+    { sv: 'Alaskan malamute', en: 'Alaskan Malamute' },
+    { sv: 'Akita', en: 'Akita' },
+    { sv: 'Shiba inu', en: 'Shiba Inu' },
+    { sv: 'Jack Russell terrier', en: 'Jack Russell Terrier' },
+    { sv: 'Staffordshire bullterrier', en: 'Staffordshire Bull Terrier' },
+    { sv: 'American staffordshire terrier', en: 'American Staffordshire Terrier' },
+    { sv: 'Berner sennenhund', en: 'Bernese Mountain Dog' },
+    { sv: 'Sankt bernhardshund', en: 'Saint Bernard' },
+    { sv: 'Newfoundlandshund', en: 'Newfoundland' },
+    { sv: 'Leonberger', en: 'Leonberger' },
+    { sv: 'Vit herdehund', en: 'White Swiss Shepherd' },
+    { sv: 'Weimaraner', en: 'Weimaraner' },
+    { sv: 'Vizsla', en: 'Vizsla' },
+    { sv: 'Pointer', en: 'Pointer' },
+    { sv: 'Engelsk setter', en: 'English Setter' },
+    { sv: 'Flatcoated retriever', en: 'Flat-Coated Retriever' },
+    { sv: 'Welsh corgi', en: 'Welsh Corgi' },
+    { sv: 'Shetland sheepdog', en: 'Shetland Sheepdog' },
+    { sv: 'Collie', en: 'Collie' },
+    { sv: 'Greyhound', en: 'Greyhound' },
+    { sv: 'Whippet', en: 'Whippet' },
+    { sv: 'Basset hound', en: 'Basset Hound' },
+    { sv: 'Bichon frisé', en: 'Bichon Frisé' },
+    { sv: 'Malteser', en: 'Maltese' },
+    { sv: 'Yorkshireterrier', en: 'Yorkshire Terrier' },
+    { sv: 'West highland white terrier', en: 'West Highland White Terrier' },
+    { sv: 'Cairnterrier', en: 'Cairn Terrier' },
+    { sv: 'Belgisk vallhund (groenendael)', en: 'Belgian Sheepdog' },
+    { sv: 'Bernedoodle', en: 'Bernedoodle' },
+    { sv: 'Labradoodle', en: 'Labradoodle' },
+    { sv: 'Goldendoodle', en: 'Goldendoodle' },
+    { sv: 'Cane corso', en: 'Cane Corso' },
+    { sv: 'Kaukasisk ovtjarka', en: 'Caucasian Shepherd' },
+    { sv: 'Västgötaspets', en: 'Swedish Vallhund' },
+    { sv: 'Svensk lapphund', en: 'Swedish Lapphund' },
+    { sv: 'Jämthund', en: 'Jämthund' },
+    { sv: 'Norsk älghund', en: 'Norwegian Elkhound' },
+    { sv: 'Finsk spets', en: 'Finnish Spitz' },
+    { sv: 'Drever', en: 'Drever' }
+  ];
 
-  // Bygger <option>-listan för rasrullmenyn: en tom platshållare, sedan
-  // "Blandras" (vanligt val), sedan raserna i bokstavsordning, sist
-  // "Annan ras" som uppsamlingsval för raser som inte finns listade.
+  // Slår upp en sparad rastext (på valfritt språk) och ger namnet på
+  // sidans nuvarande språk, så ett språkbyte inte gör att en redan sparad
+  // ras hamnar under "Annan ras".
+  function breedInCurrentLang(breedText) {
+    if (!breedText) return '';
+    var needle = String(breedText).trim().toLowerCase();
+    if (needle === 'blandras' || needle === 'mixed breed') return T('breedMixed');
+    for (var i = 0; i < DOG_BREEDS.length; i++) {
+      if (DOG_BREEDS[i].sv.toLowerCase() === needle || DOG_BREEDS[i].en.toLowerCase() === needle) {
+        return DOG_BREEDS[i][uiLang] || DOG_BREEDS[i].sv;
+      }
+    }
+    return breedText;
+  }
+
+  // Bygger <option>-listan för rasrullmenyn på sidans språk: en tom
+  // platshållare, sedan "Blandras"/"Mixed breed" (vanligt val), sedan
+  // raserna i bokstavsordning, sist "Annan ras"/"Other breed" som
+  // uppsamlingsval för raser som inte finns listade.
   function dogBreedOptionsHtml(selectedBreed) {
-    var html = '<option value="" disabled' + (selectedBreed ? '' : ' selected') + '>Välj ras</option>';
-    html += '<option value="Blandras"' + (selectedBreed === 'Blandras' ? ' selected' : '') + '>Blandras</option>';
-    DOG_BREEDS_SV.forEach(function (breed) {
-      html += '<option value="' + escapeHtml(breed) + '"' + (selectedBreed === breed ? ' selected' : '') + '>' + escapeHtml(breed) + '</option>';
+    var selected = breedInCurrentLang(selectedBreed);
+    var names = DOG_BREEDS.map(function (b) { return b[uiLang] || b.sv; })
+      .sort(function (a, b) { return a.localeCompare(b, uiLang); });
+
+    var html = '<option value="" disabled' + (selected ? '' : ' selected') + '>' + escapeHtml(T('breedPlaceholder')) + '</option>';
+    html += '<option value="' + escapeHtml(T('breedMixed')) + '"' + (selected === T('breedMixed') ? ' selected' : '') + '>' + escapeHtml(T('breedMixed')) + '</option>';
+    names.forEach(function (breed) {
+      html += '<option value="' + escapeHtml(breed) + '"' + (selected === breed ? ' selected' : '') + '>' + escapeHtml(breed) + '</option>';
     });
-    var isOther = selectedBreed && selectedBreed !== 'Blandras' && DOG_BREEDS_SV.indexOf(selectedBreed) === -1;
-    html += '<option value="' + (isOther ? escapeHtml(selectedBreed) : 'Annan ras') + '"' + (isOther ? ' selected' : '') + '>Annan ras</option>';
+    var isOther = selected && selected !== T('breedMixed') && names.indexOf(selected) === -1;
+    html += '<option value="' + (isOther ? escapeHtml(selected) : escapeHtml(T('breedOther'))) + '"' + (isOther ? ' selected' : '') + '>' + escapeHtml(T('breedOther')) + '</option>';
     return html;
   }
 
@@ -344,16 +614,16 @@
     var age = dogAgeMenuInput.value;
     saveBtn.disabled = true;
     dogMenuStatus.className = '';
-    dogMenuStatus.textContent = 'Sparar …';
+    dogMenuStatus.textContent = T('saving');
     // Går via updateCurrentDog() (inte DoginaryDB.updateDogProfile direkt)
     // så att cachen och "doginary:dogupdate"-eventet uppdateras på samma
     // sätt som från index.html, se kommentaren där.
     updateCurrentDog({ name: name || null, breed: breed, age: age }).then(function () {
       dogMenuStatus.className = '';
-      dogMenuStatus.textContent = 'Sparat.';
+      dogMenuStatus.textContent = T('saved');
     }).catch(function () {
       dogMenuStatus.className = 'error';
-      dogMenuStatus.textContent = 'Kunde inte spara just nu — försök igen.';
+      dogMenuStatus.textContent = T('saveFailed');
     }).finally(function () {
       saveBtn.disabled = false;
     });
@@ -365,24 +635,24 @@
 
     if (currentSession) {
       root.innerHTML =
-        '<button type="button" id="doginaryAccountIconBtn" aria-haspopup="true" aria-expanded="false" aria-label="Kontomeny">' + ICON_PERSON + '</button>' +
+        '<button type="button" id="doginaryAccountIconBtn" aria-haspopup="true" aria-expanded="false" aria-label="' + escapeHtml(T('accountMenuAria')) + '">' + ICON_PERSON + '</button>' +
         '<div id="doginaryAccountMenu" role="menu">' +
           '<p id="doginaryAccountMenuEmail">' + escapeHtml(currentSession.user.email) + '</p>' +
           '<div class="doginaryAccountMenu__divider"></div>' +
-          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogName">Hundens namn</label>' +
-          '<input type="text" id="doginaryAccountDogName" placeholder="Hundens namn" maxlength="40">' +
-          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogBreed">Ras</label>' +
+          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogName">' + escapeHtml(T('dogNameLabel')) + '</label>' +
+          '<input type="text" id="doginaryAccountDogName" placeholder="' + escapeHtml(T('dogNamePlaceholder')) + '" maxlength="40">' +
+          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogBreed">' + escapeHtml(T('breedLabel')) + '</label>' +
           '<select id="doginaryAccountDogBreed">' + dogBreedOptionsHtml('') + '</select>' +
-          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogAge">Ålder</label>' +
+          '<label class="doginaryAccountMenu__label" for="doginaryAccountDogAge">' + escapeHtml(T('ageLabel')) + '</label>' +
           '<select id="doginaryAccountDogAge">' +
-            '<option value="puppy">Valp (under 1 år)</option>' +
-            '<option value="adult">Vuxen</option>' +
-            '<option value="senior">Senior (8+ år)</option>' +
+            '<option value="puppy">' + escapeHtml(T('agePuppy')) + '</option>' +
+            '<option value="adult">' + escapeHtml(T('ageAdult')) + '</option>' +
+            '<option value="senior">' + escapeHtml(T('ageSenior')) + '</option>' +
           '</select>' +
-          '<button type="button" id="doginaryAccountDogSave">Spara</button>' +
+          '<button type="button" id="doginaryAccountDogSave">' + escapeHtml(T('save')) + '</button>' +
           '<p id="doginaryAccountDogStatus" role="status" aria-live="polite"></p>' +
           '<div class="doginaryAccountMenu__divider"></div>' +
-          '<button type="button" id="doginaryAccountLogout" class="doginaryAccountMenu__logout">Logga ut</button>' +
+          '<button type="button" id="doginaryAccountLogout" class="doginaryAccountMenu__logout">' + escapeHtml(T('logout')) + '</button>' +
         '</div>';
 
       menuEl = document.getElementById('doginaryAccountMenu');
@@ -409,7 +679,7 @@
     } else {
       menuEl = null;
       menuOpen = false;
-      root.innerHTML = '<button type="button" id="doginaryLoginChipBtn" aria-label="Logga in">' + ICON_PERSON + '</button>';
+      root.innerHTML = '<button type="button" id="doginaryLoginChipBtn" aria-label="' + escapeHtml(T('loginAria')) + '">' + ICON_PERSON + '</button>';
       document.getElementById('doginaryLoginChipBtn').addEventListener('click', function () {
         openModal('signup');
       });
@@ -444,6 +714,11 @@
     // se kommentaren vid updateCurrentDog() ovan.
     updateDog: updateCurrentDog,
     getSession: function () { return currentSession; },
+    // Tvinga fram en språkuppdatering av rutan/kontomenyn. Behövs normalt
+    // inte — filen upptäcker själv när <html lang> ändras (det app.js gör
+    // i applyStaticTranslations()) — men finns här för sidor som byter
+    // språk på något annat sätt.
+    refreshLanguage: applyLanguage,
     // Slår an EN gång med den allra första inloggningsstatusen (session
     // eller null) så att andra script (t.ex. app.js) kan vänta in det
     // säkert, istället för att chansa på om "doginary:auth" redan hunnit

@@ -456,8 +456,8 @@ const NAV = [
 
 /* ---------------- STORE ---------------- */
 /* ==== SUPABASE CONFIG — fyll i dina egna värden från Supabase-projektets Settings > API ==== */
-const SUPABASE_URL = 'https://DITT-PROJEKT.supabase.co';
-const SUPABASE_ANON_KEY = 'DIN-ANON-KEY';
+const SUPABASE_URL = 'https://jjbziqsjapyiihdrlnsw.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnppcXNqYXB5aWloZHJsbnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2ODkxMTgsImV4cCI6MjEwNDI2NTExOH0.MEzM2wN8eENlVBAsN-I6hhIYFnF53avdFacfbNwCBBw';
 const sb = (SUPABASE_URL.includes('DITT-PROJEKT') || !window.supabase)
   ? null
   : window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

@@ -109,7 +109,7 @@ const STR = {
     profileAccountCreatedConfirm: "Account created — your dog's profile is now saved permanently and follows you across devices.",
     heroEyebrow: "WEATHER FOR FOUR PAWS",
     heroTagline: "Know what your dog needs before every walk.",
-    heroTitle: "Helping {name} enjoy every walk",
+    heroTitle: "Weather guidance tailored to {name}",
     heroTitleDefaultName: "your dog",
     logTitleDefaultName: "your dog",
     heroSubtitle: "Get personalized advice based on today's weather and conditions.",

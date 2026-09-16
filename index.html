@@ -600,8 +600,14 @@
       tabBtn.href = 'insikter.html';
     }
 
+    // Sätts till true bara när besökaren själv klickar för att öppna
+    // inloggningsrutan på den här sidan — det är enda tillfället en
+    // lyckad inloggning ska skicka vidare till Insikter automatiskt.
+    let loginJustRequested = false;
+
     function openLoginModal(ev){
       ev.preventDefault();
+      loginJustRequested = true;
       DoginaryAuthUI.open('signup');
     }
 
@@ -627,12 +633,19 @@
       tabLabel.textContent = label;
     });
 
-    // Efter lyckad inloggning från den här sidan: gå direkt till
-    // Insikter, precis som om man klickat den inloggade "Mina sidor"-knappen.
-    let firstAuthSeen = false;
+    // Efter lyckad inloggning FRÅN DEN HÄR SIDAN: gå direkt till Insikter,
+    // precis som om man klickat den inloggade "Mina sidor"-knappen.
+    // OBS: doginary:auth-eventet kan trigga flera gånger under en vanlig
+    // session (t.ex. vid tokenförnyelse eller när fliken får fokus igen),
+    // inte bara vid en faktisk inloggning. Därför styr vi redirecten med
+    // loginJustRequested istället för att reagera på varje event med en
+    // session — annars hoppar sidan till Insikter helt utan att man klickat
+    // på något, även när man bara skrivit doginary.com i adressfältet.
     document.addEventListener('doginary:auth', (ev) => {
-      if(!firstAuthSeen){ firstAuthSeen = true; return; } // ignorera statusen vid sidladdning
-      if(ev.detail.session) window.location.href = 'insikter.html';
+      if(loginJustRequested && ev.detail.session){
+        loginJustRequested = false;
+        window.location.href = 'insikter.html';
+      }
     });
   })();
 </script>

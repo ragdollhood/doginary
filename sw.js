@@ -17,7 +17,10 @@
    någon cachad fil. Gamla cachar städas bort i "activate".
    ======================================================================= */
 
-const CACHE_VERSION = 'v2';
+// v3: inloggningsrutan översätts, alla sidor visas utloggade, crawlbara
+// innehållssektioner. Höj den här vid varje release som ändrar en cachad
+// fil — annars sitter återvändande besökare kvar på den gamla versionen.
+const CACHE_VERSION = 'v3';
 const APP_SHELL_CACHE = `doginary-shell-${CACHE_VERSION}`;
 const DATA_CACHE = `doginary-data-${CACHE_VERSION}`;
 const CURRENT_CACHES = [APP_SHELL_CACHE, DATA_CACHE];

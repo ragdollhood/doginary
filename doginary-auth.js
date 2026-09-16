@@ -377,12 +377,18 @@
           setMode('signin');
         } else if (mode === 'signup' && result && result.session) {
           // Kontot skapades och loggades in direkt (Supabase-projektets
-          // "Confirm email" är avstängt, se filens header) — ta
-          // användaren direkt till "Logga en dag" istället för att bara
-          // stänga rutan och lämna kvar dem på sidan de stod på.
-          // onAuthStateChange (längre ner) stänger modalen; vi behöver
-          // bara sköta själva navigeringen här.
-          if (!/(^|\/)logga\.html$/i.test(global.location.pathname)) {
+          // "Confirm email" är avstängt, se filens header).
+          //
+          // Från startsidan tar vi användaren vidare till "Logga en dag",
+          // som tidigare. MEN sidor som själva har något att göra — och
+          // som numera visar allt även utloggat — sätter
+          // window.DOGINARY_STAY_AFTER_SIGNUP = true och blir kvar där de
+          // är, så att ett påbörjat formulär inte försvinner i en
+          // sidväxling mitt i. onAuthStateChange (längre ner) stänger
+          // modalen; sidan själv tar hand om resten.
+          var stay = global.DOGINARY_STAY_AFTER_SIGNUP === true ||
+                     /(^|\/)logga\.html$/i.test(global.location.pathname);
+          if (!stay) {
             global.location.href = 'logga.html';
           }
         }

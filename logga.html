@@ -1094,6 +1094,11 @@
       justify-self: center;
       width: calc((100% - 22px) / 2);
     }
+    /* Centrera rubriken ("Logga dagen för X") ovanför bildrutorna, precis
+       som på mobilen — .page och .quicklog-bleed delar samma horisontella
+       mittpunkt, så en centrerad rubrik i den smalare 560px-kolumnen hamnar
+       ändå mitt över de bredare 960px-bildrutorna nedanför. */
+    header.top{ text-align: center; }
     .quicklog-label{ font-size: clamp(15px, 2.4vw, 22px); }
     .quicklog-count{ font-size: 12px; }
     .quicklog-opts{ gap: 9px; }
@@ -1247,6 +1252,82 @@
     font-size: 11.5px;
     color: var(--ink-soft);
     margin: 12px 0 0;
+  }
+
+  /* ---------- Korspromo: Hälsocenter + Insikter ---------- */
+  .cross-promo{
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px 22px;
+    margin-top: 32px;
+    text-align: center;
+  }
+  .cross-promo h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 19px;
+    margin: 0 0 8px;
+  }
+  .cross-promo p{
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin: 0 auto 16px;
+    max-width: 480px;
+    line-height: 1.55;
+  }
+  .cross-promo-links{
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .cross-promo-link{
+    display: inline-block;
+    background: var(--ink);
+    color: var(--surface);
+    border-radius: 999px;
+    padding: 10px 20px;
+    font: 600 13.5px Inter, sans-serif;
+    text-decoration: none;
+    transition: opacity .15s ease;
+  }
+  .cross-promo-link:hover{ opacity: .85; }
+
+  /* ---------- Donation ---------- */
+  .donate-fixed{
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 60;
+    text-align: center;
+  }
+  .donate-fixed a{ display: inline-block; }
+  .donate-fixed img{
+    display: block;
+    width: 150px;
+    max-width: 34vw;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px #0003;
+    transition: transform .2s ease;
+  }
+  .donate-fixed img:hover{ transform: translateY(-3px); }
+  .donate-fixed p{
+    margin: 6px 0 0;
+    font-size: 11.5px;
+    line-height: 1.3;
+    color: var(--ink-soft);
+    max-width: 150px;
+  }
+  @media (max-width: 720px){
+    .donate-fixed{
+      position: static;
+      margin: 32px auto 0;
+      right: auto;
+      bottom: auto;
+    }
+    .donate-fixed img{ width: 200px; max-width: 60vw; margin: 0 auto; }
+    .donate-fixed p{ max-width: 220px; margin-left: auto; margin-right: auto; }
   }
 </style>
 <link rel="stylesheet" href="doginary-auth-ui.css">
@@ -1543,6 +1624,22 @@
     </div>
     </div>
 
+    <div class="cross-promo">
+      <h2 data-i18n="crossPromoTitle">Mer än promenader</h2>
+      <p data-i18n="crossPromoText">Doginary handlar inte bara om väder och promenader. I Hälsocenter loggar du symtom, mediciner, vikt och veterinärbesök, och i Insikter samlas allt du loggat till mönster och trender som är unika för din hund.</p>
+      <div class="cross-promo-links">
+        <a class="cross-promo-link" href="health.html" data-i18n="crossPromoHealthLink">Öppna Hälsocenter →</a>
+        <a class="cross-promo-link" href="insikter.html" data-i18n="crossPromoInsightsLink">Se Insikter →</a>
+      </div>
+    </div>
+
+    <div class="donate-fixed">
+      <a href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener" aria-label="Support Doginary with a $2.99 donation" data-i18n-aria-label="donateImageAriaLabel">
+        <img src="assets/donate.jpg" alt="Support Doginary — donate $2.99 to help keep it free" loading="lazy" decoding="async" data-i18n-alt="donateImageAlt">
+      </a>
+      <p data-i18n="donateImageNote">Doginary stays free thanks to small contributions like this — every little bit helps.</p>
+    </div>
+
     <!-- ---------- Bekräftelse: logga på ett annat datum än idag ---------- -->
     <div class="confirm-modal-overlay" id="backdateModal" hidden>
       <div class="confirm-modal-card" role="alertdialog" aria-modal="true" aria-labelledby="backdateModalText">
@@ -1675,6 +1772,13 @@
       backdateYes: 'Yes',
       footerDisclaimer: 'Doginary provides general tips and comfort guidance for dog walks — not veterinary advice. This information never replaces a vet’s assessment and doesn’t account for every factor specific to your dog. As the dog owner, you’re always responsible for assessing the weather, terrain, and your dog’s health, age, breed and condition before and during walks and other activities. Contact a vet if you’re concerned about your dog’s health.',
       footerTerms: 'Terms',
+      crossPromoTitle: 'More than walks',
+      crossPromoText: 'Doginary isn\\u2019t just about weather and walks. In the Health center you can log symptoms, medicine, weight and vet visits, and in Insights everything you\\u2019ve logged comes together into patterns and trends unique to your dog.',
+      crossPromoHealthLink: 'Open Health center →',
+      crossPromoInsightsLink: 'See Insights →',
+      donateImageAriaLabel: 'Support Doginary with a $2.99 donation',
+      donateImageAlt: 'Support Doginary — donate $2.99 to help keep it free',
+      donateImageNote: 'Doginary stays free thanks to small contributions like this — every little bit helps.',
       weekdayMon: 'Mon', weekdayTue: 'Tue', weekdayWed: 'Wed', weekdayThu: 'Thu', weekdayFri: 'Fri', weekdaySat: 'Sat', weekdaySun: 'Sun',
       loggingFor: label => `Logging for ${label}`,
       forDate: label => `For ${label}`,
@@ -1747,6 +1851,13 @@
       backdateYes: 'Ja',
       footerDisclaimer: 'Doginary ger allmänna tips och komfortvägledning för hundpromenader — inte veterinärmedicinsk rådgivning. Informationen ersätter aldrig en veterinärs bedömning och tar inte hänsyn till alla faktorer som gäller just din hund. Du som hundägare ansvarar alltid själv för att bedöma väder, underlag och din hunds hälsa, ålder, ras och tillstånd inför och under promenader och andra aktiviteter. Kontakta veterinär vid oro för din hunds hälsa.',
       footerTerms: 'Villkor',
+      crossPromoTitle: 'Mer än promenader',
+      crossPromoText: 'Doginary handlar inte bara om väder och promenader. I Hälsocenter loggar du symtom, mediciner, vikt och veterinärbesök, och i Insikter samlas allt du loggat till mönster och trender som är unika för din hund.',
+      crossPromoHealthLink: 'Öppna Hälsocenter →',
+      crossPromoInsightsLink: 'Se Insikter →',
+      donateImageAriaLabel: 'Stöd Doginary med en donation på 2,99 USD',
+      donateImageAlt: 'Stöd Doginary — donera 2,99 USD för att hjälpa till att hålla den gratis',
+      donateImageNote: 'Doginary hålls gratis tack vare små bidrag som detta — varje liten slant hjälper.',
       weekdayMon: 'Mån', weekdayTue: 'Tis', weekdayWed: 'Ons', weekdayThu: 'Tor', weekdayFri: 'Fre', weekdaySat: 'Lör', weekdaySun: 'Sön',
       loggingFor: label => `Loggar för ${label}`,
       forDate: label => `För ${label}`,
@@ -1823,6 +1934,10 @@
     });
     document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
       el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label')));
+    });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+      const val = t(el.getAttribute('data-i18n-alt'));
+      if (typeof val === 'string') el.setAttribute('alt', val);
     });
     if (langBtnSvEl) langBtnSvEl.hidden = lang !== 'en';
     if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';

@@ -183,6 +183,13 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 .doginary-footer__copyright{font-size:11.5px;color:var(--ink-soft);margin:12px 0 0}
 
 @media(max-width:760px){.guide-grid{grid-template-columns:1fr}.page{padding-inline:14px}.profile-card{flex-direction:column;align-items:stretch}}
+
+.donate-fixed{position:fixed;right:22px;bottom:22px;z-index:60;text-align:center}
+.donate-fixed a{display:inline-block}
+.donate-fixed img{display:block;width:150px;max-width:34vw;border-radius:16px;box-shadow:0 12px 30px #0003;transition:transform .2s ease}
+.donate-fixed img:hover{transform:translateY(-3px)}
+.donate-fixed p{margin:6px 0 0;font-size:11.5px;line-height:1.3;color:var(--ink-soft);max-width:150px}
+@media (max-width:720px){.donate-fixed{position:static;margin:32px auto 0;right:auto;bottom:auto}.donate-fixed img{width:200px;max-width:60vw;margin:0 auto}.donate-fixed p{max-width:220px;margin-left:auto;margin-right:auto}}
 </style>
 <link rel="stylesheet" href="doginary-auth-ui.css">
   <link rel="icon" type="image/png" href="assets/icon.png">
@@ -386,6 +393,13 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
     <a class="knowledge-hub-tile" href="/knowledge/seniors" data-i18n="knowSeniors">Äldre hundar</a>
   </div>
 </section>
+
+<div class="donate-fixed">
+  <a href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener" aria-label="Support Doginary with a $2.99 donation" data-i18n-aria-label="donateImageAriaLabel">
+    <img src="assets/donation.jpg" alt="Support Doginary — donate $2.99 to help keep it free" loading="lazy" decoding="async" data-i18n-alt="donateImageAlt">
+  </a>
+  <p data-i18n="donateImageNote">Doginary stays free thanks to small contributions like this — every little bit helps.</p>
+</div>
 </main>
 
 <footer class="doginary-footer">
@@ -452,6 +466,9 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       knowledgeDividerText: 'From here on, the content is no longer tailored to your dog\u2019s breed or age — these are general, practical reads that apply to all dogs.',
       knowHealth: 'Health', knowSafety: 'Safety', knowWalking: 'Walking', knowWeather: 'Weather',
       knowTraining: 'Training', knowPuppies: 'Puppies', knowSeniors: 'Senior dogs',
+      donateImageAriaLabel: 'Support Doginary with a $2.99 donation',
+      donateImageAlt: 'Support Doginary — donate $2.99 to help keep it free',
+      donateImageNote: 'Doginary stays free thanks to small contributions like this — every little bit helps.',
     },
     sv: {
       docTitle: 'Doginary — Riktlinjer',
@@ -487,6 +504,9 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       knowledgeDividerText: 'Från och med här är innehållet inte längre anpassat efter din hunds ras eller ålder — det här är allmänna, praktiska texter som gäller alla hundar.',
       knowHealth: 'Hälsa', knowSafety: 'Säkerhet', knowWalking: 'Promenad', knowWeather: 'Väder',
       knowTraining: 'Träning', knowPuppies: 'Valpar', knowSeniors: 'Äldre hundar',
+      donateImageAriaLabel: 'Stöd Doginary med en donation på 2,99 USD',
+      donateImageAlt: 'Stöd Doginary — donera 2,99 USD för att hjälpa till att hålla den gratis',
+      donateImageNote: 'Doginary hålls gratis tack vare små bidrag som detta — varje liten slant hjälper.',
     }
   };
 
@@ -504,6 +524,14 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       const key = el.getAttribute('data-i18n');
       const val = t(key);
       if (typeof val === 'string') el.textContent = val;
+    });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+      const val = t(el.getAttribute('data-i18n-alt'));
+      if (typeof val === 'string') el.setAttribute('alt', val);
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+      const val = t(el.getAttribute('data-i18n-aria-label'));
+      if (typeof val === 'string') el.setAttribute('aria-label', val);
     });
     if (langBtnSvEl) langBtnSvEl.hidden = lang !== 'en';
     if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';

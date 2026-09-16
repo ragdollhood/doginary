@@ -156,6 +156,13 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
 
 @media(max-width:760px){.health-grid{grid-template-columns:repeat(2,1fr)}.summary-grid{grid-template-columns:1fr}.calendar{padding:10px}.week-grid{gap:4px}.week-day{min-height:84px;padding:9px 2px}.num{font-size:19px}.markers{font-size:10px}.page{padding-inline:14px}}
 @media(max-width:390px){.health-grid{gap:9px}.health-card{min-height:137px;padding:14px 10px}.period{min-width:130px}.calendar{padding:8px}.entries-head{align-items:flex-start}}
+
+.donate-fixed{position:fixed;right:22px;bottom:22px;z-index:60;text-align:center}
+.donate-fixed a{display:inline-block}
+.donate-fixed img{display:block;width:150px;max-width:34vw;border-radius:16px;box-shadow:0 12px 30px #0003;transition:transform .2s ease}
+.donate-fixed img:hover{transform:translateY(-3px)}
+.donate-fixed p{margin:6px 0 0;font-size:11.5px;line-height:1.3;color:var(--ink-soft);max-width:150px}
+@media (max-width:720px){.donate-fixed{position:static;margin:32px auto 0;right:auto;bottom:auto}.donate-fixed img{width:200px;max-width:60vw;margin:0 auto}.donate-fixed p{max-width:220px;margin-left:auto;margin-right:auto}}
 </style>
 <link rel="stylesheet" href="doginary-auth-ui.css">
   <link rel="icon" type="image/png" href="assets/icon.png">
@@ -282,6 +289,13 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
   <p data-i18n="diaryBoxText">Logga hundens vardag – promenader, mat, humör och roliga stunder – i dagboken.</p>
   <a class="diary-link" href="logga.html" data-i18n="diaryBoxLink">Öppna dagboken →</a>
 </section>
+
+<div class="donate-fixed">
+  <a href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener" aria-label="Support Doginary with a $2.99 donation" data-i18n-aria-label="donateImageAriaLabel">
+    <img src="assets/donation.jpg" alt="Support Doginary — donate $2.99 to help keep it free" loading="lazy" decoding="async" data-i18n-alt="donateImageAlt">
+  </a>
+  <p data-i18n="donateImageNote">Doginary stays free thanks to small contributions like this — every little bit helps.</p>
+</div>
 </main>
 
 <footer class="doginary-footer">
@@ -369,6 +383,9 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       diaryBoxTitle: 'The diary',
       diaryBoxText: 'Log your dog’s everyday life — walks, meals, mood and fun moments — in the diary.',
       diaryBoxLink: 'Open the diary →',
+      donateImageAriaLabel: 'Support Doginary with a $2.99 donation',
+      donateImageAlt: 'Support Doginary — donate $2.99 to help keep it free',
+      donateImageNote: 'Doginary stays free thanks to small contributions like this — every little bit helps.',
     },
     sv: {
       docTitle: 'Doginary — Hälsocenter',
@@ -422,6 +439,9 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
       diaryBoxTitle: 'Dagboken',
       diaryBoxText: 'Logga hundens vardag – promenader, mat, humör och roliga stunder – i dagboken.',
       diaryBoxLink: 'Öppna dagboken →',
+      donateImageAriaLabel: 'Stöd Doginary med en donation på 2,99 USD',
+      donateImageAlt: 'Stöd Doginary — donera 2,99 USD för att hjälpa till att hålla den gratis',
+      donateImageNote: 'Doginary hålls gratis tack vare små bidrag som detta — varje liten slant hjälper.',
     }
   };
 
@@ -473,6 +493,10 @@ body{margin:0;background-color:var(--bg);background-image:linear-gradient(rgba(2
     });
     document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
       el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label')));
+    });
+    document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+      const val = t(el.getAttribute('data-i18n-alt'));
+      if (typeof val === 'string') el.setAttribute('alt', val);
     });
     if (langBtnSvEl) langBtnSvEl.hidden = lang !== 'en';
     if (langBtnEnEl) langBtnEnEl.hidden = lang !== 'sv';

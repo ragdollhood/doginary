@@ -120,7 +120,6 @@ a{color:inherit;}
 .btn-danger{color:var(--danger); border-color:var(--line);}
 .btn-danger:hover{border-color:var(--danger);}
 .btn-sm{padding:6px 11px; font-size:12.5px;}
-.qty-btn{width:26px; height:26px; padding:0; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; line-height:1;}
 .link-btn{background:none; border:none; padding:0; font:inherit; color:var(--honey-deep); text-decoration:underline; cursor:pointer;}
 
 .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-m); box-shadow:var(--shadow);}
@@ -538,7 +537,7 @@ async function checkSubscriptionActive(userId){
       .from('breeder_subscriptions')
       .select('active')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
     if(error) throw error;
     return data?.active === true;
   }catch(err){
@@ -783,15 +782,18 @@ const I18N = {
 
 
     kennelInventory: 'Kennellager', kennelInventoryHint: 'Foder, tillskott & mediciner',
+    defaultKennelName: 'Min kennel',
     colItem: 'Artikel', colQty: 'Antal', restock: 'Fyll på', ok: 'OK',
     addItem: 'Lägg till vara', labelItemNameReq: 'Varunamn *', labelQtyReq: 'Antal *',
-    deductAmount: 'Dra av', deductAmountTitle: 'Dra av mängd: {name}',
-    deductAmountHint: 'Nuvarande lager: {qty} {unit}.', labelDeductAmount: 'Mängd att dra av *',
-    toastAmountDeducted: 'Lager uppdaterat',
+    adjustStock: 'Justera lager', stockLabel: 'Lager',
+    adjustAmountTitle: 'Justera lager: {name}', adjustAmountHint: 'Nuvarande lager: {qty} {unit}.',
+    labelOperation: 'Åtgärd', opAdd: 'Lägg till', opRemove: 'Dra av',
+    labelAmount: 'Mängd *', toastStockUpdated: 'Lager uppdaterat',
     labelUnit: 'Enhet', labelLowAtQty: 'Lågnivå vid', unitPiece: 'st',
+    unitOptions: ['st','kg','g','liter','ml','påse','säck','burk','flaska','kartong','förpackning','låda'],
+    unitOther: 'Annat...', labelCustomUnit: 'Egen enhet *', phCustomUnit: 'Skriv egen enhet',
     confirmDeleteItem: 'Ta bort "{name}" från lagret?',
     toastItemAdded: 'Vara tillagd', toastItemRemoved: 'Vara borttagen',
-    decreaseQty: 'Minska antal', increaseQty: 'Öka antal',
     emergencyContacts: 'Akutkontakter',
     kennelJournal: 'Kennelns journal', kennelJournalHint: 'Fria anteckningar',
     phTodayNote: 'Skriv dagens anteckning...', saveNote: 'Spara anteckning',
@@ -1000,15 +1002,18 @@ const I18N = {
 
 
     kennelInventory: 'Kennel inventory', kennelInventoryHint: 'Food, supplements & medicine',
+    defaultKennelName: 'My kennel',
     colItem: 'Item', colQty: 'Quantity', restock: 'Restock', ok: 'OK',
     addItem: 'Add item', labelItemNameReq: 'Item name *', labelQtyReq: 'Quantity *',
-    deductAmount: 'Deduct', deductAmountTitle: 'Deduct amount: {name}',
-    deductAmountHint: 'Current stock: {qty} {unit}.', labelDeductAmount: 'Amount to deduct *',
-    toastAmountDeducted: 'Inventory updated',
+    adjustStock: 'Adjust stock', stockLabel: 'Stock',
+    adjustAmountTitle: 'Adjust stock: {name}', adjustAmountHint: 'Current stock: {qty} {unit}.',
+    labelOperation: 'Operation', opAdd: 'Add', opRemove: 'Deduct',
+    labelAmount: 'Amount *', toastStockUpdated: 'Inventory updated',
     labelUnit: 'Unit', labelLowAtQty: 'Restock at', unitPiece: 'pcs',
+    unitOptions: ['pcs','kg','g','liter','ml','bag','sack','jar','bottle','box','package','crate'],
+    unitOther: 'Other...', labelCustomUnit: 'Custom unit *', phCustomUnit: 'Enter custom unit',
     confirmDeleteItem: 'Remove "{name}" from inventory?',
     toastItemAdded: 'Item added', toastItemRemoved: 'Item removed',
-    decreaseQty: 'Decrease quantity', increaseQty: 'Increase quantity',
     emergencyContacts: 'Emergency contacts',
     kennelJournal: 'Kennel journal', kennelJournalHint: 'Free-form notes',
     phTodayNote: "Write today's note...", saveNote: 'Save note',
@@ -1200,7 +1205,7 @@ async function getOrCreateKennelId(userId){
   const { data: membership, error } = await sb.from('bh_kennel_members').select('kennel_id').eq('user_id', userId).limit(1).maybeSingle();
   if(error) throw error;
   if(membership) return membership.kennel_id;
-  const { data: kennel, error: kErr } = await sb.from('bh_kennels').insert({ owner_id:userId, name:'Min kennel' }).select().single();
+  const { data: kennel, error: kErr } = await sb.from('bh_kennels').insert({ owner_id:userId, name:t('defaultKennelName') }).select().single();
   if(kErr) throw kErr;
   await sb.from('bh_kennel_members').insert({ kennel_id:kennel.id, user_id:userId, role:'owner' });
   return kennel.id;
@@ -1458,7 +1463,7 @@ function seedEn(){
 // Tom startpunkt för ett riktigt, nyskapat konto — inga påhittade
 // exempel. Allt fylls i av uppfödaren själv.
 function emptyDB(){
-  return {dogs:[], health:[], breedings:[], litters:[], buyers:[], events:[], documents:[], journal:[], inventory:[], contacts:[], kennelName:'Min kennel', pricePerPuppy:18000, theme:null};
+  return {dogs:[], health:[], breedings:[], litters:[], buyers:[], events:[], documents:[], journal:[], inventory:[], contacts:[], kennelName:t('defaultKennelName'), pricePerPuppy:18000, theme:null};
 }
 
 async function loadDB(){
@@ -2503,7 +2508,7 @@ function renderMore(){
             <button class="btn btn-primary btn-sm" id="addInventoryBtn">${t('addItem')}</button>
           </div>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>${t('colItem')}</th><th>${t('colQty')}</th><th></th><th></th></tr></thead>
+        <div class="table-wrap"><table><thead><tr><th>${t('colItem')}</th><th></th><th></th></tr></thead>
           <tbody id="inventoryBody"></tbody>
         </table></div>
         <div class="section-head"><h2>${t('emergencyContacts')}</h2></div>
@@ -2542,61 +2547,54 @@ function renderMore(){
 function drawInventoryBody(){
   document.getElementById('inventoryBody').innerHTML = DB.inventory.map(i=>`
     <tr>
-      <td>${i.name}</td>
       <td>
-        <div style="display:flex; align-items:center; gap:7px;">
-          <button class="btn btn-sm qty-btn" data-qty-dec="${i.id}" aria-label="${t('decreaseQty')}">−</button>
-          <span style="min-width:64px; text-align:center;">${i.qty} ${i.unit}</span>
-          <button class="btn btn-sm qty-btn" data-qty-inc="${i.id}" aria-label="${t('increaseQty')}">+</button>
-        </div>
+        <div style="font-weight:600;">${i.name}</div>
+        <div style="font-size:12px; color:var(--ink-soft);">${t('stockLabel')}: ${i.qty} ${i.unit}</div>
       </td>
       <td>${i.qty<=i.low?`<span class="badge due">${t('restock')}</span>`:`<span class="badge ok">${t('ok')}</span>`}</td>
       <td><div style="display:flex; gap:6px; justify-content:flex-end;">
-        <button class="btn btn-sm" data-deduct="${i.id}">${t('deductAmount')}</button>
+        <button class="btn btn-sm" data-adjust="${i.id}">${t('adjustStock')}</button>
         <button class="btn btn-sm btn-danger" data-del-item="${i.id}">${t('delete')}</button>
       </div></td>
-    </tr>`).join('') || emptyRow(4);
-  document.getElementById('inventoryBody').querySelectorAll('[data-qty-inc]').forEach(btn=>{
-    btn.addEventListener('click', ()=> adjustInventoryQty(btn.dataset.qtyInc, 1));
-  });
-  document.getElementById('inventoryBody').querySelectorAll('[data-qty-dec]').forEach(btn=>{
-    btn.addEventListener('click', ()=> adjustInventoryQty(btn.dataset.qtyDec, -1));
-  });
-  document.getElementById('inventoryBody').querySelectorAll('[data-deduct]').forEach(btn=>{
-    btn.addEventListener('click', ()=> openDeductForm(btn.dataset.deduct));
+    </tr>`).join('') || emptyRow(3);
+  document.getElementById('inventoryBody').querySelectorAll('[data-adjust]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openAdjustStockForm(btn.dataset.adjust));
   });
   document.getElementById('inventoryBody').querySelectorAll('[data-del-item]').forEach(btn=>{
     btn.addEventListener('click', ()=> deleteInventoryItem(btn.dataset.delItem));
   });
 }
 function roundQty(n){ return Math.round(n*100)/100; }
-function adjustInventoryQty(id, delta){
-  const item = DB.inventory.find(i=>i.id===id);
-  if(!item) return;
-  item.qty = Math.max(0, roundQty(item.qty + delta));
-  saveDB(); drawInventoryBody();
-}
-function openDeductForm(id){
+function openAdjustStockForm(id){
   const item = DB.inventory.find(i=>i.id===id);
   if(!item) return;
   openDrawer(`
-    <div class="drawer-head"><div class="drawer-title">${t('deductAmountTitle',{name:item.name})}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-head"><div class="drawer-title">${t('adjustAmountTitle',{name:item.name})}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
-      <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 14px;">${t('deductAmountHint',{qty:item.qty, unit:item.unit})}</p>
-      <form id="deductForm" class="form-grid">
-        <div class="field full"><label>${t('labelDeductAmount')}</label><input required type="number" min="0" step="any" name="amount" autofocus></div>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 14px;">${t('adjustAmountHint',{qty:item.qty, unit:item.unit})}</p>
+      <form id="adjustStockForm" class="form-grid">
+        <div class="field full">
+          <label>${t('labelOperation')}</label>
+          <div style="display:flex; gap:18px; padding:6px 0;">
+            <label style="display:flex; align-items:center; gap:6px; font-weight:500; font-size:13.5px; color:var(--ink);"><input type="radio" name="op" value="add"> ${t('opAdd')}</label>
+            <label style="display:flex; align-items:center; gap:6px; font-weight:500; font-size:13.5px; color:var(--ink);"><input type="radio" name="op" value="remove" checked> ${t('opRemove')}</label>
+          </div>
+        </div>
+        <div class="field full"><label>${t('labelAmount')}</label><input required type="number" min="0" step="any" name="amount" autofocus></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
-          <button type="submit" class="btn btn-primary">${t('deductAmount')}</button>
+          <button type="submit" class="btn btn-primary">${t('save')}</button>
         </div>
       </form>
     </div>
   `);
-  document.getElementById('deductForm').addEventListener('submit', e=>{
+  document.getElementById('adjustStockForm').addEventListener('submit', e=>{
     e.preventDefault(); const f = new FormData(e.target);
     const amount = Number(f.get('amount')) || 0;
-    item.qty = Math.max(0, roundQty(item.qty - amount));
-    saveDB(); closeDrawer(); drawInventoryBody(); toast(t('toastAmountDeducted'));
+    const op = f.get('op') || 'remove';
+    const delta = op === 'add' ? amount : -amount;
+    item.qty = Math.max(0, roundQty(item.qty + delta));
+    saveDB(); closeDrawer(); drawInventoryBody(); toast(t('toastStockUpdated'));
   });
 }
 function deleteInventoryItem(id){
@@ -2607,13 +2605,18 @@ function deleteInventoryItem(id){
   saveDB(); drawInventoryBody(); toast(t('toastItemRemoved'));
 }
 function openInventoryForm(){
+  const unitOpts = t('unitOptions');
   openDrawer(`
     <div class="drawer-head"><div class="drawer-title">${t('addItem')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="inventoryForm" class="form-grid">
         <div class="field full"><label>${t('labelItemNameReq')}</label><input required name="name"></div>
         <div class="field"><label>${t('labelQtyReq')}</label><input required type="number" min="0" step="1" name="qty" value="1"></div>
-        <div class="field"><label>${t('labelUnit')}</label><input name="unit" placeholder="${t('unitPiece')}"></div>
+        <div class="field"><label>${t('labelUnit')}</label><select name="unit" id="inventoryUnitSelect">
+          ${unitOpts.map(u=>`<option value="${u}">${u}</option>`).join('')}
+          <option value="__other__">${t('unitOther')}</option>
+        </select></div>
+        <div class="field full" id="customUnitField" hidden><label>${t('labelCustomUnit')}</label><input name="customUnit" placeholder="${t('phCustomUnit')}"></div>
         <div class="field"><label>${t('labelLowAtQty')}</label><input type="number" min="0" step="1" name="low" value="1"></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
@@ -2622,13 +2625,18 @@ function openInventoryForm(){
       </form>
     </div>
   `);
+  document.getElementById('inventoryUnitSelect').addEventListener('change', e=>{
+    document.getElementById('customUnitField').hidden = e.target.value !== '__other__';
+  });
   document.getElementById('inventoryForm').addEventListener('submit', e=>{
     e.preventDefault(); const f = new FormData(e.target);
+    const rawUnit = f.get('unit');
+    const unit = rawUnit === '__other__' ? (f.get('customUnit')||'').trim() || t('unitPiece') : rawUnit;
     DB.inventory.push({
       id: uid('i'),
       name: f.get('name'),
       qty: Math.max(0, Number(f.get('qty')) || 0),
-      unit: f.get('unit') || t('unitPiece'),
+      unit: unit,
       low: Math.max(0, Number(f.get('low')) || 0),
     });
     saveDB(); closeDrawer(); drawInventoryBody(); toast(t('toastItemAdded'));

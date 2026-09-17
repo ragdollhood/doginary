@@ -98,6 +98,12 @@ a{color:inherit;}
   width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);
 }
 .icon-btn:hover{border-color:var(--honey);}
+.lang-btn{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s);
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+}
+.lang-btn:hover{border-color:var(--honey);}
+.lang-btn .flag-icon{border-radius:2px; display:block;}
 .content{padding:22px 26px 70px; max-width:1280px; width:100%; margin:0 auto;}
 
 /* ============ COMPONENTS ============ */
@@ -399,6 +405,8 @@ tbody tr:hover{background:var(--surface-2);}
         <span class="share-badge" id="pageShareBadge"></span>
       </div>
       <div class="topbar-actions">
+        <button type="button" id="langBtnSv" class="lang-btn" aria-label="Visa sidan på svenska" title="Svenska" hidden><svg class="flag-icon" viewBox="0 0 16 10" width="22" height="14" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
+        <button type="button" id="langBtnEn" class="lang-btn" aria-label="Show the page in English" title="English" hidden><svg class="flag-icon" viewBox="0 0 60 30" width="22" height="14" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#bh-uk-clip)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="bh-uk-clip"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
         <button class="icon-btn" id="exportAllBtn" title="Exportera all kenneldata som PDF">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
         </button>
@@ -440,7 +448,511 @@ tbody tr:hover{background:var(--surface-2);}
    en egen kennel; all data lagras i kennel_data (privat) och en
    säker delmängd speglas till kennel_public (används av den publika
    hundsidan). Se breeder-hub-schema-consolidated.sql för databasen.
+
+   Bilingual UI (Swedish/English): all interface text goes through
+   the I18N dictionary and the t() helper below, mirroring the
+   language-switcher pattern used on index.html.
    ============================================================ */
+
+/* ---------------- I18N ---------------- */
+const LANG_KEY = 'breederhub_lang';
+let LANG = (() => {
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved === 'en' || saved === 'sv') return saved;
+  } catch { /* localStorage may be unavailable */ }
+  return 'sv';
+})();
+const LOCALE = { sv: 'sv-SE', en: 'en-GB' };
+
+const I18N = {
+  sv: {
+    hubOverviewLabel: 'Uppfödaröversikt',
+    logout: 'Logga ut',
+    demoBadge: 'Exempel',
+    menuAria: 'Meny',
+    exportTitle: 'Exportera all kenneldata som PDF',
+    printTitle: 'Skriv ut aktuell sida',
+    themeTitle: 'Byt tema',
+
+    navGroupOverview: 'Översikt', navDashboard: 'Instrumentpanel', navAnalytics: 'Statistik',
+    navGroupDogs: 'Hundar', navDogs: 'Hundregister', navHealth: 'Hälsojournal', navPedigree: 'Stamtavla',
+    navGroupBreeding: 'Avel', navBreeding: 'Parningsplaner', navLitters: 'Kullar', navMatching: 'Valpmatchning',
+    navGroupCustomers: 'Kunder', navBuyers: 'Köpare & CRM',
+    navGroupAdmin: 'Administration', navCalendar: 'Kalender', navDocuments: 'Dokument', navMore: 'Kennelverktyg', navPrivacy: 'Delning & sekretess',
+
+    pmDashboardTitle: 'Översikt', pmDashboardSub: 'Välkommen tillbaka',
+    pmAnalyticsTitle: 'Statistik', pmAnalyticsSub: 'Nyckeltal för din uppfödning',
+    pmDogsTitle: 'Hundregister', pmDogsSub: 'Alla hundar i din kennel',
+    pmHealthTitle: 'Hälsojournal', pmHealthSub: 'Vaccinationer, veterinärbesök och tester',
+    pmPedigreeTitle: 'Stamtavla', pmPedigreeSub: 'Interaktivt släktträd',
+    pmBreedingTitle: 'Parningsplaner', pmBreedingSub: 'Planerade och genomförda parningar',
+    pmLittersTitle: 'Kullar', pmLittersSub: 'Valpar, tillväxt och milstolpar',
+    pmMatchingTitle: 'Valpmatchning', pmMatchingSub: 'Matcha valpar med rätt familj',
+    pmBuyersTitle: 'Köpare & CRM', pmBuyersSub: 'Intressenter och köpprocess',
+    pmCalendarTitle: 'Kalender', pmCalendarSub: 'Alla viktiga datum på ett ställe',
+    pmDocumentsTitle: 'Dokument', pmDocumentsSub: 'Kontrakt, intyg och certifikat',
+    pmMoreTitle: 'Kennelverktyg', pmMoreSub: 'Löpcykel, lager, journal & mer',
+    pmPrivacyTitle: 'Delning & sekretess', pmPrivacySub: 'Vad som visas publikt och vad som alltid är privat',
+    pmDashboardSubWelcome: 'Välkommen tillbaka till {name}',
+    pmDashboardSubDemo: 'Så här ser Breeder Hub ut — logga in eller skapa konto för din egen kennel',
+
+    shareBadgePublic: '🌐 Delar viss info publikt — se markeringar nedan',
+    shareBadgePrivate: '🔒 Helt privat — visas aldrig på din publika sida',
+
+    authTitleSignin: 'Logga in', authTitleSignup: 'Skapa konto',
+    authDescSignin: 'Logga in för att komma åt din kennels hundregister, hälsojournal och kalender.',
+    authDescSignup: 'Skapa ett konto så får du en egen kennel att fylla med hundar, hälsodata och mer.',
+    authSubmitSignin: 'Logga in', authSubmitSignup: 'Skapa konto',
+    authSwitchTextSignin: 'Inget konto än?', authSwitchTextSignup: 'Har du redan ett konto?',
+    authSwitchBtnSignin: 'Skapa konto', authSwitchBtnSignup: 'Logga in',
+    authEmailLabel: 'E-post', authPasswordLabel: 'Lösenord',
+    authErrInvalid: 'Fel e-post eller lösenord.',
+    authErrExists: 'Det finns redan ett konto med den e-postadressen — logga in istället.',
+    authErrPwLen: 'Lösenordet måste vara minst 6 tecken.',
+    authSignupSuccess: 'Konto skapat! Kolla din e-post för att bekräfta adressen innan du loggar in.',
+    authLoadFail: 'Kunde inte ladda din kennel. Kontrollera att SQL-schemat är kört i Supabase.',
+    authNotConfiguredTitle: 'Inte konfigurerad än',
+    authNotConfiguredNote: 'Den här dashboarden är inte kopplad till någon databas ännu.<br><br>Kör <code>breeder-hub-schema-consolidated.sql</code> i ditt Supabase-projekts SQL Editor, fyll sedan i <code>SUPABASE_URL</code> och <code>SUPABASE_ANON_KEY</code> högst upp i den här filens skript-tagg.',
+
+    toastNoData: 'Ingen kenneldata inläst än',
+    toastPopupBlocked: 'Blockerad av popup-blockeraren — tillåt popupfönster och försök igen',
+    toastChangesSaved: 'Ändringarna har sparats',
+    toastDogAdded: 'Hunden har lagts till',
+    toastHealthAdded: 'Journalpost tillagd',
+    toastNoteSaved: 'Anteckning sparad',
+    toastBreedingAdded: 'Parningsplan tillagd',
+    toastEventAdded: 'Händelse tillagd',
+    toastDogRemoved: '{name} har tagits bort',
+    toastDocsAdded: 'Dokument tillagda (namn sparat lokalt — filuppladdning till moln kräver Supabase Storage)',
+    toastBuyerAdded: 'Intressent tillagd',
+    toastStatusUpdated: 'Status uppdaterad',
+    toastEventRemoved: 'Händelsen har tagits bort',
+    toastDemoView: 'Det här är en exempelvy — logga in eller skapa konto för att spara på riktigt',
+    toastFetchFail: 'Kunde inte hämta din kenneldata från molnet',
+    toastSaveFail: 'Kunde inte spara ändringen till molnet — försök igen',
+    loadingKennel: 'Laddar kenneldata…',
+    kennelLookupFail: 'Kunde inte slå upp kennel',
+    saveDbFail: 'Kunde inte spara till Supabase',
+    loadDbFail: 'Kunde inte läsa kenneldata från Supabase',
+    savePublicFail: 'Kunde inte uppdatera den publika sidans data',
+
+    confirmDeleteDogParent: 'Ta bort {name}? Hunden är registrerad som förälder till andra hundar — deras stamtavla kommer visa "Okänd" istället. Detta går inte att ångra.',
+    confirmDeleteDog: 'Ta bort {name}? Detta går inte att ångra.',
+    confirmDeleteEvent: 'Ta bort händelsen "{title}"?',
+
+    statActiveDogs: 'Aktiva hundar', statActiveDogsHint: 'I avel eller uppväxt',
+    statRetired: 'Pensionerade', statRetiredHint: 'Avslutad avelskarriär',
+    statLittersYear: 'Kullar i år',
+    statPuppiesSold: 'Valpar sålda', statPuppiesSoldHint: 'Totalt genom kenneln',
+    upcomingEvents: 'Kommande händelser', next30Days: 'Nästa 30 dagarna',
+    colDate: 'Datum', colEvent: 'Händelse', colType: 'Typ',
+    needsAttention: 'Behöver uppmärksamhas',
+    dueOn: 'Förfaller {date} · {detail}',
+    nothingUrgent: 'Inget akut just nu — bra jobbat!',
+    kennelNote: 'Kennelanteckning',
+    noNotesYet: 'Inga anteckningar än.',
+    unknownDog: 'Okänd',
+    nothingToShow: 'Inget att visa',
+    evtHealth: 'Hälsa', evtBirthday: 'Födelsedag', evtPickup: 'Hämtning', evtBreeding: 'Avel',
+
+    estRevenue: 'Uppskattad intäkt', estRevenueHint: 'Sålda + reserverade valpar',
+    avgLitter: 'Snittkullstorlek', avgLitterUnit: ' valpar', avgLitterHint: 'Historiskt snitt',
+    upcomingVacc: 'Kommande vaccinationer', upcomingVaccHint: 'Kräver åtgärd',
+    upcomingBirthdays: 'Kommande födelsedagar', upcomingBirthdaysHint: 'Nästa 60 dagar',
+    puppiesSoldPerMonth: 'Valpar sålda per månad', dogsPerStatus: 'Hundar per status',
+    noData: 'Ingen data', puppiesSoldLabel: 'Sålda valpar',
+    statusPuppy: 'Valp', statusAdult: 'Vuxen', statusRetired: 'Pensionerad', statusDeceased: 'Avliden',
+
+    publicTag: '🌐 Publik', publicTagText: 'visas på din publika sida', learnMore: 'Läs mer',
+    searchDogsPlaceholder: 'Sök hund...', filterAll: 'Alla', newDog: 'Ny hund',
+    noDogsMatch: 'Inga hundar matchar filtret.',
+    sexFemale: 'Tik', sexMale: 'Hane',
+    ageDays: '{n} dagar', ageMonths: '{n} mån', ageYears: '{n} år',
+
+    edit: 'Redigera', delete: 'Ta bort', cancel: 'Avbryt', save: 'Spara',
+    tabInfo: 'Info', tabHealth: 'Hälsa', tabWeight: 'Vikt', tabNotes: 'Anteckningar',
+    fieldCallName: 'Kallelsenamn', fieldSex: 'Kön', fieldBreed: 'Ras', fieldColor: 'Färg',
+    fieldBorn: 'Född', fieldAge: 'Ålder', fieldChip: 'Chipnummer', fieldRegNo: 'Registreringsnr',
+    fieldHeight: 'Mankhöjd', fieldStatus: 'Status', fieldHips: 'HD', fieldElbows: 'AD',
+    fieldEyes: 'Ögonlysning', fieldDna: 'DNA-tester',
+    titlesLabel: 'MERITER', parentsLabel: 'FÖRÄLDRAR', sireLabel: 'Far', damLabel: 'Mor',
+    dueBadge: 'Förfaller', nextLabel: ' · Nästa: ',
+    noHealthRecords: 'Inga hälsojournalposter ännu.',
+    privateNeverPublic: '🔒 Privat — visas aldrig publikt',
+    noWeightData: 'Ingen viktdata registrerad.',
+    weightKg: 'Vikt (kg)', noNotes: 'Inga anteckningar.',
+
+    editDogTitle: 'Redigera {name}', newDogTitle: 'Ny hund',
+    labelNameRequired: 'Namn *', labelRegName: 'Registrerat namn', labelBreedRequired: 'Ras *',
+    labelSex: 'Kön', labelBorn: 'Född', labelColor: 'Färg', labelChip: 'Chipnummer',
+    labelRegNo: 'Registreringsnr', labelStatus: 'Status', labelHeightCm: 'Mankhöjd (cm)',
+    pedigreeSection: 'Stamtavla', labelSire: 'Far (hane)', labelDam: 'Mor (tik)', unknownOption: '— Okänd —',
+    healthTitlesSection: 'Hälsoresultat & meriter',
+    labelHipsFull: 'HD (höftled)', phHips: 't.ex. A',
+    labelElbowsFull: 'AD (armbåge)', phElbows: 't.ex. 0',
+    labelEyesFull: 'Ögonlysning', phEyes: 't.ex. Ua (2024)',
+    labelDnaFull: 'DNA-tester', phDna: 't.ex. Klar (PRA, ICT)',
+    labelTitlesCsv: 'Meriter (kommaseparerat)', phTitles: 't.ex. SE UCH, SE VCH',
+    labelNotesPrivate: 'Anteckningar',
+    saveChanges: 'Spara ändringar', saveDog: 'Spara hund',
+
+    allDogs: 'Alla hundar', newHealthEntry: 'Ny journalpost',
+    colDog: 'Hund', colNextDue: 'Nästa förfallodag', colDetails: 'Detaljer', colStatus: 'Status',
+    dueSoon: 'Förfaller snart',
+    newHealthRecordTitle: 'Ny hälsojournalpost',
+    labelDogRequired: 'Hund *', labelTypeRequired: 'Typ *', labelDateRequired: 'Datum *', labelNextDue: 'Nästa förfallodag',
+    healthTypeVaccination: 'Vaccination', healthTypeDeworming: 'Avmaskning', healthTypeVetVisit: 'Veterinärbesök',
+    healthTypeXray: 'Röntgen', healthTypeEyeExam: 'Ögonlysning', healthTypeDna: 'DNA-test',
+    healthTypeInsurance: 'Försäkring', healthTypeOther: 'Övrigt',
+
+    noDogsRegisteredYet: 'Inga hundar registrerade än. Lägg till din första hund under Hundregister för att se en stamtavla här.',
+    pedNoData: 'Ingen data',
+    pedFootnote: 'Visar far/mor och två generationer bakåt. Lägg till fler anor via hundens profil (Far/Mor-fält) för en djupare stamtavla.',
+
+    newBreedingPlan: 'Ny parningsplan', confirmedPregnancy: 'Bekräftad dräktighet', planned: 'Planerad',
+    expectedWhelp: 'Beräknat valpningsdatum: {date} · ', expectedCountLabel: 'Förväntat antal: {n} · ',
+    noBreedingPlans: 'Inga parningsplaner registrerade.',
+    pregnancyCalc: 'Dräktighetskalkylator', matingDateLabel: 'Parningsdatum',
+    expectedWhelping: 'Beräknad valpning: ', basedOn63: 'Baserat på ca 63 dagars dräktighet.',
+    heatTracking: 'Löpcykelspårning', heatNotRecorded: 'Senaste löp ej registrerat — lägg till i hälsojournalen',
+    labelDamRequired: 'Tik *', labelSireRequired: 'Hane *', labelExpectedCount: 'Förväntat antal valpar',
+    labelNotes: 'Anteckningar', savePlan: 'Spara plan',
+
+    puppiesUnit: 'valpar', malesUnit: 'hanar', femalesUnit: 'tikar', bornOn: 'Född {date}',
+    noLittersYet: 'Inga kullar registrerade än.',
+    puppiesLabel: 'Valpar', colBirthWeight: 'Födelsevikt', milestonesLabel: 'Milstolpar',
+    colName: 'Namn',
+    puppyAvailable: 'Tillgänglig', puppyReserved: 'Reserverad', puppySold: 'Såld',
+
+    availablePuppies: 'Tillgängliga valpar', temperamentEst: 'Temperament (uppskattat)',
+    traitEnergy: 'Energi', traitConfidence: 'Självförtroende', traitSociability: 'Sällskaplighet', traitTrainability: 'Träningsbarhet',
+    noAvailablePuppies: 'Inga tillgängliga valpar just nu.',
+    suggestedMatches: 'Föreslagna matchningar', suggestedMatchesHint: 'Baserat på aktivitetsnivå & önskemål',
+    colBuyer: 'Köpare', colWants: 'Önskar', colSuggestedPuppy: 'Föreslagen valp', colMatch: 'Matchning', bestMatch: 'Bästa matchning',
+
+    buyerNew: 'Ny förfrågan', buyerWaiting: 'Väntelista', buyerApproved: 'Godkänd',
+    buyerReserved: 'Reserverad', buyerSold: 'Såld', buyerRejected: 'Avböjd',
+    newProspect: 'Ny intressent', colCountry: 'Land', colHousing: 'Boende', colPrefers: 'Föredrar',
+    buyerStatusLabel2: 'Status', colHousingType: 'Boendetyp', colActivityLevel: 'Aktivitetsnivå',
+    colPrevOwner: 'Tidigare hundägare', colPreferredPuppy: 'Föredragen valp',
+    commLog: 'Kommunikationslogg', addNote: 'Lägg till anteckning', phLogNote: 'Skriv en uppdatering...', add: 'Lägg till',
+    labelNameReq: 'Namn *', labelEmail: 'E-post', labelPhone: 'Telefon', labelCountry: 'Land',
+    defaultCountry: 'Sverige', labelHousingType: 'Boendetyp', labelActivityLevel: 'Aktivitetsnivå',
+    labelPrevOwner: 'Tidigare hundägare', labelDesiredPuppy: 'Önskad valp',
+    prospectAddedLog: 'Intressent tillagd.',
+
+    newEvent: 'Ny händelse', allUpcomingEvents: 'Alla kommande händelser',
+    labelTitleRequired: 'Titel *', labelDateReq: 'Datum *', labelType: 'Typ',
+    dowMon: 'Mån', dowTue: 'Tis', dowWed: 'Ons', dowThu: 'Tor', dowFri: 'Fre', dowSat: 'Lör', dowSun: 'Sön',
+
+    uploadDoc: 'Ladda upp dokument', colDocument: 'Dokument', colRelatedTo: 'Kopplat till',
+    docTypeOther: 'Övrigt',
+
+    privacyPublicTitle: '🌐 Detta visas publikt (på din publika sida)',
+    privacyPublicIntro: 'För varje hund i ditt hundregister speglas följande fält till din publika sida. Allt annat i Breeder Hub är alltid privat.',
+    privacyPublicList: ['Namn, kallelsenamn och registrerat namn','Ras, kön, färg och födelsedatum','Status (valp / vuxen / pensionerad / avliden)','Registreringsnummer och mankhöjd','Hälsoresultat: HD, AD, ögonlysning och DNA-tester','Meriter/titlar','Stamtavla (kopplingar till far/mor och två generationer bakåt)'],
+    privacyPrivateTitle: '🔒 Detta är privat — syns bara för dig',
+    privacyPrivateIntro: 'Ingen av dessa uppgifter lämnar någonsin din inloggade vy. De speglas aldrig till den publika sidan.',
+    privacyPrivateList: ['Chipnummer','Anteckningar per hund och vikthistorik','Hela hälsojournalen (vaccinationer, veterinärbesök, avmaskning m.m.)','Parningsplaner, löpcykler och dräktighetsdata','Kullar och valpar (inklusive milstolpar) — valpar blir aldrig publika automatiskt','Köpare & CRM — namn, e-post, telefon, boende och kontaktlogg','Kalenderhändelser, dokument, kennelns journal, lager och nödkontakter','Statistik/instrumentpanel (aggregerade siffror om din verksamhet)'],
+    gdprTitle: 'Om GDPR',
+    gdprText1: 'GDPR gäller personuppgifter om identifierbara privatpersoner — inte hunddata i sig. Det som faktiskt skulle kunna vara känsligt ur ett GDPR-perspektiv i Breeder Hub är köparnas kontaktuppgifter (namn, e-post, telefon) i Köpare & CRM-modulen, samt eventuella personnamn i dokumentfiler eller journalanteckningar. Dessa delas aldrig till den publika sidan och bör hanteras varsamt: spara inte mer än nödvändigt, radera uppgifter när de inte längre behövs, och var beredd att ta bort en köpares uppgifter om personen begär det.',
+    gdprText2: 'Chipnummer hålls medvetet privat eftersom det i teorin skulle kunna användas för att slå upp ägaruppgifter i nationella chipregister. Det här är allmän information, inte juridisk rådgivning — rådfråga gärna en jurist om ni vill ha ett fullständigt GDPR-upplägg för er verksamhet.',
+
+    kennelInventory: 'Kennellager', kennelInventoryHint: 'Foder, tillskott & mediciner',
+    colItem: 'Artikel', colQty: 'Antal', restock: 'Fyll på', ok: 'OK',
+    emergencyContacts: 'Akutkontakter',
+    kennelJournal: 'Kennelns journal', kennelJournalHint: 'Fria anteckningar',
+    phTodayNote: 'Skriv dagens anteckning...', saveNote: 'Spara anteckning',
+    titlesShows: 'Meriter & utställningar', noTitlesReg: 'Inga meriter registrerade.',
+    noJournalYet: 'Inga anteckningar ännu.',
+
+    yes: 'Ja', no: 'Nej',
+    exportKennelTitle: '{name} — export', exportFullTitle: 'Fullständig export — genererad {date}',
+    exportDogsTitle: 'Hundregister ({n})', exportHealthTitle: 'Hälsojournal ({n})',
+    exportBreedingsTitle: 'Parningsplaner ({n})', exportLittersTitle: 'Kullar ({n})',
+    exportBuyersTitle: 'Köpare & CRM ({n})', exportCalendarTitle: 'Kalender ({n})',
+    exportDocsTitle: 'Dokument ({n})', exportJournalTitle: 'Journalanteckningar ({n})',
+    exportInventoryTitle: 'Lager ({n})', exportContactsTitle: 'Nödkontakter ({n})',
+    exColName: 'Namn', exColRegName: 'Reg.namn', exColBreed: 'Ras', exColSex: 'Kön', exColBorn: 'Född',
+    exColStatus: 'Status', exColReg: 'Reg.nr', exColChip: 'Chip', exColHipsElbows: 'Höft/Armb.',
+    exColEyes: 'Ögon', exColDna: 'DNA', exColTitles: 'Titlar',
+    exColDog: 'Hund', exColType: 'Typ', exColDate: 'Datum', exColNext: 'Nästa', exColDetails: 'Detaljer',
+    exColDam: 'Tik', exColSire: 'Hane', exColMatingDate: 'Parningsdatum', exColDueDate: 'Beräknat valpdatum',
+    exColConfirmed: 'Bekräftad', exColExpected: 'Förv. antal', exColNotes: 'Anteckningar',
+    exBornLabel: 'född {date}', exDamLabel: 'Tik: {name}', exSireLabel: 'Hane: {name}', exPuppiesLabel: '{n} valpar',
+    exColColor: 'Färg', exColBirthWeight: 'Födelsevikt', exMilestonesLabel: 'Milstolpar: ',
+    exNotDone: '(ej klar)',
+    exColRelated: 'Kopplat till', exColLowAt: 'Lågnivå vid', exColUnit: 'Enhet',
+    exColRole: 'Roll', exColPhone: 'Telefon',
+    exHousingLine: 'Boende: {housing} &nbsp;·&nbsp; Aktivitetsnivå: {activity} &nbsp;·&nbsp; Tidigare hund: {prevDog}',
+    exWishLine: 'Önskemål: {preferred}', exLinkedPuppy: ' &nbsp;·&nbsp; Kopplad valp: {name}',
+  },
+  en: {
+    hubOverviewLabel: 'Breeder overview',
+    logout: 'Log out',
+    demoBadge: 'Demo',
+    menuAria: 'Menu',
+    exportTitle: 'Export all kennel data as PDF',
+    printTitle: 'Print current page',
+    themeTitle: 'Switch theme',
+
+    navGroupOverview: 'Overview', navDashboard: 'Dashboard', navAnalytics: 'Analytics',
+    navGroupDogs: 'Dogs', navDogs: 'Dog register', navHealth: 'Health records', navPedigree: 'Pedigree',
+    navGroupBreeding: 'Breeding', navBreeding: 'Mating plans', navLitters: 'Litters', navMatching: 'Puppy matching',
+    navGroupCustomers: 'Customers', navBuyers: 'Buyers & CRM',
+    navGroupAdmin: 'Administration', navCalendar: 'Calendar', navDocuments: 'Documents', navMore: 'Kennel tools', navPrivacy: 'Sharing & privacy',
+
+    pmDashboardTitle: 'Overview', pmDashboardSub: 'Welcome back',
+    pmAnalyticsTitle: 'Analytics', pmAnalyticsSub: 'Key metrics for your breeding program',
+    pmDogsTitle: 'Dog register', pmDogsSub: 'All dogs in your kennel',
+    pmHealthTitle: 'Health records', pmHealthSub: 'Vaccinations, vet visits and tests',
+    pmPedigreeTitle: 'Pedigree', pmPedigreeSub: 'Interactive family tree',
+    pmBreedingTitle: 'Mating plans', pmBreedingSub: 'Planned and completed matings',
+    pmLittersTitle: 'Litters', pmLittersSub: 'Puppies, growth and milestones',
+    pmMatchingTitle: 'Puppy matching', pmMatchingSub: 'Match puppies with the right family',
+    pmBuyersTitle: 'Buyers & CRM', pmBuyersSub: 'Prospects and the buying process',
+    pmCalendarTitle: 'Calendar', pmCalendarSub: 'All important dates in one place',
+    pmDocumentsTitle: 'Documents', pmDocumentsSub: 'Contracts, certificates and documents',
+    pmMoreTitle: 'Kennel tools', pmMoreSub: 'Heat cycle, inventory, journal & more',
+    pmPrivacyTitle: 'Sharing & privacy', pmPrivacySub: "What's shown publicly and what's always private",
+    pmDashboardSubWelcome: 'Welcome back to {name}',
+    pmDashboardSubDemo: "This is what Breeder Hub looks like — log in or create an account for your own kennel",
+
+    shareBadgePublic: '🌐 Shares some info publicly — see the markers below',
+    shareBadgePrivate: '🔒 Fully private — never shown on your public page',
+
+    authTitleSignin: 'Log in', authTitleSignup: 'Create account',
+    authDescSignin: "Log in to access your kennel's dog register, health records and calendar.",
+    authDescSignup: 'Create an account to get your own kennel to fill with dogs, health data and more.',
+    authSubmitSignin: 'Log in', authSubmitSignup: 'Create account',
+    authSwitchTextSignin: 'No account yet?', authSwitchTextSignup: 'Already have an account?',
+    authSwitchBtnSignin: 'Create account', authSwitchBtnSignup: 'Log in',
+    authEmailLabel: 'Email', authPasswordLabel: 'Password',
+    authErrInvalid: 'Incorrect email or password.',
+    authErrExists: 'An account with that email already exists — log in instead.',
+    authErrPwLen: 'Password must be at least 6 characters.',
+    authSignupSuccess: 'Account created! Check your email to confirm your address before logging in.',
+    authLoadFail: 'Could not load your kennel. Make sure the SQL schema has been run in Supabase.',
+    authNotConfiguredTitle: 'Not configured yet',
+    authNotConfiguredNote: "This dashboard isn't connected to a database yet.<br><br>Run <code>breeder-hub-schema-consolidated.sql</code> in your Supabase project's SQL Editor, then fill in <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top of this file's script tag.",
+
+    toastNoData: 'No kennel data loaded yet',
+    toastPopupBlocked: 'Blocked by the popup blocker — allow popups and try again',
+    toastChangesSaved: 'Changes saved',
+    toastDogAdded: 'Dog added',
+    toastHealthAdded: 'Health record added',
+    toastNoteSaved: 'Note saved',
+    toastBreedingAdded: 'Mating plan added',
+    toastEventAdded: 'Event added',
+    toastDogRemoved: '{name} has been removed',
+    toastDocsAdded: 'Documents added (name saved locally — uploading files to the cloud requires Supabase Storage)',
+    toastBuyerAdded: 'Prospect added',
+    toastStatusUpdated: 'Status updated',
+    toastEventRemoved: 'Event removed',
+    toastDemoView: 'This is a demo view — log in or create an account to actually save',
+    toastFetchFail: 'Could not fetch your kennel data from the cloud',
+    toastSaveFail: 'Could not save the change to the cloud — try again',
+    loadingKennel: 'Loading kennel data…',
+    kennelLookupFail: 'Could not look up kennel',
+    saveDbFail: 'Could not save to Supabase',
+    loadDbFail: 'Could not read kennel data from Supabase',
+    savePublicFail: "Could not update the public page's data",
+
+    confirmDeleteDogParent: 'Remove {name}? This dog is registered as a parent of other dogs — their pedigree will show "Unknown" instead. This cannot be undone.',
+    confirmDeleteDog: 'Remove {name}? This cannot be undone.',
+    confirmDeleteEvent: 'Remove the event "{title}"?',
+
+    statActiveDogs: 'Active dogs', statActiveDogsHint: 'In breeding or growing up',
+    statRetired: 'Retired', statRetiredHint: 'Breeding career ended',
+    statLittersYear: 'Litters this year',
+    statPuppiesSold: 'Puppies sold', statPuppiesSoldHint: 'Total through the kennel',
+    upcomingEvents: 'Upcoming events', next30Days: 'Next 30 days',
+    colDate: 'Date', colEvent: 'Event', colType: 'Type',
+    needsAttention: 'Needs attention',
+    dueOn: 'Due {date} · {detail}',
+    nothingUrgent: 'Nothing urgent right now — nice work!',
+    kennelNote: 'Kennel note',
+    noNotesYet: 'No notes yet.',
+    unknownDog: 'Unknown',
+    nothingToShow: 'Nothing to show',
+    evtHealth: 'Health', evtBirthday: 'Birthday', evtPickup: 'Pickup', evtBreeding: 'Breeding',
+
+    estRevenue: 'Estimated revenue', estRevenueHint: 'Sold + reserved puppies',
+    avgLitter: 'Average litter size', avgLitterUnit: ' puppies', avgLitterHint: 'Historical average',
+    upcomingVacc: 'Upcoming vaccinations', upcomingVaccHint: 'Needs action',
+    upcomingBirthdays: 'Upcoming birthdays', upcomingBirthdaysHint: 'Next 60 days',
+    puppiesSoldPerMonth: 'Puppies sold per month', dogsPerStatus: 'Dogs by status',
+    noData: 'No data', puppiesSoldLabel: 'Puppies sold',
+    statusPuppy: 'Puppy', statusAdult: 'Adult', statusRetired: 'Retired', statusDeceased: 'Deceased',
+
+    publicTag: '🌐 Public', publicTagText: 'shown on your public page', learnMore: 'Learn more',
+    searchDogsPlaceholder: 'Search dogs...', filterAll: 'All', newDog: 'New dog',
+    noDogsMatch: 'No dogs match this filter.',
+    sexFemale: 'Female', sexMale: 'Male',
+    ageDays: '{n} days', ageMonths: '{n} mo', ageYears: '{n} yr',
+
+    edit: 'Edit', delete: 'Delete', cancel: 'Cancel', save: 'Save',
+    tabInfo: 'Info', tabHealth: 'Health', tabWeight: 'Weight', tabNotes: 'Notes',
+    fieldCallName: 'Call name', fieldSex: 'Sex', fieldBreed: 'Breed', fieldColor: 'Color',
+    fieldBorn: 'Born', fieldAge: 'Age', fieldChip: 'Chip number', fieldRegNo: 'Registration no.',
+    fieldHeight: 'Height at withers', fieldStatus: 'Status', fieldHips: 'HD', fieldElbows: 'AD',
+    fieldEyes: 'Eye exam', fieldDna: 'DNA tests',
+    titlesLabel: 'TITLES', parentsLabel: 'PARENTS', sireLabel: 'Sire', damLabel: 'Dam',
+    dueBadge: 'Due', nextLabel: ' · Next: ',
+    noHealthRecords: 'No health records yet.',
+    privateNeverPublic: '🔒 Private — never shown publicly',
+    noWeightData: 'No weight data recorded.',
+    weightKg: 'Weight (kg)', noNotes: 'No notes.',
+
+    editDogTitle: 'Edit {name}', newDogTitle: 'New dog',
+    labelNameRequired: 'Name *', labelRegName: 'Registered name', labelBreedRequired: 'Breed *',
+    labelSex: 'Sex', labelBorn: 'Born', labelColor: 'Color', labelChip: 'Chip number',
+    labelRegNo: 'Registration no.', labelStatus: 'Status', labelHeightCm: 'Height at withers (cm)',
+    pedigreeSection: 'Pedigree', labelSire: 'Sire (male)', labelDam: 'Dam (female)', unknownOption: '— Unknown —',
+    healthTitlesSection: 'Health results & titles',
+    labelHipsFull: 'HD (hips)', phHips: 'e.g. A',
+    labelElbowsFull: 'AD (elbows)', phElbows: 'e.g. 0',
+    labelEyesFull: 'Eye exam', phEyes: 'e.g. Clear (2024)',
+    labelDnaFull: 'DNA tests', phDna: 'e.g. Clear (PRA, ICT)',
+    labelTitlesCsv: 'Titles (comma-separated)', phTitles: 'e.g. SE UCH, SE VCH',
+    labelNotesPrivate: 'Notes',
+    saveChanges: 'Save changes', saveDog: 'Save dog',
+
+    allDogs: 'All dogs', newHealthEntry: 'New health record',
+    colDog: 'Dog', colNextDue: 'Next due date', colDetails: 'Details', colStatus: 'Status',
+    dueSoon: 'Due soon',
+    newHealthRecordTitle: 'New health record',
+    labelDogRequired: 'Dog *', labelTypeRequired: 'Type *', labelDateRequired: 'Date *', labelNextDue: 'Next due date',
+    healthTypeVaccination: 'Vaccination', healthTypeDeworming: 'Deworming', healthTypeVetVisit: 'Vet visit',
+    healthTypeXray: 'X-ray', healthTypeEyeExam: 'Eye exam', healthTypeDna: 'DNA test',
+    healthTypeInsurance: 'Insurance', healthTypeOther: 'Other',
+
+    noDogsRegisteredYet: 'No dogs registered yet. Add your first dog under Dog register to see a pedigree here.',
+    pedNoData: 'No data',
+    pedFootnote: "Shows sire/dam and two generations back. Add more ancestors via the dog's profile (Sire/Dam fields) for a deeper pedigree.",
+
+    newBreedingPlan: 'New mating plan', confirmedPregnancy: 'Confirmed pregnancy', planned: 'Planned',
+    expectedWhelp: 'Expected whelping date: {date} · ', expectedCountLabel: 'Expected count: {n} · ',
+    noBreedingPlans: 'No mating plans registered.',
+    pregnancyCalc: 'Pregnancy calculator', matingDateLabel: 'Mating date',
+    expectedWhelping: 'Expected whelping: ', basedOn63: 'Based on approx. 63 days of pregnancy.',
+    heatTracking: 'Heat cycle tracking', heatNotRecorded: 'Last heat not recorded — add it in the health journal',
+    labelDamRequired: 'Dam *', labelSireRequired: 'Sire *', labelExpectedCount: 'Expected number of puppies',
+    labelNotes: 'Notes', savePlan: 'Save plan',
+
+    puppiesUnit: 'puppies', malesUnit: 'males', femalesUnit: 'females', bornOn: 'Born {date}',
+    noLittersYet: 'No litters registered yet.',
+    puppiesLabel: 'Puppies', colBirthWeight: 'Birth weight', milestonesLabel: 'Milestones',
+    colName: 'Name',
+    puppyAvailable: 'Available', puppyReserved: 'Reserved', puppySold: 'Sold',
+
+    availablePuppies: 'Available puppies', temperamentEst: 'Temperament (estimated)',
+    traitEnergy: 'Energy', traitConfidence: 'Confidence', traitSociability: 'Sociability', traitTrainability: 'Trainability',
+    noAvailablePuppies: 'No available puppies right now.',
+    suggestedMatches: 'Suggested matches', suggestedMatchesHint: 'Based on activity level & preferences',
+    colBuyer: 'Buyer', colWants: 'Wants', colSuggestedPuppy: 'Suggested puppy', colMatch: 'Match', bestMatch: 'Best match',
+
+    buyerNew: 'New inquiry', buyerWaiting: 'Waitlist', buyerApproved: 'Approved',
+    buyerReserved: 'Reserved', buyerSold: 'Sold', buyerRejected: 'Declined',
+    newProspect: 'New prospect', colCountry: 'Country', colHousing: 'Housing', colPrefers: 'Prefers',
+    buyerStatusLabel2: 'Status', colHousingType: 'Housing type', colActivityLevel: 'Activity level',
+    colPrevOwner: 'Previous dog owner', colPreferredPuppy: 'Preferred puppy',
+    commLog: 'Communication log', addNote: 'Add note', phLogNote: 'Write an update...', add: 'Add',
+    labelNameReq: 'Name *', labelEmail: 'Email', labelPhone: 'Phone', labelCountry: 'Country',
+    defaultCountry: 'Sweden', labelHousingType: 'Housing type', labelActivityLevel: 'Activity level',
+    labelPrevOwner: 'Previous dog owner', labelDesiredPuppy: 'Desired puppy',
+    prospectAddedLog: 'Prospect added.',
+
+    newEvent: 'New event', allUpcomingEvents: 'All upcoming events',
+    labelTitleRequired: 'Title *', labelDateReq: 'Date *', labelType: 'Type',
+    dowMon: 'Mon', dowTue: 'Tue', dowWed: 'Wed', dowThu: 'Thu', dowFri: 'Fri', dowSat: 'Sat', dowSun: 'Sun',
+
+    uploadDoc: 'Upload document', colDocument: 'Document', colRelatedTo: 'Related to',
+    docTypeOther: 'Other',
+
+    privacyPublicTitle: '🌐 Shown publicly (on your public page)',
+    privacyPublicIntro: 'For each dog in your register, the following fields are mirrored to your public page. Everything else in Breeder Hub is always private.',
+    privacyPublicList: ['Name, call name and registered name','Breed, sex, color and date of birth','Status (puppy / adult / retired / deceased)','Registration number and height at withers','Health results: hips, elbows, eye exam and DNA tests','Titles','Pedigree (links to sire/dam and two generations back)'],
+    privacyPrivateTitle: "🔒 This is private — only visible to you",
+    privacyPrivateIntro: 'None of this information ever leaves your logged-in view. It is never mirrored to the public page.',
+    privacyPrivateList: ['Chip number','Per-dog notes and weight history','The full health journal (vaccinations, vet visits, deworming, etc.)','Mating plans, heat cycles and pregnancy data','Litters and puppies (including milestones) — puppies never become public automatically','Buyers & CRM — name, email, phone, housing and contact log','Calendar events, documents, kennel journal, inventory and emergency contacts','Analytics/dashboard (aggregate figures about your business)'],
+    gdprTitle: 'About GDPR',
+    gdprText1: 'GDPR applies to personal data about identifiable individuals — not dog data itself. What could actually be sensitive from a GDPR perspective in Breeder Hub is buyers\' contact details (name, email, phone) in the Buyers & CRM module, along with any personal names in document files or journal notes. These are never shared to the public page and should be handled carefully: don\'t keep more than necessary, delete data once it\'s no longer needed, and be prepared to remove a buyer\'s data if they request it.',
+    gdprText2: "Chip numbers are deliberately kept private since they could in theory be used to look up owner details in national chip registries. This is general information, not legal advice — consult a lawyer if you'd like a complete GDPR setup for your business.",
+
+    kennelInventory: 'Kennel inventory', kennelInventoryHint: 'Food, supplements & medicine',
+    colItem: 'Item', colQty: 'Quantity', restock: 'Restock', ok: 'OK',
+    emergencyContacts: 'Emergency contacts',
+    kennelJournal: 'Kennel journal', kennelJournalHint: 'Free-form notes',
+    phTodayNote: "Write today's note...", saveNote: 'Save note',
+    titlesShows: 'Titles & shows', noTitlesReg: 'No titles registered.',
+    noJournalYet: 'No notes yet.',
+
+    yes: 'Yes', no: 'No',
+    exportKennelTitle: '{name} — export', exportFullTitle: 'Full export — generated {date}',
+    exportDogsTitle: 'Dog register ({n})', exportHealthTitle: 'Health records ({n})',
+    exportBreedingsTitle: 'Mating plans ({n})', exportLittersTitle: 'Litters ({n})',
+    exportBuyersTitle: 'Buyers & CRM ({n})', exportCalendarTitle: 'Calendar ({n})',
+    exportDocsTitle: 'Documents ({n})', exportJournalTitle: 'Journal notes ({n})',
+    exportInventoryTitle: 'Inventory ({n})', exportContactsTitle: 'Emergency contacts ({n})',
+    exColName: 'Name', exColRegName: 'Reg. name', exColBreed: 'Breed', exColSex: 'Sex', exColBorn: 'Born',
+    exColStatus: 'Status', exColReg: 'Reg. no.', exColChip: 'Chip', exColHipsElbows: 'Hips/Elbows',
+    exColEyes: 'Eyes', exColDna: 'DNA', exColTitles: 'Titles',
+    exColDog: 'Dog', exColType: 'Type', exColDate: 'Date', exColNext: 'Next', exColDetails: 'Details',
+    exColDam: 'Dam', exColSire: 'Sire', exColMatingDate: 'Mating date', exColDueDate: 'Expected whelp date',
+    exColConfirmed: 'Confirmed', exColExpected: 'Exp. count', exColNotes: 'Notes',
+    exBornLabel: 'born {date}', exDamLabel: 'Dam: {name}', exSireLabel: 'Sire: {name}', exPuppiesLabel: '{n} puppies',
+    exColColor: 'Color', exColBirthWeight: 'Birth weight', exMilestonesLabel: 'Milestones: ',
+    exNotDone: '(not done)',
+    exColRelated: 'Related to', exColLowAt: 'Restock at', exColUnit: 'Unit',
+    exColRole: 'Role', exColPhone: 'Phone',
+    exHousingLine: 'Housing: {housing} &nbsp;·&nbsp; Activity level: {activity} &nbsp;·&nbsp; Previous dog: {prevDog}',
+    exWishLine: 'Preferences: {preferred}', exLinkedPuppy: ' &nbsp;·&nbsp; Linked puppy: {name}',
+  }
+};
+
+function t(key, vars) {
+  let s = (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (I18N.sv[key] != null ? I18N.sv[key] : key);
+  if (vars) { for (const k in vars) s = s.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]); }
+  return s;
+}
+
+const langBtnSvEl = document.getElementById('langBtnSv');
+const langBtnEnEl = document.getElementById('langBtnEn');
+
+function applyChrome() {
+  document.documentElement.lang = LANG;
+  document.getElementById('menuBtn')?.setAttribute('aria-label', t('menuAria'));
+  document.getElementById('exportAllBtn')?.setAttribute('title', t('exportTitle'));
+  document.getElementById('printBtn')?.setAttribute('title', t('printTitle'));
+  document.getElementById('themeBtn')?.setAttribute('title', t('themeTitle'));
+  const overviewLabel = document.querySelector('#kennelNameLabel')?.parentElement?.querySelector('span:not(#kennelNameText):not(#demoBadge)');
+  const overviewSpan = document.querySelector('.sidebar-foot > div:nth-child(2) > span');
+  if (overviewSpan) overviewSpan.textContent = t('hubOverviewLabel');
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) logoutBtn.textContent = t('logout');
+  const demoBadge = document.getElementById('demoBadge');
+  if (demoBadge) demoBadge.textContent = t('demoBadge');
+  if (langBtnSvEl) langBtnSvEl.hidden = LANG !== 'en';
+  if (langBtnEnEl) langBtnEnEl.hidden = LANG !== 'sv';
+}
+
+function setLang(newLang) {
+  if ((newLang !== 'en' && newLang !== 'sv') || newLang === LANG) return;
+  LANG = newLang;
+  try { localStorage.setItem(LANG_KEY, LANG); } catch { /* ignore */ }
+  applyChrome();
+  closeDrawer();
+  if (DEMO_MODE) {
+    startDemo();
+  } else if (DB) {
+    renderNav();
+    goTo(currentPage);
+  }
+}
+langBtnSvEl?.addEventListener('click', () => setLang('sv'));
+langBtnEnEl?.addEventListener('click', () => setLang('en'));
 
 const ICONS = {
   dashboard:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
@@ -458,31 +970,33 @@ const ICONS = {
   privacy:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3.5v5.6c0 5-3.4 9.1-8 10.4-4.6-1.3-8-5.4-8-10.4V5.5L12 2z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg>',
 };
 
-const NAV = [
-  {group:'Översikt', items:[
-    {id:'dashboard', label:'Instrumentpanel', icon:'dashboard'},
-    {id:'analytics', label:'Statistik', icon:'analytics'},
-  ]},
-  {group:'Hundar', items:[
-    {id:'dogs', label:'Hundregister', icon:'dogs'},
-    {id:'health', label:'Hälsojournal', icon:'health'},
-    {id:'pedigree', label:'Stamtavla', icon:'pedigree'},
-  ]},
-  {group:'Avel', items:[
-    {id:'breeding', label:'Parningsplaner', icon:'breeding'},
-    {id:'litters', label:'Kullar', icon:'litters'},
-    {id:'matching', label:'Valpmatchning', icon:'matching'},
-  ]},
-  {group:'Kunder', items:[
-    {id:'buyers', label:'Köpare & CRM', icon:'buyers'},
-  ]},
-  {group:'Administration', items:[
-    {id:'calendar', label:'Kalender', icon:'calendar'},
-    {id:'documents', label:'Dokument', icon:'documents'},
-    {id:'more', label:'Kennelverktyg', icon:'more'},
-    {id:'privacy', label:'Delning & sekretess', icon:'privacy'},
-  ]},
-];
+function getNav(){
+  return [
+    {group:t('navGroupOverview'), items:[
+      {id:'dashboard', label:t('navDashboard'), icon:'dashboard'},
+      {id:'analytics', label:t('navAnalytics'), icon:'analytics'},
+    ]},
+    {group:t('navGroupDogs'), items:[
+      {id:'dogs', label:t('navDogs'), icon:'dogs'},
+      {id:'health', label:t('navHealth'), icon:'health'},
+      {id:'pedigree', label:t('navPedigree'), icon:'pedigree'},
+    ]},
+    {group:t('navGroupBreeding'), items:[
+      {id:'breeding', label:t('navBreeding'), icon:'breeding'},
+      {id:'litters', label:t('navLitters'), icon:'litters'},
+      {id:'matching', label:t('navMatching'), icon:'matching'},
+    ]},
+    {group:t('navGroupCustomers'), items:[
+      {id:'buyers', label:t('navBuyers'), icon:'buyers'},
+    ]},
+    {group:t('navGroupAdmin'), items:[
+      {id:'calendar', label:t('navCalendar'), icon:'calendar'},
+      {id:'documents', label:t('navDocuments'), icon:'documents'},
+      {id:'more', label:t('navMore'), icon:'more'},
+      {id:'privacy', label:t('navPrivacy'), icon:'privacy'},
+    ]},
+  ];
+}
 
 /* ---------------- STORE ---------------- */
 /* ==== SUPABASE CONFIG — fyll i dina egna värden från Supabase-projektets Settings > API ==== */
@@ -505,13 +1019,15 @@ const authSubmit = document.getElementById('authSubmit');
 
 function setAuthMode(mode){
   authMode = mode;
-  document.getElementById('authTitle').textContent = mode==='signin' ? 'Logga in' : 'Skapa konto';
-  document.getElementById('authDesc').textContent = mode==='signin'
-    ? 'Logga in för att komma åt din kennels hundregister, hälsojournal och kalender.'
-    : 'Skapa ett konto så får du en egen kennel att fylla med hundar, hälsodata och mer.';
-  authSubmit.textContent = mode==='signin' ? 'Logga in' : 'Skapa konto';
-  document.getElementById('authSwitchText').textContent = mode==='signin' ? 'Inget konto än?' : 'Har du redan ett konto?';
-  document.getElementById('authSwitchBtn').textContent = mode==='signin' ? 'Skapa konto' : 'Logga in';
+  document.getElementById('authTitle').textContent = mode==='signin' ? t('authTitleSignin') : t('authTitleSignup');
+  document.getElementById('authDesc').textContent = mode==='signin' ? t('authDescSignin') : t('authDescSignup');
+  authSubmit.textContent = mode==='signin' ? t('authSubmitSignin') : t('authSubmitSignup');
+  document.getElementById('authSwitchText').textContent = mode==='signin' ? t('authSwitchTextSignin') : t('authSwitchTextSignup');
+  document.getElementById('authSwitchBtn').textContent = mode==='signin' ? t('authSwitchBtnSignin') : t('authSwitchBtnSignup');
+  const emailLabel = authForm.querySelector('label[for=""]') || authForm.querySelectorAll('label')[0];
+  const labels = authForm.querySelectorAll('label');
+  if (labels[0]) labels[0].textContent = t('authEmailLabel');
+  if (labels[1]) labels[1].textContent = t('authPasswordLabel');
   authMsg.textContent = ''; authMsg.className = '';
 }
 document.getElementById('authSwitchBtn').addEventListener('click', ()=> setAuthMode(authMode==='signin' ? 'signup' : 'signin'));
@@ -530,7 +1046,7 @@ authForm.addEventListener('submit', async e=>{
       const { data, error } = await sb.auth.signUp({ email, password });
       if(error) throw error;
       if(!data.session){
-        authMsg.textContent = 'Konto skapat! Kolla din e-post för att bekräfta adressen innan du loggar in.';
+        authMsg.textContent = t('authSignupSuccess');
         authMsg.className = 'success';
       }
     }
@@ -542,9 +1058,9 @@ authForm.addEventListener('submit', async e=>{
   }
 });
 function translateAuthError(msg){
-  if(/invalid login credentials/i.test(msg)) return 'Fel e-post eller lösenord.';
-  if(/already registered/i.test(msg)) return 'Det finns redan ett konto med den e-postadressen — logga in istället.';
-  if(/password should be at least/i.test(msg)) return 'Lösenordet måste vara minst 6 tecken.';
+  if(/invalid login credentials/i.test(msg)) return t('authErrInvalid');
+  if(/already registered/i.test(msg)) return t('authErrExists');
+  if(/password should be at least/i.test(msg)) return t('authErrPwLen');
   return msg;
 }
 document.getElementById('logoutBtn').addEventListener('click', async ()=>{
@@ -566,13 +1082,15 @@ async function getOrCreateKennelId(userId){
   return kennel.id;
 }
 
+let dashboardSubOverride = null;
+
 async function bootApp(){
-  content.innerHTML = '<div class="empty">Laddar kenneldata…</div>';
+  content.innerHTML = `<div class="empty">${t('loadingKennel')}</div>`;
   DEMO_MODE = false;
   document.getElementById('demoBadge').style.display = 'none';
   DB = await loadDB();
   document.getElementById('kennelNameText').textContent = DB.kennelName;
-  PAGE_META.dashboard.sub = 'Välkommen tillbaka till ' + DB.kennelName;
+  dashboardSubOverride = t('pmDashboardSubWelcome', {name: DB.kennelName});
   goTo('dashboard');
 }
 
@@ -583,10 +1101,12 @@ async function bootApp(){
 function startDemo(){
   DEMO_MODE = true;
   KENNEL_ID = null;
-  DB = seed();
+  DB = seedData();
   document.getElementById('kennelNameText').textContent = DB.kennelName;
   document.getElementById('demoBadge').style.display = 'inline-block';
-  PAGE_META.dashboard.sub = 'Så här ser Breeder Hub ut — logga in eller skapa konto för din egen kennel';
+  applyChrome();
+  dashboardSubOverride = t('pmDashboardSubDemo');
+  renderNav();
   goTo('dashboard');
 }
 if(cloudEnabled){
@@ -597,9 +1117,9 @@ if(cloudEnabled){
         KENNEL_ID = await getOrCreateKennelId(session.user.id);
         await bootApp();
       }catch(e){
-        console.error('Kunde inte slå upp kennel', e);
+        console.error(t('kennelLookupFail'), e);
         authGate.classList.add('show');
-        authMsg.textContent = 'Kunde inte ladda din kennel. Kontrollera att SQL-schemat är kört i Supabase.';
+        authMsg.textContent = t('authLoadFail');
         authMsg.className = 'error';
       }
     } else {
@@ -611,22 +1131,22 @@ if(cloudEnabled){
 } else {
   document.getElementById('authCard').innerHTML = `
     <div class="auth-eyebrow">BREEDER HUB</div>
-    <div class="auth-title">Inte konfigurerad än</div>
+    <div class="auth-title">${t('authNotConfiguredTitle')}</div>
     <div id="authConfigNote">
-      Den här dashboarden är inte kopplad till någon databas ännu.<br><br>
-      Kör <code>breeder-hub-schema-consolidated.sql</code> i ditt Supabase-projekts SQL Editor, fyll sedan i
-      <code>SUPABASE_URL</code> och <code>SUPABASE_ANON_KEY</code> högst upp i den här filens skript-tagg.
+      ${t('authNotConfiguredNote')}
     </div>
   `;
 }
 
-function seed(){
+function seedData(){ return LANG === 'en' ? seedEn() : seedSv(); }
+
+function seedSv(){
   const dogs = [
-    {id:'d1', name:'Bella', regName:'Doginary\'s Northern Star', callName:'Bella', breed:'Golden Retriever', sex:'Tik', dob:'2021-03-14', color:'Gyllene', chip:'752098100234561', reg:'SKK SE12345/2021', status:'adult', weightLog:[{d:'2021-06-01',kg:8.2},{d:'2022-01-01',kg:24.5},{d:'2024-01-01',kg:29.1}], height:56, notes:'Lugnt temperament, utmärkt med valpar. Höftröntgen A, armbåge 0.', hips:'A', elbows:'0', eyes:'Ua (2024)', dna:'Klar (PRA, ICT)', sire:'d3', dam:'d4', titles:['SE UCH','SE VCH']},
-    {id:'d2', name:'Zeus', regName:'Nordheim\'s Zeus', callName:'Zeus', breed:'Golden Retriever', sex:'Hane', dob:'2020-07-02', color:'Ljust gyllene', chip:'752098100234562', reg:'SKK SE45210/2020', status:'adult', weightLog:[{d:'2023-01-01',kg:33.4}], height:60, notes:'Avelshane, mycket god exteriör.', hips:'A', elbows:'0', eyes:'Ua (2023)', dna:'Klar', titles:['SE UCH']},
-    {id:'d3', name:'Nova', regName:'Sunfield\'s Nova', callName:'Nova', breed:'Golden Retriever', sex:'Tik', dob:'2017-05-09', color:'Gyllene', chip:'752098100234559', reg:'SKK SE22190/2017', status:'retired', weightLog:[], height:55, notes:'Pensionerad avelstik, Bellas mamma.', hips:'B', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH','NORD UCH']},
-    {id:'d4', name:'Thor', regName:'Nordheim\'s Thor', callName:'Thor', breed:'Golden Retriever', sex:'Hane', dob:'2016-02-20', color:'Mörkt gyllene', chip:'752098100234500', reg:'SKK SE10021/2016', status:'deceased', weightLog:[], height:61, notes:'Bellas far, avled 2023.', hips:'A', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH']},
-    {id:'d5', name:'Freja', regName:'Doginary\'s Spring Freja', callName:'Freja', breed:'Golden Retriever', sex:'Tik', dob:'2025-05-02', color:'Gyllene', chip:'752098100234580', reg:'—', status:'puppy', weightLog:[{d:'2025-05-02',kg:0.45},{d:'2025-05-16',kg:1.3},{d:'2025-06-01',kg:2.6}], height:0, notes:'Från Bella x Zeus-kullen, reserverad.', hips:'', elbows:'', eyes:'', dna:'', titles:[]},
+    {id:'d1', name:'Bella', regName:'Doginary\'s Northern Star', callName:'Bella', breed:'Golden Retriever', sex:'female', dob:'2021-03-14', color:'Gyllene', chip:'752098100234561', reg:'SKK SE12345/2021', status:'adult', weightLog:[{d:'2021-06-01',kg:8.2},{d:'2022-01-01',kg:24.5},{d:'2024-01-01',kg:29.1}], height:56, notes:'Lugnt temperament, utmärkt med valpar. Höftröntgen A, armbåge 0.', hips:'A', elbows:'0', eyes:'Ua (2024)', dna:'Klar (PRA, ICT)', sire:'d3', dam:'d4', titles:['SE UCH','SE VCH']},
+    {id:'d2', name:'Zeus', regName:'Nordheim\'s Zeus', callName:'Zeus', breed:'Golden Retriever', sex:'male', dob:'2020-07-02', color:'Ljust gyllene', chip:'752098100234562', reg:'SKK SE45210/2020', status:'adult', weightLog:[{d:'2023-01-01',kg:33.4}], height:60, notes:'Avelshane, mycket god exteriör.', hips:'A', elbows:'0', eyes:'Ua (2023)', dna:'Klar', titles:['SE UCH']},
+    {id:'d3', name:'Nova', regName:'Sunfield\'s Nova', callName:'Nova', breed:'Golden Retriever', sex:'female', dob:'2017-05-09', color:'Gyllene', chip:'752098100234559', reg:'SKK SE22190/2017', status:'retired', weightLog:[], height:55, notes:'Pensionerad avelstik, Bellas mamma.', hips:'B', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH','NORD UCH']},
+    {id:'d4', name:'Thor', regName:'Nordheim\'s Thor', callName:'Thor', breed:'Golden Retriever', sex:'male', dob:'2016-02-20', color:'Mörkt gyllene', chip:'752098100234500', reg:'SKK SE10021/2016', status:'deceased', weightLog:[], height:61, notes:'Bellas far, avled 2023.', hips:'A', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH']},
+    {id:'d5', name:'Freja', regName:'Doginary\'s Spring Freja', callName:'Freja', breed:'Golden Retriever', sex:'female', dob:'2025-05-02', color:'Gyllene', chip:'752098100234580', reg:'—', status:'puppy', weightLog:[{d:'2025-05-02',kg:0.45},{d:'2025-05-16',kg:1.3},{d:'2025-06-01',kg:2.6}], height:0, notes:'Från Bella x Zeus-kullen, reserverad.', hips:'', elbows:'', eyes:'', dna:'', titles:[]},
   ];
   const health = [
     {id:'h1', dogId:'d1', type:'Vaccination', date:'2025-08-01', due:'2026-08-01', detail:'Kombinationsvaccin DHPPi+L', status:'ok'},
@@ -644,11 +1164,11 @@ function seed(){
   ];
   const litters = [
     {id:'l1', name:'S-kullen', breedingId:'b1', dam:'d1', sire:'d2', birthDate:'2025-05-14', puppies:[
-        {id:'p1', name:'Freja', sex:'Tik', color:'Gyllene', birthWeight:0.42, status:'reserverad'},
-        {id:'p2', name:'Sigge', sex:'Hane', color:'Gyllene', birthWeight:0.48, status:'tillgänglig'},
-        {id:'p3', name:'Saga', sex:'Tik', color:'Ljust gyllene', birthWeight:0.39, status:'såld'},
-        {id:'p4', name:'Simba', sex:'Hane', color:'Mörkt gyllene', birthWeight:0.51, status:'tillgänglig'},
-        {id:'p5', name:'Sally', sex:'Tik', color:'Gyllene', birthWeight:0.44, status:'reserverad'},
+        {id:'p1', name:'Freja', sex:'female', color:'Gyllene', birthWeight:0.42, status:'reserved'},
+        {id:'p2', name:'Sigge', sex:'male', color:'Gyllene', birthWeight:0.48, status:'available'},
+        {id:'p3', name:'Saga', sex:'female', color:'Ljust gyllene', birthWeight:0.39, status:'sold'},
+        {id:'p4', name:'Simba', sex:'male', color:'Mörkt gyllene', birthWeight:0.51, status:'available'},
+        {id:'p5', name:'Sally', sex:'female', color:'Gyllene', birthWeight:0.44, status:'reserved'},
       ],
       milestones:[
         {label:'Ögon öppnade', done:true, date:'2025-05-25'},
@@ -710,6 +1230,98 @@ function seed(){
   ];
   return {dogs, health, breedings, litters, buyers, events, documents, journal, inventory, contacts, kennelName:'Kennel von Bella', theme:null};
 }
+
+function seedEn(){
+  const dogs = [
+    {id:'d1', name:'Bella', regName:'Doginary\'s Northern Star', callName:'Bella', breed:'Golden Retriever', sex:'female', dob:'2021-03-14', color:'Golden', chip:'752098100234561', reg:'SKK SE12345/2021', status:'adult', weightLog:[{d:'2021-06-01',kg:8.2},{d:'2022-01-01',kg:24.5},{d:'2024-01-01',kg:29.1}], height:56, notes:'Calm temperament, excellent with puppies. Hip score A, elbows 0.', hips:'A', elbows:'0', eyes:'Clear (2024)', dna:'Clear (PRA, ICT)', sire:'d3', dam:'d4', titles:['SE UCH','SE VCH']},
+    {id:'d2', name:'Zeus', regName:'Nordheim\'s Zeus', callName:'Zeus', breed:'Golden Retriever', sex:'male', dob:'2020-07-02', color:'Light golden', chip:'752098100234562', reg:'SKK SE45210/2020', status:'adult', weightLog:[{d:'2023-01-01',kg:33.4}], height:60, notes:'Stud dog, very good conformation.', hips:'A', elbows:'0', eyes:'Clear (2023)', dna:'Clear', titles:['SE UCH']},
+    {id:'d3', name:'Nova', regName:'Sunfield\'s Nova', callName:'Nova', breed:'Golden Retriever', sex:'female', dob:'2017-05-09', color:'Golden', chip:'752098100234559', reg:'SKK SE22190/2017', status:'retired', weightLog:[], height:55, notes:'Retired brood bitch, Bella\'s mother.', hips:'B', elbows:'0', eyes:'Clear', dna:'Clear', titles:['SE UCH','NORD UCH']},
+    {id:'d4', name:'Thor', regName:'Nordheim\'s Thor', callName:'Thor', breed:'Golden Retriever', sex:'male', dob:'2016-02-20', color:'Dark golden', chip:'752098100234500', reg:'SKK SE10021/2016', status:'deceased', weightLog:[], height:61, notes:'Bella\'s father, passed away in 2023.', hips:'A', elbows:'0', eyes:'Clear', dna:'Clear', titles:['SE UCH']},
+    {id:'d5', name:'Freja', regName:'Doginary\'s Spring Freja', callName:'Freja', breed:'Golden Retriever', sex:'female', dob:'2025-05-02', color:'Golden', chip:'752098100234580', reg:'—', status:'puppy', weightLog:[{d:'2025-05-02',kg:0.45},{d:'2025-05-16',kg:1.3},{d:'2025-06-01',kg:2.6}], height:0, notes:'From the Bella x Zeus litter, reserved.', hips:'', elbows:'', eyes:'', dna:'', titles:[]},
+  ];
+  const health = [
+    {id:'h1', dogId:'d1', type:'Vaccination', date:'2025-08-01', due:'2026-08-01', detail:'Combination vaccine DHPPi+L', status:'ok'},
+    {id:'h2', dogId:'d1', type:'Vet visit', date:'2025-06-12', due:'', detail:'General health check ahead of mating', status:'ok'},
+    {id:'h3', dogId:'d1', type:'Hip X-ray', date:'2023-03-02', due:'', detail:'Result: A/A', status:'ok'},
+    {id:'h4', dogId:'d2', type:'Dental check', date:'2025-09-01', due:'2026-03-01', detail:'Mild tartar, removed', status:'ok'},
+    {id:'h5', dogId:'d2', type:'DNA test', date:'2024-01-10', due:'', detail:'PRA, ICT — clear', status:'ok'},
+    {id:'h6', dogId:'d5', type:'Deworming', date:'2025-09-05', due:'2025-10-05', detail:'Puppy series, dose 2 of 4', status:'due'},
+    {id:'h7', dogId:'d1', type:'Eye exam', date:'2024-11-01', due:'2026-11-01', detail:'No abnormalities', status:'ok'},
+    {id:'h8', dogId:'d3', type:'Insurance', date:'2025-01-01', due:'2026-01-01', detail:'Agria Life & Vet Care, renews annually', status:'ok'},
+  ];
+  const breedings = [
+    {id:'b1', dam:'d1', sire:'d2', matingDate:'2025-03-10', dueDate:'2025-05-12', confirmed:true, ultrasound:'Confirmed pregnancy, approx. 6 puppies (day 28)', expectedCount:6, notes:'Natural mating, days 11 and 13.'},
+    {id:'b2', dam:'d1', sire:'d2', matingDate:'2027-01-15', dueDate:'', confirmed:false, ultrasound:'', expectedCount:0, notes:'Planned for next heat, awaiting health results.'},
+  ];
+  const litters = [
+    {id:'l1', name:'The S-litter', breedingId:'b1', dam:'d1', sire:'d2', birthDate:'2025-05-14', puppies:[
+        {id:'p1', name:'Freja', sex:'female', color:'Golden', birthWeight:0.42, status:'reserved'},
+        {id:'p2', name:'Sigge', sex:'male', color:'Golden', birthWeight:0.48, status:'available'},
+        {id:'p3', name:'Saga', sex:'female', color:'Light golden', birthWeight:0.39, status:'sold'},
+        {id:'p4', name:'Simba', sex:'male', color:'Dark golden', birthWeight:0.51, status:'available'},
+        {id:'p5', name:'Sally', sex:'female', color:'Golden', birthWeight:0.44, status:'reserved'},
+      ],
+      milestones:[
+        {label:'Eyes opened', done:true, date:'2025-05-25'},
+        {label:'First solid food', done:true, date:'2025-06-05'},
+        {label:'First walk', done:true, date:'2025-06-10'},
+        {label:'First vet visit', done:true, date:'2025-06-15'},
+        {label:'First vaccination', done:false, date:''},
+        {label:'Ready for new homes', done:false, date:''},
+      ]
+    }
+  ];
+  const buyers = [
+    {id:'bu1', name:'Anna & Erik Lindqvist', email:'anna.lindqvist@mail.com', phone:'070-123 45 67', country:'Sweden', housing:'House with garden', activity:'High — active family, running', prevDog:'Yes, a Labrador in childhood', preferred:'Male, calm temperament', status:'reserved', puppyId:'p2', log:[
+      {date:'2025-06-01', note:'First contact via the website form.'},
+      {date:'2025-06-20', note:'Home visit completed, very suitable home.'},
+      {date:'2025-07-15', note:'Reserved Sigge, deposit received.'}
+    ]},
+    {id:'bu2', name:'The Berg family', email:'berg.family@mail.com', phone:'073-987 65 43', country:'Sweden', housing:'Apartment near the forest', activity:'Medium', prevDog:'No, first dog', preferred:'Female, family-friendly', status:'waiting', puppyId:'', log:[
+      {date:'2025-07-02', note:'Expressed interest, wants a female from the next litter.'}
+    ]},
+    {id:'bu3', name:'Malin Ohlsson', email:'malin.o@mail.com', phone:'076-555 22 11', country:'Sweden', housing:'Townhouse', activity:'High — plans working-dog training', prevDog:'Yes, a previous golden', preferred:'Male with drive', status:'approved', puppyId:'p4', log:[
+      {date:'2025-06-10', note:'Application approved after reference check.'}
+    ]},
+    {id:'bu4', name:'Johan Petersson', email:'johan.p@mail.com', phone:'070-333 44 55', country:'Norway', housing:'Farm', activity:'High', prevDog:'Yes, several goldens', preferred:'Open to either sex', status:'new', puppyId:'', log:[
+      {date:'2025-09-01', note:'New inquiry via Instagram.'}
+    ]},
+    {id:'bu5', name:'Sara Nilsson', email:'sara.n@mail.com', phone:'072-111 22 33', country:'Sweden', housing:'House', activity:'Low-medium', prevDog:'No', preferred:'Calm female', status:'rejected', puppyId:'', log:[
+      {date:'2025-05-01', note:'Housing was assessed as unsuitable right now — recommended to reapply later.'}
+    ]},
+  ];
+  const events = [
+    {id:'e1', date:'2025-09-20', title:'Vaccination — Freja (dose 2)', type:'health'},
+    {id:'e2', date:'2025-09-25', title:'Vet visit — Zeus', type:'health'},
+    {id:'e3', date:'2025-10-02', title:'Bella\'s birthday', type:'birthday'},
+    {id:'e4', date:'2025-10-05', title:'Puppy pickup — Sigge (Lindqvist)', type:'pickup'},
+    {id:'e5', date:'2025-09-30', title:'Hip X-ray — Nova, checkup', type:'health'},
+    {id:'e6', date:'2025-10-10', title:'Heat expected — Bella', type:'breeding'},
+  ];
+  const documents = [
+    {id:'doc1', name:'Sales contract — Sigge (Lindqvist).pdf', type:'Sales agreement', date:'2025-07-15', relatedTo:'Sigge / Lindqvist'},
+    {id:'doc2', name:'Bella hip X-ray 2023.pdf', type:'Health certificate', date:'2023-03-05', relatedTo:'Bella'},
+    {id:'doc3', name:'Zeus pedigree.pdf', type:'Pedigree', date:'2020-09-01', relatedTo:'Zeus'},
+    {id:'doc4', name:'S-litter vaccination certificate.pdf', type:'Vaccination certificate', date:'2025-06-15', relatedTo:'The S-litter'},
+  ];
+  const journal = [
+    {id:'j1', date:'2025-09-10', text:'Bella is showing early signs of an upcoming heat — extra attention for the next two weeks.'},
+    {id:'j2', date:'2025-08-28', text:'The S-litter puppies are developing nicely, all above the expected growth curve.'},
+  ];
+  const inventory = [
+    {id:'i1', name:'Puppy food Royal Canin Starter', qty:8, unit:'kg', low:5},
+    {id:'i2', name:'Deworming treatment (Drontal)', qty:3, unit:'packs', low:2},
+    {id:'i3', name:'Salmon oil supplement', qty:2, unit:'bottles', low:2},
+    {id:'i4', name:'Adult food Golden Retriever', qty:14, unit:'kg', low:6},
+  ];
+  const contacts = [
+    {id:'c1', name:'Nordost Animal Clinic', role:'Vet (regular)', phone:'08-555 000 11'},
+    {id:'c2', name:'AniCura Emergency Clinic', role:'24-hour emergency', phone:'08-555 999 22'},
+    {id:'c3', name:'Poison Information Centre', role:'Poisoning — animals', phone:'112 (ask for the poison centre)'},
+  ];
+  return {dogs, health, breedings, litters, buyers, events, documents, journal, inventory, contacts, kennelName:'Kennel von Bella', theme:null};
+}
+
 // Tom startpunkt för ett riktigt, nyskapat konto — inga påhittade
 // exempel. Allt fylls i av uppfödaren själv.
 function emptyDB(){
@@ -728,20 +1340,20 @@ async function loadDB(){
     await savePublicSnapshot(fresh);
     return fresh;
   }catch(e){
-    console.error('Kunde inte läsa kenneldata från Supabase', e);
-    toast('Kunde inte hämta din kenneldata från molnet');
+    console.error(t('loadDbFail'), e);
+    toast(t('toastFetchFail'));
     return emptyDB();
   }
 }
 async function saveDB(){
-  if(DEMO_MODE || !KENNEL_ID){ toast('Det här är en exempelvy — logga in eller skapa konto för att spara på riktigt'); return; }
+  if(DEMO_MODE || !KENNEL_ID){ toast(t('toastDemoView')); return; }
   try{
     const { error } = await sb.from('bh_kennel_data').upsert({kennel_id:KENNEL_ID, data: DB, updated_at:new Date().toISOString()});
     if(error) throw error;
     await savePublicSnapshot(DB);
   }catch(e){
-    console.error('Kunde inte spara till Supabase', e);
-    toast('Kunde inte spara ändringen till molnet — försök igen');
+    console.error(t('saveDbFail'), e);
+    toast(t('toastSaveFail'));
   }
 }
 // Speglar bara det som ska synas på den publika sidan (inga köpare,
@@ -760,40 +1372,42 @@ async function savePublicSnapshot(db){
       data:{ kennelName: db.kennelName, dogs: publicDogs },
       updated_at:new Date().toISOString()
     });
-  }catch(e){ console.error('Kunde inte uppdatera den publika sidans data', e); }
+  }catch(e){ console.error(t('savePublicFail'), e); }
 }
 
 /* ---------------- HELPERS ---------------- */
 function uid(p){ return p + Math.random().toString(36).slice(2,8); }
-function fmtDate(s){ if(!s) return '—'; const d = new Date(s+'T00:00:00'); if(isNaN(d)) return s; return d.toLocaleDateString('sv-SE',{day:'numeric',month:'short',year:'numeric'}); }
+function fmtDate(s){ if(!s) return '—'; const d = new Date(s+'T00:00:00'); if(isNaN(d)) return s; return d.toLocaleDateString(LOCALE[LANG],{day:'numeric',month:'short',year:'numeric'}); }
 function ageFromDob(dob){
   const d = new Date(dob+'T00:00:00'); const now = new Date();
   let months = (now.getFullYear()-d.getFullYear())*12 + (now.getMonth()-d.getMonth());
-  if(months < 1){ const days = Math.round((now-d)/86400000); return days + ' dagar'; }
-  if(months < 24) return months + ' mån';
-  return (months/12).toFixed(1).replace('.0','') + ' år';
+  if(months < 1){ const days = Math.round((now-d)/86400000); return t('ageDays', {n:days}); }
+  if(months < 24) return t('ageMonths', {n:months});
+  return t('ageYears', {n:(months/12).toFixed(1).replace('.0','')});
 }
 function dogById(id){ return DB.dogs.find(d=>d.id===id); }
-function statusLabel(s){ return {puppy:'Valp', adult:'Vuxen', retired:'Pensionerad', deceased:'Avliden'}[s] || s; }
-function buyerStatusLabel(s){ return {new:'Ny förfrågan', waiting:'Väntelista', approved:'Godkänd', reserved:'Reserverad', sold:'Såld', rejected:'Avböjd'}[s] || s; }
+function statusLabel(s){ return {puppy:t('statusPuppy'), adult:t('statusAdult'), retired:t('statusRetired'), deceased:t('statusDeceased')}[s] || s; }
+function buyerStatusLabel(s){ return {new:t('buyerNew'), waiting:t('buyerWaiting'), approved:t('buyerApproved'), reserved:t('buyerReserved'), sold:t('buyerSold'), rejected:t('buyerRejected')}[s] || s; }
+function sexLabel(s){ return {female:t('sexFemale'), male:t('sexMale')}[s] || s; }
+function puppyStatusLabel(s){ return {available:t('puppyAvailable'), reserved:t('puppyReserved'), sold:t('puppySold')}[s] || s; }
 function escapeHtml(v){ return String(v==null||v===''?'—':v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function litterName(id){ const l = DB.litters.find(x=>x.id===id); return l ? l.name : '—'; }
 
 /* ---- EXPORT ALLT (PDF via utskriftsdialogen) ---- */
 function exportAllData(){
-  if(!DB){ toast('Ingen kenneldata inläst än'); return; }
+  if(!DB){ toast(t('toastNoData')); return; }
 
-  const today = new Date().toLocaleDateString('sv-SE',{day:'numeric',month:'long',year:'numeric'});
+  const today = new Date().toLocaleDateString(LOCALE[LANG],{day:'numeric',month:'long',year:'numeric'});
   const sections = [];
 
-  sections.push(`<h1>${escapeHtml(DB.kennelName)}</h1><p class="meta">Fullständig export — genererad ${today}</p>`);
+  sections.push(`<h1>${escapeHtml(DB.kennelName)}</h1><p class="meta">${t('exportFullTitle',{date:today})}</p>`);
 
   // Hundar
-  sections.push(`<h2>Hundregister (${DB.dogs.length})</h2>
-    <table><thead><tr><th>Namn</th><th>Reg.namn</th><th>Ras</th><th>Kön</th><th>Född</th><th>Status</th><th>Reg.nr</th><th>Chip</th><th>Höft/Armb.</th><th>Ögon</th><th>DNA</th><th>Titlar</th></tr></thead><tbody>
+  sections.push(`<h2>${t('exportDogsTitle',{n:DB.dogs.length})}</h2>
+    <table><thead><tr><th>${t('exColName')}</th><th>${t('exColRegName')}</th><th>${t('exColBreed')}</th><th>${t('exColSex')}</th><th>${t('exColBorn')}</th><th>${t('exColStatus')}</th><th>${t('exColReg')}</th><th>${t('exColChip')}</th><th>${t('exColHipsElbows')}</th><th>${t('exColEyes')}</th><th>${t('exColDna')}</th><th>${t('exColTitles')}</th></tr></thead><tbody>
     ${DB.dogs.map(d=>`<tr>
       <td>${escapeHtml(d.name)}</td><td>${escapeHtml(d.regName)}</td><td>${escapeHtml(d.breed)}</td>
-      <td>${escapeHtml(d.sex)}</td><td>${fmtDate(d.dob)}</td><td>${statusLabel(d.status)}</td>
+      <td>${sexLabel(d.sex)}</td><td>${fmtDate(d.dob)}</td><td>${statusLabel(d.status)}</td>
       <td>${escapeHtml(d.reg)}</td><td>${escapeHtml(d.chip)}</td><td>${escapeHtml(d.hips)} / ${escapeHtml(d.elbows)}</td>
       <td>${escapeHtml(d.eyes)}</td><td>${escapeHtml(d.dna)}</td><td>${(d.titles||[]).join(', ')||'—'}</td>
     </tr>`).join('')}
@@ -801,75 +1415,75 @@ function exportAllData(){
     ${DB.dogs.filter(d=>d.notes).map(d=>`<p class="note"><strong>${escapeHtml(d.name)}:</strong> ${escapeHtml(d.notes)}</p>`).join('')}`);
 
   // Hälsojournal
-  sections.push(`<h2>Hälsojournal (${DB.health.length})</h2>
-    <table><thead><tr><th>Hund</th><th>Typ</th><th>Datum</th><th>Nästa</th><th>Detaljer</th><th>Status</th></tr></thead><tbody>
+  sections.push(`<h2>${t('exportHealthTitle',{n:DB.health.length})}</h2>
+    <table><thead><tr><th>${t('exColDog')}</th><th>${t('exColType')}</th><th>${t('exColDate')}</th><th>${t('exColNext')}</th><th>${t('exColDetails')}</th><th>${t('exColStatus')}</th></tr></thead><tbody>
     ${DB.health.map(h=>{const d=dogById(h.dogId);return `<tr>
       <td>${d?escapeHtml(d.name):'—'}</td><td>${escapeHtml(h.type)}</td><td>${fmtDate(h.date)}</td>
-      <td>${fmtDate(h.due)}</td><td>${escapeHtml(h.detail)}</td><td>${h.status==='due'?'Förfaller':'OK'}</td>
+      <td>${fmtDate(h.due)}</td><td>${escapeHtml(h.detail)}</td><td>${h.status==='due'?t('dueBadge'):t('ok')}</td>
     </tr>`;}).join('')}
     </tbody></table>`);
 
   // Parningsplaner
-  sections.push(`<h2>Parningsplaner (${DB.breedings.length})</h2>
-    <table><thead><tr><th>Tik</th><th>Hane</th><th>Parningsdatum</th><th>Beräknat valpdatum</th><th>Bekräftad</th><th>Förv. antal</th><th>Anteckningar</th></tr></thead><tbody>
+  sections.push(`<h2>${t('exportBreedingsTitle',{n:DB.breedings.length})}</h2>
+    <table><thead><tr><th>${t('exColDam')}</th><th>${t('exColSire')}</th><th>${t('exColMatingDate')}</th><th>${t('exColDueDate')}</th><th>${t('exColConfirmed')}</th><th>${t('exColExpected')}</th><th>${t('exColNotes')}</th></tr></thead><tbody>
     ${DB.breedings.map(b=>{const dam=dogById(b.dam),sire=dogById(b.sire);return `<tr>
       <td>${dam?escapeHtml(dam.name):'—'}</td><td>${sire?escapeHtml(sire.name):'—'}</td>
-      <td>${fmtDate(b.matingDate)}</td><td>${fmtDate(b.dueDate)}</td><td>${b.confirmed?'Ja':'Nej'}</td>
+      <td>${fmtDate(b.matingDate)}</td><td>${fmtDate(b.dueDate)}</td><td>${b.confirmed?t('yes'):t('no')}</td>
       <td>${b.expectedCount||'—'}</td><td>${escapeHtml(b.notes)}</td>
     </tr>`;}).join('')}
     </tbody></table>`);
 
   // Kullar
-  sections.push(`<h2>Kullar (${DB.litters.length})</h2>
+  sections.push(`<h2>${t('exportLittersTitle',{n:DB.litters.length})}</h2>
     ${DB.litters.map(l=>{const dam=dogById(l.dam),sire=dogById(l.sire);return `
-      <h3>${escapeHtml(l.name)} — född ${fmtDate(l.birthDate)}</h3>
-      <p class="meta">Tik: ${dam?escapeHtml(dam.name):'—'} &nbsp;·&nbsp; Hane: ${sire?escapeHtml(sire.name):'—'} &nbsp;·&nbsp; ${l.puppies.length} valpar</p>
-      <table><thead><tr><th>Namn</th><th>Kön</th><th>Färg</th><th>Födelsevikt</th><th>Status</th></tr></thead><tbody>
-      ${l.puppies.map(p=>`<tr><td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.sex)}</td><td>${escapeHtml(p.color)}</td><td>${p.birthWeight} kg</td><td>${escapeHtml(p.status)}</td></tr>`).join('')}
+      <h3>${escapeHtml(l.name)} — ${t('exBornLabel',{date:fmtDate(l.birthDate)})}</h3>
+      <p class="meta">${t('exDamLabel',{name:dam?escapeHtml(dam.name):'—'})} &nbsp;·&nbsp; ${t('exSireLabel',{name:sire?escapeHtml(sire.name):'—'})} &nbsp;·&nbsp; ${t('exPuppiesLabel',{n:l.puppies.length})}</p>
+      <table><thead><tr><th>${t('exColName')}</th><th>${t('exColSex')}</th><th>${t('exColColor')}</th><th>${t('exColBirthWeight')}</th><th>${t('exColStatus')}</th></tr></thead><tbody>
+      ${l.puppies.map(p=>`<tr><td>${escapeHtml(p.name)}</td><td>${sexLabel(p.sex)}</td><td>${escapeHtml(p.color)}</td><td>${p.birthWeight} kg</td><td>${puppyStatusLabel(p.status)}</td></tr>`).join('')}
       </tbody></table>
-      <p class="meta">Milstolpar: ${l.milestones.map(m=>`${escapeHtml(m.label)} ${m.done?('('+fmtDate(m.date)+')'):'(ej klar)'}`).join(', ')}</p>
+      <p class="meta">${t('exMilestonesLabel')}${l.milestones.map(m=>`${escapeHtml(m.label)} ${m.done?('('+fmtDate(m.date)+')'):t('exNotDone')}`).join(', ')}</p>
     `;}).join('')}`);
 
   // Köpare
-  sections.push(`<h2>Köpare & CRM (${DB.buyers.length})</h2>
+  sections.push(`<h2>${t('exportBuyersTitle',{n:DB.buyers.length})}</h2>
     ${DB.buyers.map(b=>`
       <h3>${escapeHtml(b.name)} <span class="tag">${buyerStatusLabel(b.status)}</span></h3>
       <p class="meta">${escapeHtml(b.email)} &nbsp;·&nbsp; ${escapeHtml(b.phone)} &nbsp;·&nbsp; ${escapeHtml(b.country)}</p>
-      <p class="meta">Boende: ${escapeHtml(b.housing)} &nbsp;·&nbsp; Aktivitetsnivå: ${escapeHtml(b.activity)} &nbsp;·&nbsp; Tidigare hund: ${escapeHtml(b.prevDog)}</p>
-      <p class="meta">Önskemål: ${escapeHtml(b.preferred)} ${b.puppyId?('&nbsp;·&nbsp; Kopplad valp: '+escapeHtml((DB.litters.flatMap(l=>l.puppies).find(p=>p.id===b.puppyId)||{}).name)):''}</p>
+      <p class="meta">${t('exHousingLine',{housing:escapeHtml(b.housing),activity:escapeHtml(b.activity),prevDog:escapeHtml(b.prevDog)})}</p>
+      <p class="meta">${t('exWishLine',{preferred:escapeHtml(b.preferred)})} ${b.puppyId?(t('exLinkedPuppy',{name:escapeHtml((DB.litters.flatMap(l=>l.puppies).find(p=>p.id===b.puppyId)||{}).name)})):''}</p>
       ${(b.log||[]).length?`<ul class="loglist">${b.log.map(e=>`<li>${fmtDate(e.date)} — ${escapeHtml(e.note)}</li>`).join('')}</ul>`:''}
     `).join('')}`);
 
   // Kalender
-  sections.push(`<h2>Kalender (${DB.events.length})</h2>
-    <table><thead><tr><th>Datum</th><th>Händelse</th><th>Typ</th></tr></thead><tbody>
-    ${[...DB.events].sort((a,z)=>a.date.localeCompare(z.date)).map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${escapeHtml(e.title)}</td><td>${escapeHtml(e.type)}</td></tr>`).join('')}
+  sections.push(`<h2>${t('exportCalendarTitle',{n:DB.events.length})}</h2>
+    <table><thead><tr><th>${t('exColDate')}</th><th>${t('colEvent')}</th><th>${t('exColType')}</th></tr></thead><tbody>
+    ${[...DB.events].sort((a,z)=>a.date.localeCompare(z.date)).map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${escapeHtml(e.title)}</td><td>${escapeHtml(eventTypeText(e.type))}</td></tr>`).join('')}
     </tbody></table>`);
 
   // Dokument
-  sections.push(`<h2>Dokument (${DB.documents.length})</h2>
-    <table><thead><tr><th>Namn</th><th>Typ</th><th>Datum</th><th>Gäller</th></tr></thead><tbody>
+  sections.push(`<h2>${t('exportDocsTitle',{n:DB.documents.length})}</h2>
+    <table><thead><tr><th>${t('exColName')}</th><th>${t('exColType')}</th><th>${t('exColDate')}</th><th>${t('exColRelated')}</th></tr></thead><tbody>
     ${DB.documents.map(d=>`<tr><td>${escapeHtml(d.name)}</td><td>${escapeHtml(d.type)}</td><td>${fmtDate(d.date)}</td><td>${escapeHtml(d.relatedTo)}</td></tr>`).join('')}
     </tbody></table>`);
 
   // Journal
-  sections.push(`<h2>Journalanteckningar (${DB.journal.length})</h2>
+  sections.push(`<h2>${t('exportJournalTitle',{n:DB.journal.length})}</h2>
     ${[...DB.journal].sort((a,z)=>z.date.localeCompare(a.date)).map(j=>`<p><strong>${fmtDate(j.date)}</strong> — ${escapeHtml(j.text)}</p>`).join('')}`);
 
   // Lager
-  sections.push(`<h2>Lager (${DB.inventory.length})</h2>
-    <table><thead><tr><th>Artikel</th><th>Antal</th><th>Enhet</th><th>Lågnivå vid</th></tr></thead><tbody>
+  sections.push(`<h2>${t('exportInventoryTitle',{n:DB.inventory.length})}</h2>
+    <table><thead><tr><th>${t('colItem')}</th><th>${t('colQty')}</th><th>${t('exColUnit')}</th><th>${t('exColLowAt')}</th></tr></thead><tbody>
     ${DB.inventory.map(i=>`<tr><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>${escapeHtml(i.unit)}</td><td>${i.low}</td></tr>`).join('')}
     </tbody></table>`);
 
   // Kontakter
-  sections.push(`<h2>Nödkontakter (${DB.contacts.length})</h2>
-    <table><thead><tr><th>Namn</th><th>Roll</th><th>Telefon</th></tr></thead><tbody>
+  sections.push(`<h2>${t('exportContactsTitle',{n:DB.contacts.length})}</h2>
+    <table><thead><tr><th>${t('exColName')}</th><th>${t('exColRole')}</th><th>${t('exColPhone')}</th></tr></thead><tbody>
     ${DB.contacts.map(c=>`<tr><td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.role)}</td><td>${escapeHtml(c.phone)}</td></tr>`).join('')}
     </tbody></table>`);
 
-  const doc = `<!DOCTYPE html><html lang="sv"><head><meta charset="utf-8">
-    <title>${escapeHtml(DB.kennelName)} — export</title>
+  const doc = `<!DOCTYPE html><html lang="${LANG}"><head><meta charset="utf-8">
+    <title>${escapeHtml(t('exportKennelTitle',{name:DB.kennelName}))}</title>
     <style>
       body{font-family:Georgia,'Times New Roman',serif;color:#1a2420;max-width:900px;margin:32px auto;padding:0 24px;line-height:1.5;}
       h1{font-size:26px;margin-bottom:2px;}
@@ -887,7 +1501,7 @@ function exportAllData(){
     </style></head><body>${sections.join('')}</body></html>`;
 
   const w = window.open('', '_blank');
-  if(!w){ toast('Blockerad av popup-blockeraren — tillåt popupfönster och försök igen'); return; }
+  if(!w){ toast(t('toastPopupBlocked')); return; }
   w.document.open(); w.document.write(doc); w.document.close();
   w.focus();
   setTimeout(()=>{ try{ w.print(); }catch(e){} }, 350);
@@ -906,25 +1520,27 @@ document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id
 
 /* ---------------- NAV / ROUTER ---------------- */
 let currentPage = 'dashboard';
-const PAGE_META = {
-  dashboard:{title:'Översikt', sub:'Välkommen tillbaka', share:'private'},
-  analytics:{title:'Statistik', sub:'Nyckeltal för din uppfödning', share:'private'},
-  dogs:{title:'Hundregister', sub:'Alla hundar i din kennel', share:'public'},
-  health:{title:'Hälsojournal', sub:'Vaccinationer, veterinärbesök och tester', share:'private'},
-  pedigree:{title:'Stamtavla', sub:'Interaktivt släktträd', share:'public'},
-  breeding:{title:'Parningsplaner', sub:'Planerade och genomförda parningar', share:'private'},
-  litters:{title:'Kullar', sub:'Valpar, tillväxt och milstolpar', share:'private'},
-  matching:{title:'Valpmatchning', sub:'Matcha valpar med rätt familj', share:'private'},
-  buyers:{title:'Köpare & CRM', sub:'Intressenter och köpprocess', share:'private'},
-  calendar:{title:'Kalender', sub:'Alla viktiga datum på ett ställe', share:'private'},
-  documents:{title:'Dokument', sub:'Kontrakt, intyg och certifikat', share:'private'},
-  more:{title:'Kennelverktyg', sub:'Löpcykel, lager, journal & mer', share:'private'},
-  privacy:{title:'Delning & sekretess', sub:'Vad som visas publikt och vad som alltid är privat', share:null},
-};
+function getPageMeta(){
+  return {
+    dashboard:{title:t('pmDashboardTitle'), sub: dashboardSubOverride || t('pmDashboardSub'), share:'private'},
+    analytics:{title:t('pmAnalyticsTitle'), sub:t('pmAnalyticsSub'), share:'private'},
+    dogs:{title:t('pmDogsTitle'), sub:t('pmDogsSub'), share:'public'},
+    health:{title:t('pmHealthTitle'), sub:t('pmHealthSub'), share:'private'},
+    pedigree:{title:t('pmPedigreeTitle'), sub:t('pmPedigreeSub'), share:'public'},
+    breeding:{title:t('pmBreedingTitle'), sub:t('pmBreedingSub'), share:'private'},
+    litters:{title:t('pmLittersTitle'), sub:t('pmLittersSub'), share:'private'},
+    matching:{title:t('pmMatchingTitle'), sub:t('pmMatchingSub'), share:'private'},
+    buyers:{title:t('pmBuyersTitle'), sub:t('pmBuyersSub'), share:'private'},
+    calendar:{title:t('pmCalendarTitle'), sub:t('pmCalendarSub'), share:'private'},
+    documents:{title:t('pmDocumentsTitle'), sub:t('pmDocumentsSub'), share:'private'},
+    more:{title:t('pmMoreTitle'), sub:t('pmMoreSub'), share:'private'},
+    privacy:{title:t('pmPrivacyTitle'), sub:t('pmPrivacySub'), share:null},
+  };
+}
 
 function renderNav(){
   const nav = document.getElementById('nav');
-  nav.innerHTML = NAV.map(g=>`
+  nav.innerHTML = getNav().map(g=>`
     <div class="nav-group-label">${g.group}</div>
     ${g.items.map(it=>`<button class="nav-item ${it.id===currentPage?'active':''}" data-page="${it.id}">${ICONS[it.icon]}<span>${it.label}</span></button>`).join('')}
   `).join('');
@@ -934,16 +1550,17 @@ function renderNav(){
 }
 function goTo(page){
   currentPage = page;
-  document.getElementById('pageTitle').textContent = PAGE_META[page].title;
-  document.getElementById('pageSub').textContent = PAGE_META[page].sub;
-  const share = PAGE_META[page].share;
+  const meta = getPageMeta();
+  document.getElementById('pageTitle').textContent = meta[page].title;
+  document.getElementById('pageSub').textContent = meta[page].sub;
+  const share = meta[page].share;
   const badge = document.getElementById('pageShareBadge');
   if(share === 'public'){
     badge.className = 'share-badge public';
-    badge.innerHTML = '🌐 Delar viss info publikt — se markeringar nedan';
+    badge.innerHTML = t('shareBadgePublic');
   } else if(share === 'private'){
     badge.className = 'share-badge private';
-    badge.innerHTML = '🔒 Helt privat — visas aldrig på din publika sida';
+    badge.innerHTML = t('shareBadgePrivate');
   } else {
     badge.className = 'share-badge';
     badge.innerHTML = '';
@@ -965,6 +1582,7 @@ document.getElementById('themeBtn').addEventListener('click', ()=>{
 (function initTheme(){
   try{ const saved = localStorage.getItem('breederhub_theme'); if(saved) document.documentElement.setAttribute('data-theme', saved); }catch(e){}
 })();
+applyChrome();
 
 /* ---------------- PAGE RENDERERS ---------------- */
 const content = document.getElementById('content');
@@ -982,23 +1600,23 @@ function renderDashboard(){
   const active = DB.dogs.filter(d=>d.status==='adult'||d.status==='puppy').length;
   const retired = DB.dogs.filter(d=>d.status==='retired').length;
   const littersThisYear = DB.litters.filter(l=> new Date(l.birthDate).getFullYear() === new Date().getFullYear()).length;
-  const puppiesSold = DB.litters.flatMap(l=>l.puppies).filter(p=>p.status==='såld').length;
+  const puppiesSold = DB.litters.flatMap(l=>l.puppies).filter(p=>p.status==='sold').length;
   const upcomingEvents = [...DB.events].filter(e=> new Date(e.date) >= stripTime(new Date())).sort((a,b)=> new Date(a.date)-new Date(b.date)).slice(0,6);
   const dueHealth = DB.health.filter(h=>h.status==='due');
 
   content.innerHTML = `
     <div class="stat-grid">
-      ${statCard('Aktiva hundar', active, 'I avel eller uppväxt')}
-      ${statCard('Pensionerade', retired, 'Avslutad avelskarriär')}
-      ${statCard('Kullar i år', littersThisYear, new Date().getFullYear())}
-      ${statCard('Valpar sålda', puppiesSold, 'Totalt genom kenneln')}
+      ${statCard(t('statActiveDogs'), active, t('statActiveDogsHint'))}
+      ${statCard(t('statRetired'), retired, t('statRetiredHint'))}
+      ${statCard(t('statLittersYear'), littersThisYear, new Date().getFullYear())}
+      ${statCard(t('statPuppiesSold'), puppiesSold, t('statPuppiesSoldHint'))}
     </div>
     <div class="two-col">
       <div>
-        <div class="section-head"><h2>Kommande händelser</h2><span class="hint">Nästa 30 dagarna</span></div>
+        <div class="section-head"><h2>${t('upcomingEvents')}</h2><span class="hint">${t('next30Days')}</span></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Datum</th><th>Händelse</th><th>Typ</th></tr></thead>
+            <thead><tr><th>${t('colDate')}</th><th>${t('colEvent')}</th><th>${t('colType')}</th></tr></thead>
             <tbody>
               ${upcomingEvents.map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${e.title}</td><td>${eventTypeBadge(e.type)}</td></tr>`).join('') || emptyRow(3)}
             </tbody>
@@ -1006,19 +1624,19 @@ function renderDashboard(){
         </div>
       </div>
       <div>
-        <div class="section-head"><h2>Behöver uppmärksamhas</h2><span class="hint">${dueHealth.length} st</span></div>
+        <div class="section-head"><h2>${t('needsAttention')}</h2><span class="hint">${dueHealth.length}</span></div>
         <div class="card card-pad">
           ${dueHealth.length ? dueHealth.map(h=>{
             const dog = dogById(h.dogId);
             return `<div class="milestone-row"><div class="avatar-circle">${(dog?dog.name:'?')[0]}</div>
-              <div style="flex:1"><div style="font-weight:600;font-size:13px;">${h.type} — ${dog?dog.name:'Okänd'}</div>
-              <div style="font-size:12px;color:var(--ink-soft);">Förfaller ${fmtDate(h.due)} · ${h.detail}</div></div></div>`;
-          }).join('') : `<div style="color:var(--ink-soft);font-size:13px;">Inget akut just nu — bra jobbat!</div>`}
+              <div style="flex:1"><div style="font-weight:600;font-size:13px;">${h.type} — ${dog?dog.name:t('unknownDog')}</div>
+              <div style="font-size:12px;color:var(--ink-soft);">${t('dueOn',{date:fmtDate(h.due),detail:h.detail})}</div></div></div>`;
+          }).join('') : `<div style="color:var(--ink-soft);font-size:13px;">${t('nothingUrgent')}</div>`}
         </div>
-        <div class="section-head"><h2>Kennelanteckning</h2></div>
+        <div class="section-head"><h2>${t('kennelNote')}</h2></div>
         <div class="card card-pad">
           <div style="font-size:12px;color:var(--ink-soft);margin-bottom:4px;">${fmtDate(DB.journal[0]?.date)}</div>
-          <div style="font-size:13.5px;">${DB.journal[0]?.text || 'Inga anteckningar än.'}</div>
+          <div style="font-size:13.5px;">${DB.journal[0]?.text || t('noNotesYet')}</div>
         </div>
       </div>
     </div>
@@ -1028,34 +1646,37 @@ function stripTime(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate())
 function statCard(label, value, delta){
   return `<div class="stat-card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div><div class="stat-delta">${delta}</div></div>`;
 }
-function eventTypeBadge(t){
-  const map = {health:['Hälsa','warn'], birthday:['Födelsedag','ok'], pickup:['Hämtning','ok'], breeding:['Avel','muted']};
-  const [label,cls] = map[t] || [t,'muted'];
-  return `<span class="badge ${cls}">${label}</span>`;
+function eventTypeText(ty){
+  const map = {health:t('evtHealth'), birthday:t('evtBirthday'), pickup:t('evtPickup'), breeding:t('evtBreeding')};
+  return map[ty] || ty;
 }
-function emptyRow(colspan){ return `<tr><td colspan="${colspan}" style="text-align:center;color:var(--ink-soft);padding:22px;">Inget att visa</td></tr>`; }
+function eventTypeBadge(ty){
+  const clsMap = {health:'warn', birthday:'ok', pickup:'ok', breeding:'muted'};
+  return `<span class="badge ${clsMap[ty]||'muted'}">${eventTypeText(ty)}</span>`;
+}
+function emptyRow(colspan){ return `<tr><td colspan="${colspan}" style="text-align:center;color:var(--ink-soft);padding:22px;">${t('nothingToShow')}</td></tr>`; }
 
 /* ---- ANALYTICS ---- */
 let charts = {};
 function renderAnalytics(){
   const monthly = {};
   DB.litters.flatMap(l=>l.puppies.map(p=>({...p, birthDate:l.birthDate}))).forEach(p=>{
-    if(p.status==='såld'){ const m = p.birthDate.slice(0,7); monthly[m] = (monthly[m]||0)+1; }
+    if(p.status==='sold'){ const m = p.birthDate.slice(0,7); monthly[m] = (monthly[m]||0)+1; }
   });
   const statusCounts = {puppy:0,adult:0,retired:0,deceased:0};
   DB.dogs.forEach(d=> statusCounts[d.status]++ );
-  const revenueEstimate = DB.litters.flatMap(l=>l.puppies).filter(p=>p.status==='såld'||p.status==='reserverad').length * 18000;
+  const revenueEstimate = DB.litters.flatMap(l=>l.puppies).filter(p=>p.status==='sold'||p.status==='reserved').length * 18000;
 
   content.innerHTML = `
     <div class="stat-grid">
-      ${statCard('Uppskattad intäkt', revenueEstimate.toLocaleString('sv-SE')+' kr', 'Sålda + reserverade valpar')}
-      ${statCard('Snittkullstorlek', avgLitterSize()+' valpar', 'Historiskt snitt')}
-      ${statCard('Kommande vaccinationer', DB.health.filter(h=>h.status==='due').length, 'Kräver åtgärd')}
-      ${statCard('Kommande födelsedagar', upcomingBirthdays(), 'Nästa 60 dagar')}
+      ${statCard(t('estRevenue'), revenueEstimate.toLocaleString(LOCALE[LANG])+' kr', t('estRevenueHint'))}
+      ${statCard(t('avgLitter'), avgLitterSize()+t('avgLitterUnit'), t('avgLitterHint'))}
+      ${statCard(t('upcomingVacc'), DB.health.filter(h=>h.status==='due').length, t('upcomingVaccHint'))}
+      ${statCard(t('upcomingBirthdays'), upcomingBirthdays(), t('upcomingBirthdaysHint'))}
     </div>
     <div class="two-col">
-      <div class="card card-pad"><div class="section-head" style="margin-top:0;"><h2>Valpar sålda per månad</h2></div><canvas id="chartSold" height="220"></canvas></div>
-      <div class="card card-pad"><div class="section-head" style="margin-top:0;"><h2>Hundar per status</h2></div><canvas id="chartStatus" height="220"></canvas></div>
+      <div class="card card-pad"><div class="section-head" style="margin-top:0;"><h2>${t('puppiesSoldPerMonth')}</h2></div><canvas id="chartSold" height="220"></canvas></div>
+      <div class="card card-pad"><div class="section-head" style="margin-top:0;"><h2>${t('dogsPerStatus')}</h2></div><canvas id="chartStatus" height="220"></canvas></div>
     </div>
   `;
   const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
@@ -1068,12 +1689,12 @@ function renderAnalytics(){
   const labels = Object.keys(monthly).sort();
   charts.sold = new Chart(document.getElementById('chartSold'), {
     type:'bar',
-    data:{ labels: labels.length?labels:['Ingen data'], datasets:[{label:'Sålda valpar', data: labels.length?labels.map(l=>monthly[l]):[0], backgroundColor:honey, borderRadius:5}] },
+    data:{ labels: labels.length?labels:[t('noData')], datasets:[{label:t('puppiesSoldLabel'), data: labels.length?labels.map(l=>monthly[l]):[0], backgroundColor:honey, borderRadius:5}] },
     options:{ plugins:{legend:{display:false}}, scales:{ x:{grid:{color:line}, ticks:{color:ink}}, y:{grid:{color:line}, ticks:{color:ink, precision:0}} } }
   });
   charts.status = new Chart(document.getElementById('chartStatus'), {
     type:'doughnut',
-    data:{ labels:['Valp','Vuxen','Pensionerad','Avliden'], datasets:[{ data:[statusCounts.puppy,statusCounts.adult,statusCounts.retired,statusCounts.deceased], backgroundColor:[honey,pine,'#9AA8A3','#C8C0AE'] }] },
+    data:{ labels:[t('statusPuppy'),t('statusAdult'),t('statusRetired'),t('statusDeceased')], datasets:[{ data:[statusCounts.puppy,statusCounts.adult,statusCounts.retired,statusCounts.deceased], backgroundColor:[honey,pine,'#9AA8A3','#C8C0AE'] }] },
     options:{ plugins:{legend:{position:'bottom', labels:{color:ink}}} }
   });
 }
@@ -1096,15 +1717,15 @@ let dogFilter = 'all', dogSearch = '';
 function renderDogs(){
   content.innerHTML = `
     <div class="privacy-legend">
-      <span class="field-badge public">🌐 Publik</span> visas på din publika sida &nbsp;·&nbsp;
-      <a href="#" id="privacyLegendLink" style="color:var(--ink-soft); text-decoration:underline;">Läs mer</a>
+      <span class="field-badge public">${t('publicTag')}</span> ${t('publicTagText')} &nbsp;·&nbsp;
+      <a href="#" id="privacyLegendLink" style="color:var(--ink-soft); text-decoration:underline;">${t('learnMore')}</a>
     </div>
     <div class="filter-row">
       <div class="search-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="text" id="dogSearchInput" placeholder="Sök hund..." value="${dogSearch}"></div>
-      ${['all','puppy','adult','retired','deceased'].map(s=>`<button class="chip-filter ${dogFilter===s?'active':''}" data-f="${s}">${s==='all'?'Alla':statusLabel(s)}</button>`).join('')}
+        <input type="text" id="dogSearchInput" placeholder="${t('searchDogsPlaceholder')}" value="${dogSearch}"></div>
+      ${['all','puppy','adult','retired','deceased'].map(s=>`<button class="chip-filter ${dogFilter===s?'active':''}" data-f="${s}">${s==='all'?t('filterAll'):statusLabel(s)}</button>`).join('')}
       <span style="flex:1"></span>
-      <button class="btn btn-primary" id="addDogBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Ny hund</button>
+      <button class="btn btn-primary" id="addDogBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newDog')}</button>
     </div>
     <div class="grid-cards" id="dogGrid"></div>
   `;
@@ -1125,11 +1746,11 @@ function drawDogGrid(){
       </div>
       <div class="dog-body">
         <div class="dog-name">${d.name}</div>
-        <div class="dog-meta">${d.breed} · ${d.sex} · ${ageFromDob(d.dob)}</div>
+        <div class="dog-meta">${d.breed} · ${sexLabel(d.sex)} · ${ageFromDob(d.dob)}</div>
         <div class="dog-tags"><span class="tag">${d.color}</span>${d.hips?`<span class="tag">HD ${d.hips}</span>`:''}${d.titles[0]?`<span class="tag">${d.titles[0]}</span>`:''}</div>
       </div>
     </div>
-  `).join('') || `<div class="empty" style="grid-column:1/-1;">Inga hundar matchar filtret.</div>`;
+  `).join('') || `<div class="empty" style="grid-column:1/-1;">${t('noDogsMatch')}</div>`;
   grid.querySelectorAll('.dog-card').forEach(c=> c.addEventListener('click', ()=> openDogProfile(c.dataset.id)));
 }
 
@@ -1140,17 +1761,17 @@ function openDogProfile(id){
     <div class="drawer-head">
       <div><div class="drawer-title">${d.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${d.regName}</div></div>
       <div style="display:flex; align-items:center; gap:4px;">
-        <button class="btn btn-sm" id="editDogBtn">Redigera</button>
-        <button class="btn btn-sm btn-danger" id="deleteDogBtn">Ta bort</button>
+        <button class="btn btn-sm" id="editDogBtn">${t('edit')}</button>
+        <button class="btn btn-sm btn-danger" id="deleteDogBtn">${t('delete')}</button>
         <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
     </div>
     <div class="drawer-body">
       <div class="tabs">
-        <button class="tab-btn active" data-t="info">Info</button>
-        <button class="tab-btn" data-t="health">Hälsa</button>
-        <button class="tab-btn" data-t="weight">Vikt</button>
-        <button class="tab-btn" data-t="notes">Anteckningar</button>
+        <button class="tab-btn active" data-t="info">${t('tabInfo')}</button>
+        <button class="tab-btn" data-t="health">${t('tabHealth')}</button>
+        <button class="tab-btn" data-t="weight">${t('tabWeight')}</button>
+        <button class="tab-btn" data-t="notes">${t('tabNotes')}</button>
       </div>
       <div id="dogTabBody"></div>
     </div>
@@ -1160,36 +1781,36 @@ function openDogProfile(id){
     if(tab==='info'){
       body.innerHTML = `
         <div class="form-grid" style="font-size:13px;">
-          ${infoRow('Kallelsenamn', d.callName, true)} ${infoRow('Kön', d.sex, true)}
-          ${infoRow('Ras', d.breed, true)} ${infoRow('Färg', d.color, true)}
-          ${infoRow('Född', fmtDate(d.dob), true)} ${infoRow('Ålder', ageFromDob(d.dob), true)}
-          ${infoRow('Chipnummer', d.chip, false)} ${infoRow('Registreringsnr', d.reg, true)}
-          ${infoRow('Mankhöjd', d.height?d.height+' cm':'—', true)} ${infoRow('Status', statusLabel(d.status), true)}
-          ${infoRow('HD', d.hips||'—', true)} ${infoRow('AD', d.elbows||'—', true)}
-          ${infoRow('Ögonlysning', d.eyes||'—', true)} ${infoRow('DNA-tester', d.dna||'—', true)}
+          ${infoRow(t('fieldCallName'), d.callName, true)} ${infoRow(t('fieldSex'), sexLabel(d.sex), true)}
+          ${infoRow(t('fieldBreed'), d.breed, true)} ${infoRow(t('fieldColor'), d.color, true)}
+          ${infoRow(t('fieldBorn'), fmtDate(d.dob), true)} ${infoRow(t('fieldAge'), ageFromDob(d.dob), true)}
+          ${infoRow(t('fieldChip'), d.chip, false)} ${infoRow(t('fieldRegNo'), d.reg, true)}
+          ${infoRow(t('fieldHeight'), d.height?d.height+' cm':'—', true)} ${infoRow(t('fieldStatus'), statusLabel(d.status), true)}
+          ${infoRow(t('fieldHips'), d.hips||'—', true)} ${infoRow(t('fieldElbows'), d.elbows||'—', true)}
+          ${infoRow(t('fieldEyes'), d.eyes||'—', true)} ${infoRow(t('fieldDna'), d.dna||'—', true)}
         </div>
-        ${d.titles.length?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">MERITER <span class="field-badge public">🌐 Publik</span></div><div class="dog-tags">${d.titles.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`:''}
-        ${(d.sire||d.dam)?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">FÖRÄLDRAR <span class="field-badge public">🌐 Publik</span></div>
-          <div style="font-size:13px;">${d.sire?('Far: '+ (dogById(d.sire)?.name||'—')):''} ${d.dam?('· Mor: '+(dogById(d.dam)?.name||'—')):''}</div></div>`:''}
+        ${d.titles.length?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">${t('titlesLabel')} <span class="field-badge public">${t('publicTag')}</span></div><div class="dog-tags">${d.titles.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div>`:''}
+        ${(d.sire||d.dam)?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">${t('parentsLabel')} <span class="field-badge public">${t('publicTag')}</span></div>
+          <div style="font-size:13px;">${d.sire?(t('sireLabel')+': '+ (dogById(d.sire)?.name||'—')):''} ${d.dam?('· '+t('damLabel')+': '+(dogById(d.dam)?.name||'—')):''}</div></div>`:''}
       `;
     } else if(tab==='health'){
       body.innerHTML = (dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
-        <div class="tl-item"><div class="tl-date">${fmtDate(h.date)}</div><div class="tl-title">${h.type} ${h.status==='due'?'<span class=\"badge due\" style=\"margin-left:6px;\">Förfaller</span>':''}</div><div class="tl-desc">${h.detail}${h.due?(' · Nästa: '+fmtDate(h.due)):''}</div></div>
-      `).join('')}</div>` : `<div class="empty">Inga hälsojournalposter ännu.</div>`) + `<span class="field-badge private" style="margin-top:12px;">🔒 Privat — visas aldrig publikt</span>`;
+        <div class="tl-item"><div class="tl-date">${fmtDate(h.date)}</div><div class="tl-title">${h.type} ${h.status==='due'?`<span class=\"badge due\" style=\"margin-left:6px;\">${t('dueBadge')}</span>`:''}</div><div class="tl-desc">${h.detail}${h.due?(t('nextLabel')+fmtDate(h.due)):''}</div></div>
+      `).join('')}</div>` : `<div class="empty">${t('noHealthRecords')}</div>`) + `<span class="field-badge private" style="margin-top:12px;">${t('privateNeverPublic')}</span>`;
     } else if(tab==='weight'){
-      if(!d.weightLog.length){ body.innerHTML = `<div class="empty">Ingen viktdata registrerad.</div><span class="field-badge private">🔒 Privat — visas aldrig publikt</span>`; return; }
-      body.innerHTML = `<span class="field-badge private" style="margin-bottom:10px;">🔒 Privat — visas aldrig publikt</span><canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>Datum</th><th>Vikt (kg)</th></tr></thead><tbody>
+      if(!d.weightLog.length){ body.innerHTML = `<div class="empty">${t('noWeightData')}</div><span class="field-badge private">${t('privateNeverPublic')}</span>`; return; }
+      body.innerHTML = `<span class="field-badge private" style="margin-bottom:10px;">${t('privateNeverPublic')}</span><canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>${t('colDate')}</th><th>${t('weightKg')}</th></tr></thead><tbody>
         ${d.weightLog.slice().reverse().map(w=>`<tr><td>${fmtDate(w.d)}</td><td>${w.kg} kg</td></tr>`).join('')}
       </tbody></table></div>`;
       const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
       const honey = getComputedStyle(document.documentElement).getPropertyValue('--honey').trim();
       new Chart(document.getElementById('weightChart'), {
         type:'line',
-        data:{ labels:d.weightLog.map(w=>fmtDate(w.d)), datasets:[{label:'Vikt (kg)', data:d.weightLog.map(w=>w.kg), borderColor:honey, backgroundColor:honey+'33', tension:.3, fill:true}] },
+        data:{ labels:d.weightLog.map(w=>fmtDate(w.d)), datasets:[{label:t('weightKg'), data:d.weightLog.map(w=>w.kg), borderColor:honey, backgroundColor:honey+'33', tension:.3, fill:true}] },
         options:{ plugins:{legend:{display:false}}, scales:{x:{ticks:{color:ink}}, y:{ticks:{color:ink}}} }
       });
     } else if(tab==='notes'){
-      body.innerHTML = `<span class="field-badge private" style="margin-bottom:10px;">🔒 Privat — visas aldrig publikt</span><div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || 'Inga anteckningar.'}</div>`;
+      body.innerHTML = `<span class="field-badge private" style="margin-bottom:10px;">${t('privateNeverPublic')}</span><div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || t('noNotes')}</div>`;
     }
   }
   document.querySelectorAll('.tab-btn').forEach(b=> b.addEventListener('click', ()=>{
@@ -1203,16 +1824,14 @@ function deleteDog(id){
   const d = dogById(id);
   if(!d) return;
   const usedAsParent = DB.dogs.some(x=> x.sire===id || x.dam===id);
-  const msg = usedAsParent
-    ? `Ta bort ${d.name}? Hunden är registrerad som förälder till andra hundar — deras stamtavla kommer visa "Okänd" istället. Detta går inte att ångra.`
-    : `Ta bort ${d.name}? Detta går inte att ångra.`;
+  const msg = usedAsParent ? t('confirmDeleteDogParent',{name:d.name}) : t('confirmDeleteDog',{name:d.name});
   if(!confirm(msg)) return;
   DB.dogs = DB.dogs.filter(x=> x.id!==id);
   DB.health = DB.health.filter(h=> h.dogId!==id);
-  saveDB(); closeDrawer(); renderDogs(); toast(d.name+' har tagits bort');
+  saveDB(); closeDrawer(); renderDogs(); toast(t('toastDogRemoved',{name:d.name}));
 }
 function infoRow(label,val,pub){
-  const badge = pub===true ? '<span class="field-badge public">🌐 Publik</span>' : pub===false ? '<span class="field-badge private">🔒 Privat</span>' : '';
+  const badge = pub===true ? `<span class="field-badge public">${t('publicTag')}</span>` : pub===false ? `<span class="field-badge private">${t('privateNeverPublic').split(' —')[0]}</span>` : '';
   return `<div class="field"><label>${label}${badge}</label><div style="padding:8px 0; font-weight:500;">${val}</div></div>`;
 }
 
@@ -1220,50 +1839,50 @@ function openDogForm(existing){
   const isEdit = !!existing;
   const d = existing || {};
   const possibleParents = DB.dogs.filter(x=> !isEdit || x.id!==existing.id);
-  const sireOptions = possibleParents.filter(x=>x.sex==='Hane');
-  const damOptions = possibleParents.filter(x=>x.sex==='Tik');
+  const sireOptions = possibleParents.filter(x=>x.sex==='male');
+  const damOptions = possibleParents.filter(x=>x.sex==='female');
   const sel = (val, cur)=> val===cur ? 'selected' : '';
   openDrawer(`
-    <div class="drawer-head"><div class="drawer-title">${isEdit?'Redigera '+d.name:'Ny hund'}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-head"><div class="drawer-title">${isEdit?t('editDogTitle',{name:d.name}):t('newDogTitle')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="dogForm" class="form-grid">
-        <div class="field"><label>Namn * <span class="field-badge public">🌐</span></label><input required name="name" value="${d.name||''}"></div>
-        <div class="field"><label>Registrerat namn <span class="field-badge public">🌐</span></label><input name="regName" value="${d.regName||''}"></div>
-        <div class="field"><label>Ras * <span class="field-badge public">🌐</span></label><input required name="breed" value="${d.breed||'Golden Retriever'}"></div>
-        <div class="field"><label>Kön <span class="field-badge public">🌐</span></label><select name="sex"><option ${sel(d.sex,'Tik')}>Tik</option><option ${sel(d.sex,'Hane')}>Hane</option></select></div>
-        <div class="field"><label>Född <span class="field-badge public">🌐</span></label><input type="date" name="dob" value="${d.dob||''}"></div>
-        <div class="field"><label>Färg <span class="field-badge public">🌐</span></label><input name="color" value="${d.color||''}"></div>
-        <div class="field"><label>Chipnummer <span class="field-badge private">🔒</span></label><input name="chip" value="${d.chip||''}"></div>
-        <div class="field"><label>Registreringsnr <span class="field-badge public">🌐</span></label><input name="reg" value="${d.reg||''}"></div>
-        <div class="field"><label>Status <span class="field-badge public">🌐</span></label><select name="status">
-          <option value="puppy" ${sel(d.status,'puppy')}>Valp</option>
-          <option value="adult" ${sel(d.status,'adult')||(!isEdit?'selected':'')}>Vuxen</option>
-          <option value="retired" ${sel(d.status,'retired')}>Pensionerad</option>
-          <option value="deceased" ${sel(d.status,'deceased')}>Avliden</option>
+        <div class="field"><label>${t('labelNameRequired')} <span class="field-badge public">🌐</span></label><input required name="name" value="${d.name||''}"></div>
+        <div class="field"><label>${t('labelRegName')} <span class="field-badge public">🌐</span></label><input name="regName" value="${d.regName||''}"></div>
+        <div class="field"><label>${t('labelBreedRequired')} <span class="field-badge public">🌐</span></label><input required name="breed" value="${d.breed||'Golden Retriever'}"></div>
+        <div class="field"><label>${t('labelSex')} <span class="field-badge public">🌐</span></label><select name="sex"><option value="female" ${sel(d.sex,'female')}>${t('sexFemale')}</option><option value="male" ${sel(d.sex,'male')}>${t('sexMale')}</option></select></div>
+        <div class="field"><label>${t('labelBorn')} <span class="field-badge public">🌐</span></label><input type="date" name="dob" value="${d.dob||''}"></div>
+        <div class="field"><label>${t('labelColor')} <span class="field-badge public">🌐</span></label><input name="color" value="${d.color||''}"></div>
+        <div class="field"><label>${t('labelChip')} <span class="field-badge private">🔒</span></label><input name="chip" value="${d.chip||''}"></div>
+        <div class="field"><label>${t('labelRegNo')} <span class="field-badge public">🌐</span></label><input name="reg" value="${d.reg||''}"></div>
+        <div class="field"><label>${t('labelStatus')} <span class="field-badge public">🌐</span></label><select name="status">
+          <option value="puppy" ${sel(d.status,'puppy')}>${t('statusPuppy')}</option>
+          <option value="adult" ${sel(d.status,'adult')||(!isEdit?'selected':'')}>${t('statusAdult')}</option>
+          <option value="retired" ${sel(d.status,'retired')}>${t('statusRetired')}</option>
+          <option value="deceased" ${sel(d.status,'deceased')}>${t('statusDeceased')}</option>
         </select></div>
-        <div class="field"><label>Mankhöjd (cm) <span class="field-badge public">🌐</span></label><input type="number" name="height" value="${d.height||''}"></div>
+        <div class="field"><label>${t('labelHeightCm')} <span class="field-badge public">🌐</span></label><input type="number" name="height" value="${d.height||''}"></div>
 
-        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">Stamtavla <span class="field-badge public">🌐 Publik</span></label></div>
-        <div class="field"><label>Far (hane)</label><select name="sire">
-          <option value="">— Okänd —</option>
+        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">${t('pedigreeSection')} <span class="field-badge public">${t('publicTag')}</span></label></div>
+        <div class="field"><label>${t('labelSire')}</label><select name="sire">
+          <option value="">${t('unknownOption')}</option>
           ${sireOptions.map(x=>`<option value="${x.id}" ${sel(d.sire,x.id)}>${x.name}</option>`).join('')}
         </select></div>
-        <div class="field"><label>Mor (tik)</label><select name="dam">
-          <option value="">— Okänd —</option>
+        <div class="field"><label>${t('labelDam')}</label><select name="dam">
+          <option value="">${t('unknownOption')}</option>
           ${damOptions.map(x=>`<option value="${x.id}" ${sel(d.dam,x.id)}>${x.name}</option>`).join('')}
         </select></div>
 
-        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">Hälsoresultat & meriter <span class="field-badge public">🌐 Publik</span></label></div>
-        <div class="field"><label>HD (höftled)</label><input name="hips" value="${d.hips||''}" placeholder="t.ex. A"></div>
-        <div class="field"><label>AD (armbåge)</label><input name="elbows" value="${d.elbows||''}" placeholder="t.ex. 0"></div>
-        <div class="field"><label>Ögonlysning</label><input name="eyes" value="${d.eyes||''}" placeholder="t.ex. Ua (2024)"></div>
-        <div class="field"><label>DNA-tester</label><input name="dna" value="${d.dna||''}" placeholder="t.ex. Klar (PRA, ICT)"></div>
-        <div class="field full"><label>Meriter (kommaseparerat)</label><input name="titles" value="${(d.titles||[]).join(', ')}" placeholder="t.ex. SE UCH, SE VCH"></div>
+        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">${t('healthTitlesSection')} <span class="field-badge public">${t('publicTag')}</span></label></div>
+        <div class="field"><label>${t('labelHipsFull')}</label><input name="hips" value="${d.hips||''}" placeholder="${t('phHips')}"></div>
+        <div class="field"><label>${t('labelElbowsFull')}</label><input name="elbows" value="${d.elbows||''}" placeholder="${t('phElbows')}"></div>
+        <div class="field"><label>${t('labelEyesFull')}</label><input name="eyes" value="${d.eyes||''}" placeholder="${t('phEyes')}"></div>
+        <div class="field"><label>${t('labelDnaFull')}</label><input name="dna" value="${d.dna||''}" placeholder="${t('phDna')}"></div>
+        <div class="field full"><label>${t('labelTitlesCsv')}</label><input name="titles" value="${(d.titles||[]).join(', ')}" placeholder="${t('phTitles')}"></div>
 
-        <div class="field full"><label>Anteckningar <span class="field-badge private">🔒 Privat</span></label><textarea name="notes">${d.notes||''}</textarea></div>
+        <div class="field full"><label>${t('labelNotesPrivate')} <span class="field-badge private">${t('privateNeverPublic').split(' —')[0]}</span></label><textarea name="notes">${d.notes||''}</textarea></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
-          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
-          <button type="submit" class="btn btn-primary">${isEdit?'Spara ändringar':'Spara hund'}</button>
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${isEdit?t('saveChanges'):t('saveDog')}</button>
         </div>
       </form>
     </div>
@@ -1282,10 +1901,10 @@ function openDogForm(existing){
     };
     if(isEdit){
       Object.assign(existing, patch);
-      saveDB(); closeDrawer(); openDogProfile(existing.id); toast('Ändringarna har sparats');
+      saveDB(); closeDrawer(); openDogProfile(existing.id); toast(t('toastChangesSaved'));
     } else {
       const dog = Object.assign({id:uid('d'), weightLog:[]}, patch);
-      DB.dogs.unshift(dog); saveDB(); closeDrawer(); renderDogs(); toast('Hunden har lagts till');
+      DB.dogs.unshift(dog); saveDB(); closeDrawer(); renderDogs(); toast(t('toastDogAdded'));
     }
   });
 }
@@ -1296,14 +1915,14 @@ function renderHealth(){
   content.innerHTML = `
     <div class="filter-row">
       <select class="chip-filter" id="healthDogFilter" style="border-radius:8px;">
-        <option value="all">Alla hundar</option>
+        <option value="all">${t('allDogs')}</option>
         ${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}
       </select>
       <span style="flex:1"></span>
-      <button class="btn btn-primary" id="addHealthBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Ny journalpost</button>
+      <button class="btn btn-primary" id="addHealthBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newHealthEntry')}</button>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>Hund</th><th>Typ</th><th>Datum</th><th>Nästa förfallodag</th><th>Detaljer</th><th>Status</th></tr></thead>
+      <thead><tr><th>${t('colDog')}</th><th>${t('colType')}</th><th>${t('colDate')}</th><th>${t('colNextDue')}</th><th>${t('colDetails')}</th><th>${t('colStatus')}</th></tr></thead>
       <tbody id="healthBody"></tbody>
     </table></div>
   `;
@@ -1316,23 +1935,23 @@ function drawHealthBody(){
   list = list.slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
   document.getElementById('healthBody').innerHTML = list.map(h=>{
     const dog = dogById(h.dogId);
-    return `<tr><td>${dog?dog.name:'—'}</td><td>${h.type}</td><td>${fmtDate(h.date)}</td><td>${h.due?fmtDate(h.due):'—'}</td><td style="color:var(--ink-soft);">${h.detail}</td><td>${h.status==='due'?'<span class="badge due">Förfaller snart</span>':'<span class="badge ok">OK</span>'}</td></tr>`;
+    return `<tr><td>${dog?dog.name:'—'}</td><td>${h.type}</td><td>${fmtDate(h.date)}</td><td>${h.due?fmtDate(h.due):'—'}</td><td style="color:var(--ink-soft);">${h.detail}</td><td>${h.status==='due'?`<span class="badge due">${t('dueSoon')}</span>`:`<span class="badge ok">${t('ok')}</span>`}</td></tr>`;
   }).join('') || emptyRow(6);
 }
 function openHealthForm(){
   openDrawer(`
-    <div class="drawer-head"><div class="drawer-title">Ny hälsojournalpost</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-head"><div class="drawer-title">${t('newHealthRecordTitle')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="healthForm" class="form-grid">
-        <div class="field full"><label>Hund *</label><select required name="dogId">${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
-        <div class="field"><label>Typ *</label><select required name="type"><option>Vaccination</option><option>Avmaskning</option><option>Veterinärbesök</option><option>Röntgen</option><option>Ögonlysning</option><option>DNA-test</option><option>Försäkring</option><option>Övrigt</option></select></div>
-        <div class="field"><label>Datum *</label><input required type="date" name="date"></div>
-        <div class="field"><label>Nästa förfallodag</label><input type="date" name="due"></div>
-        <div class="field"><label>Status</label><select name="status"><option value="ok">OK</option><option value="due">Förfaller snart</option></select></div>
-        <div class="field full"><label>Detaljer</label><textarea name="detail"></textarea></div>
+        <div class="field full"><label>${t('labelDogRequired')}</label><select required name="dogId">${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div class="field"><label>${t('labelTypeRequired')}</label><select required name="type"><option>${t('healthTypeVaccination')}</option><option>${t('healthTypeDeworming')}</option><option>${t('healthTypeVetVisit')}</option><option>${t('healthTypeXray')}</option><option>${t('healthTypeEyeExam')}</option><option>${t('healthTypeDna')}</option><option>${t('healthTypeInsurance')}</option><option>${t('healthTypeOther')}</option></select></div>
+        <div class="field"><label>${t('labelDateRequired')}</label><input required type="date" name="date"></div>
+        <div class="field"><label>${t('labelNextDue')}</label><input type="date" name="due"></div>
+        <div class="field"><label>${t('colStatus')}</label><select name="status"><option value="ok">${t('ok')}</option><option value="due">${t('dueSoon')}</option></select></div>
+        <div class="field full"><label>${t('colDetails')}</label><textarea name="detail"></textarea></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
-          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
-          <button type="submit" class="btn btn-primary">Spara</button>
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${t('save')}</button>
         </div>
       </form>
     </div>
@@ -1340,14 +1959,14 @@ function openHealthForm(){
   document.getElementById('healthForm').addEventListener('submit', e=>{
     e.preventDefault(); const f = new FormData(e.target);
     DB.health.unshift({id:uid('h'), dogId:f.get('dogId'), type:f.get('type'), date:f.get('date'), due:f.get('due')||'', detail:f.get('detail')||'', status:f.get('status')});
-    saveDB(); closeDrawer(); renderHealth(); toast('Journalpost tillagd');
+    saveDB(); closeDrawer(); renderHealth(); toast(t('toastHealthAdded'));
   });
 }
 
 /* ---- PEDIGREE ---- */
 function renderPedigree(){
   if(!DB.dogs.length){
-    content.innerHTML = `<div class="empty">Inga hundar registrerade än. Lägg till din första hund under Hundregister för att se en stamtavla här.</div>`;
+    content.innerHTML = `<div class="empty">${t('noDogsRegisteredYet')}</div>`;
     return;
   }
   content.innerHTML = `
@@ -1360,7 +1979,7 @@ function renderPedigree(){
   drawPedigree(DB.dogs[0].id);
 }
 function pedNode(dog, isSelf){
-  if(!dog) return `<div class="ped-node" style="opacity:.4;"><div class="n">Okänd</div><div class="m">Ingen data</div></div>`;
+  if(!dog) return `<div class="ped-node" style="opacity:.4;"><div class="n">${t('unknownDog')}</div><div class="m">${t('pedNoData')}</div></div>`;
   return `<div class="ped-node ${isSelf?'self':''}"><div class="n">${dog.name}</div><div class="m">${dog.breed}</div>
     <div class="scores">${dog.hips?`<span class="tag">HD ${dog.hips}</span>`:''}${dog.titles[0]?`<span class="tag">${dog.titles[0]}</span>`:''}</div></div>`;
 }
@@ -1378,7 +1997,7 @@ function drawPedigree(id){
       <div class="ped-col">${pedNode(sire)}${pedNode(dam)}</div>
       <div class="ped-col">${pedNode(sireSire)}${pedNode(sireDam)}${pedNode(damSire)}${pedNode(damDam)}</div>
     </div>
-    <div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">Visar far/mor och två generationer bakåt. Lägg till fler anor via hundens profil (Far/Mor-fält) för en djupare stamtavla.</div>
+    <div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('pedFootnote')}</div>
   `;
 }
 
@@ -1386,30 +2005,30 @@ function drawPedigree(id){
 function renderBreeding(){
   content.innerHTML = `
     <div class="filter-row"><span style="flex:1"></span>
-      <button class="btn btn-primary" id="addBreedingBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Ny parningsplan</button>
+      <button class="btn btn-primary" id="addBreedingBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newBreedingPlan')}</button>
     </div>
     <div class="timeline" style="margin-bottom:30px;">
       ${DB.breedings.slice().sort((a,b)=>new Date(b.matingDate)-new Date(a.matingDate)).map(b=>{
         const dam = dogById(b.dam), sire = dogById(b.sire);
         return `<div class="tl-item"><div class="tl-date">${fmtDate(b.matingDate)}</div>
-          <div class="tl-title">${dam?.name || '?'} × ${sire?.name || '?'} ${b.confirmed?'<span class="badge ok" style="margin-left:6px;">Bekräftad dräktighet</span>':'<span class="badge muted" style="margin-left:6px;">Planerad</span>'}</div>
-          <div class="tl-desc">${b.dueDate?('Beräknat valpningsdatum: '+fmtDate(b.dueDate)+' · '):''}${b.expectedCount?('Förväntat antal: '+b.expectedCount+' · '):''}${b.ultrasound||''}</div>
+          <div class="tl-title">${dam?.name || '?'} × ${sire?.name || '?'} ${b.confirmed?`<span class="badge ok" style="margin-left:6px;">${t('confirmedPregnancy')}</span>`:`<span class="badge muted" style="margin-left:6px;">${t('planned')}</span>`}</div>
+          <div class="tl-desc">${b.dueDate?t('expectedWhelp',{date:fmtDate(b.dueDate)}):''}${b.expectedCount?t('expectedCountLabel',{n:b.expectedCount}):''}${b.ultrasound||''}</div>
           ${b.notes?`<div class="tl-desc" style="margin-top:2px;">${b.notes}</div>`:''}
         </div>`;
-      }).join('') || `<div class="empty">Inga parningsplaner registrerade.</div>`}
+      }).join('') || `<div class="empty">${t('noBreedingPlans')}</div>`}
     </div>
     <div class="two-col">
       <div class="card card-pad">
-        <div class="section-head" style="margin-top:0;"><h2>Dräktighetskalkylator</h2></div>
-        <div class="field"><label>Parningsdatum</label><input type="date" id="matingDateCalc"></div>
-        <div style="margin-top:12px; font-size:13.5px;">Beräknad valpning: <strong id="calcResult">—</strong></div>
-        <div style="font-size:12px; color:var(--ink-soft); margin-top:4px;">Baserat på ca 63 dagars dräktighet.</div>
+        <div class="section-head" style="margin-top:0;"><h2>${t('pregnancyCalc')}</h2></div>
+        <div class="field"><label>${t('matingDateLabel')}</label><input type="date" id="matingDateCalc"></div>
+        <div style="margin-top:12px; font-size:13.5px;">${t('expectedWhelping')}<strong id="calcResult">—</strong></div>
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:4px;">${t('basedOn63')}</div>
       </div>
       <div class="card card-pad">
-        <div class="section-head" style="margin-top:0;"><h2>Löpcykelspårning</h2></div>
-        ${DB.dogs.filter(d=>d.sex==='Tik' && d.status!=='deceased').map(d=>`
+        <div class="section-head" style="margin-top:0;"><h2>${t('heatTracking')}</h2></div>
+        ${DB.dogs.filter(d=>d.sex==='female' && d.status!=='deceased').map(d=>`
           <div class="milestone-row"><div class="avatar-circle">${d.name[0]}</div>
-            <div style="flex:1"><div style="font-weight:600;font-size:13px;">${d.name}</div><div style="font-size:12px;color:var(--ink-soft);">Senaste löp ej registrerat — lägg till i hälsojournalen</div></div>
+            <div style="flex:1"><div style="font-weight:600;font-size:13px;">${d.name}</div><div style="font-size:12px;color:var(--ink-soft);">${t('heatNotRecorded')}</div></div>
           </div>`).join('')}
       </div>
     </div>
@@ -1417,24 +2036,24 @@ function renderBreeding(){
   document.getElementById('matingDateCalc').addEventListener('change', e=>{
     if(!e.target.value){ document.getElementById('calcResult').textContent='—'; return; }
     const d = new Date(e.target.value+'T00:00:00'); d.setDate(d.getDate()+63);
-    document.getElementById('calcResult').textContent = d.toLocaleDateString('sv-SE',{day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('calcResult').textContent = d.toLocaleDateString(LOCALE[LANG],{day:'numeric',month:'long',year:'numeric'});
   });
   document.getElementById('addBreedingBtn').addEventListener('click', openBreedingForm);
 }
 function openBreedingForm(){
-  const dams = DB.dogs.filter(d=>d.sex==='Tik'); const sires = DB.dogs.filter(d=>d.sex==='Hane');
+  const dams = DB.dogs.filter(d=>d.sex==='female'); const sires = DB.dogs.filter(d=>d.sex==='male');
   openDrawer(`
-    <div class="drawer-head"><div class="drawer-title">Ny parningsplan</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-head"><div class="drawer-title">${t('newBreedingPlan')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="breedingForm" class="form-grid">
-        <div class="field"><label>Tik *</label><select required name="dam">${dams.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
-        <div class="field"><label>Hane *</label><select required name="sire">${sires.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
-        <div class="field"><label>Parningsdatum</label><input type="date" name="matingDate"></div>
-        <div class="field"><label>Förväntat antal valpar</label><input type="number" name="expectedCount"></div>
-        <div class="field full"><label>Anteckningar</label><textarea name="notes"></textarea></div>
+        <div class="field"><label>${t('labelDamRequired')}</label><select required name="dam">${dams.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div class="field"><label>${t('labelSireRequired')}</label><select required name="sire">${sires.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div class="field"><label>${t('matingDateLabel')}</label><input type="date" name="matingDate"></div>
+        <div class="field"><label>${t('labelExpectedCount')}</label><input type="number" name="expectedCount"></div>
+        <div class="field full"><label>${t('labelNotes')}</label><textarea name="notes"></textarea></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
-          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
-          <button type="submit" class="btn btn-primary">Spara plan</button>
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${t('savePlan')}</button>
         </div>
       </form>
     </div>
@@ -1444,7 +2063,7 @@ function openBreedingForm(){
     let due = '';
     if(f.get('matingDate')){ const d = new Date(f.get('matingDate')+'T00:00:00'); d.setDate(d.getDate()+63); due = d.toISOString().slice(0,10); }
     DB.breedings.unshift({id:uid('b'), dam:f.get('dam'), sire:f.get('sire'), matingDate:f.get('matingDate')||'', dueDate:due, confirmed:false, ultrasound:'', expectedCount:Number(f.get('expectedCount'))||0, notes:f.get('notes')||''});
-    saveDB(); closeDrawer(); renderBreeding(); toast('Parningsplan tillagd');
+    saveDB(); closeDrawer(); renderBreeding(); toast(t('toastBreedingAdded'));
   });
 }
 
@@ -1457,15 +2076,15 @@ function renderLitters(){
         return `<div class="card litter-card" data-id="${l.id}" style="cursor:pointer;">
           <div class="card-pad">
             <div style="font-family:var(--font-display); font-size:17px; font-weight:500;">${l.name}</div>
-            <div style="font-size:12.5px; color:var(--ink-soft); margin-top:2px;">${dam?.name || '?'} × ${sire?.name || '?'} · Född ${fmtDate(l.birthDate)}</div>
+            <div style="font-size:12.5px; color:var(--ink-soft); margin-top:2px;">${dam?.name || '?'} × ${sire?.name || '?'} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div>
             <div style="display:flex; gap:14px; margin-top:12px; font-size:12.5px;">
-              <div><strong>${l.puppies.length}</strong> valpar</div>
-              <div><strong>${l.puppies.filter(p=>p.sex==='Hane').length}</strong> hanar</div>
-              <div><strong>${l.puppies.filter(p=>p.sex==='Tik').length}</strong> tikar</div>
+              <div><strong>${l.puppies.length}</strong> ${t('puppiesUnit')}</div>
+              <div><strong>${l.puppies.filter(p=>p.sex==='male').length}</strong> ${t('malesUnit')}</div>
+              <div><strong>${l.puppies.filter(p=>p.sex==='female').length}</strong> ${t('femalesUnit')}</div>
             </div>
           </div>
         </div>`;
-      }).join('') || `<div class="empty" style="grid-column:1/-1;">Inga kullar registrerade än.</div>`}
+      }).join('') || `<div class="empty" style="grid-column:1/-1;">${t('noLittersYet')}</div>`}
     </div>
   `;
   content.querySelectorAll('.litter-card').forEach(c=> c.addEventListener('click', ()=> openLitterDetail(c.dataset.id)));
@@ -1474,14 +2093,14 @@ function openLitterDetail(id){
   const l = DB.litters.find(x=>x.id===id);
   const dam = dogById(l.dam), sire = dogById(l.sire);
   openDrawer(`
-    <div class="drawer-head"><div><div class="drawer-title">${l.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${dam?.name} × ${sire?.name} · Född ${fmtDate(l.birthDate)}</div></div>
+    <div class="drawer-head"><div><div class="drawer-title">${l.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${dam?.name} × ${sire?.name} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div></div>
       <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
-      <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">Valpar</h2></div>
-      <div class="table-wrap"><table><thead><tr><th>Namn</th><th>Kön</th><th>Färg</th><th>Födelsevikt</th><th>Status</th></tr></thead>
-        <tbody>${l.puppies.map(p=>`<tr><td>${p.name}</td><td>${p.sex}</td><td>${p.color}</td><td>${p.birthWeight} kg</td><td>${puppyStatusBadge(p.status)}</td></tr>`).join('')}</tbody>
+      <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('puppiesLabel')}</h2></div>
+      <div class="table-wrap"><table><thead><tr><th>${t('colName')}</th><th>${t('colStatus').replace(t('colStatus'),'')}${t('fieldSex')}</th><th>${t('exColColor')}</th><th>${t('colBirthWeight')}</th><th>${t('colStatus')}</th></tr></thead>
+        <tbody>${l.puppies.map(p=>`<tr><td>${p.name}</td><td>${sexLabel(p.sex)}</td><td>${p.color}</td><td>${p.birthWeight} kg</td><td>${puppyStatusBadge(p.status)}</td></tr>`).join('')}</tbody>
       </table></div>
-      <div class="section-head"><h2 style="font-size:15px;">Milstolpar</h2></div>
+      <div class="section-head"><h2 style="font-size:15px;">${t('milestonesLabel')}</h2></div>
       <div class="card card-pad">
         ${l.milestones.map((m,i)=>`
           <div class="milestone-row">
@@ -1501,35 +2120,35 @@ function openLitterDetail(id){
   });
 }
 function puppyStatusBadge(s){
-  const map = {'tillgänglig':'ok','reserverad':'warn','såld':'muted'};
-  return `<span class="badge ${map[s]||'muted'}">${s}</span>`;
+  const map = {available:'ok',reserved:'warn',sold:'muted'};
+  return `<span class="badge ${map[s]||'muted'}">${puppyStatusLabel(s)}</span>`;
 }
 
 /* ---- MATCHING ---- */
 function renderMatching(){
-  const availablePuppies = DB.litters.flatMap(l=> l.puppies.filter(p=>p.status!=='såld').map(p=>({...p, litter:l.name})));
+  const availablePuppies = DB.litters.flatMap(l=> l.puppies.filter(p=>p.status!=='sold').map(p=>({...p, litter:l.name})));
   const waitingBuyers = DB.buyers.filter(b=> b.status==='waiting' || b.status==='approved');
   content.innerHTML = `
-    <div class="section-head" style="margin-top:0;"><h2>Tillgängliga valpar</h2><span class="hint">${availablePuppies.length} st</span></div>
+    <div class="section-head" style="margin-top:0;"><h2>${t('availablePuppies')}</h2><span class="hint">${availablePuppies.length}</span></div>
     <div class="grid-cards" style="margin-bottom:26px;">
       ${availablePuppies.map(p=>`
         <div class="card card-pad">
           <div style="font-family:var(--font-display); font-size:16px; font-weight:500;">${p.name}</div>
-          <div style="font-size:12px; color:var(--ink-soft); margin-bottom:8px;">${p.litter} · ${p.sex} · ${p.color}</div>
-          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;">Temperament (uppskattat)</div>
-          ${trait('Energi', puppyTraitSeed(p.id,0))}
-          ${trait('Självförtroende', puppyTraitSeed(p.id,1))}
-          ${trait('Sällskaplighet', puppyTraitSeed(p.id,2))}
-          ${trait('Träningsbarhet', puppyTraitSeed(p.id,3))}
-        </div>`).join('') || `<div class="empty" style="grid-column:1/-1;">Inga tillgängliga valpar just nu.</div>`}
+          <div style="font-size:12px; color:var(--ink-soft); margin-bottom:8px;">${p.litter} · ${sexLabel(p.sex)} · ${p.color}</div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;">${t('temperamentEst')}</div>
+          ${trait(t('traitEnergy'), puppyTraitSeed(p.id,0))}
+          ${trait(t('traitConfidence'), puppyTraitSeed(p.id,1))}
+          ${trait(t('traitSociability'), puppyTraitSeed(p.id,2))}
+          ${trait(t('traitTrainability'), puppyTraitSeed(p.id,3))}
+        </div>`).join('') || `<div class="empty" style="grid-column:1/-1;">${t('noAvailablePuppies')}</div>`}
     </div>
-    <div class="section-head"><h2>Föreslagna matchningar</h2><span class="hint">Baserat på aktivitetsnivå & önskemål</span></div>
+    <div class="section-head"><h2>${t('suggestedMatches')}</h2><span class="hint">${t('suggestedMatchesHint')}</span></div>
     <div class="table-wrap"><table>
-      <thead><tr><th>Köpare</th><th>Önskar</th><th>Föreslagen valp</th><th>Matchning</th></tr></thead>
+      <thead><tr><th>${t('colBuyer')}</th><th>${t('colWants')}</th><th>${t('colSuggestedPuppy')}</th><th>${t('colMatch')}</th></tr></thead>
       <tbody>
         ${waitingBuyers.map(b=>{
           const suggestion = availablePuppies[Math.floor(Math.random()*100+b.name.length) % (availablePuppies.length||1)];
-          return `<tr><td>${b.name}</td><td style="color:var(--ink-soft);">${b.preferred}</td><td>${suggestion?suggestion.name:'—'}</td><td><span class="badge ok">Bästa matchning</span></td></tr>`;
+          return `<tr><td>${b.name}</td><td style="color:var(--ink-soft);">${b.preferred}</td><td>${suggestion?suggestion.name:'—'}</td><td><span class="badge ok">${t('bestMatch')}</span></td></tr>`;
         }).join('') || emptyRow(4)}
       </tbody>
     </table></div>
@@ -1549,13 +2168,13 @@ const BUYER_STATUSES = ['new','waiting','approved','reserved','sold','rejected']
 function renderBuyers(){
   content.innerHTML = `
     <div class="filter-row">
-      <button class="chip-filter ${buyerFilter==='all'?'active':''}" data-f="all">Alla</button>
+      <button class="chip-filter ${buyerFilter==='all'?'active':''}" data-f="all">${t('filterAll')}</button>
       ${BUYER_STATUSES.map(s=>`<button class="chip-filter ${buyerFilter===s?'active':''}" data-f="${s}">${buyerStatusLabel(s)}</button>`).join('')}
       <span style="flex:1"></span>
-      <button class="btn btn-primary" id="addBuyerBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Ny intressent</button>
+      <button class="btn btn-primary" id="addBuyerBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newProspect')}</button>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>Namn</th><th>Land</th><th>Boende</th><th>Föredrar</th><th>Status</th></tr></thead>
+      <thead><tr><th>${t('colName')}</th><th>${t('colCountry')}</th><th>${t('colHousing')}</th><th>${t('colPrefers')}</th><th>${t('buyerStatusLabel2')}</th></tr></thead>
       <tbody id="buyersBody"></tbody>
     </table></div>
   `;
@@ -1581,23 +2200,23 @@ function openBuyerDetail(id){
       <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <div class="field full" style="margin-bottom:16px;">
-        <label>Status</label>
+        <label>${t('buyerStatusLabel2')}</label>
         <select id="buyerStatusSelect">${BUYER_STATUSES.map(s=>`<option value="${s}" ${s===b.status?'selected':''}>${buyerStatusLabel(s)}</option>`).join('')}</select>
       </div>
       <div class="form-grid" style="font-size:13px; margin-bottom:16px;">
-        ${infoRow('Land', b.country)} ${infoRow('Boendetyp', b.housing)}
-        ${infoRow('Aktivitetsnivå', b.activity)} ${infoRow('Tidigare hundägare', b.prevDog)}
-        ${infoRow('Föredragen valp', b.preferred)}
+        ${infoRow(t('colCountry'), b.country)} ${infoRow(t('colHousingType'), b.housing)}
+        ${infoRow(t('colActivityLevel'), b.activity)} ${infoRow(t('colPrevOwner'), b.prevDog)}
+        ${infoRow(t('colPreferredPuppy'), b.preferred)}
       </div>
-      <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">Kommunikationslogg</h2></div>
+      <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('commLog')}</h2></div>
       <div class="timeline" id="buyerLog">
         ${b.log.slice().reverse().map(l=>`<div class="tl-item"><div class="tl-date">${fmtDate(l.date)}</div><div class="tl-desc">${l.note}</div></div>`).join('')}
       </div>
-      <div class="field full"><label>Lägg till anteckning</label><textarea id="newLogNote" placeholder="Skriv en uppdatering..."></textarea></div>
-      <button class="btn btn-primary btn-sm" id="addLogBtn" style="margin-top:8px;">Lägg till</button>
+      <div class="field full"><label>${t('addNote')}</label><textarea id="newLogNote" placeholder="${t('phLogNote')}"></textarea></div>
+      <button class="btn btn-primary btn-sm" id="addLogBtn" style="margin-top:8px;">${t('add')}</button>
     </div>
   `);
-  document.getElementById('buyerStatusSelect').addEventListener('change', e=>{ b.status=e.target.value; saveDB(); toast('Status uppdaterad'); });
+  document.getElementById('buyerStatusSelect').addEventListener('change', e=>{ b.status=e.target.value; saveDB(); toast(t('toastStatusUpdated')); });
   document.getElementById('addLogBtn').addEventListener('click', ()=>{
     const val = document.getElementById('newLogNote').value.trim();
     if(!val) return;
@@ -1606,20 +2225,20 @@ function openBuyerDetail(id){
 }
 function openBuyerForm(){
   openDrawer(`
-    <div class="drawer-head"><div class="drawer-title">Ny intressent</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-head"><div class="drawer-title">${t('newProspect')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="buyerForm" class="form-grid">
-        <div class="field"><label>Namn *</label><input required name="name"></div>
-        <div class="field"><label>E-post</label><input type="email" name="email"></div>
-        <div class="field"><label>Telefon</label><input name="phone"></div>
-        <div class="field"><label>Land</label><input name="country" value="Sverige"></div>
-        <div class="field"><label>Boendetyp</label><input name="housing"></div>
-        <div class="field"><label>Aktivitetsnivå</label><input name="activity"></div>
-        <div class="field"><label>Tidigare hundägare</label><input name="prevDog"></div>
-        <div class="field"><label>Önskad valp</label><input name="preferred"></div>
+        <div class="field"><label>${t('labelNameReq')}</label><input required name="name"></div>
+        <div class="field"><label>${t('labelEmail')}</label><input type="email" name="email"></div>
+        <div class="field"><label>${t('labelPhone')}</label><input name="phone"></div>
+        <div class="field"><label>${t('labelCountry')}</label><input name="country" value="${t('defaultCountry')}"></div>
+        <div class="field"><label>${t('labelHousingType')}</label><input name="housing"></div>
+        <div class="field"><label>${t('labelActivityLevel')}</label><input name="activity"></div>
+        <div class="field"><label>${t('labelPrevOwner')}</label><input name="prevDog"></div>
+        <div class="field"><label>${t('labelDesiredPuppy')}</label><input name="preferred"></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
-          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
-          <button type="submit" class="btn btn-primary">Spara</button>
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${t('save')}</button>
         </div>
       </form>
     </div>
@@ -1628,8 +2247,8 @@ function openBuyerForm(){
     e.preventDefault(); const f = new FormData(e.target);
     DB.buyers.unshift({id:uid('bu'), name:f.get('name'), email:f.get('email')||'', phone:f.get('phone')||'', country:f.get('country')||'',
       housing:f.get('housing')||'', activity:f.get('activity')||'', prevDog:f.get('prevDog')||'', preferred:f.get('preferred')||'',
-      status:'new', puppyId:'', log:[{date:new Date().toISOString().slice(0,10), note:'Intressent tillagd.'}]});
-    saveDB(); closeDrawer(); renderBuyers(); toast('Intressent tillagd');
+      status:'new', puppyId:'', log:[{date:new Date().toISOString().slice(0,10), note:t('prospectAddedLog')}]});
+    saveDB(); closeDrawer(); renderBuyers(); toast(t('toastBuyerAdded'));
   });
 }
 
@@ -1642,11 +2261,11 @@ function renderCalendar(){
       <div style="font-family:var(--font-display); font-size:17px; min-width:180px; text-align:center;" id="calLabel"></div>
       <button class="btn btn-sm" id="calNext">→</button>
       <span style="flex:1"></span>
-      <button class="btn btn-primary btn-sm" id="addEventBtn">Ny händelse</button>
+      <button class="btn btn-primary btn-sm" id="addEventBtn">${t('newEvent')}</button>
     </div>
     <div class="cal-grid" id="calGrid"></div>
-    <div class="section-head"><h2>Alla kommande händelser</h2></div>
-    <div class="table-wrap"><table><thead><tr><th>Datum</th><th>Händelse</th><th>Typ</th><th></th></tr></thead><tbody id="calList"></tbody></table></div>
+    <div class="section-head"><h2>${t('allUpcomingEvents')}</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>${t('colDate')}</th><th>${t('colEvent')}</th><th>${t('colType')}</th><th></th></tr></thead><tbody id="calList"></tbody></table></div>
   `;
   document.getElementById('calPrev').addEventListener('click', ()=>{ calMonth--; if(calMonth<0){calMonth=11;calYear--;} drawCalendar(); });
   document.getElementById('calNext').addEventListener('click', ()=>{ calMonth++; if(calMonth>11){calMonth=0;calYear++;} drawCalendar(); });
@@ -1654,7 +2273,7 @@ function renderCalendar(){
   drawCalendar();
 }
 function drawCalendar(){
-  const label = new Date(calYear,calMonth,1).toLocaleDateString('sv-SE',{month:'long', year:'numeric'});
+  const label = new Date(calYear,calMonth,1).toLocaleDateString(LOCALE[LANG],{month:'long', year:'numeric'});
   document.getElementById('calLabel').textContent = label.charAt(0).toUpperCase()+label.slice(1);
   const first = new Date(calYear,calMonth,1);
   const startDow = (first.getDay()+6)%7; // Monday=0
@@ -1664,7 +2283,7 @@ function drawCalendar(){
   for(let i=startDow-1;i>=0;i--) cells.push({d:daysInPrev-i, other:true});
   for(let d=1; d<=daysInMonth; d++) cells.push({d, other:false});
   while(cells.length % 7 !== 0) cells.push({d:cells.length, other:true});
-  const dows = ['Mån','Tis','Ons','Tor','Fre','Lör','Sön'];
+  const dows = [t('dowMon'),t('dowTue'),t('dowWed'),t('dowThu'),t('dowFri'),t('dowSat'),t('dowSun')];
   const todayStr = new Date().toISOString().slice(0,10);
   document.getElementById('calGrid').innerHTML = dows.map(d=>`<div class="cal-dow">${d}</div>`).join('') +
     cells.map(c=>{
@@ -1676,7 +2295,7 @@ function drawCalendar(){
       </div>`;
     }).join('');
   const upcoming = DB.events.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
-  document.getElementById('calList').innerHTML = upcoming.map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${e.title}</td><td>${eventTypeBadge(e.type)}</td><td><button class="btn btn-sm btn-danger" data-del="${e.id}">Ta bort</button></td></tr>`).join('') || emptyRow(4);
+  document.getElementById('calList').innerHTML = upcoming.map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${e.title}</td><td>${eventTypeBadge(e.type)}</td><td><button class="btn btn-sm btn-danger" data-del="${e.id}">${t('delete')}</button></td></tr>`).join('') || emptyRow(4);
   document.getElementById('calList').querySelectorAll('[data-del]').forEach(btn=>{
     btn.addEventListener('click', ()=> deleteEvent(btn.dataset.del));
   });
@@ -1684,21 +2303,21 @@ function drawCalendar(){
 function deleteEvent(id){
   const ev = DB.events.find(e=>e.id===id);
   if(!ev) return;
-  if(!confirm(`Ta bort händelsen "${ev.title}"?`)) return;
+  if(!confirm(t('confirmDeleteEvent',{title:ev.title}))) return;
   DB.events = DB.events.filter(e=>e.id!==id);
-  saveDB(); drawCalendar(); toast('Händelsen har tagits bort');
+  saveDB(); drawCalendar(); toast(t('toastEventRemoved'));
 }
 function openEventForm(){
   openDrawer(`
-    <div class="drawer-head"><div class="drawer-title">Ny händelse</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-head"><div class="drawer-title">${t('newEvent')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="eventForm" class="form-grid">
-        <div class="field full"><label>Titel *</label><input required name="title"></div>
-        <div class="field"><label>Datum *</label><input required type="date" name="date"></div>
-        <div class="field"><label>Typ</label><select name="type"><option value="health">Hälsa</option><option value="birthday">Födelsedag</option><option value="pickup">Hämtning</option><option value="breeding">Avel</option></select></div>
+        <div class="field full"><label>${t('labelTitleRequired')}</label><input required name="title"></div>
+        <div class="field"><label>${t('labelDateReq')}</label><input required type="date" name="date"></div>
+        <div class="field"><label>${t('labelType')}</label><select name="type"><option value="health">${t('evtHealth')}</option><option value="birthday">${t('evtBirthday')}</option><option value="pickup">${t('evtPickup')}</option><option value="breeding">${t('evtBreeding')}</option></select></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
-          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
-          <button type="submit" class="btn btn-primary">Spara</button>
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${t('save')}</button>
         </div>
       </form>
     </div>
@@ -1706,7 +2325,7 @@ function openEventForm(){
   document.getElementById('eventForm').addEventListener('submit', e=>{
     e.preventDefault(); const f = new FormData(e.target);
     DB.events.push({id:uid('e'), date:f.get('date'), title:f.get('title'), type:f.get('type')});
-    saveDB(); closeDrawer(); renderCalendar(); toast('Händelse tillagd');
+    saveDB(); closeDrawer(); renderCalendar(); toast(t('toastEventAdded'));
   });
 }
 
@@ -1714,18 +2333,18 @@ function openEventForm(){
 function renderDocuments(){
   content.innerHTML = `
     <div class="filter-row"><span style="flex:1"></span>
-      <label class="btn btn-primary btn-sm" style="cursor:pointer;">Ladda upp dokument<input type="file" id="docUpload" style="display:none;" multiple></label>
+      <label class="btn btn-primary btn-sm" style="cursor:pointer;">${t('uploadDoc')}<input type="file" id="docUpload" style="display:none;" multiple></label>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>Dokument</th><th>Typ</th><th>Datum</th><th>Kopplat till</th></tr></thead>
+      <thead><tr><th>${t('colDocument')}</th><th>${t('colType')}</th><th>${t('colDate')}</th><th>${t('colRelatedTo')}</th></tr></thead>
       <tbody id="docBody"></tbody>
     </table></div>
   `;
   document.getElementById('docUpload').addEventListener('change', e=>{
     Array.from(e.target.files).forEach(file=>{
-      DB.documents.unshift({id:uid('doc'), name:file.name, type:'Övrigt', date:new Date().toISOString().slice(0,10), relatedTo:'—'});
+      DB.documents.unshift({id:uid('doc'), name:file.name, type:t('docTypeOther'), date:new Date().toISOString().slice(0,10), relatedTo:'—'});
     });
-    saveDB(); drawDocBody(); toast('Dokument tillagda (namn sparat lokalt — filuppladdning till moln kräver Supabase Storage)');
+    saveDB(); drawDocBody(); toast(t('toastDocsAdded'));
   });
   drawDocBody();
 }
@@ -1739,36 +2358,19 @@ function drawDocBody(){
 function renderPrivacy(){
   content.innerHTML = `
     <div class="privacy-sign public">
-      <h2>🌐 Detta visas publikt (på din publika sida)</h2>
-      <p>För varje hund i ditt hundregister speglas följande fält till din publika sida. Allt annat i Breeder Hub är alltid privat.</p>
-      <ul>
-        <li>Namn, kallelsenamn och registrerat namn</li>
-        <li>Ras, kön, färg och födelsedatum</li>
-        <li>Status (valp / vuxen / pensionerad / avliden)</li>
-        <li>Registreringsnummer och mankhöjd</li>
-        <li>Hälsoresultat: HD, AD, ögonlysning och DNA-tester</li>
-        <li>Meriter/titlar</li>
-        <li>Stamtavla (kopplingar till far/mor och två generationer bakåt)</li>
-      </ul>
+      <h2>${t('privacyPublicTitle')}</h2>
+      <p>${t('privacyPublicIntro')}</p>
+      <ul>${t('privacyPublicList').map(li=>`<li>${li}</li>`).join('')}</ul>
     </div>
     <div class="privacy-sign private">
-      <h2>🔒 Detta är privat — syns bara för dig</h2>
-      <p>Ingen av dessa uppgifter lämnar någonsin din inloggade vy. De speglas aldrig till den publika sidan.</p>
-      <ul>
-        <li>Chipnummer</li>
-        <li>Anteckningar per hund och vikthistorik</li>
-        <li>Hela hälsojournalen (vaccinationer, veterinärbesök, avmaskning m.m.)</li>
-        <li>Parningsplaner, löpcykler och dräktighetsdata</li>
-        <li>Kullar och valpar (inklusive milstolpar) — valpar blir aldrig publika automatiskt</li>
-        <li>Köpare & CRM — namn, e-post, telefon, boende och kontaktlogg</li>
-        <li>Kalenderhändelser, dokument, kennelns journal, lager och nödkontakter</li>
-        <li>Statistik/instrumentpanel (aggregerade siffror om din verksamhet)</li>
-      </ul>
+      <h2>${t('privacyPrivateTitle')}</h2>
+      <p>${t('privacyPrivateIntro')}</p>
+      <ul>${t('privacyPrivateList').map(li=>`<li>${li}</li>`).join('')}</ul>
     </div>
     <div class="card card-pad" style="font-size:13px; color:var(--ink-soft); line-height:1.6;">
-      <div style="font-weight:700; color:var(--ink); margin-bottom:6px;">Om GDPR</div>
-      <p style="margin:0 0 8px;">GDPR gäller personuppgifter om identifierbara privatpersoner — inte hunddata i sig. Det som faktiskt skulle kunna vara känsligt ur ett GDPR-perspektiv i Breeder Hub är köparnas kontaktuppgifter (namn, e-post, telefon) i Köpare & CRM-modulen, samt eventuella personnamn i dokumentfiler eller journalanteckningar. Dessa delas aldrig till den publika sidan och bör hanteras varsamt: spara inte mer än nödvändigt, radera uppgifter när de inte längre behövs, och var beredd att ta bort en köpares uppgifter om personen begär det.</p>
-      <p style="margin:0;">Chipnummer hålls medvetet privat eftersom det i teorin skulle kunna användas för att slå upp ägaruppgifter i nationella chipregister. Det här är allmän information, inte juridisk rådgivning — rådfråga gärna en jurist om ni vill ha ett fullständigt GDPR-upplägg för er verksamhet.</p>
+      <div style="font-weight:700; color:var(--ink); margin-bottom:6px;">${t('gdprTitle')}</div>
+      <p style="margin:0 0 8px;">${t('gdprText1')}</p>
+      <p style="margin:0;">${t('gdprText2')}</p>
     </div>
   `;
 }
@@ -1778,50 +2380,51 @@ function renderMore(){
   content.innerHTML = `
     <div class="two-col">
       <div>
-        <div class="section-head" style="margin-top:0;"><h2>Kennellager</h2><span class="hint">Foder, tillskott & mediciner</span></div>
-        <div class="table-wrap"><table><thead><tr><th>Artikel</th><th>Antal</th><th></th></tr></thead>
-          <tbody>${DB.inventory.map(i=>`<tr><td>${i.name}</td><td>${i.qty} ${i.unit}</td><td>${i.qty<=i.low?'<span class="badge due">Fyll på</span>':'<span class="badge ok">OK</span>'}</td></tr>`).join('')}</tbody>
+        <div class="section-head" style="margin-top:0;"><h2>${t('kennelInventory')}</h2><span class="hint">${t('kennelInventoryHint')}</span></div>
+        <div class="table-wrap"><table><thead><tr><th>${t('colItem')}</th><th>${t('colQty')}</th><th></th></tr></thead>
+          <tbody>${DB.inventory.map(i=>`<tr><td>${i.name}</td><td>${i.qty} ${i.unit}</td><td>${i.qty<=i.low?`<span class="badge due">${t('restock')}</span>`:`<span class="badge ok">${t('ok')}</span>`}</td></tr>`).join('')}</tbody>
         </table></div>
-        <div class="section-head"><h2>Akutkontakter</h2></div>
+        <div class="section-head"><h2>${t('emergencyContacts')}</h2></div>
         <div class="card card-pad">
           ${DB.contacts.map(c=>`<div class="milestone-row"><div style="flex:1"><div style="font-weight:600; font-size:13px;">${c.name}</div><div style="font-size:12px; color:var(--ink-soft);">${c.role}</div></div><div style="font-weight:600; font-size:13px;">${c.phone}</div></div>`).join('')}
         </div>
       </div>
       <div>
-        <div class="section-head" style="margin-top:0;"><h2>Kennelns journal</h2><span class="hint">Fria anteckningar</span></div>
+        <div class="section-head" style="margin-top:0;"><h2>${t('kennelJournal')}</h2><span class="hint">${t('kennelJournalHint')}</span></div>
         <div class="card card-pad">
-          <div class="field full" style="margin-bottom:8px;"><textarea id="journalInput" placeholder="Skriv dagens anteckning..."></textarea></div>
-          <button class="btn btn-primary btn-sm" id="addJournalBtn">Spara anteckning</button>
+          <div class="field full" style="margin-bottom:8px;"><textarea id="journalInput" placeholder="${t('phTodayNote')}"></textarea></div>
+          <button class="btn btn-primary btn-sm" id="addJournalBtn">${t('saveNote')}</button>
           <div class="timeline" style="margin-top:18px;" id="journalList"></div>
         </div>
-        <div class="section-head"><h2>Meriter & utställningar</h2></div>
+        <div class="section-head"><h2>${t('titlesShows')}</h2></div>
         <div class="card card-pad">
-          ${DB.dogs.filter(d=>d.titles.length).map(d=>`<div style="margin-bottom:8px;"><strong>${d.name}</strong> — ${d.titles.join(', ')}</div>`).join('') || '<div style="color:var(--ink-soft);">Inga meriter registrerade.</div>'}
+          ${DB.dogs.filter(d=>d.titles.length).map(d=>`<div style="margin-bottom:8px;"><strong>${d.name}</strong> — ${d.titles.join(', ')}</div>`).join('') || `<div style="color:var(--ink-soft);">${t('noTitlesReg')}</div>`}
         </div>
       </div>
     </div>
   `;
   function drawJournal(){
     document.getElementById('journalList').innerHTML = DB.journal.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(j=>`
-      <div class="tl-item"><div class="tl-date">${fmtDate(j.date)}</div><div class="tl-desc">${j.text}</div></div>`).join('') || '<div style="color:var(--ink-soft); font-size:13px;">Inga anteckningar ännu.</div>';
+      <div class="tl-item"><div class="tl-date">${fmtDate(j.date)}</div><div class="tl-desc">${j.text}</div></div>`).join('') || `<div style="color:var(--ink-soft); font-size:13px;">${t('noJournalYet')}</div>`;
   }
   document.getElementById('addJournalBtn').addEventListener('click', ()=>{
     const val = document.getElementById('journalInput').value.trim();
     if(!val) return;
     DB.journal.unshift({id:uid('j'), date:new Date().toISOString().slice(0,10), text:val});
-    saveDB(); document.getElementById('journalInput').value=''; drawJournal(); toast('Anteckning sparad');
+    saveDB(); document.getElementById('journalInput').value=''; drawJournal(); toast(t('toastNoteSaved'));
   });
   drawJournal();
 }
 
 /* ---------------- APP-START ----------------
-   Körs sist i skriptet, efter att alla const/funktioner (PAGE_META,
-   content, NAV m.fl.) är initierade. Visar direkt en klickbar
+   Körs sist i skriptet, efter att alla const/funktioner (getPageMeta,
+   content, getNav m.fl.) är initierade. Visar direkt en klickbar
    exempelkennel bakom det flytande inloggningskortet; riktig
    inloggning/registrering (se AUTH-sektionen ovan) byter sedan ut
    detta mot användarens egen (tomma) kennel via bootApp(). */
 startDemo();
 authGate.classList.add('show');
+
 </script>
 </body>
 </html>

@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breeder Hub — Doginary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#FAF6EF; --surface:#FFFFFF; --surface-2:#F3EEE3;
+  --ink:#1C2420; --ink-soft:#54615B;
+  --pine:#22403A; --pine-deep:#122420; --pine-tint:#E7EFEC;
+  --honey:#C08F45; --honey-deep:#A0762F; --honey-tint:#F5E9D4;
+  --line:#E4DDCC; --line-soft:#EEE8DA;
+  --danger:#AF5138; --danger-tint:#F6E4DE;
+  --ok:#4B7A5B; --ok-tint:#E7F0E7;
+  --radius-s:6px; --radius-m:10px; --radius-l:16px;
+  --shadow: 0 1px 2px rgba(28,36,32,.05), 0 8px 24px -12px rgba(28,36,32,.18);
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1A211D; --surface-2:#212823;
+  --ink:#ECE7DA; --ink-soft:#A7B0A9;
+  --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
+  --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
+  --line:#2A322C; --line-soft:#232B26;
+  --danger:#D68266; --danger-tint:#2E211C;
+  --ok:#7FAE8C; --ok-tint:#1B2620;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121815; --surface:#1A211D; --surface-2:#212823;
+    --ink:#ECE7DA; --ink-soft:#A7B0A9;
+    --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
+    --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
+    --line:#2A322C; --line-soft:#232B26;
+    --danger:#D68266; --danger-tint:#2E211C;
+    --ok:#7FAE8C; --ok-tint:#1B2620;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  font-size:14.5px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block;}
+button{font-family:inherit;}
+::selection{background:var(--honey-tint);}
+a{color:inherit;}
+.scroll-x{overflow-x:auto;}
+
+/* ============ LAYOUT ============ */
+.app{display:flex; min-height:100vh;}
+.sidebar{
+  width:250px; flex-shrink:0; background:var(--pine-deep); color:#EDE7D9;
+  display:flex; flex-direction:column; position:fixed; top:0; bottom:0; left:0;
+  transition:transform .25s ease; z-index:40;
+}
+.sidebar-head{padding:22px 20px 14px; border-bottom:1px solid rgba(255,255,255,.08);}
+.wordmark{display:flex; align-items:center; gap:10px;}
+.wordmark img{height:28px; width:auto;}
+.wordmark-fallback{font-family:var(--font-display); font-style:italic; font-size:22px; color:#F3E4C6; font-weight:500;}
+.hub-tag{font-family:var(--font-body); font-size:11px; letter-spacing:.04em; color:#9FB3A9; margin-top:2px;}
+.nav{flex:1; padding:14px 10px; overflow-y:auto;}
+.nav-group-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:#7C9088; padding:14px 12px 6px;}
+.nav-item{
+  display:flex; align-items:center; gap:11px; width:100%; border:none; background:transparent;
+  color:#D8E0D8; padding:9px 12px; border-radius:var(--radius-s); font-size:13.6px; text-align:left;
+  cursor:pointer; margin:1px 0; transition:background .12s ease, color .12s ease;
+}
+.nav-item svg{flex-shrink:0; opacity:.85;}
+.nav-item:hover{background:rgba(255,255,255,.06);}
+.nav-item.active{background:#EDE7D9; color:var(--pine-deep); font-weight:600;}
+.nav-item.active svg{opacity:1;}
+.sidebar-foot{padding:14px 18px 20px; border-top:1px solid rgba(255,255,255,.08); font-size:12px; color:#8CA098;}
+.kennel-name{color:#EDE7D9; font-weight:600; font-size:13px;}
+
+.main{margin-left:250px; flex:1; min-width:0; display:flex; flex-direction:column;}
+.topbar{
+  position:sticky; top:0; z-index:30; background:var(--bg); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:14px 26px; backdrop-filter:blur(6px);
+}
+.menu-btn{display:none; background:none; border:1px solid var(--line); border-radius:var(--radius-s); padding:7px 9px; cursor:pointer; color:var(--ink);}
+.page-title{font-family:var(--font-display); font-size:22px; font-weight:500; flex:1;}
+.page-sub{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+.topbar-actions{display:flex; align-items:center; gap:10px;}
+.icon-btn{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s);
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);
+}
+.icon-btn:hover{border-color:var(--honey);}
+.content{padding:22px 26px 70px; max-width:1280px; width:100%; margin:0 auto;}
+
+/* ============ COMPONENTS ============ */
+.btn{
+  display:inline-flex; align-items:center; gap:7px; border-radius:var(--radius-s); border:1px solid var(--line);
+  background:var(--surface); color:var(--ink); padding:9px 15px; font-size:13.5px; font-weight:600; cursor:pointer;
+  transition:border-color .12s, background .12s;
+}
+.btn:hover{border-color:var(--honey);}
+.btn-primary{background:var(--pine); color:#F4EFE2; border-color:var(--pine);}
+.btn-primary:hover{background:var(--pine-deep);}
+.btn-ghost{border-color:transparent; background:transparent;}
+.btn-ghost:hover{background:var(--surface-2); border-color:transparent;}
+.btn-danger{color:var(--danger); border-color:var(--line);}
+.btn-danger:hover{border-color:var(--danger);}
+.btn-sm{padding:6px 11px; font-size:12.5px;}
+
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-m); box-shadow:var(--shadow);}
+.card-pad{padding:18px 20px;}
+
+.stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:22px;}
+.stat-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-m); padding:17px 18px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.stat-label{font-size:12px; color:var(--ink-soft); display:flex; justify-content:space-between; align-items:center;}
+.stat-value{font-family:var(--font-display); font-size:28px; font-weight:500;}
+.stat-delta{font-size:11.5px; color:var(--ok);}
+.stat-delta.down{color:var(--danger);}
+
+.section-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:30px 0 14px;}
+.section-head:first-child{margin-top:0;}
+.section-head h2{font-family:var(--font-display); font-size:18.5px; font-weight:500; margin:0;}
+.section-head .hint{font-size:12px; color:var(--ink-soft);}
+
+.grid-cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+
+.dog-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-m); overflow:hidden; cursor:pointer;
+  transition:transform .12s ease, border-color .12s ease;
+}
+.dog-card:hover{border-color:var(--honey); transform:translateY(-2px);}
+.dog-photo{height:140px; background:var(--pine-tint); display:flex; align-items:center; justify-content:center; position:relative;}
+.dog-photo svg{width:52px; height:52px; color:var(--pine); opacity:.55;}
+.status-chip{
+  position:absolute; top:10px; right:10px; font-size:10.5px; padding:3px 9px; border-radius:20px; font-weight:600;
+  background:var(--surface); border:1px solid var(--line); letter-spacing:.02em;
+}
+.status-chip.puppy{background:var(--honey-tint); color:var(--honey-deep); border-color:transparent;}
+.status-chip.adult{background:var(--ok-tint); color:var(--ok); border-color:transparent;}
+.status-chip.retired{background:var(--surface-2); color:var(--ink-soft); border-color:transparent;}
+.status-chip.deceased{background:var(--line-soft); color:var(--ink-soft); border-color:transparent;}
+.dog-body{padding:13px 15px 15px;}
+.dog-name{font-family:var(--font-display); font-size:16.5px; font-weight:500;}
+.dog-meta{font-size:12px; color:var(--ink-soft); margin-top:3px;}
+.dog-tags{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+.tag{font-size:10.5px; padding:3px 8px; border-radius:5px; background:var(--surface-2); color:var(--ink-soft);}
+
+.table-wrap{border:1px solid var(--line); border-radius:var(--radius-m); overflow:hidden; background:var(--surface);}
+table{width:100%; border-collapse:collapse; font-size:13.2px;}
+th{
+  text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);
+  padding:11px 14px; background:var(--surface-2); border-bottom:1px solid var(--line); font-weight:600;
+}
+td{padding:11px 14px; border-bottom:1px solid var(--line-soft); vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface-2);}
+.badge{font-size:11px; padding:3px 9px; border-radius:20px; font-weight:600; white-space:nowrap;}
+.badge.ok{background:var(--ok-tint); color:var(--ok);}
+.badge.warn{background:var(--honey-tint); color:var(--honey-deep);}
+.badge.due{background:var(--danger-tint); color:var(--danger);}
+.badge.muted{background:var(--surface-2); color:var(--ink-soft);}
+
+.filter-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:16px;}
+.chip-filter{
+  border:1px solid var(--line); background:var(--surface); border-radius:20px; padding:6px 13px; font-size:12.5px;
+  cursor:pointer; color:var(--ink-soft);
+}
+.chip-filter.active{background:var(--pine); color:#F4EFE2; border-color:var(--pine);}
+.search-box{
+  display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:var(--radius-s);
+  padding:7px 12px; background:var(--surface); min-width:200px; flex:1; max-width:320px;
+}
+.search-box input{border:none; outline:none; background:transparent; font-size:13px; width:100%; color:var(--ink); font-family:inherit;}
+.search-box svg{color:var(--ink-soft); flex-shrink:0;}
+
+/* forms */
+.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px 14px;}
+.field{display:flex; flex-direction:column; gap:5px;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:12px; font-weight:600; color:var(--ink-soft);}
+.field input, .field select, .field textarea{
+  border:1px solid var(--line); border-radius:var(--radius-s); padding:9px 11px; font-size:13.5px;
+  background:var(--surface); color:var(--ink); font-family:inherit; outline:none;
+}
+.field input:focus, .field select:focus, .field textarea:focus{border-color:var(--honey);}
+.field textarea{resize:vertical; min-height:70px;}
+
+/* modal / drawer */
+.overlay{
+  position:fixed; inset:0; background:rgba(15,20,17,.45); z-index:100; display:none;
+  align-items:stretch; justify-content:flex-end;
+}
+.overlay.open{display:flex;}
+
+/* auth gate */
+#authGate{
+  position:fixed; inset:0; z-index:400; background:var(--bg); display:none;
+  align-items:center; justify-content:center; padding:20px;
+}
+#authGate.show{display:flex;}
+.auth-card{
+  width:min(380px,100%); background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-l);
+  padding:32px 28px 26px; box-shadow:var(--shadow);
+}
+.auth-eyebrow{font-size:12px; color:var(--ink-soft); margin:0 0 2px;}
+.auth-title{font-family:var(--font-display); font-size:23px; font-weight:500; margin:0 0 6px;}
+.auth-desc{font-size:13.5px; color:var(--ink-soft); margin:0 0 18px; line-height:1.5;}
+#authForm{display:flex; flex-direction:column; gap:5px;}
+#authForm label{font-size:12px; font-weight:600; color:var(--ink-soft); margin-top:10px;}
+#authForm input{
+  border:1px solid var(--line); border-radius:var(--radius-s); padding:10px 12px; font-size:14px;
+  background:var(--surface-2); color:var(--ink); font-family:inherit; outline:none;
+}
+#authForm input:focus{border-color:var(--honey);}
+#authMessage{min-height:16px; font-size:12.5px; margin:10px 0 0; line-height:1.4;}
+#authMessage.error{color:var(--danger);}
+#authMessage.success{color:var(--ok);}
+#authSubmit{
+  margin-top:16px; width:100%; font-family:inherit; font-size:14.5px; font-weight:600;
+  color:#F4EFE2; background:var(--pine); border:none; border-radius:var(--radius-s); padding:11px; cursor:pointer;
+}
+#authSubmit:hover{background:var(--pine-deep);}
+#authSubmit:disabled{opacity:.6; cursor:default;}
+.auth-switch{margin:12px 0 0; text-align:center; font-size:13px; color:var(--ink-soft);}
+.auth-switch button{font-family:inherit; font-size:13px; color:var(--honey-deep); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline;}
+#authConfigNote{font-size:12.5px; color:var(--ink-soft); line-height:1.5; text-align:center; max-width:340px;}
+#authConfigNote code{background:var(--surface-2); padding:1px 5px; border-radius:4px;}
+.drawer{
+  width:min(560px,94vw); background:var(--bg); height:100%; overflow-y:auto; box-shadow:-14px 0 40px rgba(0,0,0,.2);
+  animation:slideIn .2s ease;
+}
+@keyframes slideIn{from{transform:translateX(24px); opacity:.4;} to{transform:translateX(0); opacity:1;}}
+.drawer-head{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:20px 24px;
+  border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:2;
+}
+.drawer-title{font-family:var(--font-display); font-size:21px; font-weight:500;}
+.drawer-body{padding:20px 24px 40px;}
+.close-x{background:none; border:none; cursor:pointer; color:var(--ink-soft); padding:4px;}
+.close-x:hover{color:var(--ink);}
+
+.tabs{display:flex; gap:4px; border-bottom:1px solid var(--line); margin-bottom:16px; overflow-x:auto;}
+.tab-btn{
+  background:none; border:none; padding:9px 4px; margin-right:16px; font-size:13px; color:var(--ink-soft);
+  border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; font-weight:600;
+}
+.tab-btn.active{color:var(--pine); border-color:var(--honey);}
+:root[data-theme="dark"] .tab-btn.active{color:var(--honey);}
+
+.timeline{position:relative; padding-left:22px;}
+.timeline::before{content:"";position:absolute; left:5px; top:4px; bottom:4px; width:1.5px; background:var(--line);}
+.tl-item{position:relative; padding-bottom:20px;}
+.tl-item::before{content:""; position:absolute; left:-22px; top:3px; width:9px; height:9px; border-radius:50%; background:var(--honey); border:2px solid var(--bg);}
+.tl-date{font-size:11px; color:var(--ink-soft); font-weight:600;}
+.tl-title{font-size:13.6px; font-weight:600; margin-top:1px;}
+.tl-desc{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+
+.empty{
+  text-align:center; padding:50px 20px; color:var(--ink-soft); border:1.5px dashed var(--line); border-radius:var(--radius-m);
+}
+.empty svg{width:34px;height:34px;margin-bottom:10px;opacity:.5;}
+
+/* pedigree tree */
+.pedigree-tree{display:flex; align-items:stretch; gap:0; overflow-x:auto; padding:10px 4px 20px;}
+.ped-col{display:flex; flex-direction:column; justify-content:space-around; gap:10px; padding:0 10px; position:relative;}
+.ped-node{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s); padding:9px 12px;
+  min-width:150px; font-size:12px;
+}
+.ped-node.self{border-color:var(--honey); background:var(--honey-tint); min-width:170px;}
+.ped-node .n{font-weight:700; font-size:13px;}
+.ped-node .m{color:var(--ink-soft); font-size:11px; margin-top:2px;}
+.ped-node .scores{display:flex; gap:5px; margin-top:5px; flex-wrap:wrap;}
+
+/* calendar */
+.cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius-m); overflow:hidden;}
+.cal-dow{background:var(--surface-2); padding:7px; font-size:10.5px; text-align:center; font-weight:700; color:var(--ink-soft); text-transform:uppercase;}
+.cal-day{background:var(--surface); min-height:82px; padding:6px; font-size:11.5px; position:relative;}
+.cal-day.other{opacity:.35;}
+.cal-day.today{background:var(--honey-tint);}
+.cal-num{font-weight:700; font-size:12px;}
+.cal-ev{font-size:10px; background:var(--pine-tint); color:var(--pine); border-radius:4px; padding:2px 5px; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+:root[data-theme="dark"] .cal-ev{color:var(--pine);}
+
+.toast{
+  position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--pine-deep); color:#F0EAD9;
+  padding:11px 20px; border-radius:var(--radius-s); font-size:13px; box-shadow:var(--shadow); opacity:0; pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease; z-index:200;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+.two-col{display:grid; grid-template-columns:1.3fr 1fr; gap:20px;}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+.progress-track{height:6px; border-radius:6px; background:var(--surface-2); overflow:hidden;}
+.progress-fill{height:100%; background:var(--honey);}
+
+.page{display:none;}
+.page.active{display:block; animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+.milestone-row{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line-soft);}
+.milestone-row:last-child{border-bottom:none;}
+.milestone-check{
+  width:20px; height:20px; border-radius:50%; border:1.5px solid var(--line); flex-shrink:0; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.milestone-check.done{background:var(--ok); border-color:var(--ok); color:#fff;}
+.milestone-label{flex:1; font-size:13px;}
+.milestone-label.done{text-decoration:line-through; color:var(--ink-soft);}
+.milestone-date{font-size:11px; color:var(--ink-soft);}
+
+.avatar-circle{
+  width:40px; height:40px; border-radius:50%; background:var(--pine-tint); color:var(--pine); display:flex;
+  align-items:center; justify-content:center; font-family:var(--font-display); font-weight:600; font-size:15px; flex-shrink:0;
+}
+
+@media(max-width:980px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .menu-btn{display:flex;}
+  .content{padding:18px 16px 60px;}
+  .form-grid{grid-template-columns:1fr;}
+  .two-col{grid-template-columns:1fr;}
+}
+@media print{
+  .sidebar,.topbar,.overlay,.btn{display:none !important;}
+  .main{margin-left:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="wordmark">
+        <img src="assets/title-doginary.png" alt="Doginary" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span class="wordmark-fallback" style="display:none;">Doginary</span>
+      </div>
+      <div class="hub-tag">BREEDER HUB</div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sidebar-foot">
+      <div class="kennel-name" id="kennelNameLabel">Kennel von Bella</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <span>Uppfödaröversikt</span>
+        <button id="logoutBtn" style="background:none; border:none; color:#9FB3A9; cursor:pointer; font-size:12px; text-decoration:underline; padding:0;">Logga ut</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Meny">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <div class="page-title" id="pageTitle">Översikt</div>
+        <div class="page-sub" id="pageSub">Välkommen tillbaka</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="printBtn" title="Exportera till PDF">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
+        </button>
+        <button class="icon-btn" id="themeBtn" title="Byt tema">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div id="authGate">
+  <div class="auth-card" id="authCard">
+    <div class="auth-eyebrow">BREEDER HUB</div>
+    <div class="auth-title" id="authTitle">Logga in</div>
+    <p class="auth-desc" id="authDesc">Logga in för att komma åt din kennels hundregister, hälsojournal och kalender.</p>
+    <form id="authForm">
+      <label>E-post</label><input type="email" name="email" required autocomplete="username">
+      <label>Lösenord</label><input type="password" name="password" required autocomplete="current-password" minlength="6">
+      <div id="authMessage"></div>
+      <button type="submit" id="authSubmit">Logga in</button>
+    </form>
+    <div class="auth-switch">
+      <span id="authSwitchText">Inget konto än?</span> <button type="button" id="authSwitchBtn">Skapa konto</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="drawer" id="drawer"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   BREEDER HUB — kräver inloggning (Supabase Auth). Varje konto får
+   en egen kennel; all data lagras i kennel_data (privat) och en
+   säker delmängd speglas till kennel_public (används av den publika
+   hundsidan). Se breeder-hub-schema-consolidated.sql för databasen.
+   ============================================================ */
+
+const ICONS = {
+  dashboard:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  dogs:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/><circle cx="9.5" cy="14" r=".6" fill="currentColor"/><circle cx="14.5" cy="14" r=".6" fill="currentColor"/></svg>',
+  health:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/><path d="M9 12h2l1-2 2 4 1-2h2"/></svg>',
+  breeding:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="5"/><path d="M9 14v7M6 18h6M17.5 3.5l3 3M20.5 3.5l-3 3M19 6v3"/></svg>',
+  litters:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="16" r="3"/><circle cx="17" cy="16" r="3"/><circle cx="12" cy="8" r="3.2"/></svg>',
+  pedigree:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="5" r="2.3"/><circle cx="5" cy="19" r="2.3"/><circle cx="19" cy="12" r="2.3"/><path d="M7 5h5a2 2 0 0 1 2 2v3M7 19h5a2 2 0 0 0 2-2v-3M14 12h3"/></svg>',
+  buyers:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>',
+  matching:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+  calendar:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>',
+  documents:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+  analytics:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>',
+  more:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+};
+
+const NAV = [
+  {group:'Översikt', items:[
+    {id:'dashboard', label:'Instrumentpanel', icon:'dashboard'},
+    {id:'analytics', label:'Statistik', icon:'analytics'},
+  ]},
+  {group:'Hundar', items:[
+    {id:'dogs', label:'Hundregister', icon:'dogs'},
+    {id:'health', label:'Hälsojournal', icon:'health'},
+    {id:'pedigree', label:'Stamtavla', icon:'pedigree'},
+  ]},
+  {group:'Avel', items:[
+    {id:'breeding', label:'Parningsplaner', icon:'breeding'},
+    {id:'litters', label:'Kullar', icon:'litters'},
+    {id:'matching', label:'Valpmatchning', icon:'matching'},
+  ]},
+  {group:'Kunder', items:[
+    {id:'buyers', label:'Köpare & CRM', icon:'buyers'},
+  ]},
+  {group:'Administration', items:[
+    {id:'calendar', label:'Kalender', icon:'calendar'},
+    {id:'documents', label:'Dokument', icon:'documents'},
+    {id:'more', label:'Kennelverktyg', icon:'more'},
+  ]},
+];
+
+/* ---------------- STORE ---------------- */
+/* ==== SUPABASE CONFIG — fyll i dina egna värden från Supabase-projektets Settings > API ==== */
+const SUPABASE_URL = 'https://jjbziqsjapyiihdrlnsw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnppcXNqYXB5aWloZHJsbnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2ODkxMTgsImV4cCI6MjEwNDI2NTExOH0.MEzM2wN8eENlVBAsN-I6hhIYFnF53avdFacfbNwCBBw';
+const sb = (SUPABASE_URL.includes('DITT-PROJEKT') || !window.supabase)
+  ? null
+  : window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let cloudEnabled = !!sb;
+let DB = null;
+let KENNEL_ID = null;
+
+/* ---------------- AUTH ---------------- */
+let authMode = 'signin'; // or 'signup'
+const authGate = document.getElementById('authGate');
+const authForm = document.getElementById('authForm');
+const authMsg = document.getElementById('authMessage');
+const authSubmit = document.getElementById('authSubmit');
+
+function setAuthMode(mode){
+  authMode = mode;
+  document.getElementById('authTitle').textContent = mode==='signin' ? 'Logga in' : 'Skapa konto';
+  document.getElementById('authDesc').textContent = mode==='signin'
+    ? 'Logga in för att komma åt din kennels hundregister, hälsojournal och kalender.'
+    : 'Skapa ett konto så får du en egen kennel att fylla med hundar, hälsodata och mer.';
+  authSubmit.textContent = mode==='signin' ? 'Logga in' : 'Skapa konto';
+  document.getElementById('authSwitchText').textContent = mode==='signin' ? 'Inget konto än?' : 'Har du redan ett konto?';
+  document.getElementById('authSwitchBtn').textContent = mode==='signin' ? 'Skapa konto' : 'Logga in';
+  authMsg.textContent = ''; authMsg.className = '';
+}
+document.getElementById('authSwitchBtn').addEventListener('click', ()=> setAuthMode(authMode==='signin' ? 'signup' : 'signin'));
+
+authForm.addEventListener('submit', async e=>{
+  e.preventDefault();
+  const f = new FormData(authForm);
+  const email = f.get('email'), password = f.get('password');
+  authSubmit.disabled = true; authMsg.textContent = ''; authMsg.className = '';
+  try{
+    if(authMode==='signin'){
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      // onAuthStateChange tar hand om resten (döljer gate, laddar kenneln)
+    } else {
+      const { data, error } = await sb.auth.signUp({ email, password });
+      if(error) throw error;
+      if(!data.session){
+        authMsg.textContent = 'Konto skapat! Kolla din e-post för att bekräfta adressen innan du loggar in.';
+        authMsg.className = 'success';
+      }
+    }
+  }catch(err){
+    authMsg.textContent = translateAuthError(err.message);
+    authMsg.className = 'error';
+  }finally{
+    authSubmit.disabled = false;
+  }
+});
+function translateAuthError(msg){
+  if(/invalid login credentials/i.test(msg)) return 'Fel e-post eller lösenord.';
+  if(/already registered/i.test(msg)) return 'Det finns redan ett konto med den e-postadressen — logga in istället.';
+  if(/password should be at least/i.test(msg)) return 'Lösenordet måste vara minst 6 tecken.';
+  return msg;
+}
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+  if(cloudEnabled) await sb.auth.signOut();
+  location.reload();
+});
+
+// Slår upp (eller, som reservlösning om signup-triggern i databasen av
+// någon anledning inte kört, skapar) den kennel som den inloggade
+// användaren tillhör. Normalt sköts detta av handle_new_kennel_user()
+// -triggern i SQL-schemat direkt vid registrering.
+async function getOrCreateKennelId(userId){
+  const { data: membership, error } = await sb.from('bh_kennel_members').select('kennel_id').eq('user_id', userId).limit(1).maybeSingle();
+  if(error) throw error;
+  if(membership) return membership.kennel_id;
+  const { data: kennel, error: kErr } = await sb.from('bh_kennels').insert({ owner_id:userId, name:'Min kennel' }).select().single();
+  if(kErr) throw kErr;
+  await sb.from('bh_kennel_members').insert({ kennel_id:kennel.id, user_id:userId, role:'owner' });
+  return kennel.id;
+}
+
+async function bootApp(){
+  content.innerHTML = '<div class="empty">Laddar kenneldata…</div>';
+  DB = await loadDB();
+  document.getElementById('kennelNameLabel').textContent = DB.kennelName;
+  PAGE_META.dashboard.sub = 'Välkommen tillbaka till ' + DB.kennelName;
+  goTo('dashboard');
+}
+
+if(cloudEnabled){
+  sb.auth.onAuthStateChange(async (event, session)=>{
+    if(session){
+      authGate.classList.remove('show');
+      try{
+        KENNEL_ID = await getOrCreateKennelId(session.user.id);
+        await bootApp();
+      }catch(e){
+        console.error('Kunde inte slå upp kennel', e);
+        authGate.classList.add('show');
+        authMsg.textContent = 'Kunde inte ladda din kennel. Kontrollera att SQL-schemat är kört i Supabase.';
+        authMsg.className = 'error';
+      }
+    } else {
+      KENNEL_ID = null; DB = null;
+      setAuthMode('signin');
+      authGate.classList.add('show');
+    }
+  });
+} else {
+  authGate.classList.add('show');
+  document.getElementById('authCard').innerHTML = `
+    <div class="auth-eyebrow">BREEDER HUB</div>
+    <div class="auth-title">Inte konfigurerad än</div>
+    <div id="authConfigNote">
+      Den här dashboarden är inte kopplad till någon databas ännu.<br><br>
+      Kör <code>breeder-hub-schema-consolidated.sql</code> i ditt Supabase-projekts SQL Editor, fyll sedan i
+      <code>SUPABASE_URL</code> och <code>SUPABASE_ANON_KEY</code> högst upp i den här filens skript-tagg.
+    </div>
+  `;
+}
+
+function seed(){
+  const dogs = [
+    {id:'d1', name:'Bella', regName:'Doginary\'s Northern Star', callName:'Bella', breed:'Golden Retriever', sex:'Tik', dob:'2021-03-14', color:'Gyllene', chip:'752098100234561', reg:'SKK SE12345/2021', status:'adult', weightLog:[{d:'2021-06-01',kg:8.2},{d:'2022-01-01',kg:24.5},{d:'2024-01-01',kg:29.1}], height:56, notes:'Lugnt temperament, utmärkt med valpar. Höftröntgen A, armbåge 0.', hips:'A', elbows:'0', eyes:'Ua (2024)', dna:'Klar (PRA, ICT)', sire:'d3', dam:'d4', titles:['SE UCH','SE VCH']},
+    {id:'d2', name:'Zeus', regName:'Nordheim\'s Zeus', callName:'Zeus', breed:'Golden Retriever', sex:'Hane', dob:'2020-07-02', color:'Ljust gyllene', chip:'752098100234562', reg:'SKK SE45210/2020', status:'adult', weightLog:[{d:'2023-01-01',kg:33.4}], height:60, notes:'Avelshane, mycket god exteriör.', hips:'A', elbows:'0', eyes:'Ua (2023)', dna:'Klar', titles:['SE UCH']},
+    {id:'d3', name:'Nova', regName:'Sunfield\'s Nova', callName:'Nova', breed:'Golden Retriever', sex:'Tik', dob:'2017-05-09', color:'Gyllene', chip:'752098100234559', reg:'SKK SE22190/2017', status:'retired', weightLog:[], height:55, notes:'Pensionerad avelstik, Bellas mamma.', hips:'B', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH','NORD UCH']},
+    {id:'d4', name:'Thor', regName:'Nordheim\'s Thor', callName:'Thor', breed:'Golden Retriever', sex:'Hane', dob:'2016-02-20', color:'Mörkt gyllene', chip:'752098100234500', reg:'SKK SE10021/2016', status:'deceased', weightLog:[], height:61, notes:'Bellas far, avled 2023.', hips:'A', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH']},
+    {id:'d5', name:'Freja', regName:'Doginary\'s Spring Freja', callName:'Freja', breed:'Golden Retriever', sex:'Tik', dob:'2025-05-02', color:'Gyllene', chip:'752098100234580', reg:'—', status:'puppy', weightLog:[{d:'2025-05-02',kg:0.45},{d:'2025-05-16',kg:1.3},{d:'2025-06-01',kg:2.6}], height:0, notes:'Från Bella x Zeus-kullen, reserverad.', hips:'', elbows:'', eyes:'', dna:'', titles:[]},
+  ];
+  const health = [
+    {id:'h1', dogId:'d1', type:'Vaccination', date:'2025-08-01', due:'2026-08-01', detail:'Kombinationsvaccin DHPPi+L', status:'ok'},
+    {id:'h2', dogId:'d1', type:'Veterinärbesök', date:'2025-06-12', due:'', detail:'Allmän hälsokontroll inför parning', status:'ok'},
+    {id:'h3', dogId:'d1', type:'Höftröntgen', date:'2023-03-02', due:'', detail:'Resultat: A/A', status:'ok'},
+    {id:'h4', dogId:'d2', type:'Tandkontroll', date:'2025-09-01', due:'2026-03-01', detail:'Mild tandsten, borttagen', status:'ok'},
+    {id:'h5', dogId:'d2', type:'DNA-test', date:'2024-01-10', due:'', detail:'PRA, ICT — friskförklarad', status:'ok'},
+    {id:'h6', dogId:'d5', type:'Avmaskning', date:'2025-09-05', due:'2025-10-05', detail:'Puppy-serie, dos 2 av 4', status:'due'},
+    {id:'h7', dogId:'d1', type:'Ögonlysning', date:'2024-11-01', due:'2026-11-01', detail:'Utan anmärkning', status:'ok'},
+    {id:'h8', dogId:'d3', type:'Försäkring', date:'2025-01-01', due:'2026-01-01', detail:'Agria Liv & Veterinärvård, förnyas årligen', status:'ok'},
+  ];
+  const breedings = [
+    {id:'b1', dam:'d1', sire:'d2', matingDate:'2025-03-10', dueDate:'2025-05-12', confirmed:true, ultrasound:'Bekräftad dräktighet, ca 6 valpar (dag 28)', expectedCount:6, notes:'Naturlig parning, dag 11 och 13.'},
+    {id:'b2', dam:'d1', sire:'d2', matingDate:'2027-01-15', dueDate:'', confirmed:false, ultrasound:'', expectedCount:0, notes:'Planerad nästa löp, väntar på hälsoresultat.'},
+  ];
+  const litters = [
+    {id:'l1', name:'S-kullen', breedingId:'b1', dam:'d1', sire:'d2', birthDate:'2025-05-14', puppies:[
+        {id:'p1', name:'Freja', sex:'Tik', color:'Gyllene', birthWeight:0.42, status:'reserverad'},
+        {id:'p2', name:'Sigge', sex:'Hane', color:'Gyllene', birthWeight:0.48, status:'tillgänglig'},
+        {id:'p3', name:'Saga', sex:'Tik', color:'Ljust gyllene', birthWeight:0.39, status:'såld'},
+        {id:'p4', name:'Simba', sex:'Hane', color:'Mörkt gyllene', birthWeight:0.51, status:'tillgänglig'},
+        {id:'p5', name:'Sally', sex:'Tik', color:'Gyllene', birthWeight:0.44, status:'reserverad'},
+      ],
+      milestones:[
+        {label:'Ögon öppnade', done:true, date:'2025-05-25'},
+        {label:'Första fasta födan', done:true, date:'2025-06-05'},
+        {label:'Första promenad', done:true, date:'2025-06-10'},
+        {label:'Första veterinärbesök', done:true, date:'2025-06-15'},
+        {label:'Första vaccination', done:false, date:''},
+        {label:'Klara för nytt hem', done:false, date:''},
+      ]
+    }
+  ];
+  const buyers = [
+    {id:'bu1', name:'Anna & Erik Lindqvist', email:'anna.lindqvist@mail.com', phone:'070-123 45 67', country:'Sverige', housing:'Villa med trädgård', activity:'Hög — aktiv familj, löpning', prevDog:'Ja, labrador i barndomen', preferred:'Hane, lugnt temperament', status:'reserved', puppyId:'p2', log:[
+      {date:'2025-06-01', note:'Första kontakt via formulär på hemsidan.'},
+      {date:'2025-06-20', note:'Hembesök genomfört, mycket lämpligt hem.'},
+      {date:'2025-07-15', note:'Reserverat Sigge, handpenning mottagen.'}
+    ]},
+    {id:'bu2', name:'Familjen Berg', email:'berg.family@mail.com', phone:'073-987 65 43', country:'Sverige', housing:'Lägenhet med närhet till skog', activity:'Medel', prevDog:'Nej, första hunden', preferred:'Tik, familjevänlig', status:'waiting', puppyId:'', log:[
+      {date:'2025-07-02', note:'Intresseanmälan, önskar tik från nästa kull.'}
+    ]},
+    {id:'bu3', name:'Malin Ohlsson', email:'malin.o@mail.com', phone:'076-555 22 11', country:'Sverige', housing:'Radhus', activity:'Hög — planerar bruksträning', prevDog:'Ja, tidigare golden', preferred:'Hane med driv', status:'approved', puppyId:'p4', log:[
+      {date:'2025-06-10', note:'Ansökan godkänd efter referenskontroll.'}
+    ]},
+    {id:'bu4', name:'Johan Petersson', email:'johan.p@mail.com', phone:'070-333 44 55', country:'Norge', housing:'Gård', activity:'Hög', prevDog:'Ja, flera goldens', preferred:'Öppen för båda könen', status:'new', puppyId:'', log:[
+      {date:'2025-09-01', note:'Ny förfrågan via Instagram.'}
+    ]},
+    {id:'bu5', name:'Sara Nilsson', email:'sara.n@mail.com', phone:'072-111 22 33', country:'Sverige', housing:'Villa', activity:'Låg-medel', prevDog:'Nej', preferred:'Lugn tik', status:'rejected', puppyId:'', log:[
+      {date:'2025-05-01', note:'Boende bedömdes ej lämpligt just nu — rekommenderad återkomst senare.'}
+    ]},
+  ];
+  const events = [
+    {id:'e1', date:'2025-09-20', title:'Vaccination — Freja (dos 2)', type:'health'},
+    {id:'e2', date:'2025-09-25', title:'Veterinärbesök — Zeus', type:'health'},
+    {id:'e3', date:'2025-10-02', title:'Bellas födelsedag', type:'birthday'},
+    {id:'e4', date:'2025-10-05', title:'Valphämtning — Sigge (Lindqvist)', type:'pickup'},
+    {id:'e5', date:'2025-09-30', title:'Höftröntgen — Nova, kontroll', type:'health'},
+    {id:'e6', date:'2025-10-10', title:'Löp förväntad — Bella', type:'breeding'},
+  ];
+  const documents = [
+    {id:'doc1', name:'Köpekontrakt — Sigge (Lindqvist).pdf', type:'Köpeavtal', date:'2025-07-15', relatedTo:'Sigge / Lindqvist'},
+    {id:'doc2', name:'Höftröntgen Bella 2023.pdf', type:'Hälsointyg', date:'2023-03-05', relatedTo:'Bella'},
+    {id:'doc3', name:'Stamtavla Zeus.pdf', type:'Stamtavla', date:'2020-09-01', relatedTo:'Zeus'},
+    {id:'doc4', name:'Vaccinationsintyg S-kullen.pdf', type:'Vaccinationsintyg', date:'2025-06-15', relatedTo:'S-kullen'},
+  ];
+  const journal = [
+    {id:'j1', date:'2025-09-10', text:'Bella visar tidiga tecken på kommande löp — extra uppmärksamhet nästa två veckor.'},
+    {id:'j2', date:'2025-08-28', text:'S-kullens valpar utvecklas fint, alla över förväntad tillväxtkurva.'},
+  ];
+  const inventory = [
+    {id:'i1', name:'Valpfoder Royal Canin Starter', qty:8, unit:'kg', low:5},
+    {id:'i2', name:'Avmaskningsmedel (Drontal)', qty:3, unit:'förp.', low:2},
+    {id:'i3', name:'Vitamintillskott laxolja', qty:2, unit:'flaskor', low:2},
+    {id:'i4', name:'Vuxenfoder Golden Retriever', qty:14, unit:'kg', low:6},
+  ];
+  const contacts = [
+    {id:'c1', name:'Djurkliniken Nordost', role:'Veterinär (ordinarie)', phone:'08-555 000 11'},
+    {id:'c2', name:'AniCura Jourklinik', role:'Akutjour, dygnet runt', phone:'08-555 999 22'},
+    {id:'c3', name:'Giftinformationscentralen', role:'Förgiftning — djur', phone:'112 (be om GIC)'},
+  ];
+  return {dogs, health, breedings, litters, buyers, events, documents, journal, inventory, contacts, kennelName:'Kennel von Bella', theme:null};
+}
+
+async function loadDB(){
+  try{
+    const { data, error } = await sb.from('bh_kennel_data').select('data').eq('kennel_id', KENNEL_ID).maybeSingle();
+    if(error) throw error;
+    if(data && data.data && Object.keys(data.data).length) return data.data;
+    // Tom rad (t.ex. precis skapad av signup-triggern) — seeda med startdata.
+    const fresh = seed();
+    await sb.from('bh_kennel_data').upsert({kennel_id:KENNEL_ID, data: fresh, updated_at:new Date().toISOString()});
+    await savePublicSnapshot(fresh);
+    return fresh;
+  }catch(e){
+    console.error('Kunde inte läsa kenneldata från Supabase', e);
+    toast('Kunde inte hämta din kenneldata från molnet');
+    return seed();
+  }
+}
+async function saveDB(){
+  try{
+    const { error } = await sb.from('bh_kennel_data').upsert({kennel_id:KENNEL_ID, data: DB, updated_at:new Date().toISOString()});
+    if(error) throw error;
+    await savePublicSnapshot(DB);
+  }catch(e){
+    console.error('Kunde inte spara till Supabase', e);
+    toast('Kunde inte spara ändringen till molnet — försök igen');
+  }
+}
+// Speglar bara det som ska synas på den publika sidan (inga köpare,
+// dokument, journal eller andra privata anteckningar) till kennel_public,
+// som har en RLS-policy som tillåter alla att läsa den utan inloggning.
+async function savePublicSnapshot(db){
+  const publicDogs = (db.dogs||[]).map(d=>({
+    id:d.id, name:d.name, regName:d.regName, callName:d.callName, breed:d.breed, sex:d.sex,
+    dob:d.dob, color:d.color, reg:d.reg, status:d.status, height:d.height,
+    hips:d.hips, elbows:d.elbows, eyes:d.eyes, dna:d.dna, titles:d.titles, sire:d.sire, dam:d.dam
+  }));
+  try{
+    await sb.from('bh_kennel_public').upsert({
+      kennel_id:KENNEL_ID,
+      data:{ kennelName: db.kennelName, dogs: publicDogs },
+      updated_at:new Date().toISOString()
+    });
+  }catch(e){ console.error('Kunde inte uppdatera den publika sidans data', e); }
+}
+
+/* ---------------- HELPERS ---------------- */
+function uid(p){ return p + Math.random().toString(36).slice(2,8); }
+function fmtDate(s){ if(!s) return '—'; const d = new Date(s+'T00:00:00'); if(isNaN(d)) return s; return d.toLocaleDateString('sv-SE',{day:'numeric',month:'short',year:'numeric'}); }
+function ageFromDob(dob){
+  const d = new Date(dob+'T00:00:00'); const now = new Date();
+  let months = (now.getFullYear()-d.getFullYear())*12 + (now.getMonth()-d.getMonth());
+  if(months < 1){ const days = Math.round((now-d)/86400000); return days + ' dagar'; }
+  if(months < 24) return months + ' mån';
+  return (months/12).toFixed(1).replace('.0','') + ' år';
+}
+function dogById(id){ return DB.dogs.find(d=>d.id===id); }
+function statusLabel(s){ return {puppy:'Valp', adult:'Vuxen', retired:'Pensionerad', deceased:'Avliden'}[s] || s; }
+function buyerStatusLabel(s){ return {new:'Ny förfrågan', waiting:'Väntelista', approved:'Godkänd', reserved:'Reserverad', sold:'Såld', rejected:'Avböjd'}[s] || s; }
+function toast(msg){
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function openDrawer(html){
+  document.getElementById('drawer').innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+}
+function closeDrawer(){ document.getElementById('overlay').classList.remove('open'); }
+document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') closeDrawer(); });
+
+/* ---------------- NAV / ROUTER ---------------- */
+let currentPage = 'dashboard';
+const PAGE_META = {
+  dashboard:{title:'Översikt', sub:'Välkommen tillbaka'},
+  analytics:{title:'Statistik', sub:'Nyckeltal för din uppfödning'},
+  dogs:{title:'Hundregister', sub:'Alla hundar i din kennel'},
+  health:{title:'Hälsojournal', sub:'Vaccinationer, veterinärbesök och tester'},
+  pedigree:{title:'Stamtavla', sub:'Interaktivt släktträd'},
+  breeding:{title:'Parningsplaner', sub:'Planerade och genomförda parningar'},
+  litters:{title:'Kullar', sub:'Valpar, tillväxt och milstolpar'},
+  matching:{title:'Valpmatchning', sub:'Matcha valpar med rätt familj'},
+  buyers:{title:'Köpare & CRM', sub:'Intressenter och köpprocess'},
+  calendar:{title:'Kalender', sub:'Alla viktiga datum på ett ställe'},
+  documents:{title:'Dokument', sub:'Kontrakt, intyg och certifikat'},
+  more:{title:'Kennelverktyg', sub:'Löpcykel, lager, journal & mer'},
+};
+
+function renderNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = NAV.map(g=>`
+    <div class="nav-group-label">${g.group}</div>
+    ${g.items.map(it=>`<button class="nav-item ${it.id===currentPage?'active':''}" data-page="${it.id}">${ICONS[it.icon]}<span>${it.label}</span></button>`).join('')}
+  `).join('');
+  nav.querySelectorAll('.nav-item').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ goTo(btn.dataset.page); if(window.innerWidth<=980) document.getElementById('sidebar').classList.remove('open'); });
+  });
+}
+function goTo(page){
+  currentPage = page;
+  document.getElementById('pageTitle').textContent = PAGE_META[page].title;
+  document.getElementById('pageSub').textContent = PAGE_META[page].sub;
+  renderNav();
+  renderPage(page);
+}
+
+document.getElementById('menuBtn').addEventListener('click', ()=> document.getElementById('sidebar').classList.toggle('open'));
+document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  const root = document.documentElement;
+  const cur = root.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  try{ localStorage.setItem('breederhub_theme', next); }catch(e){}
+});
+(function initTheme(){
+  try{ const saved = localStorage.getItem('breederhub_theme'); if(saved) document.documentElement.setAttribute('data-theme', saved); }catch(e){}
+})();
+
+/* ---------------- PAGE RENDERERS ---------------- */
+const content = document.getElementById('content');
+
+function renderPage(page){
+  content.innerHTML = '';
+  const fns = {dashboard:renderDashboard, analytics:renderAnalytics, dogs:renderDogs, health:renderHealth,
+    pedigree:renderPedigree, breeding:renderBreeding, litters:renderLitters, matching:renderMatching,
+    buyers:renderBuyers, calendar:renderCalendar, documents:renderDocuments, more:renderMore};
+  fns[page]();
+}
+
+/* ---- DASHBOARD ---- */
+function renderDashboard(){
+  const active = DB.dogs.filter(d=>d.status==='adult'||d.status==='puppy').length;
+  const retired = DB.dogs.filter(d=>d.status==='retired').length;
+  const littersThisYear = DB.litters.filter(l=> new Date(l.birthDate).getFullYear() === new Date().getFullYear()).length;
+  const puppiesSold = DB.litters.flatMap(l=>l.puppies).filter(p=>p.status==='såld').length;
+  const upcomingEvents = [...DB.events].filter(e=> new Date(e.date) >= stripTime(new Date())).sort((a,b)=> new Date(a.date)-new Date(b.date)).slice(0,6);
+  const dueHealth = DB.health.filter(h=>h.status==='due');
+
+  content.innerHTML = `
+    <div class="stat-grid">
+      ${statCard('Aktiva hundar', active, 'I avel eller uppväxt')}
+      ${statCard('Pensionerade', retired, 'Avslutad avelskarriär')}
+      ${statCard('Kullar i år', littersThisYear, new Date().getFullYear())}
+      ${statCard('Valpar sålda', puppiesSold, 'Totalt genom kenneln')}
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="section-head"><h2>Kommande händelser</h2><span class="hint">Nästa 30 dagarna</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Datum</th><th>Händelse</th><th>Typ</th></tr></thead>
+            <tbody>
+              ${upcomingEvents.map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${e.title}</td><td>${eventTypeBadge(e.type)}</td></tr>`).join('') || emptyRow(3)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="section-head"><h2>Behöver uppmärksamhas</h2><span class="hint">${dueHealth.length} st</span></div>
+        <div class="card card-pad">
+          ${dueHealth.length ? dueHealth.map(h=>{
+            const dog = dogById(h.dogId);
+            return `<div class="milestone-row"><div class="avatar-circle">${(dog?dog.name:'?')[0]}</div>
+              <div style="flex:1"><div style="font-weight:600;font-size:13px;">${h.type} — ${dog?dog.name:'Okänd'}</div>
+              <div style="font-size:12px;color:var(--ink-soft);">Förfaller ${fmtDate(h.due)} · ${h.detail}</div></div></div>`;
+          }).join('') : `<div style="color:var(--ink-soft);font-size:13px;">Inget akut just nu — bra jobbat!</div>`}
+        </div>
+        <div class="section-head"><h2>Kennelanteckning</h2></div>
+        <div class="card card-pad">
+          <div style="font-size:12px;color:var(--ink-soft);margin-bottom:4px;">${fmtDate(DB.journal[0]?.date)}</div>
+          <div style="font-size:13.5px;">${DB.journal[0]?.text || 'Inga anteckningar än.'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function stripTime(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+function statCard(label, value, delta){
+  return `<div class="stat-card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div><div class="stat-delta">${delta}</div></div>`;
+}
+function eventTypeBadge(t){
+  const map = {health:['Hälsa','warn'], birthday:['Födelsedag','ok'], pickup:['Hämtning','ok'], breeding:['Avel','muted']};
+  const [label,cls] = map[t] || [t,'muted'];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+function emptyRow(colspan){ return `<tr><td colspan="${colspan}" style="text-align:center;color:var(--ink-soft);padding:22px;">Inget att visa</td></tr>`; }
+
+/* ---- ANALYTICS ---- */
+let charts = {};
+function renderAnalytics(){
+  const monthly = {};
+  DB.litters.flatMap(l=>l.puppies.map(p=>({...p, birthDate:l.birthDate}))).forEach(p=>{
+    if(p.status==='såld'){ const m = p.birthDate.slice(0,7); monthly[m] = (monthly[m]||0)+1; }
+  });
+  const statusCounts = {puppy:0,adult:0,retired:0,deceased:0};
+  DB.dogs.forEach(d=> statusCounts[d.status]++ );
+  const revenueEstimate = DB.litters.flatMap(l=>l.puppies).filter(p=>p.status==='såld'||p.status==='reserverad').length * 18000;
+
+  content.innerHTML = `
+    <div class="stat-grid">
+      ${statCard('Uppskattad intäkt', revenueEstimate.toLocaleString('sv-SE')+' kr', 'Sålda + reserverade valpar')}
+      ${statCard('Snittkullstorlek', avgLitterSize()+' valpar', 'Historiskt snitt')}
+      ${statCard('Kommande vaccinationer', DB.health.filter(h=>h.status==='due').length, 'Kräver åtgärd')}
+      ${statCard('Kommande födelsedagar', upcomingBirthdays(), 'Nästa 60 dagar')}
+    </div>
+    <div class="two-col">
+      <div class="card card-pad"><div class="section-head" style="margin-top:0;"><h2>Valpar sålda per månad</h2></div><canvas id="chartSold" height="220"></canvas></div>
+      <div class="card card-pad"><div class="section-head" style="margin-top:0;"><h2>Hundar per status</h2></div><canvas id="chartStatus" height="220"></canvas></div>
+    </div>
+  `;
+  const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
+  const honey = getComputedStyle(document.documentElement).getPropertyValue('--honey').trim();
+  const pine = getComputedStyle(document.documentElement).getPropertyValue('--pine').trim();
+  const line = getComputedStyle(document.documentElement).getPropertyValue('--line').trim();
+
+  if(charts.sold) charts.sold.destroy();
+  if(charts.status) charts.status.destroy();
+  const labels = Object.keys(monthly).sort();
+  charts.sold = new Chart(document.getElementById('chartSold'), {
+    type:'bar',
+    data:{ labels: labels.length?labels:['Ingen data'], datasets:[{label:'Sålda valpar', data: labels.length?labels.map(l=>monthly[l]):[0], backgroundColor:honey, borderRadius:5}] },
+    options:{ plugins:{legend:{display:false}}, scales:{ x:{grid:{color:line}, ticks:{color:ink}}, y:{grid:{color:line}, ticks:{color:ink, precision:0}} } }
+  });
+  charts.status = new Chart(document.getElementById('chartStatus'), {
+    type:'doughnut',
+    data:{ labels:['Valp','Vuxen','Pensionerad','Avliden'], datasets:[{ data:[statusCounts.puppy,statusCounts.adult,statusCounts.retired,statusCounts.deceased], backgroundColor:[honey,pine,'#9AA8A3','#C8C0AE'] }] },
+    options:{ plugins:{legend:{position:'bottom', labels:{color:ink}}} }
+  });
+}
+function avgLitterSize(){
+  if(!DB.litters.length) return 0;
+  return (DB.litters.reduce((s,l)=>s+l.puppies.length,0)/DB.litters.length).toFixed(1);
+}
+function upcomingBirthdays(){
+  const now = new Date();
+  return DB.dogs.filter(d=>{
+    const dob = new Date(d.dob); const next = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+    if(next < stripTime(now)) next.setFullYear(now.getFullYear()+1);
+    const days = (next-now)/86400000;
+    return days <= 60 && (d.status==='adult'||d.status==='retired');
+  }).length;
+}
+
+/* ---- DOGS ---- */
+let dogFilter = 'all', dogSearch = '';
+function renderDogs(){
+  content.innerHTML = `
+    <div class="filter-row">
+      <div class="search-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="dogSearchInput" placeholder="Sök hund..." value="${dogSearch}"></div>
+      ${['all','puppy','adult','retired','deceased'].map(s=>`<button class="chip-filter ${dogFilter===s?'active':''}" data-f="${s}">${s==='all'?'Alla':statusLabel(s)}</button>`).join('')}
+      <span style="flex:1"></span>
+      <button class="btn btn-primary" id="addDogBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Ny hund</button>
+    </div>
+    <div class="grid-cards" id="dogGrid"></div>
+  `;
+  document.getElementById('dogSearchInput').addEventListener('input', e=>{ dogSearch = e.target.value; drawDogGrid(); });
+  content.querySelectorAll('.chip-filter').forEach(b=> b.addEventListener('click', ()=>{ dogFilter=b.dataset.f; renderDogs(); }));
+  document.getElementById('addDogBtn').addEventListener('click', ()=> openDogForm());
+  drawDogGrid();
+}
+function drawDogGrid(){
+  const grid = document.getElementById('dogGrid');
+  let list = DB.dogs.filter(d=> dogFilter==='all' || d.status===dogFilter);
+  if(dogSearch.trim()) list = list.filter(d=> d.name.toLowerCase().includes(dogSearch.toLowerCase()) || d.breed.toLowerCase().includes(dogSearch.toLowerCase()));
+  grid.innerHTML = list.map(d=>`
+    <div class="dog-card" data-id="${d.id}">
+      <div class="dog-photo"><span class="status-chip ${d.status}">${statusLabel(d.status)}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>
+      </div>
+      <div class="dog-body">
+        <div class="dog-name">${d.name}</div>
+        <div class="dog-meta">${d.breed} · ${d.sex} · ${ageFromDob(d.dob)}</div>
+        <div class="dog-tags"><span class="tag">${d.color}</span>${d.hips?`<span class="tag">HD ${d.hips}</span>`:''}${d.titles[0]?`<span class="tag">${d.titles[0]}</span>`:''}</div>
+      </div>
+    </div>
+  `).join('') || `<div class="empty" style="grid-column:1/-1;">Inga hundar matchar filtret.</div>`;
+  grid.querySelectorAll('.dog-card').forEach(c=> c.addEventListener('click', ()=> openDogProfile(c.dataset.id)));
+}
+
+function openDogProfile(id){
+  const d = dogById(id);
+  const dogHealth = DB.health.filter(h=>h.dogId===id);
+  openDrawer(`
+    <div class="drawer-head">
+      <div><div class="drawer-title">${d.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${d.regName}</div></div>
+      <div style="display:flex; align-items:center; gap:4px;">
+        <button class="btn btn-sm" id="editDogBtn">Redigera</button>
+        <button class="btn btn-sm btn-danger" id="deleteDogBtn">Ta bort</button>
+        <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div class="tabs">
+        <button class="tab-btn active" data-t="info">Info</button>
+        <button class="tab-btn" data-t="health">Hälsa</button>
+        <button class="tab-btn" data-t="weight">Vikt</button>
+        <button class="tab-btn" data-t="notes">Anteckningar</button>
+      </div>
+      <div id="dogTabBody"></div>
+    </div>
+  `);
+  const body = document.getElementById('dogTabBody');
+  function draw(tab){
+    if(tab==='info'){
+      body.innerHTML = `
+        <div class="form-grid" style="font-size:13px;">
+          ${infoRow('Kallelsenamn', d.callName)} ${infoRow('Kön', d.sex)}
+          ${infoRow('Ras', d.breed)} ${infoRow('Färg', d.color)}
+          ${infoRow('Född', fmtDate(d.dob))} ${infoRow('Ålder', ageFromDob(d.dob))}
+          ${infoRow('Chipnummer', d.chip)} ${infoRow('Registreringsnr', d.reg)}
+          ${infoRow('Mankhöjd', d.height?d.height+' cm':'—')} ${infoRow('Status', statusLabel(d.status))}
+          ${infoRow('HD', d.hips||'—')} ${infoRow('AD', d.elbows||'—')}
+          ${infoRow('Ögonlysning', d.eyes||'—')} ${infoRow('DNA-tester', d.dna||'—')}
+        </div>
+        ${d.titles.length?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">MERITER</div><div class="dog-tags">${d.titles.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`:''}
+        ${(d.sire||d.dam)?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">FÖRÄLDRAR</div>
+          <div style="font-size:13px;">${d.sire?('Far: '+ (dogById(d.sire)?.name||'—')):''} ${d.dam?('· Mor: '+(dogById(d.dam)?.name||'—')):''}</div></div>`:''}
+      `;
+    } else if(tab==='health'){
+      body.innerHTML = dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
+        <div class="tl-item"><div class="tl-date">${fmtDate(h.date)}</div><div class="tl-title">${h.type} ${h.status==='due'?'<span class=\"badge due\" style=\"margin-left:6px;\">Förfaller</span>':''}</div><div class="tl-desc">${h.detail}${h.due?(' · Nästa: '+fmtDate(h.due)):''}</div></div>
+      `).join('')}</div>` : `<div class="empty">Inga hälsojournalposter ännu.</div>`;
+    } else if(tab==='weight'){
+      if(!d.weightLog.length){ body.innerHTML = `<div class="empty">Ingen viktdata registrerad.</div>`; return; }
+      body.innerHTML = `<canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>Datum</th><th>Vikt (kg)</th></tr></thead><tbody>
+        ${d.weightLog.slice().reverse().map(w=>`<tr><td>${fmtDate(w.d)}</td><td>${w.kg} kg</td></tr>`).join('')}
+      </tbody></table></div>`;
+      const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
+      const honey = getComputedStyle(document.documentElement).getPropertyValue('--honey').trim();
+      new Chart(document.getElementById('weightChart'), {
+        type:'line',
+        data:{ labels:d.weightLog.map(w=>fmtDate(w.d)), datasets:[{label:'Vikt (kg)', data:d.weightLog.map(w=>w.kg), borderColor:honey, backgroundColor:honey+'33', tension:.3, fill:true}] },
+        options:{ plugins:{legend:{display:false}}, scales:{x:{ticks:{color:ink}}, y:{ticks:{color:ink}}} }
+      });
+    } else if(tab==='notes'){
+      body.innerHTML = `<div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || 'Inga anteckningar.'}</div>`;
+    }
+  }
+  document.querySelectorAll('.tab-btn').forEach(b=> b.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); draw(b.dataset.t);
+  }));
+  document.getElementById('editDogBtn').addEventListener('click', ()=> openDogForm(d));
+  document.getElementById('deleteDogBtn').addEventListener('click', ()=> deleteDog(d.id));
+  draw('info');
+}
+function deleteDog(id){
+  const d = dogById(id);
+  if(!d) return;
+  const usedAsParent = DB.dogs.some(x=> x.sire===id || x.dam===id);
+  const msg = usedAsParent
+    ? `Ta bort ${d.name}? Hunden är registrerad som förälder till andra hundar — deras stamtavla kommer visa "Okänd" istället. Detta går inte att ångra.`
+    : `Ta bort ${d.name}? Detta går inte att ångra.`;
+  if(!confirm(msg)) return;
+  DB.dogs = DB.dogs.filter(x=> x.id!==id);
+  DB.health = DB.health.filter(h=> h.dogId!==id);
+  saveDB(); closeDrawer(); renderDogs(); toast(d.name+' har tagits bort');
+}
+function infoRow(label,val){ return `<div class="field"><label>${label}</label><div style="padding:8px 0; font-weight:500;">${val}</div></div>`; }
+
+function openDogForm(existing){
+  const isEdit = !!existing;
+  const d = existing || {};
+  const possibleParents = DB.dogs.filter(x=> !isEdit || x.id!==existing.id);
+  const sireOptions = possibleParents.filter(x=>x.sex==='Hane');
+  const damOptions = possibleParents.filter(x=>x.sex==='Tik');
+  const sel = (val, cur)=> val===cur ? 'selected' : '';
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">${isEdit?'Redigera '+d.name:'Ny hund'}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="dogForm" class="form-grid">
+        <div class="field"><label>Namn *</label><input required name="name" value="${d.name||''}"></div>
+        <div class="field"><label>Registrerat namn</label><input name="regName" value="${d.regName||''}"></div>
+        <div class="field"><label>Ras *</label><input required name="breed" value="${d.breed||'Golden Retriever'}"></div>
+        <div class="field"><label>Kön</label><select name="sex"><option ${sel(d.sex,'Tik')}>Tik</option><option ${sel(d.sex,'Hane')}>Hane</option></select></div>
+        <div class="field"><label>Född</label><input type="date" name="dob" value="${d.dob||''}"></div>
+        <div class="field"><label>Färg</label><input name="color" value="${d.color||''}"></div>
+        <div class="field"><label>Chipnummer</label><input name="chip" value="${d.chip||''}"></div>
+        <div class="field"><label>Registreringsnr</label><input name="reg" value="${d.reg||''}"></div>
+        <div class="field"><label>Status</label><select name="status">
+          <option value="puppy" ${sel(d.status,'puppy')}>Valp</option>
+          <option value="adult" ${sel(d.status,'adult')||(!isEdit?'selected':'')}>Vuxen</option>
+          <option value="retired" ${sel(d.status,'retired')}>Pensionerad</option>
+          <option value="deceased" ${sel(d.status,'deceased')}>Avliden</option>
+        </select></div>
+        <div class="field"><label>Mankhöjd (cm)</label><input type="number" name="height" value="${d.height||''}"></div>
+
+        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">Stamtavla</label></div>
+        <div class="field"><label>Far (hane)</label><select name="sire">
+          <option value="">— Okänd —</option>
+          ${sireOptions.map(x=>`<option value="${x.id}" ${sel(d.sire,x.id)}>${x.name}</option>`).join('')}
+        </select></div>
+        <div class="field"><label>Mor (tik)</label><select name="dam">
+          <option value="">— Okänd —</option>
+          ${damOptions.map(x=>`<option value="${x.id}" ${sel(d.dam,x.id)}>${x.name}</option>`).join('')}
+        </select></div>
+
+        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">Hälsoresultat & meriter</label></div>
+        <div class="field"><label>HD (höftled)</label><input name="hips" value="${d.hips||''}" placeholder="t.ex. A"></div>
+        <div class="field"><label>AD (armbåge)</label><input name="elbows" value="${d.elbows||''}" placeholder="t.ex. 0"></div>
+        <div class="field"><label>Ögonlysning</label><input name="eyes" value="${d.eyes||''}" placeholder="t.ex. Ua (2024)"></div>
+        <div class="field"><label>DNA-tester</label><input name="dna" value="${d.dna||''}" placeholder="t.ex. Klar (PRA, ICT)"></div>
+        <div class="field full"><label>Meriter (kommaseparerat)</label><input name="titles" value="${(d.titles||[]).join(', ')}" placeholder="t.ex. SE UCH, SE VCH"></div>
+
+        <div class="field full"><label>Anteckningar</label><textarea name="notes">${d.notes||''}</textarea></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
+          <button type="submit" class="btn btn-primary">${isEdit?'Spara ändringar':'Spara hund'}</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('dogForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const titles = (f.get('titles')||'').split(',').map(t=>t.trim()).filter(Boolean);
+    const patch = {
+      name:f.get('name'), regName:f.get('regName')||f.get('name'), callName:f.get('name'),
+      breed:f.get('breed'), sex:f.get('sex'), dob:f.get('dob')||new Date().toISOString().slice(0,10), color:f.get('color')||'',
+      chip:f.get('chip')||'', reg:f.get('reg')||'', status:f.get('status'), height:Number(f.get('height'))||0,
+      sire:f.get('sire')||'', dam:f.get('dam')||'',
+      hips:f.get('hips')||'', elbows:f.get('elbows')||'', eyes:f.get('eyes')||'', dna:f.get('dna')||'',
+      titles, notes:f.get('notes')||''
+    };
+    if(isEdit){
+      Object.assign(existing, patch);
+      saveDB(); closeDrawer(); openDogProfile(existing.id); toast('Ändringarna har sparats');
+    } else {
+      const dog = Object.assign({id:uid('d'), weightLog:[]}, patch);
+      DB.dogs.unshift(dog); saveDB(); closeDrawer(); renderDogs(); toast('Hunden har lagts till');
+    }
+  });
+}
+
+/* ---- HEALTH ---- */
+let healthFilterDog = 'all';
+function renderHealth(){
+  content.innerHTML = `
+    <div class="filter-row">
+      <select class="chip-filter" id="healthDogFilter" style="border-radius:8px;">
+        <option value="all">Alla hundar</option>
+        ${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}
+      </select>
+      <span style="flex:1"></span>
+      <button class="btn btn-primary" id="addHealthBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Ny journalpost</button>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Hund</th><th>Typ</th><th>Datum</th><th>Nästa förfallodag</th><th>Detaljer</th><th>Status</th></tr></thead>
+      <tbody id="healthBody"></tbody>
+    </table></div>
+  `;
+  document.getElementById('healthDogFilter').addEventListener('change', e=>{ healthFilterDog=e.target.value; drawHealthBody(); });
+  document.getElementById('addHealthBtn').addEventListener('click', openHealthForm);
+  drawHealthBody();
+}
+function drawHealthBody(){
+  let list = DB.health.filter(h=> healthFilterDog==='all' || h.dogId===healthFilterDog);
+  list = list.slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
+  document.getElementById('healthBody').innerHTML = list.map(h=>{
+    const dog = dogById(h.dogId);
+    return `<tr><td>${dog?dog.name:'—'}</td><td>${h.type}</td><td>${fmtDate(h.date)}</td><td>${h.due?fmtDate(h.due):'—'}</td><td style="color:var(--ink-soft);">${h.detail}</td><td>${h.status==='due'?'<span class="badge due">Förfaller snart</span>':'<span class="badge ok">OK</span>'}</td></tr>`;
+  }).join('') || emptyRow(6);
+}
+function openHealthForm(){
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">Ny hälsojournalpost</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="healthForm" class="form-grid">
+        <div class="field full"><label>Hund *</label><select required name="dogId">${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div class="field"><label>Typ *</label><select required name="type"><option>Vaccination</option><option>Avmaskning</option><option>Veterinärbesök</option><option>Röntgen</option><option>Ögonlysning</option><option>DNA-test</option><option>Försäkring</option><option>Övrigt</option></select></div>
+        <div class="field"><label>Datum *</label><input required type="date" name="date"></div>
+        <div class="field"><label>Nästa förfallodag</label><input type="date" name="due"></div>
+        <div class="field"><label>Status</label><select name="status"><option value="ok">OK</option><option value="due">Förfaller snart</option></select></div>
+        <div class="field full"><label>Detaljer</label><textarea name="detail"></textarea></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
+          <button type="submit" class="btn btn-primary">Spara</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('healthForm').addEventListener('submit', e=>{
+    e.preventDefault(); const f = new FormData(e.target);
+    DB.health.unshift({id:uid('h'), dogId:f.get('dogId'), type:f.get('type'), date:f.get('date'), due:f.get('due')||'', detail:f.get('detail')||'', status:f.get('status')});
+    saveDB(); closeDrawer(); renderHealth(); toast('Journalpost tillagd');
+  });
+}
+
+/* ---- PEDIGREE ---- */
+function renderPedigree(){
+  content.innerHTML = `
+    <div class="filter-row">
+      <select class="chip-filter" id="pedSelect" style="border-radius:8px;">${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select>
+    </div>
+    <div class="card card-pad"><div id="pedTree"></div></div>
+  `;
+  document.getElementById('pedSelect').addEventListener('change', e=> drawPedigree(e.target.value));
+  drawPedigree(DB.dogs[0].id);
+}
+function pedNode(dog, isSelf){
+  if(!dog) return `<div class="ped-node" style="opacity:.4;"><div class="n">Okänd</div><div class="m">Ingen data</div></div>`;
+  return `<div class="ped-node ${isSelf?'self':''}"><div class="n">${dog.name}</div><div class="m">${dog.breed}</div>
+    <div class="scores">${dog.hips?`<span class="tag">HD ${dog.hips}</span>`:''}${dog.titles[0]?`<span class="tag">${dog.titles[0]}</span>`:''}</div></div>`;
+}
+function drawPedigree(id){
+  const d = dogById(id);
+  const sire = d.sire ? dogById(d.sire) : null;
+  const dam = d.dam ? dogById(d.dam) : null;
+  const sireSire = sire && sire.sire ? dogById(sire.sire) : null;
+  const sireDam = sire && sire.dam ? dogById(sire.dam) : null;
+  const damSire = dam && dam.sire ? dogById(dam.sire) : null;
+  const damDam = dam && dam.dam ? dogById(dam.dam) : null;
+  document.getElementById('pedTree').innerHTML = `
+    <div class="pedigree-tree">
+      <div class="ped-col">${pedNode(d, true)}</div>
+      <div class="ped-col">${pedNode(sire)}${pedNode(dam)}</div>
+      <div class="ped-col">${pedNode(sireSire)}${pedNode(sireDam)}${pedNode(damSire)}${pedNode(damDam)}</div>
+    </div>
+    <div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">Visar far/mor och två generationer bakåt. Lägg till fler anor via hundens profil (Far/Mor-fält) för en djupare stamtavla.</div>
+  `;
+}
+
+/* ---- BREEDING ---- */
+function renderBreeding(){
+  content.innerHTML = `
+    <div class="filter-row"><span style="flex:1"></span>
+      <button class="btn btn-primary" id="addBreedingBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Ny parningsplan</button>
+    </div>
+    <div class="timeline" style="margin-bottom:30px;">
+      ${DB.breedings.slice().sort((a,b)=>new Date(b.matingDate)-new Date(a.matingDate)).map(b=>{
+        const dam = dogById(b.dam), sire = dogById(b.sire);
+        return `<div class="tl-item"><div class="tl-date">${fmtDate(b.matingDate)}</div>
+          <div class="tl-title">${dam?.name || '?'} × ${sire?.name || '?'} ${b.confirmed?'<span class="badge ok" style="margin-left:6px;">Bekräftad dräktighet</span>':'<span class="badge muted" style="margin-left:6px;">Planerad</span>'}</div>
+          <div class="tl-desc">${b.dueDate?('Beräknat valpningsdatum: '+fmtDate(b.dueDate)+' · '):''}${b.expectedCount?('Förväntat antal: '+b.expectedCount+' · '):''}${b.ultrasound||''}</div>
+          ${b.notes?`<div class="tl-desc" style="margin-top:2px;">${b.notes}</div>`:''}
+        </div>`;
+      }).join('') || `<div class="empty">Inga parningsplaner registrerade.</div>`}
+    </div>
+    <div class="two-col">
+      <div class="card card-pad">
+        <div class="section-head" style="margin-top:0;"><h2>Dräktighetskalkylator</h2></div>
+        <div class="field"><label>Parningsdatum</label><input type="date" id="matingDateCalc"></div>
+        <div style="margin-top:12px; font-size:13.5px;">Beräknad valpning: <strong id="calcResult">—</strong></div>
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:4px;">Baserat på ca 63 dagars dräktighet.</div>
+      </div>
+      <div class="card card-pad">
+        <div class="section-head" style="margin-top:0;"><h2>Löpcykelspårning</h2></div>
+        ${DB.dogs.filter(d=>d.sex==='Tik' && d.status!=='deceased').map(d=>`
+          <div class="milestone-row"><div class="avatar-circle">${d.name[0]}</div>
+            <div style="flex:1"><div style="font-weight:600;font-size:13px;">${d.name}</div><div style="font-size:12px;color:var(--ink-soft);">Senaste löp ej registrerat — lägg till i hälsojournalen</div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('matingDateCalc').addEventListener('change', e=>{
+    if(!e.target.value){ document.getElementById('calcResult').textContent='—'; return; }
+    const d = new Date(e.target.value+'T00:00:00'); d.setDate(d.getDate()+63);
+    document.getElementById('calcResult').textContent = d.toLocaleDateString('sv-SE',{day:'numeric',month:'long',year:'numeric'});
+  });
+  document.getElementById('addBreedingBtn').addEventListener('click', openBreedingForm);
+}
+function openBreedingForm(){
+  const dams = DB.dogs.filter(d=>d.sex==='Tik'); const sires = DB.dogs.filter(d=>d.sex==='Hane');
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">Ny parningsplan</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="breedingForm" class="form-grid">
+        <div class="field"><label>Tik *</label><select required name="dam">${dams.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div class="field"><label>Hane *</label><select required name="sire">${sires.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div class="field"><label>Parningsdatum</label><input type="date" name="matingDate"></div>
+        <div class="field"><label>Förväntat antal valpar</label><input type="number" name="expectedCount"></div>
+        <div class="field full"><label>Anteckningar</label><textarea name="notes"></textarea></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
+          <button type="submit" class="btn btn-primary">Spara plan</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('breedingForm').addEventListener('submit', e=>{
+    e.preventDefault(); const f = new FormData(e.target);
+    let due = '';
+    if(f.get('matingDate')){ const d = new Date(f.get('matingDate')+'T00:00:00'); d.setDate(d.getDate()+63); due = d.toISOString().slice(0,10); }
+    DB.breedings.unshift({id:uid('b'), dam:f.get('dam'), sire:f.get('sire'), matingDate:f.get('matingDate')||'', dueDate:due, confirmed:false, ultrasound:'', expectedCount:Number(f.get('expectedCount'))||0, notes:f.get('notes')||''});
+    saveDB(); closeDrawer(); renderBreeding(); toast('Parningsplan tillagd');
+  });
+}
+
+/* ---- LITTERS ---- */
+function renderLitters(){
+  content.innerHTML = `
+    <div class="grid-cards">
+      ${DB.litters.map(l=>{
+        const dam = dogById(l.dam), sire = dogById(l.sire);
+        return `<div class="card litter-card" data-id="${l.id}" style="cursor:pointer;">
+          <div class="card-pad">
+            <div style="font-family:var(--font-display); font-size:17px; font-weight:500;">${l.name}</div>
+            <div style="font-size:12.5px; color:var(--ink-soft); margin-top:2px;">${dam?.name || '?'} × ${sire?.name || '?'} · Född ${fmtDate(l.birthDate)}</div>
+            <div style="display:flex; gap:14px; margin-top:12px; font-size:12.5px;">
+              <div><strong>${l.puppies.length}</strong> valpar</div>
+              <div><strong>${l.puppies.filter(p=>p.sex==='Hane').length}</strong> hanar</div>
+              <div><strong>${l.puppies.filter(p=>p.sex==='Tik').length}</strong> tikar</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('') || `<div class="empty" style="grid-column:1/-1;">Inga kullar registrerade än.</div>`}
+    </div>
+  `;
+  content.querySelectorAll('.litter-card').forEach(c=> c.addEventListener('click', ()=> openLitterDetail(c.dataset.id)));
+}
+function openLitterDetail(id){
+  const l = DB.litters.find(x=>x.id===id);
+  const dam = dogById(l.dam), sire = dogById(l.sire);
+  openDrawer(`
+    <div class="drawer-head"><div><div class="drawer-title">${l.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${dam?.name} × ${sire?.name} · Född ${fmtDate(l.birthDate)}</div></div>
+      <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">Valpar</h2></div>
+      <div class="table-wrap"><table><thead><tr><th>Namn</th><th>Kön</th><th>Färg</th><th>Födelsevikt</th><th>Status</th></tr></thead>
+        <tbody>${l.puppies.map(p=>`<tr><td>${p.name}</td><td>${p.sex}</td><td>${p.color}</td><td>${p.birthWeight} kg</td><td>${puppyStatusBadge(p.status)}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <div class="section-head"><h2 style="font-size:15px;">Milstolpar</h2></div>
+      <div class="card card-pad">
+        ${l.milestones.map((m,i)=>`
+          <div class="milestone-row">
+            <div class="milestone-check ${m.done?'done':''}" data-i="${i}">${m.done?'✓':''}</div>
+            <div class="milestone-label ${m.done?'done':''}">${m.label}</div>
+            <div class="milestone-date">${m.done?fmtDate(m.date):''}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  `);
+  document.querySelectorAll('.milestone-check').forEach(chk=>{
+    chk.addEventListener('click', ()=>{
+      const i = Number(chk.dataset.i); const m = l.milestones[i];
+      m.done = !m.done; m.date = m.done ? new Date().toISOString().slice(0,10) : '';
+      saveDB(); openLitterDetail(id);
+    });
+  });
+}
+function puppyStatusBadge(s){
+  const map = {'tillgänglig':'ok','reserverad':'warn','såld':'muted'};
+  return `<span class="badge ${map[s]||'muted'}">${s}</span>`;
+}
+
+/* ---- MATCHING ---- */
+function renderMatching(){
+  const availablePuppies = DB.litters.flatMap(l=> l.puppies.filter(p=>p.status!=='såld').map(p=>({...p, litter:l.name})));
+  const waitingBuyers = DB.buyers.filter(b=> b.status==='waiting' || b.status==='approved');
+  content.innerHTML = `
+    <div class="section-head" style="margin-top:0;"><h2>Tillgängliga valpar</h2><span class="hint">${availablePuppies.length} st</span></div>
+    <div class="grid-cards" style="margin-bottom:26px;">
+      ${availablePuppies.map(p=>`
+        <div class="card card-pad">
+          <div style="font-family:var(--font-display); font-size:16px; font-weight:500;">${p.name}</div>
+          <div style="font-size:12px; color:var(--ink-soft); margin-bottom:8px;">${p.litter} · ${p.sex} · ${p.color}</div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;">Temperament (uppskattat)</div>
+          ${trait('Energi', puppyTraitSeed(p.id,0))}
+          ${trait('Självförtroende', puppyTraitSeed(p.id,1))}
+          ${trait('Sällskaplighet', puppyTraitSeed(p.id,2))}
+          ${trait('Träningsbarhet', puppyTraitSeed(p.id,3))}
+        </div>`).join('') || `<div class="empty" style="grid-column:1/-1;">Inga tillgängliga valpar just nu.</div>`}
+    </div>
+    <div class="section-head"><h2>Föreslagna matchningar</h2><span class="hint">Baserat på aktivitetsnivå & önskemål</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Köpare</th><th>Önskar</th><th>Föreslagen valp</th><th>Matchning</th></tr></thead>
+      <tbody>
+        ${waitingBuyers.map(b=>{
+          const suggestion = availablePuppies[Math.floor(Math.random()*100+b.name.length) % (availablePuppies.length||1)];
+          return `<tr><td>${b.name}</td><td style="color:var(--ink-soft);">${b.preferred}</td><td>${suggestion?suggestion.name:'—'}</td><td><span class="badge ok">Bästa matchning</span></td></tr>`;
+        }).join('') || emptyRow(4)}
+      </tbody>
+    </table></div>
+  `;
+}
+function puppyTraitSeed(id, offset){
+  let h = 0; for(const c of id) h += c.charCodeAt(0);
+  return 40 + ((h*(offset+3)) % 55);
+}
+function trait(label, pct){
+  return `<div style="margin-bottom:6px;"><div style="display:flex; justify-content:space-between; font-size:11px; color:var(--ink-soft);"><span>${label}</span></div><div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div></div>`;
+}
+
+/* ---- BUYERS ---- */
+let buyerFilter = 'all';
+const BUYER_STATUSES = ['new','waiting','approved','reserved','sold','rejected'];
+function renderBuyers(){
+  content.innerHTML = `
+    <div class="filter-row">
+      <button class="chip-filter ${buyerFilter==='all'?'active':''}" data-f="all">Alla</button>
+      ${BUYER_STATUSES.map(s=>`<button class="chip-filter ${buyerFilter===s?'active':''}" data-f="${s}">${buyerStatusLabel(s)}</button>`).join('')}
+      <span style="flex:1"></span>
+      <button class="btn btn-primary" id="addBuyerBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Ny intressent</button>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Namn</th><th>Land</th><th>Boende</th><th>Föredrar</th><th>Status</th></tr></thead>
+      <tbody id="buyersBody"></tbody>
+    </table></div>
+  `;
+  content.querySelectorAll('.chip-filter').forEach(b=> b.addEventListener('click', ()=>{ buyerFilter=b.dataset.f; renderBuyers(); }));
+  document.getElementById('addBuyerBtn').addEventListener('click', openBuyerForm);
+  drawBuyersBody();
+}
+function drawBuyersBody(){
+  let list = DB.buyers.filter(b=> buyerFilter==='all' || b.status===buyerFilter);
+  document.getElementById('buyersBody').innerHTML = list.map(b=>`
+    <tr class="buyer-row" data-id="${b.id}" style="cursor:pointer;"><td>${b.name}</td><td>${b.country}</td><td style="color:var(--ink-soft);">${b.housing}</td><td style="color:var(--ink-soft);">${b.preferred}</td><td>${buyerBadge(b.status)}</td></tr>
+  `).join('') || emptyRow(5);
+  document.querySelectorAll('.buyer-row').forEach(r=> r.addEventListener('click', ()=> openBuyerDetail(r.dataset.id)));
+}
+function buyerBadge(s){
+  const map = {new:'muted', waiting:'warn', approved:'ok', reserved:'ok', sold:'ok', rejected:'due'};
+  return `<span class="badge ${map[s]}">${buyerStatusLabel(s)}</span>`;
+}
+function openBuyerDetail(id){
+  const b = DB.buyers.find(x=>x.id===id);
+  openDrawer(`
+    <div class="drawer-head"><div><div class="drawer-title">${b.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${b.email} · ${b.phone}</div></div>
+      <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <div class="field full" style="margin-bottom:16px;">
+        <label>Status</label>
+        <select id="buyerStatusSelect">${BUYER_STATUSES.map(s=>`<option value="${s}" ${s===b.status?'selected':''}>${buyerStatusLabel(s)}</option>`).join('')}</select>
+      </div>
+      <div class="form-grid" style="font-size:13px; margin-bottom:16px;">
+        ${infoRow('Land', b.country)} ${infoRow('Boendetyp', b.housing)}
+        ${infoRow('Aktivitetsnivå', b.activity)} ${infoRow('Tidigare hundägare', b.prevDog)}
+        ${infoRow('Föredragen valp', b.preferred)}
+      </div>
+      <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">Kommunikationslogg</h2></div>
+      <div class="timeline" id="buyerLog">
+        ${b.log.slice().reverse().map(l=>`<div class="tl-item"><div class="tl-date">${fmtDate(l.date)}</div><div class="tl-desc">${l.note}</div></div>`).join('')}
+      </div>
+      <div class="field full"><label>Lägg till anteckning</label><textarea id="newLogNote" placeholder="Skriv en uppdatering..."></textarea></div>
+      <button class="btn btn-primary btn-sm" id="addLogBtn" style="margin-top:8px;">Lägg till</button>
+    </div>
+  `);
+  document.getElementById('buyerStatusSelect').addEventListener('change', e=>{ b.status=e.target.value; saveDB(); toast('Status uppdaterad'); });
+  document.getElementById('addLogBtn').addEventListener('click', ()=>{
+    const val = document.getElementById('newLogNote').value.trim();
+    if(!val) return;
+    b.log.push({date:new Date().toISOString().slice(0,10), note:val}); saveDB(); openBuyerDetail(id);
+  });
+}
+function openBuyerForm(){
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">Ny intressent</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="buyerForm" class="form-grid">
+        <div class="field"><label>Namn *</label><input required name="name"></div>
+        <div class="field"><label>E-post</label><input type="email" name="email"></div>
+        <div class="field"><label>Telefon</label><input name="phone"></div>
+        <div class="field"><label>Land</label><input name="country" value="Sverige"></div>
+        <div class="field"><label>Boendetyp</label><input name="housing"></div>
+        <div class="field"><label>Aktivitetsnivå</label><input name="activity"></div>
+        <div class="field"><label>Tidigare hundägare</label><input name="prevDog"></div>
+        <div class="field"><label>Önskad valp</label><input name="preferred"></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
+          <button type="submit" class="btn btn-primary">Spara</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('buyerForm').addEventListener('submit', e=>{
+    e.preventDefault(); const f = new FormData(e.target);
+    DB.buyers.unshift({id:uid('bu'), name:f.get('name'), email:f.get('email')||'', phone:f.get('phone')||'', country:f.get('country')||'',
+      housing:f.get('housing')||'', activity:f.get('activity')||'', prevDog:f.get('prevDog')||'', preferred:f.get('preferred')||'',
+      status:'new', puppyId:'', log:[{date:new Date().toISOString().slice(0,10), note:'Intressent tillagd.'}]});
+    saveDB(); closeDrawer(); renderBuyers(); toast('Intressent tillagd');
+  });
+}
+
+/* ---- CALENDAR ---- */
+let calMonth = new Date().getMonth(), calYear = new Date().getFullYear();
+function renderCalendar(){
+  content.innerHTML = `
+    <div class="filter-row">
+      <button class="btn btn-sm" id="calPrev">←</button>
+      <div style="font-family:var(--font-display); font-size:17px; min-width:180px; text-align:center;" id="calLabel"></div>
+      <button class="btn btn-sm" id="calNext">→</button>
+      <span style="flex:1"></span>
+      <button class="btn btn-primary btn-sm" id="addEventBtn">Ny händelse</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="section-head"><h2>Alla kommande händelser</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Datum</th><th>Händelse</th><th>Typ</th><th></th></tr></thead><tbody id="calList"></tbody></table></div>
+  `;
+  document.getElementById('calPrev').addEventListener('click', ()=>{ calMonth--; if(calMonth<0){calMonth=11;calYear--;} drawCalendar(); });
+  document.getElementById('calNext').addEventListener('click', ()=>{ calMonth++; if(calMonth>11){calMonth=0;calYear++;} drawCalendar(); });
+  document.getElementById('addEventBtn').addEventListener('click', openEventForm);
+  drawCalendar();
+}
+function drawCalendar(){
+  const label = new Date(calYear,calMonth,1).toLocaleDateString('sv-SE',{month:'long', year:'numeric'});
+  document.getElementById('calLabel').textContent = label.charAt(0).toUpperCase()+label.slice(1);
+  const first = new Date(calYear,calMonth,1);
+  const startDow = (first.getDay()+6)%7; // Monday=0
+  const daysInMonth = new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrev = new Date(calYear,calMonth,0).getDate();
+  const cells = [];
+  for(let i=startDow-1;i>=0;i--) cells.push({d:daysInPrev-i, other:true});
+  for(let d=1; d<=daysInMonth; d++) cells.push({d, other:false});
+  while(cells.length % 7 !== 0) cells.push({d:cells.length, other:true});
+  const dows = ['Mån','Tis','Ons','Tor','Fre','Lör','Sön'];
+  const todayStr = new Date().toISOString().slice(0,10);
+  document.getElementById('calGrid').innerHTML = dows.map(d=>`<div class="cal-dow">${d}</div>`).join('') +
+    cells.map(c=>{
+      const dateStr = !c.other ? `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(c.d).padStart(2,'0')}` : '';
+      const evs = dateStr ? DB.events.filter(e=>e.date===dateStr) : [];
+      return `<div class="cal-day ${c.other?'other':''} ${dateStr===todayStr?'today':''}">
+        <div class="cal-num">${c.d}</div>
+        ${evs.map(e=>`<div class="cal-ev" title="${e.title}">${e.title}</div>`).join('')}
+      </div>`;
+    }).join('');
+  const upcoming = DB.events.slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+  document.getElementById('calList').innerHTML = upcoming.map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${e.title}</td><td>${eventTypeBadge(e.type)}</td><td><button class="btn btn-sm btn-danger" data-del="${e.id}">Ta bort</button></td></tr>`).join('') || emptyRow(4);
+  document.getElementById('calList').querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', ()=> deleteEvent(btn.dataset.del));
+  });
+}
+function deleteEvent(id){
+  const ev = DB.events.find(e=>e.id===id);
+  if(!ev) return;
+  if(!confirm(`Ta bort händelsen "${ev.title}"?`)) return;
+  DB.events = DB.events.filter(e=>e.id!==id);
+  saveDB(); drawCalendar(); toast('Händelsen har tagits bort');
+}
+function openEventForm(){
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">Ny händelse</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="eventForm" class="form-grid">
+        <div class="field full"><label>Titel *</label><input required name="title"></div>
+        <div class="field"><label>Datum *</label><input required type="date" name="date"></div>
+        <div class="field"><label>Typ</label><select name="type"><option value="health">Hälsa</option><option value="birthday">Födelsedag</option><option value="pickup">Hämtning</option><option value="breeding">Avel</option></select></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
+          <button type="submit" class="btn btn-primary">Spara</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('eventForm').addEventListener('submit', e=>{
+    e.preventDefault(); const f = new FormData(e.target);
+    DB.events.push({id:uid('e'), date:f.get('date'), title:f.get('title'), type:f.get('type')});
+    saveDB(); closeDrawer(); renderCalendar(); toast('Händelse tillagd');
+  });
+}
+
+/* ---- DOCUMENTS ---- */
+function renderDocuments(){
+  content.innerHTML = `
+    <div class="filter-row"><span style="flex:1"></span>
+      <label class="btn btn-primary btn-sm" style="cursor:pointer;">Ladda upp dokument<input type="file" id="docUpload" style="display:none;" multiple></label>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Dokument</th><th>Typ</th><th>Datum</th><th>Kopplat till</th></tr></thead>
+      <tbody id="docBody"></tbody>
+    </table></div>
+  `;
+  document.getElementById('docUpload').addEventListener('change', e=>{
+    Array.from(e.target.files).forEach(file=>{
+      DB.documents.unshift({id:uid('doc'), name:file.name, type:'Övrigt', date:new Date().toISOString().slice(0,10), relatedTo:'—'});
+    });
+    saveDB(); drawDocBody(); toast('Dokument tillagda (namn sparat lokalt — filuppladdning till moln kräver Supabase Storage)');
+  });
+  drawDocBody();
+}
+function drawDocBody(){
+  document.getElementById('docBody').innerHTML = DB.documents.map(d=>`
+    <tr><td>${d.name}</td><td><span class="tag">${d.type}</span></td><td>${fmtDate(d.date)}</td><td style="color:var(--ink-soft);">${d.relatedTo}</td></tr>
+  `).join('') || emptyRow(4);
+}
+
+/* ---- MORE (bonus tools) ---- */
+function renderMore(){
+  content.innerHTML = `
+    <div class="two-col">
+      <div>
+        <div class="section-head" style="margin-top:0;"><h2>Kennellager</h2><span class="hint">Foder, tillskott & mediciner</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Artikel</th><th>Antal</th><th></th></tr></thead>
+          <tbody>${DB.inventory.map(i=>`<tr><td>${i.name}</td><td>${i.qty} ${i.unit}</td><td>${i.qty<=i.low?'<span class="badge due">Fyll på</span>':'<span class="badge ok">OK</span>'}</td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="section-head"><h2>Akutkontakter</h2></div>
+        <div class="card card-pad">
+          ${DB.contacts.map(c=>`<div class="milestone-row"><div style="flex:1"><div style="font-weight:600; font-size:13px;">${c.name}</div><div style="font-size:12px; color:var(--ink-soft);">${c.role}</div></div><div style="font-weight:600; font-size:13px;">${c.phone}</div></div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="section-head" style="margin-top:0;"><h2>Kennelns journal</h2><span class="hint">Fria anteckningar</span></div>
+        <div class="card card-pad">
+          <div class="field full" style="margin-bottom:8px;"><textarea id="journalInput" placeholder="Skriv dagens anteckning..."></textarea></div>
+          <button class="btn btn-primary btn-sm" id="addJournalBtn">Spara anteckning</button>
+          <div class="timeline" style="margin-top:18px;" id="journalList"></div>
+        </div>
+        <div class="section-head"><h2>Meriter & utställningar</h2></div>
+        <div class="card card-pad">
+          ${DB.dogs.filter(d=>d.titles.length).map(d=>`<div style="margin-bottom:8px;"><strong>${d.name}</strong> — ${d.titles.join(', ')}</div>`).join('') || '<div style="color:var(--ink-soft);">Inga meriter registrerade.</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+  function drawJournal(){
+    document.getElementById('journalList').innerHTML = DB.journal.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(j=>`
+      <div class="tl-item"><div class="tl-date">${fmtDate(j.date)}</div><div class="tl-desc">${j.text}</div></div>`).join('') || '<div style="color:var(--ink-soft); font-size:13px;">Inga anteckningar ännu.</div>';
+  }
+  document.getElementById('addJournalBtn').addEventListener('click', ()=>{
+    const val = document.getElementById('journalInput').value.trim();
+    if(!val) return;
+    DB.journal.unshift({id:uid('j'), date:new Date().toISOString().slice(0,10), text:val});
+    saveDB(); document.getElementById('journalInput').value=''; drawJournal(); toast('Anteckning sparad');
+  });
+  drawJournal();
+}
+
+/* App boot now happens in bootApp(), triggered by onAuthStateChange
+   above once a session exists (see AUTH section). */
+
+</script>
+</body>
+</html>

@@ -171,6 +171,20 @@ tbody tr:hover{background:var(--surface-2);}
 .badge.due{background:var(--danger-tint); color:var(--danger);}
 .badge.muted{background:var(--surface-2); color:var(--ink-soft);}
 
+.share-badge{display:inline-block; margin-top:6px; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; letter-spacing:.01em;}
+.share-badge.public{background:var(--ok-tint); color:var(--ok);}
+.share-badge.private{background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--line);}
+.field-badge{display:inline-block; margin-left:6px; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:1.5px 6px; border-radius:9px; vertical-align:middle;}
+.field-badge.public{background:var(--ok-tint); color:var(--ok);}
+.field-badge.private{background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--line);}
+.privacy-legend{display:flex; gap:8px; align-items:center; font-size:12px; color:var(--ink-soft); margin-bottom:14px; flex-wrap:wrap;}
+.privacy-sign{border-radius:var(--radius-m); padding:20px 22px; margin-bottom:22px;}
+.privacy-sign.public{background:var(--ok-tint); border:1px solid var(--ok);}
+.privacy-sign.private{background:var(--surface-2); border:1px solid var(--line);}
+.privacy-sign h2{margin-top:0; display:flex; align-items:center; gap:8px;}
+.privacy-sign ul{margin:8px 0 0; padding-left:20px; font-size:13.5px; line-height:1.7;}
+.privacy-sign p{font-size:13px; color:var(--ink-soft); margin:6px 0 0;}
+
 .filter-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:16px;}
 .chip-filter{
   border:1px solid var(--line); background:var(--surface); border-radius:20px; padding:6px 13px; font-size:12.5px;
@@ -348,7 +362,7 @@ tbody tr:hover{background:var(--surface-2);}
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-head">
       <div class="wordmark">
-        <img src="assets/title-doginary.png" alt="Doginary" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <img src="assets/title-doginary-blue.png" alt="Doginary" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
         <span class="wordmark-fallback" style="display:none;">Doginary</span>
       </div>
       <div class="hub-tag">BREEDER HUB</div>
@@ -372,6 +386,7 @@ tbody tr:hover{background:var(--surface-2);}
       <div>
         <div class="page-title" id="pageTitle">Översikt</div>
         <div class="page-sub" id="pageSub">Välkommen tillbaka</div>
+        <span class="share-badge" id="pageShareBadge"></span>
       </div>
       <div class="topbar-actions">
         <button class="icon-btn" id="exportAllBtn" title="Exportera all kenneldata som PDF">
@@ -430,6 +445,7 @@ const ICONS = {
   documents:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
   analytics:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>',
   more:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+  privacy:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3.5v5.6c0 5-3.4 9.1-8 10.4-4.6-1.3-8-5.4-8-10.4V5.5L12 2z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg>',
 };
 
 const NAV = [
@@ -454,6 +470,7 @@ const NAV = [
     {id:'calendar', label:'Kalender', icon:'calendar'},
     {id:'documents', label:'Dokument', icon:'documents'},
     {id:'more', label:'Kennelverktyg', icon:'more'},
+    {id:'privacy', label:'Delning & sekretess', icon:'privacy'},
   ]},
 ];
 
@@ -857,18 +874,19 @@ document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id
 /* ---------------- NAV / ROUTER ---------------- */
 let currentPage = 'dashboard';
 const PAGE_META = {
-  dashboard:{title:'Översikt', sub:'Välkommen tillbaka'},
-  analytics:{title:'Statistik', sub:'Nyckeltal för din uppfödning'},
-  dogs:{title:'Hundregister', sub:'Alla hundar i din kennel'},
-  health:{title:'Hälsojournal', sub:'Vaccinationer, veterinärbesök och tester'},
-  pedigree:{title:'Stamtavla', sub:'Interaktivt släktträd'},
-  breeding:{title:'Parningsplaner', sub:'Planerade och genomförda parningar'},
-  litters:{title:'Kullar', sub:'Valpar, tillväxt och milstolpar'},
-  matching:{title:'Valpmatchning', sub:'Matcha valpar med rätt familj'},
-  buyers:{title:'Köpare & CRM', sub:'Intressenter och köpprocess'},
-  calendar:{title:'Kalender', sub:'Alla viktiga datum på ett ställe'},
-  documents:{title:'Dokument', sub:'Kontrakt, intyg och certifikat'},
-  more:{title:'Kennelverktyg', sub:'Löpcykel, lager, journal & mer'},
+  dashboard:{title:'Översikt', sub:'Välkommen tillbaka', share:'private'},
+  analytics:{title:'Statistik', sub:'Nyckeltal för din uppfödning', share:'private'},
+  dogs:{title:'Hundregister', sub:'Alla hundar i din kennel', share:'public'},
+  health:{title:'Hälsojournal', sub:'Vaccinationer, veterinärbesök och tester', share:'private'},
+  pedigree:{title:'Stamtavla', sub:'Interaktivt släktträd', share:'public'},
+  breeding:{title:'Parningsplaner', sub:'Planerade och genomförda parningar', share:'private'},
+  litters:{title:'Kullar', sub:'Valpar, tillväxt och milstolpar', share:'private'},
+  matching:{title:'Valpmatchning', sub:'Matcha valpar med rätt familj', share:'private'},
+  buyers:{title:'Köpare & CRM', sub:'Intressenter och köpprocess', share:'private'},
+  calendar:{title:'Kalender', sub:'Alla viktiga datum på ett ställe', share:'private'},
+  documents:{title:'Dokument', sub:'Kontrakt, intyg och certifikat', share:'private'},
+  more:{title:'Kennelverktyg', sub:'Löpcykel, lager, journal & mer', share:'private'},
+  privacy:{title:'Delning & sekretess', sub:'Vad som visas publikt och vad som alltid är privat', share:null},
 };
 
 function renderNav(){
@@ -885,6 +903,18 @@ function goTo(page){
   currentPage = page;
   document.getElementById('pageTitle').textContent = PAGE_META[page].title;
   document.getElementById('pageSub').textContent = PAGE_META[page].sub;
+  const share = PAGE_META[page].share;
+  const badge = document.getElementById('pageShareBadge');
+  if(share === 'public'){
+    badge.className = 'share-badge public';
+    badge.innerHTML = '🌐 Delar viss info publikt — se markeringar nedan';
+  } else if(share === 'private'){
+    badge.className = 'share-badge private';
+    badge.innerHTML = '🔒 Helt privat — visas aldrig på din publika sida';
+  } else {
+    badge.className = 'share-badge';
+    badge.innerHTML = '';
+  }
   renderNav();
   renderPage(page);
 }
@@ -910,7 +940,7 @@ function renderPage(page){
   content.innerHTML = '';
   const fns = {dashboard:renderDashboard, analytics:renderAnalytics, dogs:renderDogs, health:renderHealth,
     pedigree:renderPedigree, breeding:renderBreeding, litters:renderLitters, matching:renderMatching,
-    buyers:renderBuyers, calendar:renderCalendar, documents:renderDocuments, more:renderMore};
+    buyers:renderBuyers, calendar:renderCalendar, documents:renderDocuments, more:renderMore, privacy:renderPrivacy};
   fns[page]();
 }
 
@@ -1032,6 +1062,11 @@ function upcomingBirthdays(){
 let dogFilter = 'all', dogSearch = '';
 function renderDogs(){
   content.innerHTML = `
+    <div class="privacy-legend">
+      <span class="field-badge public">🌐 Publik</span> visas på din publika sida &nbsp;·&nbsp;
+      <span class="field-badge private">🔒 Privat</span> syns bara för dig &nbsp;·&nbsp;
+      <a href="#" id="privacyLegendLink" style="color:var(--ink-soft); text-decoration:underline;">Läs mer</a>
+    </div>
     <div class="filter-row">
       <div class="search-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input type="text" id="dogSearchInput" placeholder="Sök hund..." value="${dogSearch}"></div>
@@ -1041,6 +1076,7 @@ function renderDogs(){
     </div>
     <div class="grid-cards" id="dogGrid"></div>
   `;
+  document.getElementById('privacyLegendLink').addEventListener('click', e=>{ e.preventDefault(); goTo('privacy'); });
   document.getElementById('dogSearchInput').addEventListener('input', e=>{ dogSearch = e.target.value; drawDogGrid(); });
   content.querySelectorAll('.chip-filter').forEach(b=> b.addEventListener('click', ()=>{ dogFilter=b.dataset.f; renderDogs(); }));
   document.getElementById('addDogBtn').addEventListener('click', ()=> openDogForm());
@@ -1092,25 +1128,25 @@ function openDogProfile(id){
     if(tab==='info'){
       body.innerHTML = `
         <div class="form-grid" style="font-size:13px;">
-          ${infoRow('Kallelsenamn', d.callName)} ${infoRow('Kön', d.sex)}
-          ${infoRow('Ras', d.breed)} ${infoRow('Färg', d.color)}
-          ${infoRow('Född', fmtDate(d.dob))} ${infoRow('Ålder', ageFromDob(d.dob))}
-          ${infoRow('Chipnummer', d.chip)} ${infoRow('Registreringsnr', d.reg)}
-          ${infoRow('Mankhöjd', d.height?d.height+' cm':'—')} ${infoRow('Status', statusLabel(d.status))}
-          ${infoRow('HD', d.hips||'—')} ${infoRow('AD', d.elbows||'—')}
-          ${infoRow('Ögonlysning', d.eyes||'—')} ${infoRow('DNA-tester', d.dna||'—')}
+          ${infoRow('Kallelsenamn', d.callName, true)} ${infoRow('Kön', d.sex, true)}
+          ${infoRow('Ras', d.breed, true)} ${infoRow('Färg', d.color, true)}
+          ${infoRow('Född', fmtDate(d.dob), true)} ${infoRow('Ålder', ageFromDob(d.dob), true)}
+          ${infoRow('Chipnummer', d.chip, false)} ${infoRow('Registreringsnr', d.reg, true)}
+          ${infoRow('Mankhöjd', d.height?d.height+' cm':'—', true)} ${infoRow('Status', statusLabel(d.status), true)}
+          ${infoRow('HD', d.hips||'—', true)} ${infoRow('AD', d.elbows||'—', true)}
+          ${infoRow('Ögonlysning', d.eyes||'—', true)} ${infoRow('DNA-tester', d.dna||'—', true)}
         </div>
-        ${d.titles.length?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">MERITER</div><div class="dog-tags">${d.titles.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`:''}
-        ${(d.sire||d.dam)?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">FÖRÄLDRAR</div>
+        ${d.titles.length?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">MERITER <span class="field-badge public">🌐 Publik</span></div><div class="dog-tags">${d.titles.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`:''}
+        ${(d.sire||d.dam)?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">FÖRÄLDRAR <span class="field-badge public">🌐 Publik</span></div>
           <div style="font-size:13px;">${d.sire?('Far: '+ (dogById(d.sire)?.name||'—')):''} ${d.dam?('· Mor: '+(dogById(d.dam)?.name||'—')):''}</div></div>`:''}
       `;
     } else if(tab==='health'){
-      body.innerHTML = dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
+      body.innerHTML = (dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
         <div class="tl-item"><div class="tl-date">${fmtDate(h.date)}</div><div class="tl-title">${h.type} ${h.status==='due'?'<span class=\"badge due\" style=\"margin-left:6px;\">Förfaller</span>':''}</div><div class="tl-desc">${h.detail}${h.due?(' · Nästa: '+fmtDate(h.due)):''}</div></div>
-      `).join('')}</div>` : `<div class="empty">Inga hälsojournalposter ännu.</div>`;
+      `).join('')}</div>` : `<div class="empty">Inga hälsojournalposter ännu.</div>`) + `<span class="field-badge private" style="margin-top:12px;">🔒 Privat — visas aldrig publikt</span>`;
     } else if(tab==='weight'){
-      if(!d.weightLog.length){ body.innerHTML = `<div class="empty">Ingen viktdata registrerad.</div>`; return; }
-      body.innerHTML = `<canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>Datum</th><th>Vikt (kg)</th></tr></thead><tbody>
+      if(!d.weightLog.length){ body.innerHTML = `<div class="empty">Ingen viktdata registrerad.</div><span class="field-badge private">🔒 Privat — visas aldrig publikt</span>`; return; }
+      body.innerHTML = `<span class="field-badge private" style="margin-bottom:10px;">🔒 Privat — visas aldrig publikt</span><canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>Datum</th><th>Vikt (kg)</th></tr></thead><tbody>
         ${d.weightLog.slice().reverse().map(w=>`<tr><td>${fmtDate(w.d)}</td><td>${w.kg} kg</td></tr>`).join('')}
       </tbody></table></div>`;
       const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
@@ -1121,7 +1157,7 @@ function openDogProfile(id){
         options:{ plugins:{legend:{display:false}}, scales:{x:{ticks:{color:ink}}, y:{ticks:{color:ink}}} }
       });
     } else if(tab==='notes'){
-      body.innerHTML = `<div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || 'Inga anteckningar.'}</div>`;
+      body.innerHTML = `<span class="field-badge private" style="margin-bottom:10px;">🔒 Privat — visas aldrig publikt</span><div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || 'Inga anteckningar.'}</div>`;
     }
   }
   document.querySelectorAll('.tab-btn').forEach(b=> b.addEventListener('click', ()=>{
@@ -1143,7 +1179,10 @@ function deleteDog(id){
   DB.health = DB.health.filter(h=> h.dogId!==id);
   saveDB(); closeDrawer(); renderDogs(); toast(d.name+' har tagits bort');
 }
-function infoRow(label,val){ return `<div class="field"><label>${label}</label><div style="padding:8px 0; font-weight:500;">${val}</div></div>`; }
+function infoRow(label,val,pub){
+  const badge = pub===true ? '<span class="field-badge public">🌐 Publik</span>' : pub===false ? '<span class="field-badge private">🔒 Privat</span>' : '';
+  return `<div class="field"><label>${label}${badge}</label><div style="padding:8px 0; font-weight:500;">${val}</div></div>`;
+}
 
 function openDogForm(existing){
   const isEdit = !!existing;
@@ -1156,23 +1195,23 @@ function openDogForm(existing){
     <div class="drawer-head"><div class="drawer-title">${isEdit?'Redigera '+d.name:'Ny hund'}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="dogForm" class="form-grid">
-        <div class="field"><label>Namn *</label><input required name="name" value="${d.name||''}"></div>
-        <div class="field"><label>Registrerat namn</label><input name="regName" value="${d.regName||''}"></div>
-        <div class="field"><label>Ras *</label><input required name="breed" value="${d.breed||'Golden Retriever'}"></div>
-        <div class="field"><label>Kön</label><select name="sex"><option ${sel(d.sex,'Tik')}>Tik</option><option ${sel(d.sex,'Hane')}>Hane</option></select></div>
-        <div class="field"><label>Född</label><input type="date" name="dob" value="${d.dob||''}"></div>
-        <div class="field"><label>Färg</label><input name="color" value="${d.color||''}"></div>
-        <div class="field"><label>Chipnummer</label><input name="chip" value="${d.chip||''}"></div>
-        <div class="field"><label>Registreringsnr</label><input name="reg" value="${d.reg||''}"></div>
-        <div class="field"><label>Status</label><select name="status">
+        <div class="field"><label>Namn * <span class="field-badge public">🌐</span></label><input required name="name" value="${d.name||''}"></div>
+        <div class="field"><label>Registrerat namn <span class="field-badge public">🌐</span></label><input name="regName" value="${d.regName||''}"></div>
+        <div class="field"><label>Ras * <span class="field-badge public">🌐</span></label><input required name="breed" value="${d.breed||'Golden Retriever'}"></div>
+        <div class="field"><label>Kön <span class="field-badge public">🌐</span></label><select name="sex"><option ${sel(d.sex,'Tik')}>Tik</option><option ${sel(d.sex,'Hane')}>Hane</option></select></div>
+        <div class="field"><label>Född <span class="field-badge public">🌐</span></label><input type="date" name="dob" value="${d.dob||''}"></div>
+        <div class="field"><label>Färg <span class="field-badge public">🌐</span></label><input name="color" value="${d.color||''}"></div>
+        <div class="field"><label>Chipnummer <span class="field-badge private">🔒</span></label><input name="chip" value="${d.chip||''}"></div>
+        <div class="field"><label>Registreringsnr <span class="field-badge public">🌐</span></label><input name="reg" value="${d.reg||''}"></div>
+        <div class="field"><label>Status <span class="field-badge public">🌐</span></label><select name="status">
           <option value="puppy" ${sel(d.status,'puppy')}>Valp</option>
           <option value="adult" ${sel(d.status,'adult')||(!isEdit?'selected':'')}>Vuxen</option>
           <option value="retired" ${sel(d.status,'retired')}>Pensionerad</option>
           <option value="deceased" ${sel(d.status,'deceased')}>Avliden</option>
         </select></div>
-        <div class="field"><label>Mankhöjd (cm)</label><input type="number" name="height" value="${d.height||''}"></div>
+        <div class="field"><label>Mankhöjd (cm) <span class="field-badge public">🌐</span></label><input type="number" name="height" value="${d.height||''}"></div>
 
-        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">Stamtavla</label></div>
+        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">Stamtavla <span class="field-badge public">🌐 Publik</span></label></div>
         <div class="field"><label>Far (hane)</label><select name="sire">
           <option value="">— Okänd —</option>
           ${sireOptions.map(x=>`<option value="${x.id}" ${sel(d.sire,x.id)}>${x.name}</option>`).join('')}
@@ -1182,14 +1221,14 @@ function openDogForm(existing){
           ${damOptions.map(x=>`<option value="${x.id}" ${sel(d.dam,x.id)}>${x.name}</option>`).join('')}
         </select></div>
 
-        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">Hälsoresultat & meriter</label></div>
+        <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">Hälsoresultat & meriter <span class="field-badge public">🌐 Publik</span></label></div>
         <div class="field"><label>HD (höftled)</label><input name="hips" value="${d.hips||''}" placeholder="t.ex. A"></div>
         <div class="field"><label>AD (armbåge)</label><input name="elbows" value="${d.elbows||''}" placeholder="t.ex. 0"></div>
         <div class="field"><label>Ögonlysning</label><input name="eyes" value="${d.eyes||''}" placeholder="t.ex. Ua (2024)"></div>
         <div class="field"><label>DNA-tester</label><input name="dna" value="${d.dna||''}" placeholder="t.ex. Klar (PRA, ICT)"></div>
         <div class="field full"><label>Meriter (kommaseparerat)</label><input name="titles" value="${(d.titles||[]).join(', ')}" placeholder="t.ex. SE UCH, SE VCH"></div>
 
-        <div class="field full"><label>Anteckningar</label><textarea name="notes">${d.notes||''}</textarea></div>
+        <div class="field full"><label>Anteckningar <span class="field-badge private">🔒 Privat</span></label><textarea name="notes">${d.notes||''}</textarea></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">Avbryt</button>
           <button type="submit" class="btn btn-primary">${isEdit?'Spara ändringar':'Spara hund'}</button>
@@ -1660,7 +1699,45 @@ function drawDocBody(){
   `).join('') || emptyRow(4);
 }
 
-/* ---- MORE (bonus tools) ---- */
+/* ---- DELNING & SEKRETESS ---- */
+function renderPrivacy(){
+  content.innerHTML = `
+    <div class="privacy-sign public">
+      <h2>🌐 Detta visas publikt (på din publika sida)</h2>
+      <p>För varje hund i ditt hundregister speglas följande fält till din publika sida. Allt annat i Breeder Hub är alltid privat.</p>
+      <ul>
+        <li>Namn, kallelsenamn och registrerat namn</li>
+        <li>Ras, kön, färg och födelsedatum</li>
+        <li>Status (valp / vuxen / pensionerad / avliden)</li>
+        <li>Registreringsnummer och mankhöjd</li>
+        <li>Hälsoresultat: HD, AD, ögonlysning och DNA-tester</li>
+        <li>Meriter/titlar</li>
+        <li>Stamtavla (kopplingar till far/mor och två generationer bakåt)</li>
+      </ul>
+    </div>
+    <div class="privacy-sign private">
+      <h2>🔒 Detta är privat — syns bara för dig</h2>
+      <p>Ingen av dessa uppgifter lämnar någonsin din inloggade vy. De speglas aldrig till den publika sidan.</p>
+      <ul>
+        <li>Chipnummer</li>
+        <li>Anteckningar per hund och vikthistorik</li>
+        <li>Hela hälsojournalen (vaccinationer, veterinärbesök, avmaskning m.m.)</li>
+        <li>Parningsplaner, löpcykler och dräktighetsdata</li>
+        <li>Kullar och valpar (inklusive milstolpar) — valpar blir aldrig publika automatiskt</li>
+        <li>Köpare & CRM — namn, e-post, telefon, boende och kontaktlogg</li>
+        <li>Kalenderhändelser, dokument, kennelns journal, lager och nödkontakter</li>
+        <li>Statistik/instrumentpanel (aggregerade siffror om din verksamhet)</li>
+      </ul>
+    </div>
+    <div class="card card-pad" style="font-size:13px; color:var(--ink-soft); line-height:1.6;">
+      <div style="font-weight:700; color:var(--ink); margin-bottom:6px;">Om GDPR</div>
+      <p style="margin:0 0 8px;">GDPR gäller personuppgifter om identifierbara privatpersoner — inte hunddata i sig. Det som faktiskt skulle kunna vara känsligt ur ett GDPR-perspektiv i Breeder Hub är köparnas kontaktuppgifter (namn, e-post, telefon) i Köpare & CRM-modulen, samt eventuella personnamn i dokumentfiler eller journalanteckningar. Dessa delas aldrig till den publika sidan och bör hanteras varsamt: spara inte mer än nödvändigt, radera uppgifter när de inte längre behövs, och var beredd att ta bort en köpares uppgifter om personen begär det.</p>
+      <p style="margin:0;">Chipnummer hålls medvetet privat eftersom det i teorin skulle kunna användas för att slå upp ägaruppgifter i nationella chipregister. Det här är allmän information, inte juridisk rådgivning — rådfråga gärna en jurist om ni vill ha ett fullständigt GDPR-upplägg för er verksamhet.</p>
+    </div>
+  `;
+}
+
+/* ---- MER (KENNELVERKTYG) ---- */
 function renderMore(){
   content.innerHTML = `
     <div class="two-col">

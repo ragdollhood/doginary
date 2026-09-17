@@ -374,7 +374,10 @@ tbody tr:hover{background:var(--surface-2);}
         <div class="page-sub" id="pageSub">Välkommen tillbaka</div>
       </div>
       <div class="topbar-actions">
-        <button class="icon-btn" id="printBtn" title="Exportera till PDF">
+        <button class="icon-btn" id="exportAllBtn" title="Exportera all kenneldata som PDF">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        </button>
+        <button class="icon-btn" id="printBtn" title="Skriv ut aktuell sida">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
         </button>
         <button class="icon-btn" id="themeBtn" title="Byt tema">
@@ -723,6 +726,123 @@ function ageFromDob(dob){
 function dogById(id){ return DB.dogs.find(d=>d.id===id); }
 function statusLabel(s){ return {puppy:'Valp', adult:'Vuxen', retired:'Pensionerad', deceased:'Avliden'}[s] || s; }
 function buyerStatusLabel(s){ return {new:'Ny förfrågan', waiting:'Väntelista', approved:'Godkänd', reserved:'Reserverad', sold:'Såld', rejected:'Avböjd'}[s] || s; }
+function escapeHtml(v){ return String(v==null||v===''?'—':v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function litterName(id){ const l = DB.litters.find(x=>x.id===id); return l ? l.name : '—'; }
+
+/* ---- EXPORT ALLT (PDF via utskriftsdialogen) ---- */
+function exportAllData(){
+  if(!DB){ toast('Ingen kenneldata inläst än'); return; }
+
+  const today = new Date().toLocaleDateString('sv-SE',{day:'numeric',month:'long',year:'numeric'});
+  const sections = [];
+
+  sections.push(`<h1>${escapeHtml(DB.kennelName)}</h1><p class="meta">Fullständig export — genererad ${today}</p>`);
+
+  // Hundar
+  sections.push(`<h2>Hundregister (${DB.dogs.length})</h2>
+    <table><thead><tr><th>Namn</th><th>Reg.namn</th><th>Ras</th><th>Kön</th><th>Född</th><th>Status</th><th>Reg.nr</th><th>Chip</th><th>Höft/Armb.</th><th>Ögon</th><th>DNA</th><th>Titlar</th></tr></thead><tbody>
+    ${DB.dogs.map(d=>`<tr>
+      <td>${escapeHtml(d.name)}</td><td>${escapeHtml(d.regName)}</td><td>${escapeHtml(d.breed)}</td>
+      <td>${escapeHtml(d.sex)}</td><td>${fmtDate(d.dob)}</td><td>${statusLabel(d.status)}</td>
+      <td>${escapeHtml(d.reg)}</td><td>${escapeHtml(d.chip)}</td><td>${escapeHtml(d.hips)} / ${escapeHtml(d.elbows)}</td>
+      <td>${escapeHtml(d.eyes)}</td><td>${escapeHtml(d.dna)}</td><td>${(d.titles||[]).join(', ')||'—'}</td>
+    </tr>`).join('')}
+    </tbody></table>
+    ${DB.dogs.filter(d=>d.notes).map(d=>`<p class="note"><strong>${escapeHtml(d.name)}:</strong> ${escapeHtml(d.notes)}</p>`).join('')}`);
+
+  // Hälsojournal
+  sections.push(`<h2>Hälsojournal (${DB.health.length})</h2>
+    <table><thead><tr><th>Hund</th><th>Typ</th><th>Datum</th><th>Nästa</th><th>Detaljer</th><th>Status</th></tr></thead><tbody>
+    ${DB.health.map(h=>{const d=dogById(h.dogId);return `<tr>
+      <td>${d?escapeHtml(d.name):'—'}</td><td>${escapeHtml(h.type)}</td><td>${fmtDate(h.date)}</td>
+      <td>${fmtDate(h.due)}</td><td>${escapeHtml(h.detail)}</td><td>${h.status==='due'?'Förfaller':'OK'}</td>
+    </tr>`;}).join('')}
+    </tbody></table>`);
+
+  // Parningsplaner
+  sections.push(`<h2>Parningsplaner (${DB.breedings.length})</h2>
+    <table><thead><tr><th>Tik</th><th>Hane</th><th>Parningsdatum</th><th>Beräknat valpdatum</th><th>Bekräftad</th><th>Förv. antal</th><th>Anteckningar</th></tr></thead><tbody>
+    ${DB.breedings.map(b=>{const dam=dogById(b.dam),sire=dogById(b.sire);return `<tr>
+      <td>${dam?escapeHtml(dam.name):'—'}</td><td>${sire?escapeHtml(sire.name):'—'}</td>
+      <td>${fmtDate(b.matingDate)}</td><td>${fmtDate(b.dueDate)}</td><td>${b.confirmed?'Ja':'Nej'}</td>
+      <td>${b.expectedCount||'—'}</td><td>${escapeHtml(b.notes)}</td>
+    </tr>`;}).join('')}
+    </tbody></table>`);
+
+  // Kullar
+  sections.push(`<h2>Kullar (${DB.litters.length})</h2>
+    ${DB.litters.map(l=>{const dam=dogById(l.dam),sire=dogById(l.sire);return `
+      <h3>${escapeHtml(l.name)} — född ${fmtDate(l.birthDate)}</h3>
+      <p class="meta">Tik: ${dam?escapeHtml(dam.name):'—'} &nbsp;·&nbsp; Hane: ${sire?escapeHtml(sire.name):'—'} &nbsp;·&nbsp; ${l.puppies.length} valpar</p>
+      <table><thead><tr><th>Namn</th><th>Kön</th><th>Färg</th><th>Födelsevikt</th><th>Status</th></tr></thead><tbody>
+      ${l.puppies.map(p=>`<tr><td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.sex)}</td><td>${escapeHtml(p.color)}</td><td>${p.birthWeight} kg</td><td>${escapeHtml(p.status)}</td></tr>`).join('')}
+      </tbody></table>
+      <p class="meta">Milstolpar: ${l.milestones.map(m=>`${escapeHtml(m.label)} ${m.done?('('+fmtDate(m.date)+')'):'(ej klar)'}`).join(', ')}</p>
+    `;}).join('')}`);
+
+  // Köpare
+  sections.push(`<h2>Köpare & CRM (${DB.buyers.length})</h2>
+    ${DB.buyers.map(b=>`
+      <h3>${escapeHtml(b.name)} <span class="tag">${buyerStatusLabel(b.status)}</span></h3>
+      <p class="meta">${escapeHtml(b.email)} &nbsp;·&nbsp; ${escapeHtml(b.phone)} &nbsp;·&nbsp; ${escapeHtml(b.country)}</p>
+      <p class="meta">Boende: ${escapeHtml(b.housing)} &nbsp;·&nbsp; Aktivitetsnivå: ${escapeHtml(b.activity)} &nbsp;·&nbsp; Tidigare hund: ${escapeHtml(b.prevDog)}</p>
+      <p class="meta">Önskemål: ${escapeHtml(b.preferred)} ${b.puppyId?('&nbsp;·&nbsp; Kopplad valp: '+escapeHtml((DB.litters.flatMap(l=>l.puppies).find(p=>p.id===b.puppyId)||{}).name)):''}</p>
+      ${(b.log||[]).length?`<ul class="loglist">${b.log.map(e=>`<li>${fmtDate(e.date)} — ${escapeHtml(e.note)}</li>`).join('')}</ul>`:''}
+    `).join('')}`);
+
+  // Kalender
+  sections.push(`<h2>Kalender (${DB.events.length})</h2>
+    <table><thead><tr><th>Datum</th><th>Händelse</th><th>Typ</th></tr></thead><tbody>
+    ${[...DB.events].sort((a,z)=>a.date.localeCompare(z.date)).map(e=>`<tr><td>${fmtDate(e.date)}</td><td>${escapeHtml(e.title)}</td><td>${escapeHtml(e.type)}</td></tr>`).join('')}
+    </tbody></table>`);
+
+  // Dokument
+  sections.push(`<h2>Dokument (${DB.documents.length})</h2>
+    <table><thead><tr><th>Namn</th><th>Typ</th><th>Datum</th><th>Gäller</th></tr></thead><tbody>
+    ${DB.documents.map(d=>`<tr><td>${escapeHtml(d.name)}</td><td>${escapeHtml(d.type)}</td><td>${fmtDate(d.date)}</td><td>${escapeHtml(d.relatedTo)}</td></tr>`).join('')}
+    </tbody></table>`);
+
+  // Journal
+  sections.push(`<h2>Journalanteckningar (${DB.journal.length})</h2>
+    ${[...DB.journal].sort((a,z)=>z.date.localeCompare(a.date)).map(j=>`<p><strong>${fmtDate(j.date)}</strong> — ${escapeHtml(j.text)}</p>`).join('')}`);
+
+  // Lager
+  sections.push(`<h2>Lager (${DB.inventory.length})</h2>
+    <table><thead><tr><th>Artikel</th><th>Antal</th><th>Enhet</th><th>Lågnivå vid</th></tr></thead><tbody>
+    ${DB.inventory.map(i=>`<tr><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>${escapeHtml(i.unit)}</td><td>${i.low}</td></tr>`).join('')}
+    </tbody></table>`);
+
+  // Kontakter
+  sections.push(`<h2>Nödkontakter (${DB.contacts.length})</h2>
+    <table><thead><tr><th>Namn</th><th>Roll</th><th>Telefon</th></tr></thead><tbody>
+    ${DB.contacts.map(c=>`<tr><td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.role)}</td><td>${escapeHtml(c.phone)}</td></tr>`).join('')}
+    </tbody></table>`);
+
+  const doc = `<!DOCTYPE html><html lang="sv"><head><meta charset="utf-8">
+    <title>${escapeHtml(DB.kennelName)} — export</title>
+    <style>
+      body{font-family:Georgia,'Times New Roman',serif;color:#1a2420;max-width:900px;margin:32px auto;padding:0 24px;line-height:1.5;}
+      h1{font-size:26px;margin-bottom:2px;}
+      h2{font-size:19px;margin-top:36px;border-bottom:1px solid #ccc;padding-bottom:6px;page-break-after:avoid;}
+      h3{font-size:15px;margin:18px 0 2px;page-break-after:avoid;}
+      .meta{color:#666;font-size:13px;margin:2px 0 10px;}
+      .note{font-size:13px;color:#444;}
+      table{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:12.5px;}
+      th,td{border:1px solid #ddd;padding:5px 7px;text-align:left;vertical-align:top;}
+      th{background:#f2efe9;}
+      tr{page-break-inside:avoid;}
+      .tag{font-size:11px;background:#eee;border-radius:4px;padding:2px 6px;margin-left:6px;}
+      .loglist{margin:4px 0 14px;padding-left:18px;font-size:13px;}
+      @media print{ body{margin:0;padding:16px;} }
+    </style></head><body>${sections.join('')}</body></html>`;
+
+  const w = window.open('', '_blank');
+  if(!w){ toast('Blockerad av popup-blockeraren — tillåt popupfönster och försök igen'); return; }
+  w.document.open(); w.document.write(doc); w.document.close();
+  w.focus();
+  setTimeout(()=>{ try{ w.print(); }catch(e){} }, 350);
+}
+
 function toast(msg){
   const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
@@ -771,6 +891,7 @@ function goTo(page){
 
 document.getElementById('menuBtn').addEventListener('click', ()=> document.getElementById('sidebar').classList.toggle('open'));
 document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+document.getElementById('exportAllBtn').addEventListener('click', exportAllData);
 document.getElementById('themeBtn').addEventListener('click', ()=>{
   const root = document.documentElement;
   const cur = root.getAttribute('data-theme');

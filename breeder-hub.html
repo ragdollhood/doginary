@@ -217,15 +217,25 @@ tbody tr:hover{background:var(--surface-2);}
 }
 .overlay.open{display:flex;}
 
-/* auth gate */
+/* auth gate — flyter mitt på sidan men blockerar inte resten av sidan.
+   pointer-events:none på wrappern gör att klick "faller igenom" till
+   innehållet bakom, medan kortet självt (pointer-events:auto) förblir
+   klickbart. Så kan besökare klicka runt i exempeldata samtidigt som
+   inloggningsrutan syns. */
 #authGate{
-  position:fixed; inset:0; z-index:400; background:var(--bg); display:none;
+  position:fixed; inset:0; z-index:400; display:none;
   align-items:center; justify-content:center; padding:20px;
+  pointer-events:none;
 }
 #authGate.show{display:flex;}
 .auth-card{
   width:min(380px,100%); background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-l);
-  padding:32px 28px 26px; box-shadow:var(--shadow);
+  padding:32px 28px 26px; box-shadow:0 18px 50px rgba(0,0,0,.28), 0 2px 10px rgba(0,0,0,.12);
+  pointer-events:auto;
+}
+.demo-badge{
+  display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+  background:var(--honey-tint); color:var(--honey-deep); padding:2px 8px; border-radius:10px; margin-left:6px;
 }
 .auth-eyebrow{font-size:12px; color:var(--ink-soft); margin:0 0 2px;}
 .auth-title{font-family:var(--font-display); font-size:23px; font-weight:500; margin:0 0 6px;}
@@ -369,7 +379,7 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-foot">
-      <div class="kennel-name" id="kennelNameLabel">Kennel von Bella</div>
+      <div class="kennel-name" id="kennelNameLabel"><span id="kennelNameText">Kennel von Bella</span><span class="demo-badge" id="demoBadge" style="display:none;">Exempel</span></div>
       <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
         <span>Uppfödaröversikt</span>
         <button id="logoutBtn" style="background:none; border:none; color:#9FB3A9; cursor:pointer; font-size:12px; text-decoration:underline; padding:0;">Logga ut</button>
@@ -484,6 +494,7 @@ const sb = (SUPABASE_URL.includes('DITT-PROJEKT') || !window.supabase)
 let cloudEnabled = !!sb;
 let DB = null;
 let KENNEL_ID = null;
+let DEMO_MODE = true;
 
 /* ---------------- AUTH ---------------- */
 let authMode = 'signin'; // or 'signup'
@@ -557,12 +568,27 @@ async function getOrCreateKennelId(userId){
 
 async function bootApp(){
   content.innerHTML = '<div class="empty">Laddar kenneldata…</div>';
+  DEMO_MODE = false;
+  document.getElementById('demoBadge').style.display = 'none';
   DB = await loadDB();
-  document.getElementById('kennelNameLabel').textContent = DB.kennelName;
+  document.getElementById('kennelNameText').textContent = DB.kennelName;
   PAGE_META.dashboard.sub = 'Välkommen tillbaka till ' + DB.kennelName;
   goTo('dashboard');
 }
 
+// Visar klickbar exempeldata direkt när sidan öppnas, innan (eller om)
+// någon är inloggad. Inget sparas mot Supabase i det här läget — se
+// saveDB()/savePublicSnapshot() som tyst hoppar över nätverksanropet
+// så länge DEMO_MODE är true.
+function startDemo(){
+  DEMO_MODE = true;
+  KENNEL_ID = null;
+  DB = seed();
+  document.getElementById('kennelNameText').textContent = DB.kennelName;
+  document.getElementById('demoBadge').style.display = 'inline-block';
+  PAGE_META.dashboard.sub = 'Så här ser Breeder Hub ut — logga in eller skapa konto för din egen kennel';
+  goTo('dashboard');
+}
 if(cloudEnabled){
   sb.auth.onAuthStateChange(async (event, session)=>{
     if(session){
@@ -577,13 +603,12 @@ if(cloudEnabled){
         authMsg.className = 'error';
       }
     } else {
-      KENNEL_ID = null; DB = null;
       setAuthMode('signin');
       authGate.classList.add('show');
+      if(!DEMO_MODE) startDemo();
     }
   });
 } else {
-  authGate.classList.add('show');
   document.getElementById('authCard').innerHTML = `
     <div class="auth-eyebrow">BREEDER HUB</div>
     <div class="auth-title">Inte konfigurerad än</div>
@@ -685,24 +710,31 @@ function seed(){
   ];
   return {dogs, health, breedings, litters, buyers, events, documents, journal, inventory, contacts, kennelName:'Kennel von Bella', theme:null};
 }
+// Tom startpunkt för ett riktigt, nyskapat konto — inga påhittade
+// exempel. Allt fylls i av uppfödaren själv.
+function emptyDB(){
+  return {dogs:[], health:[], breedings:[], litters:[], buyers:[], events:[], documents:[], journal:[], inventory:[], contacts:[], kennelName:'Min kennel', theme:null};
+}
 
 async function loadDB(){
   try{
     const { data, error } = await sb.from('bh_kennel_data').select('data').eq('kennel_id', KENNEL_ID).maybeSingle();
     if(error) throw error;
     if(data && data.data && Object.keys(data.data).length) return data.data;
-    // Tom rad (t.ex. precis skapad av signup-triggern) — seeda med startdata.
-    const fresh = seed();
+    // Tom rad (t.ex. precis skapad av signup-triggern) — nytt konto ska
+    // starta helt tomt, inte med exempeldata.
+    const fresh = emptyDB();
     await sb.from('bh_kennel_data').upsert({kennel_id:KENNEL_ID, data: fresh, updated_at:new Date().toISOString()});
     await savePublicSnapshot(fresh);
     return fresh;
   }catch(e){
     console.error('Kunde inte läsa kenneldata från Supabase', e);
     toast('Kunde inte hämta din kenneldata från molnet');
-    return seed();
+    return emptyDB();
   }
 }
 async function saveDB(){
+  if(DEMO_MODE || !KENNEL_ID){ toast('Det här är en exempelvy — logga in eller skapa konto för att spara på riktigt'); return; }
   try{
     const { error } = await sb.from('bh_kennel_data').upsert({kennel_id:KENNEL_ID, data: DB, updated_at:new Date().toISOString()});
     if(error) throw error;
@@ -716,6 +748,7 @@ async function saveDB(){
 // dokument, journal eller andra privata anteckningar) till kennel_public,
 // som har en RLS-policy som tillåter alla att läsa den utan inloggning.
 async function savePublicSnapshot(db){
+  if(DEMO_MODE || !KENNEL_ID) return;
   const publicDogs = (db.dogs||[]).map(d=>({
     id:d.id, name:d.name, regName:d.regName, callName:d.callName, breed:d.breed, sex:d.sex,
     dob:d.dob, color:d.color, reg:d.reg, status:d.status, height:d.height,
@@ -1064,7 +1097,6 @@ function renderDogs(){
   content.innerHTML = `
     <div class="privacy-legend">
       <span class="field-badge public">🌐 Publik</span> visas på din publika sida &nbsp;·&nbsp;
-      <span class="field-badge private">🔒 Privat</span> syns bara för dig &nbsp;·&nbsp;
       <a href="#" id="privacyLegendLink" style="color:var(--ink-soft); text-decoration:underline;">Läs mer</a>
     </div>
     <div class="filter-row">
@@ -1314,6 +1346,10 @@ function openHealthForm(){
 
 /* ---- PEDIGREE ---- */
 function renderPedigree(){
+  if(!DB.dogs.length){
+    content.innerHTML = `<div class="empty">Inga hundar registrerade än. Lägg till din första hund under Hundregister för att se en stamtavla här.</div>`;
+    return;
+  }
   content.innerHTML = `
     <div class="filter-row">
       <select class="chip-filter" id="pedSelect" style="border-radius:8px;">${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select>
@@ -1778,9 +1814,14 @@ function renderMore(){
   drawJournal();
 }
 
-/* App boot now happens in bootApp(), triggered by onAuthStateChange
-   above once a session exists (see AUTH section). */
-
+/* ---------------- APP-START ----------------
+   Körs sist i skriptet, efter att alla const/funktioner (PAGE_META,
+   content, NAV m.fl.) är initierade. Visar direkt en klickbar
+   exempelkennel bakom det flytande inloggningskortet; riktig
+   inloggning/registrering (se AUTH-sektionen ovan) byter sedan ut
+   detta mot användarens egen (tomma) kennel via bootApp(). */
+startDemo();
+authGate.classList.add('show');
 </script>
 </body>
 </html>

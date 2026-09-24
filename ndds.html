@@ -148,9 +148,9 @@ async function loadStations(){
  status("Hämtar mätstationer från datavärden…");
  let all;
  try{ all=await fetchAllStations(); }
- catch(e){ apiFail(e,"listan över mätstationer"); S.stations=[]; S.series=[]; render(); return; }
+ catch(e){ apiFail(e,"listan över mätstationer"); S.stations=[]; S.series=[]; render(true); return; }
 
- if(!all.length){status("Datavärden svarade, men listan över mätstationer var tom eller hade oväntat format.",1);S.stations=[];S.series=[];render();return}
+ if(!all.length){status("Datavärden svarade, men listan över mätstationer var tom eller hade oväntat format.",1);S.stations=[];S.series=[];render(true);return}
 
  // Try the selected radius; if nothing is found, automatically widen the
  // search instead of just reporting zero stations.
@@ -161,18 +161,18 @@ async function loadStations(){
   if(chosen.length){ if(r!==rad){$("rad").value=r;status("Inga stationer inom "+rad+" km – vidgade automatiskt sökningen till "+r+" km.")} rad=r; break; }
  }
  S.stations=chosen;
- if(!S.stations.length){status("Hittade inga mätstationer inom "+RADII[RADII.length-1]+" km från Norra Djurgårdsstaden i datavärdens register.",1);S.series=[];render();return}
+ if(!S.stations.length){status("Hittade inga mätstationer inom "+RADII[RADII.length-1]+" km från Norra Djurgårdsstaden i datavärdens register.",1);S.series=[];render(true);return}
 
  status("Hämtar tidsserier för "+S.stations.length+" station(er)…");
  let seriesResults;
  try{
   seriesResults=await Promise.all(S.stations.map(s=>getj(API+"/timeseries?station="+s.id+"&expanded=true")));
- }catch(e){ apiFail(e,"tidsserierna för stationerna"); S.series=[]; render(); return; }
+ }catch(e){ apiFail(e,"tidsserierna för stationerna"); S.series=[]; render(true); return; }
 
  S.series=[];
  seriesResults.forEach((arr,i)=>(arr||[]).forEach(t=>{const l=t.parameters?.phenomenon?.label||t.label;S.series.push({id:t.id,st:S.stations[i],label:l,pol:norm(l),uom:t.uom||""})}));
  const pols=[...new Set(S.series.map(s=>s.pol))];
- if(!pols.length){status("Stationerna hittades men hade inga tidsserier (inga uppmätta föroreningar) i svaret.",1);$("chips").innerHTML="";render();return}
+ if(!pols.length){status("Stationerna hittades men hade inga tidsserier (inga uppmätta föroreningar) i svaret.",1);$("chips").innerHTML="";render(true);return}
  $("chips").innerHTML=pols.map(p=>`<button data-p="${p}">${p}</button>`).join("");
  if(!pols.includes(S.pol))S.pol=pols.includes("NO2")?"NO2":pols[0];
  refresh();
@@ -196,7 +196,7 @@ async function refresh(){
  if(anyError && !ss.some(s=>(S.cache[s.id+d]||[]).length)) apiFail(anyError,"mätvärdena för "+S.pol+" "+d);
 }
 function valAt(s,ms){const arr=S.cache[s.id+$("date").value]||[];let best=null;arr.forEach(p=>{const df=Math.abs(p.t-ms);if(df<=31*60000&&(!best||df<best.df))best={...p,df}});return best}
-function render(){
+function render(quiet){
  const h=+$("hour").value,d=$("date").value,ms=loc2utc(d,h);$("hl").textContent=String(h).padStart(2,"0")+":00";
  mk.clearLayers();let rows="",n=0;
  const seen=new Set();
@@ -209,7 +209,7 @@ function render(){
   rows+=`<tr class="row" data-i="${s.id}"><td><span class="dot" style="background:${c}"></span>${s.st.label}</td><td>${s.st.d.toFixed(1)} km</td><td>${p?p.v.toFixed(1)+" "+s.uom:(s.err?"fel: "+s.err:"saknar värde")}</td><td>${p?fmt(p.t):"–"}</td></tr>`});
  $("tb").innerHTML=rows||"<tr><td colspan=4>Inga stationer mäter "+S.pol+" i området.</td></tr>";
  $("lg").innerHTML=(LIM[S.pol]?`<span><i class="dot" style="background:#2e9e5b"></i>&lt;25 % av norm</span><span><i class="dot" style="background:#c8b400"></i>25–50 %</span><span><i class="dot" style="background:#e8890c"></i>50–75 %</span><span><i class="dot" style="background:#d8382f"></i>&gt;75 % (norm ${LIM[S.pol]})</span>`:"Ingen jämförelsenorm inlagd för denna förorening")+`<span><i class="dot" style="background:#9aa39c"></i>saknar data</span>`;
- if(!S._lastErr) status(n?`${n} station(er) med mätvärde för ${S.pol} ${d} kl ${String(h).padStart(2,"0")}:00.`:`Inga mätvärden för ${S.pol} vid vald tid (data kan saknas eller vara försenade).`,!n);
+ if(!quiet) status(n?`${n} station(er) med mätvärde för ${S.pol} ${d} kl ${String(h).padStart(2,"0")}:00.`:`Inga mätvärden för ${S.pol} vid vald tid (data kan saknas eller vara försenade).`,!n);
  if(!S.sel||S.sel.pol!=S.pol)S.sel=S.series.find(s=>s.pol==S.pol);chart();
 }
 function chart(){

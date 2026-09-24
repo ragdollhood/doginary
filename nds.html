@@ -2,173 +2,204 @@
 <html lang="sv">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Företag i Norra Djurgårdsstaden</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Norra Djurgårdsstaden – lokal karta</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---bg:#f5f4ef;--card:#fff;--ink:#1d2a33;--mute:#5d6b75;--line:#dcd9cf;--water:#bcd8ea;--land:#efece2;--park:#cfe3c1;--road:#fff;--hw:#9aa9c4}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14191d;--card:#1e262c;--ink:#e8edf0;--mute:#9aa8b1;--line:#33404a;--water:#1f3a4d;--land:#252b2e;--park:#2b4530;--road:#454d52;--hw:#5f6f8c}}
-:root[data-theme="dark"]{--bg:#14191d;--card:#1e262c;--ink:#e8edf0;--mute:#9aa8b1;--line:#33404a;--water:#1f3a4d;--land:#252b2e;--park:#2b4530;--road:#454d52;--hw:#5f6f8c}
+:root{--bg:#f2f6f7;--card:#fff;--ink:#12324a;--mute:#5b7183;--line:#d5e0e6;--accent:#2e7fa6}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1a22;--card:#172530;--ink:#e6eef3;--mute:#93a9b8;--line:#28404f;--accent:#5bb0d6}}
 *{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:900px;margin:0 auto;padding:0 12px 28px}
-h1{font-size:1.25rem;margin:14px 0 2px}
-.sub{color:var(--mute);margin:0 0 10px;font-size:.88rem}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:0 12px 32px}
+h1{font-size:1.35rem;margin:16px 0 2px}
+.sub{margin:0 0 12px;color:var(--mute);font-size:.9rem}
+.row{display:flex;gap:8px;overflow-x:auto;padding:3px 0 8px}
 .chip{flex:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 13px;font:inherit;font-size:.85rem;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.mapwrap{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-svg{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
-.zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px}
-.zoom button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:18px;cursor:pointer}
-.mk{cursor:pointer}
-.mk circle{stroke:#fff;stroke-width:2}
-.mk text{font-size:11px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
-.mk .nm{font-size:9px;fill:var(--ink);paint-order:stroke;stroke:var(--card);stroke-width:3px}
-.mk.sel circle{stroke:var(--ink);stroke-width:3}
-.lbl{font-size:10px;fill:var(--mute);text-anchor:middle;letter-spacing:.05em}
-.wl{font-size:12px;fill:#4f86a6;font-style:italic;text-anchor:middle}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px}
-.card h2{font-size:1rem;margin:0 0 2px}
-.card p{margin:2px 0;color:var(--mute);font-size:.88rem}
-.list{margin-top:12px;display:grid;gap:8px}
-.it{display:flex;gap:10px;align-items:center;text-align:left;width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;cursor:pointer}
-.it i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:15px}
-.it b{display:block;font-size:.95rem}
-.it span{color:var(--mute);font-size:.8rem}
-.it.sel{border-color:var(--ink)}
-.note{font-size:.8rem;color:var(--mute);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-top:14px}
+.chip.lay[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+#map{height:62vh;min-height:360px;border-radius:14px;border:1px solid var(--line)}
+.status{font-size:.82rem;color:var(--mute);margin:8px 2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px}
+.panel h2{font-size:1.02rem;margin:0 0 6px}
+input[type=search]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-bottom:8px}
+.grid{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.it{display:block;text-align:left;width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:8px 10px;font:inherit;cursor:pointer}
+.it b{display:block;font-size:.92rem}.it span{font-size:.78rem;color:var(--mute)}
+.ev{border-top:1px solid var(--line);padding:8px 0;font-size:.88rem}.ev:first-of-type{border-top:0}
+.ev small{color:var(--mute)}
+a{color:var(--accent)}
+.note{font-size:.8rem;color:var(--mute);margin-top:14px}
+.pop b{display:block}.pop span{display:block;font-size:.85em}
 </style>
 </head>
 <body>
-<h1>Företag i Norra Djurgårdsstaden</h1>
-<p class="sub">Från Husarviken till Ropsten – sortera på restauranger och caféer.</p>
-<div class="chips" id="chips"></div>
+<div class="wrap">
+<h1>Norra Djurgårdsstaden</h1>
+<p class="sub">Husarviken, Hjorthagen och Ropsten – företag, busslinjer och polishändelser.</p>
 
-<div class="mapwrap">
-<svg id="map" viewBox="0 60 740 560" role="img" aria-label="Schematisk karta över företag i norra Djurgårdsstaden">
-  <rect x="-200" y="-200" width="1400" height="1200" fill="var(--land)"/>
-  <polygon points="-200,-200 340,-200 330,60 230,80 100,170 20,290 -200,330" fill="var(--park)"/>
-  <polygon points="450,-200 1200,-200 1200,500 800,420 700,300 640,150 560,80 470,50" fill="var(--water)"/>
-  <polyline points="-20,315 20,290 100,170 230,80 330,60 470,50" fill="none" stroke="var(--water)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- streets -->
-  <g stroke="var(--road)" fill="none" stroke-linecap="round">
-    <path d="M40 260 L200 200 L330 150 L470 130" stroke-width="7"/>
-    <path d="M60 300 L110 330 L150 420 L170 520" stroke-width="6"/>
-    <path d="M110 330 L300 250 L520 340 L640 260" stroke-width="5"/>
-    <path d="M200 200 L250 330 L280 470" stroke-width="4"/>
-    <path d="M60 470 L300 470 L520 420" stroke-width="4"/>
-  </g>
-  <!-- Norra Länken / E20 -->
-  <path d="M-100 610 C100 585 300 600 470 610 C620 605 680 520 680 400 C680 320 700 280 760 230" fill="none" stroke="var(--hw)" stroke-width="12" stroke-linecap="round"/>
-  <g transform="translate(300,596)"><rect x="-13" y="-9" width="26" height="18" rx="4" fill="#4c8a3a"/><text x="0" y="4" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">E20</text></g>
-  <text class="wl" x="590" y="90">Värtan</text>
-  <text class="wl" x="175" y="200" transform="rotate(-38 175 200)" opacity=".9">Husarviken</text>
-  <text class="lbl" x="130" y="100">NATIONALSTADSPARKEN</text>
-  <text class="lbl" x="130" y="568">KVARTERET MUDDUS</text>
-  <text class="lbl" x="440" y="300">HJORTHAGEN</text>
-  <g transform="translate(628,232)"><circle r="10" fill="#7a4bc2"/><text y="4" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">T</text></g>
-  <text class="lbl" x="628" y="256">ROPSTEN</text>
-  <g id="marks"></g>
-</svg>
-<div class="zoom"><button id="zi" aria-label="Zooma in">+</button><button id="zo" aria-label="Zooma ut">−</button><button id="zr" aria-label="Återställ" style="font-size:14px">⌂</button></div>
+<div class="row" id="cats"></div>
+<div class="row" id="lays"></div>
+<div id="map" role="application" aria-label="Karta"></div>
+<div class="status" id="status">Hämtar data…</div>
+
+<div class="panel">
+  <h2 id="lt">Platser</h2>
+  <input type="search" id="q" placeholder="Sök på namn eller adress">
+  <div class="grid" id="list"></div>
 </div>
 
-<div class="card" id="info"><h2>Tryck på en symbol eller ett företag i listan</h2><p>Zooma in för att se namnen på kartan. Dra för att flytta kartan.</p></div>
-<div class="list" id="list"></div>
-
-<div class="note">
-  Kartan är en förenklad skiss och placeringarna är ungefärliga. Företagslistan bygger på en sökning i Google Places och kan vara ofullständig eller inaktuell – öppettider och betyg hittar du i din kartapp.
-  Sthlm Physique och Synsam är utplacerade utifrån din skärmdump och därför extra ungefärliga.
+<div class="panel">
+  <h2>Polishändelser</h2>
+  <div class="row"><button class="chip" id="allev" aria-pressed="false">Visa hela Stockholm</button></div>
+  <div id="events">Hämtar…</div>
 </div>
 
+<p class="note">Kartdata © OpenStreetMap-bidragsgivare. Företag kommer från OpenStreetMap och kan vara ofullständiga. Polisens händelser hämtas från Polisens öppna API och har ofta bara ungefärlig plats. Busslinjer visas som de är inritade i OpenStreetMap – kontrollera avgångar i SL-appen.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-var T={r:{n:"Restauranger",c:"#d64545",e:"🍽️"},c:{n:"Caféer",c:"#9a6a35",e:"☕"},g:{n:"Mataffärer",c:"#4c9a3a",e:"🛒"},s:{n:"Butiker & service",c:"#7a4bc2",e:"🛍️"},h:{n:"Hälsa & träning",c:"#1f9d8a",e:"💪"}};
-// [namn, x, y, typer, adress, beskrivning]
-var D=[
-["Rustys",143,452,"r","Lövängsgatan 12","Pizzeria, bar och barberare."],
-["Basilico",82,320,"r","Jaktgatan 3","Napolitansk pizza och pasta."],
-["Mare Blu",65,231,"r","Fågelhundsgatan 30","Italienskt: pizza och pasta."],
-["O.C.R.A",285,149,"r","Tengelinsgatan 10","Restaurang med öppet kök, lunch och brunch."],
-["Rockin Grill",140,437,"r","Lövängsgatan 14","Amerikansk burgarrestaurang."],
-["Texas Longhorn",132,424,"r","Lövängsgatan 14","Steakhouse och burgare."],
-["Matkafé Mätarhuset",211,197,"rc","Gasverksvägen 15","Brunch och lunch i gamla gasverket."],
-["Beiruts Brygga",68,175,"r","Husarviksgatan 12","Libanesisk mat."],
-["Suyaki",545,349,"r","Artemisgatan 20","Asiatisk/kinesisk mat."],
-["Bamboo Asia",126,464,"r","Storängsvägen 3","Vietnamesisk mat."],
-["Selma Deli",106,311,"cr","Jaktgatan 4","Café och lunchställe, husmanskost."],
-["Hjorthagens Kulturcafé",520,339,"cr","Artemisgatan 19T","Vegetariskt kafé i gammalt medborgarhus."],
-["Café Olive",109,421,"c","Storängsvägen 25","Kafé med georgisk och armenisk mat."],
-["Café Två Bönor",104,139,"c","Husarviksgatan 14a","Kafé med fika, lunch och veganskt."],
-["Granero Bakery",297,140,"c","Tengelinsgatan 14","Bageri, kafé och gelato."],
-["Story café Sthlm",259,109,"c","Bobergsgatan 59c","Kafé med crêpes och smörgåsar."],
-["The Bear Café",271,121,"c","Bobergsgatan 59c","Kafé med smörgåsar."],
-["Hemköp",177,520,"g","Storängskroken 14–16","Mataffär."],
-["Coop",228,129,"g","Bobergsgatan 53","Mataffär."],
-["Sunny Delikatess",152,462,"g","Lövängsgatan 10","Frukt, grönt och delikatesser."],
-["Direkten Djurgårds Närlivs",118,392,"g","Lövängsgatan 22","Närlivs och paketutlämning."],
-["Systembolaget",258,135,"s","Bobergsgatan 50","Bolag för alkoholhaltiga drycker."],
-["Agape Second Hand",192,540,"s","Storängskroken 16A","Second hand."],
-["Myrorna Ropsten",711,458,"s","Kolargatan 2","Stor second hand-butik."],
-["Synsam",163,504,"s","Norra Djurgårdsstaden","Optiker. Läge ungefärligt."],
-["Storängsvägen Kemtvätt & skomakeri",135,476,"s","Storängsvägen 1","Kemtvätt, skrädderi och skomakeri."],
-["Sthlm Physique",215,112,"h","Norra Djurgårdsstaden","Träning. Läge ungefärligt."]
-];
-var F="all",sel=-1,vb0=[0,60,740,560],vb=vb0.slice(),NS="http://www.w3.org/2000/svg";
-var svg=document.getElementById("map"),marks=document.getElementById("marks");
-function vis(d){return F==="all"||d[3].indexOf(F)>-1}
-function mk(t,a,p,x){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(x)e.textContent=x;p.appendChild(e);return e}
-function setVB(){svg.setAttribute("viewBox",vb.join(" "))}
-function draw(){
-  marks.innerHTML="";
-  D.forEach(function(d,i){
-    if(!vis(d))return;
-    var t=T[d[3][0]],g=mk("g",{class:"mk"+(sel===i?" sel":"")},marks);
-    mk("circle",{cx:d[1],cy:d[2],r:11,fill:t.c},g);
-    mk("text",{x:d[1],y:d[2]},g,t.e);
-    if(vb[2]<420)mk("text",{x:d[1],y:d[2]+21,class:"nm"},g,d[0]);
-    g.addEventListener("click",function(){if(!moved)pick(i,false)});
+var BB=[59.3495,18.0750,59.3625,18.1120]; // S,W,N,E
+var CAT={
+ r:{n:"Restauranger",c:"#c8452f"},c:{n:"Caféer",c:"#9a6a35"},g:{n:"Mataffärer",c:"#3f8f47"},
+ s:{n:"Butiker & service",c:"#7a4bc2"},h:{n:"Hälsa & träning",c:"#1f9d8a"},e:{n:"Skola & förskola",c:"#d49a1a"},a:{n:"Återvinning",c:"#5b7183"}
+};
+var AREAS={hjorthagen:[59.3565,18.0985],"norra djurgårdsstaden":[59.3560,18.0900],husarviken:[59.3575,18.0880],ropsten:[59.3572,18.1025],gärdet:[59.3540,18.0960],värtan:[59.3540,18.0980],frihamnen:[59.3520,18.0960],lidingövägen:[59.3560,18.1000],djurgårdsstaden:[59.3560,18.0900]};
+var map=L.map("map",{zoomControl:true}).fitBounds([[BB[0],BB[1]],[BB[2],BB[3]]]);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+var G={places:L.layerGroup().addTo(map),bus:L.layerGroup().addTo(map),stops:L.layerGroup(),police:L.layerGroup().addTo(map)};
+var places=[],filter="all",lays={bus:true,stops:false,police:true},markers=[];
+var st=document.getElementById("status");
+
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function classify(t){
+  var a=t.amenity,s=t.shop,l=t.leisure;
+  if(a==="cafe"||s==="bakery"||s==="pastry"||s==="coffee")return"c";
+  if(/^(restaurant|fast_food|pub|bar)$/.test(a))return"r";
+  if(/^(supermarket|convenience|greengrocer|deli|butcher|kiosk)$/.test(s))return"g";
+  if(/^(pharmacy|clinic|doctors|dentist)$/.test(a)||/^(fitness_centre|sports_centre|swimming_pool)$/.test(l)||/^(chemist|optician|hairdresser|beauty|massage)$/.test(s))return"h";
+  if(/^(school|kindergarten)$/.test(a))return"e";
+  if(a==="recycling")return"a";
+  if(a||s)return"s";
+  return null;
+}
+function addr(t){return[(t["addr:street"]||"")+(t["addr:housenumber"]?" "+t["addr:housenumber"]:""),t["addr:postcode"]].filter(Boolean).join(", ")}
+function popup(p){
+  var d=el("div","pop");d.appendChild(el("b",0,p.name));
+  d.appendChild(el("span",0,CAT[p.k].n+(p.addr?" · "+p.addr:"")));
+  if(p.hours)d.appendChild(el("span",0,"Öppet: "+p.hours));
+  if(p.phone)d.appendChild(el("span",0,p.phone));
+  if(p.web&&/^https?:\/\//.test(p.web)){var a=el("a",0,"Webbplats");a.href=p.web;a.target="_blank";a.rel="noopener";d.appendChild(a)}
+  return d;
+}
+function vis(p){return filter==="all"||p.k===filter}
+function drawPlaces(){
+  G.places.clearLayers();markers=[];
+  var q=document.getElementById("q").value.toLowerCase(),list=document.getElementById("list");list.innerHTML="";
+  var shown=places.filter(function(p){return vis(p)&&(!q||(p.name+" "+p.addr).toLowerCase().indexOf(q)>-1)});
+  shown.forEach(function(p){
+    var m=L.circleMarker([p.lat,p.lon],{radius:7,color:"#fff",weight:2,fillColor:CAT[p.k].c,fillOpacity:1}).bindPopup(function(){return popup(p)});
+    m.addTo(G.places);p.m=m;
   });
-  var l=document.getElementById("list");l.innerHTML="";
-  D.forEach(function(d,i){
-    if(!vis(d))return;
-    var t=T[d[3][0]],b=document.createElement("button");b.className="it"+(sel===i?" sel":"");
-    b.innerHTML='<i style="background:'+t.c+'33">'+t.e+'</i><div><b></b><span></span></div>';
-    b.querySelector("b").textContent=d[0];
-    b.querySelector("span").textContent=d[3].split("").map(function(k){return T[k].n}).join(" · ")+" · "+d[4];
-    b.addEventListener("click",function(){pick(i,true)});
-    l.appendChild(b);
+  shown.slice().sort(function(a,b){return a.name.localeCompare(b.name,"sv")}).forEach(function(p){
+    var b=el("button","it");b.appendChild(el("b",0,p.name));b.appendChild(el("span",0,CAT[p.k].n+(p.addr?" · "+p.addr:"")));
+    b.onclick=function(){map.setView([p.lat,p.lon],17);p.m.openPopup();document.getElementById("map").scrollIntoView({behavior:"smooth",block:"center"})};
+    list.appendChild(b);
+  });
+  document.getElementById("lt").textContent="Platser ("+shown.length+")";
+}
+function overpass(q){
+  var urls=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
+  function go(i){
+    return fetch(urls[i],{method:"POST",body:"data="+encodeURIComponent(q),headers:{"Content-Type":"application/x-www-form-urlencoded"}})
+      .then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){if(i+1<urls.length)return go(i+1);throw new Error("overpass")});
+  }
+  return go(0);
+}
+function cached(key,fn){
+  try{var c=JSON.parse(localStorage.getItem(key));if(c&&Date.now()-c.t<864e5)return Promise.resolve(c.d)}catch(e){}
+  return fn().then(function(d){try{localStorage.setItem(key,JSON.stringify({t:Date.now(),d:d}))}catch(e){}return d});
+}
+var box="("+BB.join(",")+")";
+function loadPlaces(){
+  var q='[out:json][timeout:30];(nwr["amenity"]'+box+';nwr["shop"]'+box+';nwr["leisure"~"^(fitness_centre|sports_centre|swimming_pool)$"]'+box+';nwr["highway"="bus_stop"]'+box+';);out center tags;';
+  return cached("nds_places",function(){return overpass(q)}).then(function(j){
+    j.elements.forEach(function(e){
+      var t=e.tags||{},lat=e.lat||(e.center&&e.center.lat),lon=e.lon||(e.center&&e.center.lon);
+      if(!lat)return;
+      if(t.highway==="bus_stop"){
+        L.circleMarker([lat,lon],{radius:4,color:"#fff",weight:1,fillColor:"#2e7fa6",fillOpacity:1}).bindTooltip(t.name||"Busshållplats").addTo(G.stops);return}
+      var k=classify(t);if(!k)return;
+      if(!t.name&&k!=="a")return;
+      places.push({name:t.name||"Återvinningsstation",k:k,lat:lat,lon:lon,addr:addr(t),hours:t.opening_hours,phone:t.phone||t["contact:phone"],web:t.website||t["contact:website"]});
+    });
+    drawPlaces();
   });
 }
-function pick(i,center){
-  sel=i;var d=D[i],c=document.getElementById("info");
-  c.innerHTML="<h2></h2><p></p><p></p>";
-  c.querySelector("h2").textContent=d[0];
-  c.querySelectorAll("p")[0].textContent=d[3].split("").map(function(k){return T[k].n}).join(" · ")+" · "+d[4];
-  c.querySelectorAll("p")[1].textContent=d[5];
-  if(center){vb=[d[1]-150,d[2]-113,300,226];setVB();window.scrollTo({top:0,behavior:"smooth"})}
-  draw();
+function loadBuses(){
+  var q='[out:json][timeout:40];relation["route"="bus"]'+box+';out geom;';
+  return cached("nds_bus",function(){return overpass(q)}).then(function(j){
+    var seen={},refs={};
+    j.elements.forEach(function(r){
+      var ref=r.tags&&r.tags.ref;if(!ref)return;refs[ref]=1;
+      var col="hsl("+((parseInt(ref,10)||ref.charCodeAt(0))*47%360)+",70%,42%)";
+      (r.members||[]).forEach(function(m){
+        if(m.type!=="way"||!m.geometry)return;
+        var key=ref+"-"+m.ref;if(seen[key])return;seen[key]=1;
+        L.polyline(m.geometry.map(function(g){return[g.lat,g.lon]}),{color:col,weight:4,opacity:.75}).bindTooltip("Buss "+ref).addTo(G.bus);
+      });
+    });
+    var l=Object.keys(refs).sort(function(a,b){return a-b});
+    st.textContent="Busslinjer i området: "+(l.join(", ")||"inga hittades")+".";
+  });
 }
-function zoom(f){var cx=vb[0]+vb[2]/2,cy=vb[1]+vb[3]/2,w=Math.max(150,Math.min(740,vb[2]*f)),h=w*560/740;vb=[cx-w/2,cy-h/2,w,h];setVB();draw()}
-document.getElementById("zi").onclick=function(){zoom(.6)};
-document.getElementById("zo").onclick=function(){zoom(1.6)};
-document.getElementById("zr").onclick=function(){vb=vb0.slice();setVB();draw()};
-var drag=null,moved=false;
-svg.addEventListener("pointerdown",function(e){drag={x:e.clientX,y:e.clientY,vx:vb[0],vy:vb[1]};moved=false});
-window.addEventListener("pointermove",function(e){
-  if(!drag)return;var k=vb[2]/svg.clientWidth,dx=e.clientX-drag.x,dy=e.clientY-drag.y;
-  if(Math.abs(dx)+Math.abs(dy)>5)moved=true;
-  if(moved){vb[0]=drag.vx-dx*k;vb[1]=drag.vy-dy*k;setVB()}
+function loadPolice(){
+  return fetch("https://polisen.se/api/events?locationname=Stockholm").then(function(r){return r.json()}).then(function(ev){
+    window._ev=ev;drawEvents();
+  });
+}
+function near(e){
+  var s=(e.name+" "+e.summary+" "+e.location.name).toLowerCase();
+  for(var k in AREAS)if(s.indexOf(k)>-1)return AREAS[k];
+  return null;
+}
+function drawEvents(){
+  var all=document.getElementById("allev").getAttribute("aria-pressed")==="true",box=document.getElementById("events");
+  box.innerHTML="";G.police.clearLayers();
+  var n=0;
+  (window._ev||[]).forEach(function(e){
+    var p=near(e);
+    if(p){L.marker(p,{icon:L.divIcon({html:"🚓",className:"",iconSize:[24,24]})}).bindPopup(function(){var d=el("div","pop");d.appendChild(el("b",0,e.name));d.appendChild(el("span",0,e.datetime.slice(0,16)));d.appendChild(el("span",0,e.summary));return d}).addTo(G.police)}
+    if(!p&&!all)return;
+    if(++n>40)return;
+    var d=el("div","ev"),b=el("b",0,e.name+" – "+e.location.name);d.appendChild(b);
+    d.appendChild(el("div",0,e.summary));
+    var s=el("small",0,e.datetime.slice(0,16)+" ");
+    var a=el("a",0,"Läs mer");a.href="https://polisen.se"+e.url;a.target="_blank";a.rel="noopener";s.appendChild(a);d.appendChild(s);
+    box.appendChild(d);
+  });
+  if(!n)box.textContent=all?"Inga händelser.":"Inga aktuella händelser som nämner området. Tryck på 'Visa hela Stockholm' för alla.";
+}
+function fail(what){return function(){st.textContent=st.textContent+" ("+what+" kunde inte hämtas – försök igen senare.)"}}
+
+// UI
+var cats=document.getElementById("cats");
+[["all","Alla"]].concat(Object.keys(CAT).map(function(k){return[k,CAT[k].n]})).forEach(function(c){
+  var b=el("button","chip",c[1]);b.setAttribute("aria-pressed",c[0]==="all");
+  b.onclick=function(){filter=c[0];Array.prototype.forEach.call(cats.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");drawPlaces()};
+  cats.appendChild(b);
 });
-window.addEventListener("pointerup",function(){if(drag&&moved)draw();drag=null;setTimeout(function(){moved=false},0)});
-var ch=document.getElementById("chips");
-[["all","Alla"],["r","Restauranger"],["c","Caféer"],["g","Mataffärer"],["s","Butiker & service"],["h","Hälsa"]].forEach(function(f){
-  var n=D.filter(function(d){return f[0]==="all"||d[3].indexOf(f[0])>-1}).length;
-  var b=document.createElement("button");b.className="chip";b.textContent=f[1]+" ("+n+")";b.setAttribute("aria-pressed",f[0]==="all");
-  b.addEventListener("click",function(){F=f[0];sel=-1;Array.prototype.forEach.call(ch.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()});
-  ch.appendChild(b);
+var ly=document.getElementById("lays");
+[["bus","Busslinjer"],["stops","Hållplatser"],["police","Polis"]].forEach(function(c){
+  var b=el("button","chip lay",c[1]);b.setAttribute("aria-pressed",lays[c[0]]);
+  b.onclick=function(){lays[c[0]]=!lays[c[0]];b.setAttribute("aria-pressed",lays[c[0]]);lays[c[0]]?G[c[0]].addTo(map):map.removeLayer(G[c[0]])};
+  ly.appendChild(b);
 });
-draw();
+document.getElementById("q").oninput=drawPlaces;
+document.getElementById("allev").onclick=function(){var b=this;b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")!=="true");drawEvents()};
+
+loadPolice().catch(function(){document.getElementById("events").innerHTML='Kunde inte hämta händelser (webbläsaren kan blockera anropet). Se <a href="https://polisen.se/aktuellt/handelser/" target="_blank" rel="noopener">polisen.se</a>.'});
+loadPlaces().then(loadBuses).catch(fail("Kartdata"));
 </script>
 </body>
 </html>

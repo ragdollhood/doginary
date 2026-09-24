@@ -79,6 +79,7 @@ async function getj(u,o){
  return r.json();
 }
 function apiFail(e,context){
+ S._lastErr=e;
  const link=`<a href="${e.url}" target="_blank" rel="noopener">Öppna anropet direkt i ny flik</a> (öppnar det utan CORS-begränsning, så du kan se om datan finns).`;
  status(`Kunde inte hämta ${context}.\n${e.message}\n${link}`,1);
 }
@@ -122,6 +123,7 @@ async function fetchAllStations(){
 }
 
 async function loadStations(){
+ S._lastErr=null;
  status("Hämtar mätstationer från datavärden…");
  let all;
  try{ all=await fetchAllStations(); }
@@ -156,6 +158,7 @@ async function loadStations(){
 }
 
 async function refresh(){
+ S._lastErr=null;
  document.querySelectorAll("#chips button").forEach(b=>b.classList.toggle("on",b.dataset.p==S.pol));
  const d=$("date").value,a=loc2utc(d,0),b=loc2utc(d,24);
  const ss=S.series.filter(s=>s.pol==S.pol);

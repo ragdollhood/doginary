@@ -80,16 +80,26 @@ const map=L.map("map").setView(CENTER,14);
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap-bidragsgivare"}).addTo(map);
 const mk=L.layerGroup().addTo(map), srcLayer=L.layerGroup();
 
+async function fetchTO(url,opts,ms=8000){
+ const ctrl=new AbortController();
+ const id=setTimeout(()=>ctrl.abort(),ms);
+ try{ return await fetch(url,{...(opts||{}),signal:ctrl.signal}); }
+ finally{ clearTimeout(id); }
+}
+
 function status(html,e){const s=$("status");s.innerHTML=html;s.className=e?"err":""}
 
-// --- robust fetch: separates network/CORS failures from HTTP errors and
-// surfaces the exact URL + reason directly in the page, not just the console.
+// --- robust fetch: separates network/CORS failures, timeouts and HTTP
+// errors, and surfaces the exact URL + reason directly in the page.
 async function getj(u,o){
  let r;
- try{ r=await fetch(u,o); }
+ try{ r=await fetchTO(u,o); }
  catch(networkErr){
-  const err=new Error("Nätverksfel (troligen CORS – API:t tillåter inte anrop från den här sidans domän, eller så är tjänsten nere): "+networkErr.message);
-  err.url=u; err.isNetwork=true; throw err;
+  const timedOut=networkErr.name==="AbortError";
+  const err=new Error(timedOut
+   ? "Fick inget svar alls inom 8 sekunder (servern verkar inte svara / kan vara blockerad av brandvägg eller nere)."
+   : "Nätverksfel (troligen CORS – API:t tillåter inte anrop från den här sidans domän, eller så är tjänsten nere): "+networkErr.message);
+  err.url=u; err.isNetwork=true; err.timedOut=timedOut; throw err;
  }
  if(!r.ok){
   let body="";try{body=(await r.text()).slice(0,180)}catch(e){}

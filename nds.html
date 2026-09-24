@@ -1,265 +1,174 @@
 <!DOCTYPE html>
-<html lang="sv"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Luftkvalitet – Norra Djurgårdsstaden, Stockholm</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Företag i Norra Djurgårdsstaden</title>
 <style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f5f4ef;--card:#fff;--ink:#1d2a33;--mute:#5d6b75;--line:#dcd9cf;--water:#bcd8ea;--land:#efece2;--park:#cfe3c1;--road:#fff;--hw:#9aa9c4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14191d;--card:#1e262c;--ink:#e8edf0;--mute:#9aa8b1;--line:#33404a;--water:#1f3a4d;--land:#252b2e;--park:#2b4530;--road:#454d52;--hw:#5f6f8c}}
+:root[data-theme="dark"]{--bg:#14191d;--card:#1e262c;--ink:#e8edf0;--mute:#9aa8b1;--line:#33404a;--water:#1f3a4d;--land:#252b2e;--park:#2b4530;--road:#454d52;--hw:#5f6f8c}
 *{box-sizing:border-box}
-body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f4f6f3;color:#1d2a22}
-header,main,footer{max-width:1000px;margin:0 auto;padding:12px 16px}
-h1{font-size:21px;margin:8px 0 2px}.sub{color:#5d6b63;font-size:13px;margin:0}
-.card{background:#fff;border:1px solid #dde3dc;border-radius:12px;padding:12px;margin-bottom:12px}
-.ctl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end}
-label{font-size:12px;color:#5d6b63;display:block;margin-bottom:2px}
-input,select,button{font:inherit;padding:6px 8px;border:1px solid #c9d1c8;border-radius:8px;background:#fff}
-button{cursor:pointer}button.on{background:#2f6f4f;color:#fff;border-color:#2f6f4f}
-#chips{display:flex;gap:6px;flex-wrap:wrap}
-#map{height:62vh;min-height:380px;border-radius:10px}
-#status{font-size:13px;margin:8px 0;color:#5d6b63;white-space:pre-wrap}#status.err{color:#b3261e}
-#status a{color:inherit;text-decoration:underline}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:6px 4px;border-bottom:1px solid #e6ebe5;text-align:left}th{font-size:12px;color:#5d6b63}
-tr.row{cursor:pointer}tr.row:hover{background:#f0f5ef}
-.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
-canvas{width:100%;height:220px}
-.small{font-size:12px;color:#5d6b63}
-.lg span{display:inline-block;margin-right:12px;font-size:12px}
-.vt{background:#fff;border:2px solid #333;border-radius:12px;padding:1px 5px;font-weight:700;font-size:12px}
-</style></head><body>
-<header><h1>Luftkvalitet i Norra Djurgårdsstaden</h1>
-<p class="sub">Uppmätta halter från Naturvårdsverkets datavärd för luft (SMHI) – välj datum, klockslag och förorening</p></header>
-<main>
-<div class="card">
- <div class="ctl">
-  <div><label for="date">Datum</label><input type="date" id="date"></div>
-  <div style="min-width:220px;flex:1"><label>Klockslag: <b id="hl"></b> (svensk tid)</label>
-   <div style="display:flex;gap:6px"><button id="play" title="Spela upp dygnet">▶</button><input type="range" id="hour" min="0" max="23" value="12" style="flex:1"></div></div>
-  <div><label for="rad">Sök stationer inom (km)</label><select id="rad"><option>3</option><option>5</option><option selected>8</option><option>15</option><option>30</option><option>50</option></select></div>
-  <div><label>&nbsp;</label><button id="src">Visa möjliga källor (OSM)</button></div>
- </div>
- <div style="margin-top:10px"><label>Förorening</label><div id="chips"></div></div>
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:900px;margin:0 auto;padding:0 12px 28px}
+h1{font-size:1.25rem;margin:14px 0 2px}
+.sub{color:var(--mute);margin:0 0 10px;font-size:.88rem}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 13px;font:inherit;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.mapwrap{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+svg{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
+.zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:18px;cursor:pointer}
+.mk{cursor:pointer}
+.mk circle{stroke:#fff;stroke-width:2}
+.mk text{font-size:11px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.mk .nm{font-size:9px;fill:var(--ink);paint-order:stroke;stroke:var(--card);stroke-width:3px}
+.mk.sel circle{stroke:var(--ink);stroke-width:3}
+.lbl{font-size:10px;fill:var(--mute);text-anchor:middle;letter-spacing:.05em}
+.wl{font-size:12px;fill:#4f86a6;font-style:italic;text-anchor:middle}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px}
+.card h2{font-size:1rem;margin:0 0 2px}
+.card p{margin:2px 0;color:var(--mute);font-size:.88rem}
+.list{margin-top:12px;display:grid;gap:8px}
+.it{display:flex;gap:10px;align-items:center;text-align:left;width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;cursor:pointer}
+.it i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:15px}
+.it b{display:block;font-size:.95rem}
+.it span{color:var(--mute);font-size:.8rem}
+.it.sel{border-color:var(--ink)}
+.note{font-size:.8rem;color:var(--mute);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-top:14px}
+</style>
+</head>
+<body>
+<h1>Företag i Norra Djurgårdsstaden</h1>
+<p class="sub">Från Husarviken till Ropsten – sortera på restauranger och caféer.</p>
+<div class="chips" id="chips"></div>
+
+<div class="mapwrap">
+<svg id="map" viewBox="0 60 740 560" role="img" aria-label="Schematisk karta över företag i norra Djurgårdsstaden">
+  <rect x="-200" y="-200" width="1400" height="1200" fill="var(--land)"/>
+  <polygon points="-200,-200 340,-200 330,60 230,80 100,170 20,290 -200,330" fill="var(--park)"/>
+  <polygon points="450,-200 1200,-200 1200,500 800,420 700,300 640,150 560,80 470,50" fill="var(--water)"/>
+  <polyline points="-20,315 20,290 100,170 230,80 330,60 470,50" fill="none" stroke="var(--water)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- streets -->
+  <g stroke="var(--road)" fill="none" stroke-linecap="round">
+    <path d="M40 260 L200 200 L330 150 L470 130" stroke-width="7"/>
+    <path d="M60 300 L110 330 L150 420 L170 520" stroke-width="6"/>
+    <path d="M110 330 L300 250 L520 340 L640 260" stroke-width="5"/>
+    <path d="M200 200 L250 330 L280 470" stroke-width="4"/>
+    <path d="M60 470 L300 470 L520 420" stroke-width="4"/>
+  </g>
+  <!-- Norra Länken / E20 -->
+  <path d="M-100 610 C100 585 300 600 470 610 C620 605 680 520 680 400 C680 320 700 280 760 230" fill="none" stroke="var(--hw)" stroke-width="12" stroke-linecap="round"/>
+  <g transform="translate(300,596)"><rect x="-13" y="-9" width="26" height="18" rx="4" fill="#4c8a3a"/><text x="0" y="4" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">E20</text></g>
+  <text class="wl" x="590" y="90">Värtan</text>
+  <text class="wl" x="175" y="200" transform="rotate(-38 175 200)" opacity=".9">Husarviken</text>
+  <text class="lbl" x="130" y="100">NATIONALSTADSPARKEN</text>
+  <text class="lbl" x="130" y="568">KVARTERET MUDDUS</text>
+  <text class="lbl" x="440" y="300">HJORTHAGEN</text>
+  <g transform="translate(628,232)"><circle r="10" fill="#7a4bc2"/><text y="4" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">T</text></g>
+  <text class="lbl" x="628" y="256">ROPSTEN</text>
+  <g id="marks"></g>
+</svg>
+<div class="zoom"><button id="zi" aria-label="Zooma in">+</button><button id="zo" aria-label="Zooma ut">−</button><button id="zr" aria-label="Återställ" style="font-size:14px">⌂</button></div>
 </div>
-<div class="card"><div id="map"></div><div id="status">Startar…</div>
- <div class="lg small" id="lg"></div></div>
-<div class="card"><table><thead><tr><th>Mätstation</th><th>Avstånd</th><th>Halt</th><th>Mättid</th></tr></thead><tbody id="tb"></tbody></table></div>
-<div class="card"><b id="ct">Dygnsförlopp</b><canvas id="cv"></canvas><div class="small">Klicka på en station i kartan eller tabellen för att se dygnskurvan.</div></div>
-</main>
-<footer class="small">
-<p><b>Källor.</b> Mätdata: <a href="https://www.smhi.se/data/luftkvalitet/datavardskap-luftkvalitet">Datavärdskap luftkvalitet, SMHI</a> på uppdrag av Naturvårdsverket (REST-API/SOS, <a href="https://www.naturvardsverket.se/amnesomraden/luft/statistik--utslapp-och-halter/luftkvaliteten-i-realtid-och-preliminar-statistik/webbtjanster-luftkvalitetsdata/">beskrivning</a>). Karta, områdesgräns och möjliga källor: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-bidragsgivare (tiles, Nominatim, Overpass).</p>
-<p><b>Viktigt.</b> Värdena är <i>halter i luft</i> (inte utsläppsmängder). Data för senaste dygnen är preliminära realtidsdata utan kvalitetsgranskning; kvalitetssäkrade data publiceras normalt först året efter. Mätstationerna ligger oftast utanför området, så de visar närliggande luftkvalitet, inte exakt halt i varje kvarter. Färgerna jämför mot förenklade värden för miljökvalitetsnormer (NO₂ 90 µg/m³ timme, PM10 50, PM2.5 25, O₃ 120, SO₂ 200) och är vägledande. Kontrollera alltid mot <a href="https://www.naturvardsverket.se/data-och-statistik/luft/">Naturvårdsverket</a>.</p></footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<div class="card" id="info"><h2>Tryck på en symbol eller ett företag i listan</h2><p>Zooma in för att se namnen på kartan. Dra för att flytta kartan.</p></div>
+<div class="list" id="list"></div>
+
+<div class="note">
+  Kartan är en förenklad skiss och placeringarna är ungefärliga. Företagslistan bygger på en sökning i Google Places och kan vara ofullständig eller inaktuell – öppettider och betyg hittar du i din kartapp.
+  Sthlm Physique och Synsam är utplacerade utifrån din skärmdump och därför extra ungefärliga.
+</div>
+
 <script>
-const API_CANDIDATES=[
- "https://datavardluft.smhi.se/52North/api/v1",
- "https://datavardluft.smhi.se/52North/api",
- "https://datavardluft.smhi.se/52north/api/v1",
- "https://datavardluft.smhi.se/52North/rest/api/v1"
+var T={r:{n:"Restauranger",c:"#d64545",e:"🍽️"},c:{n:"Caféer",c:"#9a6a35",e:"☕"},g:{n:"Mataffärer",c:"#4c9a3a",e:"🛒"},s:{n:"Butiker & service",c:"#7a4bc2",e:"🛍️"},h:{n:"Hälsa & träning",c:"#1f9d8a",e:"💪"}};
+// [namn, x, y, typer, adress, beskrivning]
+var D=[
+["Rustys",143,452,"r","Lövängsgatan 12","Pizzeria, bar och barberare."],
+["Basilico",82,320,"r","Jaktgatan 3","Napolitansk pizza och pasta."],
+["Mare Blu",65,231,"r","Fågelhundsgatan 30","Italienskt: pizza och pasta."],
+["O.C.R.A",285,149,"r","Tengelinsgatan 10","Restaurang med öppet kök, lunch och brunch."],
+["Rockin Grill",140,437,"r","Lövängsgatan 14","Amerikansk burgarrestaurang."],
+["Texas Longhorn",132,424,"r","Lövängsgatan 14","Steakhouse och burgare."],
+["Matkafé Mätarhuset",211,197,"rc","Gasverksvägen 15","Brunch och lunch i gamla gasverket."],
+["Beiruts Brygga",68,175,"r","Husarviksgatan 12","Libanesisk mat."],
+["Suyaki",545,349,"r","Artemisgatan 20","Asiatisk/kinesisk mat."],
+["Bamboo Asia",126,464,"r","Storängsvägen 3","Vietnamesisk mat."],
+["Selma Deli",106,311,"cr","Jaktgatan 4","Café och lunchställe, husmanskost."],
+["Hjorthagens Kulturcafé",520,339,"cr","Artemisgatan 19T","Vegetariskt kafé i gammalt medborgarhus."],
+["Café Olive",109,421,"c","Storängsvägen 25","Kafé med georgisk och armenisk mat."],
+["Café Två Bönor",104,139,"c","Husarviksgatan 14a","Kafé med fika, lunch och veganskt."],
+["Granero Bakery",297,140,"c","Tengelinsgatan 14","Bageri, kafé och gelato."],
+["Story café Sthlm",259,109,"c","Bobergsgatan 59c","Kafé med crêpes och smörgåsar."],
+["The Bear Café",271,121,"c","Bobergsgatan 59c","Kafé med smörgåsar."],
+["Hemköp",177,520,"g","Storängskroken 14–16","Mataffär."],
+["Coop",228,129,"g","Bobergsgatan 53","Mataffär."],
+["Sunny Delikatess",152,462,"g","Lövängsgatan 10","Frukt, grönt och delikatesser."],
+["Direkten Djurgårds Närlivs",118,392,"g","Lövängsgatan 22","Närlivs och paketutlämning."],
+["Systembolaget",258,135,"s","Bobergsgatan 50","Bolag för alkoholhaltiga drycker."],
+["Agape Second Hand",192,540,"s","Storängskroken 16A","Second hand."],
+["Myrorna Ropsten",711,458,"s","Kolargatan 2","Stor second hand-butik."],
+["Synsam",163,504,"s","Norra Djurgårdsstaden","Optiker. Läge ungefärligt."],
+["Storängsvägen Kemtvätt & skomakeri",135,476,"s","Storängsvägen 1","Kemtvätt, skrädderi och skomakeri."],
+["Sthlm Physique",215,112,"h","Norra Djurgårdsstaden","Träning. Läge ungefärligt."]
 ];
-let API=null;
-async function resolveApi(){
- if(API)return API;
- status("Testar vilken API-adress som svarar…");
- const attempts=[];
- for(const base of API_CANDIDATES){
-  try{
-   const r=await fetchTO(base+"/stations",{headers:{"Accept":"application/json"}});
-   attempts.push(base+" → HTTP "+r.status);
-   if(r.ok){API=base;return API}
-  }catch(e){attempts.push(base+" → "+(e.name==="AbortError"?"inget svar inom 8s (timeout)":"nätverksfel/CORS: "+e.message))}
- }
- const err=new Error("Inget av de kända API-baserna för datavärden svarade med OK:\n"+attempts.join("\n"));
- err.url=API_CANDIDATES[0]+"/stations";
- throw err;
+var F="all",sel=-1,vb0=[0,60,740,560],vb=vb0.slice(),NS="http://www.w3.org/2000/svg";
+var svg=document.getElementById("map"),marks=document.getElementById("marks");
+function vis(d){return F==="all"||d[3].indexOf(F)>-1}
+function mk(t,a,p,x){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(x)e.textContent=x;p.appendChild(e);return e}
+function setVB(){svg.setAttribute("viewBox",vb.join(" "))}
+function draw(){
+  marks.innerHTML="";
+  D.forEach(function(d,i){
+    if(!vis(d))return;
+    var t=T[d[3][0]],g=mk("g",{class:"mk"+(sel===i?" sel":"")},marks);
+    mk("circle",{cx:d[1],cy:d[2],r:11,fill:t.c},g);
+    mk("text",{x:d[1],y:d[2]},g,t.e);
+    if(vb[2]<420)mk("text",{x:d[1],y:d[2]+21,class:"nm"},g,d[0]);
+    g.addEventListener("click",function(){if(!moved)pick(i,false)});
+  });
+  var l=document.getElementById("list");l.innerHTML="";
+  D.forEach(function(d,i){
+    if(!vis(d))return;
+    var t=T[d[3][0]],b=document.createElement("button");b.className="it"+(sel===i?" sel":"");
+    b.innerHTML='<i style="background:'+t.c+'33">'+t.e+'</i><div><b></b><span></span></div>';
+    b.querySelector("b").textContent=d[0];
+    b.querySelector("span").textContent=d[3].split("").map(function(k){return T[k].n}).join(" · ")+" · "+d[4];
+    b.addEventListener("click",function(){pick(i,true)});
+    l.appendChild(b);
+  });
 }
-const CENTER=[59.3510,18.1070], TZ="Europe/Stockholm";
-const LIM={"NO2":90,"PM10":50,"PM2.5":25,"O3":120,"SO2":200};
-const RADII=[3,5,8,15,30,50];
-const S={stations:[],series:[],pol:null,sel:null,cache:{},timer:null};
-const $=id=>document.getElementById(id);
-const map=L.map("map").setView(CENTER,14);
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap-bidragsgivare"}).addTo(map);
-const mk=L.layerGroup().addTo(map), srcLayer=L.layerGroup();
-
-// Fyll i din Supabase Edge Function-URL här om direkta anrop till
-// datavardluft.smhi.se blockeras av CORS, t.ex.:
-// "https://xxxxxxxx.supabase.co/functions/v1/air-proxy"
-const PROXY_BASE="";
-function px(url){
- if(!PROXY_BASE||!url.includes("datavardluft.smhi.se"))return url;
- return PROXY_BASE+"?url="+encodeURIComponent(url);
+function pick(i,center){
+  sel=i;var d=D[i],c=document.getElementById("info");
+  c.innerHTML="<h2></h2><p></p><p></p>";
+  c.querySelector("h2").textContent=d[0];
+  c.querySelectorAll("p")[0].textContent=d[3].split("").map(function(k){return T[k].n}).join(" · ")+" · "+d[4];
+  c.querySelectorAll("p")[1].textContent=d[5];
+  if(center){vb=[d[1]-150,d[2]-113,300,226];setVB();window.scrollTo({top:0,behavior:"smooth"})}
+  draw();
 }
-
-async function fetchTO(url,opts,ms=8000){
- const ctrl=new AbortController();
- const id=setTimeout(()=>ctrl.abort(),ms);
- try{ return await fetch(url,{...(opts||{}),signal:ctrl.signal}); }
- finally{ clearTimeout(id); }
-}
-
-function status(html,e){const s=$("status");s.innerHTML=html;s.className=e?"err":""}
-
-// --- robust fetch: separates network/CORS failures, timeouts and HTTP
-// errors, and surfaces the exact URL + reason directly in the page.
-async function getj(u,o){
- let r;
- try{ r=await fetchTO(u,o); }
- catch(networkErr){
-  const timedOut=networkErr.name==="AbortError";
-  const err=new Error(timedOut
-   ? "Fick inget svar alls inom 8 sekunder (servern verkar inte svara / kan vara blockerad av brandvägg eller nere)."
-   : "Nätverksfel (troligen CORS – API:t tillåter inte anrop från den här sidans domän, eller så är tjänsten nere): "+networkErr.message);
-  err.url=u; err.isNetwork=true; err.timedOut=timedOut; throw err;
- }
- if(!r.ok){
-  let body="";try{body=(await r.text()).slice(0,180)}catch(e){}
-  const err=new Error("HTTP "+r.status+" "+r.statusText+(body?" — "+body:""));
-  err.url=u; err.status=r.status; throw err;
- }
- return r.json();
-}
-function apiFail(e,context){
- S._lastErr=e;
- const link=`<a href="${e.url}" target="_blank" rel="noopener">Öppna anropet direkt i ny flik</a> (öppnar det utan CORS-begränsning, så du kan se om datan finns).`;
- status(`Kunde inte hämta ${context}.\n${e.message}\n${link}`,1);
-}
-
-function tzOff(ms){const p=Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:TZ,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).formatToParts(ms).map(x=>[x.type,x.value]));return Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second)-Math.floor(ms/1000)*1000}
-function loc2utc(d,h){const [y,m,dd]=d.split("-").map(Number),g=Date.UTC(y,m-1,dd,h);return g-tzOff(g)}
-const iso=ms=>new Date(ms).toISOString().replace(/\.\d+Z/,"Z");
-const fmt=ms=>new Date(ms).toLocaleString("sv-SE",{timeZone:TZ,dateStyle:"short",timeStyle:"short"});
-function dist(a,b,c,d){const r=Math.PI/180,x=(c-a)*r,y=(d-b)*r*Math.cos((a+c)/2*r);return 6371*Math.hypot(x,y)}
-function norm(l){const s=(l||"").toLowerCase();
- if(/2[.,]5/.test(s)&&/pm|particul/.test(s))return"PM2.5";
- if(/pm\s*10|< ?10 ?µm/.test(s))return"PM10";
- if(/nitrogen dioxide|\bno2|kvävedioxid/.test(s))return"NO2";
- if(/ozone|\bo3\b|ozon/.test(s))return"O3";
- if(/sulphur dioxide|sulfur dioxide|\bso2|svaveldioxid/.test(s))return"SO2";
- if(/carbon monoxide|kolmonoxid/.test(s))return"CO";
- if(/benzene|bensen/.test(s))return"Bensen";
- if(/nitrogen monoxide|kvävemonoxid/.test(s))return"NO";
- return l}
-function col(v,p){if(v==null)return"#9aa39c";const r=v/(LIM[p]||Infinity);return r<.25?"#2e9e5b":r<.5?"#c8b400":r<.75?"#e8890c":"#d8382f"}
-
-async function loadBoundary(){
- try{const j=await getj("https://nominatim.openstreetmap.org/search?q="+encodeURIComponent("Norra Djurgårdsstaden, Stockholm")+"&format=jsonv2&polygon_geojson=1&limit=3&accept-language=sv");
-  const f=j.find(x=>x.geojson&&/Polygon/.test(x.geojson.type));
-  if(f){const g=L.geoJSON(f.geojson,{style:{color:"#2f6f4f",weight:3,dashArray:"6 4",fillOpacity:.06}}).addTo(map).bindTooltip("Norra Djurgårdsstaden (OSM-gräns)");map.fitBounds(g.getBounds().pad(.15));return}
- }catch(e){}
- L.rectangle([[59.343,18.088],[59.357,18.135]],{color:"#2f6f4f",weight:2,dashArray:"6 4",fillOpacity:.05}).addTo(map).bindTooltip("Ungefärlig avgränsning av Norra Djurgårdsstaden");
-}
-
-// Fetches the /stations list once (not radius-dependent) and caches it.
-async function fetchAllStations(){
- if(S._rawStations)return S._rawStations;
- const base=await resolveApi();
- let st=await getj(base+"/stations");
- st=Array.isArray(st)?st:st.features||[];
- S._rawStations=st.map(f=>{
-  const lat=Number(f.properties?.lat ?? f.geometry?.coordinates?.[1]);
-  const lon=Number(f.properties?.lon ?? f.geometry?.coordinates?.[0]);
-  return {id:f.properties?.id??f.id,label:f.properties?.label??f.label,lat,lon};
- }).filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lon));
- return S._rawStations;
-}
-
-async function loadStations(){
- S._lastErr=null;
- status("Hämtar mätstationer från datavärden…");
- let all;
- try{ all=await fetchAllStations(); }
- catch(e){ apiFail(e,"listan över mätstationer"); S.stations=[]; S.series=[]; render(true); return; }
-
- if(!all.length){status("Datavärden svarade, men listan över mätstationer var tom eller hade oväntat format.",1);S.stations=[];S.series=[];render(true);return}
-
- // Try the selected radius; if nothing is found, automatically widen the
- // search instead of just reporting zero stations.
- let rad=+$("rad").value, chosen=[];
- for(const r of RADII){
-  if(r<rad)continue;
-  chosen=all.map(s=>({...s,d:dist(CENTER[0],CENTER[1],s.lat,s.lon)})).filter(s=>s.d<=r).sort((a,b)=>a.d-b.d);
-  if(chosen.length){ if(r!==rad){$("rad").value=r;status("Inga stationer inom "+rad+" km – vidgade automatiskt sökningen till "+r+" km.")} rad=r; break; }
- }
- S.stations=chosen;
- if(!S.stations.length){status("Hittade inga mätstationer inom "+RADII[RADII.length-1]+" km från Norra Djurgårdsstaden i datavärdens register.",1);S.series=[];render(true);return}
-
- status("Hämtar tidsserier för "+S.stations.length+" station(er)…");
- let seriesResults;
- try{
-  seriesResults=await Promise.all(S.stations.map(s=>getj(API+"/timeseries?station="+s.id+"&expanded=true")));
- }catch(e){ apiFail(e,"tidsserierna för stationerna"); S.series=[]; render(true); return; }
-
- S.series=[];
- seriesResults.forEach((arr,i)=>(arr||[]).forEach(t=>{const l=t.parameters?.phenomenon?.label||t.label;S.series.push({id:t.id,st:S.stations[i],label:l,pol:norm(l),uom:t.uom||""})}));
- const pols=[...new Set(S.series.map(s=>s.pol))];
- if(!pols.length){status("Stationerna hittades men hade inga tidsserier (inga uppmätta föroreningar) i svaret.",1);$("chips").innerHTML="";render(true);return}
- $("chips").innerHTML=pols.map(p=>`<button data-p="${p}">${p}</button>`).join("");
- if(!pols.includes(S.pol))S.pol=pols.includes("NO2")?"NO2":pols[0];
- refresh();
-}
-
-async function refresh(){
- S._lastErr=null;
- document.querySelectorAll("#chips button").forEach(b=>b.classList.toggle("on",b.dataset.p==S.pol));
- const d=$("date").value,a=loc2utc(d,0),b=loc2utc(d,24);
- const ss=S.series.filter(s=>s.pol==S.pol);
- status("Hämtar mätdata för "+S.pol+" "+d+"…");
- let anyError=null;
- await Promise.all(ss.map(async s=>{const k=s.id+d;if(S.cache[k])return;
-  try{
-   const j=await getj(API+"/timeseries/"+s.id+"/getData?timespan="+iso(a)+"/"+iso(b));
-   const raw=(j.values||j[s.id]?.values)||[];
-   S.cache[k]=raw.filter(v=>v.value!=null).map(v=>({t:+v.timestamp,v:+v.value}));
-  }catch(e){S.cache[k]=[];s.err=e.message;anyError=anyError||e}
- }));
- render();
- if(anyError && !ss.some(s=>(S.cache[s.id+d]||[]).length)) apiFail(anyError,"mätvärdena för "+S.pol+" "+d);
-}
-function valAt(s,ms){const arr=S.cache[s.id+$("date").value]||[];let best=null;arr.forEach(p=>{const df=Math.abs(p.t-ms);if(df<=31*60000&&(!best||df<best.df))best={...p,df}});return best}
-function render(quiet){
- const h=+$("hour").value,d=$("date").value,ms=loc2utc(d,h);$("hl").textContent=String(h).padStart(2,"0")+":00";
- mk.clearLayers();let rows="",n=0;
- const seen=new Set();
- S.series.filter(s=>s.pol==S.pol).forEach(s=>{
-  const p=valAt(s,ms),c=col(p&&p.v,S.pol);if(p)n++;
-  if(!seen.has(s.st.id)){seen.add(s.st.id);
-   const m=L.circleMarker([s.st.lat,s.st.lon],{radius:16,color:"#222",weight:2,fillColor:c,fillOpacity:.85}).addTo(mk).on("click",()=>{S.sel=s;chart()});
-   m.bindTooltip((p?p.v.toFixed(1):"–"),{permanent:true,direction:"center",className:"vt"});
-   m.bindPopup(`<b>${s.st.label}</b><br>${S.pol}: ${p?p.v.toFixed(1)+" "+s.uom:"saknar mätvärde"}<br>${p?fmt(p.t):""}`)}
-  rows+=`<tr class="row" data-i="${s.id}"><td><span class="dot" style="background:${c}"></span>${s.st.label}</td><td>${s.st.d.toFixed(1)} km</td><td>${p?p.v.toFixed(1)+" "+s.uom:(s.err?"fel: "+s.err:"saknar värde")}</td><td>${p?fmt(p.t):"–"}</td></tr>`});
- $("tb").innerHTML=rows||"<tr><td colspan=4>Inga stationer mäter "+S.pol+" i området.</td></tr>";
- $("lg").innerHTML=(LIM[S.pol]?`<span><i class="dot" style="background:#2e9e5b"></i>&lt;25 % av norm</span><span><i class="dot" style="background:#c8b400"></i>25–50 %</span><span><i class="dot" style="background:#e8890c"></i>50–75 %</span><span><i class="dot" style="background:#d8382f"></i>&gt;75 % (norm ${LIM[S.pol]})</span>`:"Ingen jämförelsenorm inlagd för denna förorening")+`<span><i class="dot" style="background:#9aa39c"></i>saknar data</span>`;
- if(!quiet) status(n?`${n} station(er) med mätvärde för ${S.pol} ${d} kl ${String(h).padStart(2,"0")}:00.`:`Inga mätvärden för ${S.pol} vid vald tid (data kan saknas eller vara försenade).`,!n);
- if(!S.sel||S.sel.pol!=S.pol)S.sel=S.series.find(s=>s.pol==S.pol);chart();
-}
-function chart(){
- const cv=$("cv"),w=cv.width=cv.clientWidth*2,ht=cv.height=440,x=cv.getContext("2d");x.clearRect(0,0,w,ht);
- const s=S.sel;if(!s){return}$("ct").textContent="Dygnsförlopp – "+s.st.label+", "+s.pol+" ("+s.uom+")";
- const d=$("date").value,a=loc2utc(d,0),arr=S.cache[s.id+d]||[];
- x.font="22px system-ui";x.fillStyle="#5d6b63";x.strokeStyle="#dde3dc";
- const mx=Math.max(1,...arr.map(p=>p.v),LIM[s.pol]?0:0)*1.15,X=t=>50+(t-a)/864e5*(w-70),Y=v=>ht-40-v/mx*(ht-70);
- for(let i=0;i<=4;i++){const v=mx*i/4;x.beginPath();x.moveTo(50,Y(v));x.lineTo(w-20,Y(v));x.stroke();x.fillText(v.toFixed(0),4,Y(v)+6)}
- for(let hh=0;hh<=24;hh+=6)x.fillText(String(hh).padStart(2,"0"),X(a+hh*36e5)-12,ht-10);
- const hx=X(loc2utc(d,+$("hour").value));x.strokeStyle="#2f6f4f";x.beginPath();x.moveTo(hx,10);x.lineTo(hx,ht-40);x.stroke();
- x.strokeStyle="#1d2a22";x.lineWidth=3;x.beginPath();arr.forEach((p,i)=>i?x.lineTo(X(p.t),Y(p.v)):x.moveTo(X(p.t),Y(p.v)));x.stroke();x.lineWidth=1;
- if(!arr.length)x.fillText("Inga data för dygnet",w/2-120,ht/2);
-}
-async function loadSources(){
- if(srcLayer._loaded)return;srcLayer._loaded=1;const b=map.getBounds().pad(.3),bb=[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].join(",");
- try{const q=`[out:json][timeout:25];(nwr["power"="plant"](${bb});nwr["landuse"="port"](${bb});nwr["harbour"="yes"](${bb});nwr["landuse"="industrial"](${bb});nwr["man_made"="works"](${bb}););out center tags;`;
-  const j=await getj("https://overpass-api.de/api/interpreter",{method:"POST",body:"data="+encodeURIComponent(q)});
-  j.elements.forEach(e=>{const c=e.center||e;if(c.lat==null)return;const t=e.tags||{};
-   L.circleMarker([c.lat,c.lon],{radius:6,color:"#7a3db8",fillColor:"#b784e6",fillOpacity:.9}).addTo(srcLayer).bindPopup(`<b>${t.name||"(namnlös)"}</b><br>${t.power?"Kraftverk":t.landuse=="port"||t.harbour?"Hamn":"Industri/verksamhet"} – OSM. Visar plats, inte uppmätta utsläpp.`)});
- }catch(e){status("Kunde inte hämta källor från Overpass: "+e.message,1)}
-}
-$("src").onclick=function(){if(map.hasLayer(srcLayer)){map.removeLayer(srcLayer);this.classList.remove("on")}else{srcLayer.addTo(map);this.classList.add("on");loadSources()}};
-$("chips").onclick=e=>{if(e.target.dataset.p){S.pol=e.target.dataset.p;S.sel=null;refresh()}};
-$("tb").onclick=e=>{const r=e.target.closest("tr.row");if(r){S.sel=S.series.find(s=>s.id==r.dataset.i);chart()}};
-$("date").onchange=()=>{S.cache={};refresh()};$("hour").oninput=render;$("rad").onchange=()=>loadStations();
-$("play").onclick=function(){if(S.timer){clearInterval(S.timer);S.timer=null;this.textContent="▶";return}this.textContent="⏸";S.timer=setInterval(()=>{const h=$("hour");h.value=(+h.value+1)%24;render()},1200)};
-(function init(){
- const now=new Date();$("date").value=now.toLocaleDateString("sv-SE",{timeZone:TZ});$("date").max=$("date").value;
- $("hour").value=Math.max(0,+now.toLocaleString("sv-SE",{timeZone:TZ,hour:"2-digit",hourCycle:"h23"})-2);
- loadBoundary();loadStations();
-})();
-</script></body></html>
+function zoom(f){var cx=vb[0]+vb[2]/2,cy=vb[1]+vb[3]/2,w=Math.max(150,Math.min(740,vb[2]*f)),h=w*560/740;vb=[cx-w/2,cy-h/2,w,h];setVB();draw()}
+document.getElementById("zi").onclick=function(){zoom(.6)};
+document.getElementById("zo").onclick=function(){zoom(1.6)};
+document.getElementById("zr").onclick=function(){vb=vb0.slice();setVB();draw()};
+var drag=null,moved=false;
+svg.addEventListener("pointerdown",function(e){drag={x:e.clientX,y:e.clientY,vx:vb[0],vy:vb[1]};moved=false});
+window.addEventListener("pointermove",function(e){
+  if(!drag)return;var k=vb[2]/svg.clientWidth,dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(Math.abs(dx)+Math.abs(dy)>5)moved=true;
+  if(moved){vb[0]=drag.vx-dx*k;vb[1]=drag.vy-dy*k;setVB()}
+});
+window.addEventListener("pointerup",function(){if(drag&&moved)draw();drag=null;setTimeout(function(){moved=false},0)});
+var ch=document.getElementById("chips");
+[["all","Alla"],["r","Restauranger"],["c","Caféer"],["g","Mataffärer"],["s","Butiker & service"],["h","Hälsa"]].forEach(function(f){
+  var n=D.filter(function(d){return f[0]==="all"||d[3].indexOf(f[0])>-1}).length;
+  var b=document.createElement("button");b.className="chip";b.textContent=f[1]+" ("+n+")";b.setAttribute("aria-pressed",f[0]==="all");
+  b.addEventListener("click",function(){F=f[0];sel=-1;Array.prototype.forEach.call(ch.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()});
+  ch.appendChild(b);
+});
+draw();
+</script>
+</body>
+</html>

@@ -81,6 +81,15 @@ const map=L.map("map").setView(CENTER,14);
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap-bidragsgivare"}).addTo(map);
 const mk=L.layerGroup().addTo(map), srcLayer=L.layerGroup();
 
+// Fyll i din Supabase Edge Function-URL här om direkta anrop till
+// datavardluft.smhi.se blockeras av CORS, t.ex.:
+// "https://xxxxxxxx.supabase.co/functions/v1/air-proxy"
+const PROXY_BASE="";
+function px(url){
+ if(!PROXY_BASE||!url.includes("datavardluft.smhi.se"))return url;
+ return PROXY_BASE+"?url="+encodeURIComponent(url);
+}
+
 async function fetchTO(url,opts,ms=8000){
  const ctrl=new AbortController();
  const id=setTimeout(()=>ctrl.abort(),ms);

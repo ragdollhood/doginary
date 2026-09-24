@@ -59,13 +59,14 @@ const API_CANDIDATES=[
 let API=null;
 async function resolveApi(){
  if(API)return API;
+ status("Testar vilken API-adress som svarar…");
  const attempts=[];
  for(const base of API_CANDIDATES){
   try{
-   const r=await fetch(base+"/stations",{headers:{"Accept":"application/json"}});
+   const r=await fetchTO(base+"/stations",{headers:{"Accept":"application/json"}});
    attempts.push(base+" → HTTP "+r.status);
    if(r.ok){API=base;return API}
-  }catch(e){attempts.push(base+" → nätverksfel/CORS: "+e.message)}
+  }catch(e){attempts.push(base+" → "+(e.name==="AbortError"?"inget svar inom 8s (timeout)":"nätverksfel/CORS: "+e.message))}
  }
  const err=new Error("Inget av de kända API-baserna för datavärden svarade med OK:\n"+attempts.join("\n"));
  err.url=API_CANDIDATES[0]+"/stations";

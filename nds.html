@@ -15,7 +15,8 @@ input,select,button{font:inherit;padding:6px 8px;border:1px solid #c9d1c8;border
 button{cursor:pointer}button.on{background:#2f6f4f;color:#fff;border-color:#2f6f4f}
 #chips{display:flex;gap:6px;flex-wrap:wrap}
 #map{height:62vh;min-height:380px;border-radius:10px}
-#status{font-size:13px;margin:8px 0;color:#5d6b63}#status.err{color:#b3261e}
+#status{font-size:13px;margin:8px 0;color:#5d6b63;white-space:pre-wrap}#status.err{color:#b3261e}
+#status a{color:inherit;text-decoration:underline}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{padding:6px 4px;border-bottom:1px solid #e6ebe5;text-align:left}th{font-size:12px;color:#5d6b63}
 tr.row{cursor:pointer}tr.row:hover{background:#f0f5ef}
@@ -33,7 +34,7 @@ canvas{width:100%;height:220px}
   <div><label for="date">Datum</label><input type="date" id="date"></div>
   <div style="min-width:220px;flex:1"><label>Klockslag: <b id="hl"></b> (svensk tid)</label>
    <div style="display:flex;gap:6px"><button id="play" title="Spela upp dygnet">▶</button><input type="range" id="hour" min="0" max="23" value="12" style="flex:1"></div></div>
-  <div><label for="rad">Sök stationer inom (km)</label><select id="rad"><option>3</option><option>5</option><option selected>8</option><option>15</option></select></div>
+  <div><label for="rad">Sök stationer inom (km)</label><select id="rad"><option>3</option><option>5</option><option selected>8</option><option>15</option><option>30</option><option>50</option></select></div>
   <div><label>&nbsp;</label><button id="src">Visa möjliga källor (OSM)</button></div>
  </div>
  <div style="margin-top:10px"><label>Förorening</label><div id="chips"></div></div>
@@ -52,12 +53,36 @@ canvas{width:100%;height:220px}
 const API="https://datavardluft.smhi.se/52North/api/v1";
 const CENTER=[59.3510,18.1070], TZ="Europe/Stockholm";
 const LIM={"NO2":90,"PM10":50,"PM2.5":25,"O3":120,"SO2":200};
+const RADII=[3,5,8,15,30,50];
 const S={stations:[],series:[],pol:null,sel:null,cache:{},timer:null};
 const $=id=>document.getElementById(id);
 const map=L.map("map").setView(CENTER,14);
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap-bidragsgivare"}).addTo(map);
 const mk=L.layerGroup().addTo(map), srcLayer=L.layerGroup();
-function status(t,e){const s=$("status");s.textContent=t;s.className=e?"err":""}
+
+function status(html,e){const s=$("status");s.innerHTML=html;s.className=e?"err":""}
+
+// --- robust fetch: separates network/CORS failures from HTTP errors and
+// surfaces the exact URL + reason directly in the page, not just the console.
+async function getj(u,o){
+ let r;
+ try{ r=await fetch(u,o); }
+ catch(networkErr){
+  const err=new Error("Nätverksfel (troligen CORS – API:t tillåter inte anrop från den här sidans domän, eller så är tjänsten nere): "+networkErr.message);
+  err.url=u; err.isNetwork=true; throw err;
+ }
+ if(!r.ok){
+  let body="";try{body=(await r.text()).slice(0,180)}catch(e){}
+  const err=new Error("HTTP "+r.status+" "+r.statusText+(body?" — "+body:""));
+  err.url=u; err.status=r.status; throw err;
+ }
+ return r.json();
+}
+function apiFail(e,context){
+ const link=`<a href="${e.url}" target="_blank" rel="noopener">Öppna anropet direkt i ny flik</a> (öppnar det utan CORS-begränsning, så du kan se om datan finns).`;
+ status(`Kunde inte hämta ${context}.\n${e.message}\n${link}`,1);
+}
+
 function tzOff(ms){const p=Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:TZ,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).formatToParts(ms).map(x=>[x.type,x.value]));return Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second)-Math.floor(ms/1000)*1000}
 function loc2utc(d,h){const [y,m,dd]=d.split("-").map(Number),g=Date.UTC(y,m-1,dd,h);return g-tzOff(g)}
 const iso=ms=>new Date(ms).toISOString().replace(/\.\d+Z/,"Z");
@@ -74,7 +99,6 @@ function norm(l){const s=(l||"").toLowerCase();
  if(/nitrogen monoxide|kvävemonoxid/.test(s))return"NO";
  return l}
 function col(v,p){if(v==null)return"#9aa39c";const r=v/(LIM[p]||Infinity);return r<.25?"#2e9e5b":r<.5?"#c8b400":r<.75?"#e8890c":"#d8382f"}
-const getj=async(u,o)=>{const r=await fetch(u,o);if(!r.ok)throw new Error("HTTP "+r.status+" "+u.split("?")[0]);return r.json()};
 
 async function loadBoundary(){
  try{const j=await getj("https://nominatim.openstreetmap.org/search?q="+encodeURIComponent("Norra Djurgårdsstaden, Stockholm")+"&format=jsonv2&polygon_geojson=1&limit=3&accept-language=sv");
@@ -83,29 +107,69 @@ async function loadBoundary(){
  }catch(e){}
  L.rectangle([[59.343,18.088],[59.357,18.135]],{color:"#2f6f4f",weight:2,dashArray:"6 4",fillOpacity:.05}).addTo(map).bindTooltip("Ungefärlig avgränsning av Norra Djurgårdsstaden");
 }
+
+// Fetches the /stations list once (not radius-dependent) and caches it.
+async function fetchAllStations(){
+ if(S._rawStations)return S._rawStations;
+ let st=await getj(API+"/stations");
+ st=Array.isArray(st)?st:st.features||[];
+ S._rawStations=st.map(f=>{
+  const lat=Number(f.properties?.lat ?? f.geometry?.coordinates?.[1]);
+  const lon=Number(f.properties?.lon ?? f.geometry?.coordinates?.[0]);
+  return {id:f.properties?.id??f.id,label:f.properties?.label??f.label,lat,lon};
+ }).filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lon));
+ return S._rawStations;
+}
+
 async function loadStations(){
  status("Hämtar mätstationer från datavärden…");
- const rad=+$("rad").value;let st=await getj(API+"/stations");st=Array.isArray(st)?st:st.features||[];
- S.stations=st.map(f=>({id:f.properties?.id??f.id,label:f.properties?.label??f.label,lat:f.geometry?.coordinates?.[1],lon:f.geometry?.coordinates?.[0]}))
-  .filter(s=>s.lat!=null).map(s=>({...s,d:dist(CENTER[0],CENTER[1],s.lat,s.lon)})).filter(s=>s.d<=rad).sort((a,b)=>a.d-b.d);
- if(!S.stations.length){status("Inga mätstationer inom "+rad+" km. Öka sökradien.",1);S.series=[];render();return}
- const all=await Promise.all(S.stations.map(s=>getj(API+"/timeseries?station="+s.id+"&expanded=true").catch(()=>[])));
- S.series=[];all.forEach((arr,i)=>arr.forEach(t=>{const l=t.parameters?.phenomenon?.label||t.label;S.series.push({id:t.id,st:S.stations[i],label:l,pol:norm(l),uom:t.uom||""})}));
+ let all;
+ try{ all=await fetchAllStations(); }
+ catch(e){ apiFail(e,"listan över mätstationer"); S.stations=[]; S.series=[]; render(); return; }
+
+ if(!all.length){status("Datavärden svarade, men listan över mätstationer var tom eller hade oväntat format.",1);S.stations=[];S.series=[];render();return}
+
+ // Try the selected radius; if nothing is found, automatically widen the
+ // search instead of just reporting zero stations.
+ let rad=+$("rad").value, chosen=[];
+ for(const r of RADII){
+  if(r<rad)continue;
+  chosen=all.map(s=>({...s,d:dist(CENTER[0],CENTER[1],s.lat,s.lon)})).filter(s=>s.d<=r).sort((a,b)=>a.d-b.d);
+  if(chosen.length){ if(r!==rad){$("rad").value=r;status("Inga stationer inom "+rad+" km – vidgade automatiskt sökningen till "+r+" km.")} rad=r; break; }
+ }
+ S.stations=chosen;
+ if(!S.stations.length){status("Hittade inga mätstationer inom "+RADII[RADII.length-1]+" km från Norra Djurgårdsstaden i datavärdens register.",1);S.series=[];render();return}
+
+ status("Hämtar tidsserier för "+S.stations.length+" station(er)…");
+ let seriesResults;
+ try{
+  seriesResults=await Promise.all(S.stations.map(s=>getj(API+"/timeseries?station="+s.id+"&expanded=true")));
+ }catch(e){ apiFail(e,"tidsserierna för stationerna"); S.series=[]; render(); return; }
+
+ S.series=[];
+ seriesResults.forEach((arr,i)=>(arr||[]).forEach(t=>{const l=t.parameters?.phenomenon?.label||t.label;S.series.push({id:t.id,st:S.stations[i],label:l,pol:norm(l),uom:t.uom||""})}));
  const pols=[...new Set(S.series.map(s=>s.pol))];
+ if(!pols.length){status("Stationerna hittades men hade inga tidsserier (inga uppmätta föroreningar) i svaret.",1);$("chips").innerHTML="";render();return}
  $("chips").innerHTML=pols.map(p=>`<button data-p="${p}">${p}</button>`).join("");
  if(!pols.includes(S.pol))S.pol=pols.includes("NO2")?"NO2":pols[0];
  refresh();
 }
+
 async function refresh(){
  document.querySelectorAll("#chips button").forEach(b=>b.classList.toggle("on",b.dataset.p==S.pol));
  const d=$("date").value,a=loc2utc(d,0),b=loc2utc(d,24);
  const ss=S.series.filter(s=>s.pol==S.pol);
  status("Hämtar mätdata för "+S.pol+" "+d+"…");
+ let anyError=null;
  await Promise.all(ss.map(async s=>{const k=s.id+d;if(S.cache[k])return;
-  try{const j=await getj(API+"/timeseries/"+s.id+"/getData?timespan="+iso(a)+"/"+iso(b));
-   S.cache[k]=((j.values||j[s.id]?.values)||[]).filter(v=>v.value!=null).map(v=>({t:v.timestamp,v:+v.value}))}
-  catch(e){S.cache[k]=[];s.err=e.message}}));
+  try{
+   const j=await getj(API+"/timeseries/"+s.id+"/getData?timespan="+iso(a)+"/"+iso(b));
+   const raw=(j.values||j[s.id]?.values)||[];
+   S.cache[k]=raw.filter(v=>v.value!=null).map(v=>({t:+v.timestamp,v:+v.value}));
+  }catch(e){S.cache[k]=[];s.err=e.message;anyError=anyError||e}
+ }));
  render();
+ if(anyError && !ss.some(s=>(S.cache[s.id+d]||[]).length)) apiFail(anyError,"mätvärdena för "+S.pol+" "+d);
 }
 function valAt(s,ms){const arr=S.cache[s.id+$("date").value]||[];let best=null;arr.forEach(p=>{const df=Math.abs(p.t-ms);if(df<=31*60000&&(!best||df<best.df))best={...p,df}});return best}
 function render(){
@@ -121,7 +185,7 @@ function render(){
   rows+=`<tr class="row" data-i="${s.id}"><td><span class="dot" style="background:${c}"></span>${s.st.label}</td><td>${s.st.d.toFixed(1)} km</td><td>${p?p.v.toFixed(1)+" "+s.uom:(s.err?"fel: "+s.err:"saknar värde")}</td><td>${p?fmt(p.t):"–"}</td></tr>`});
  $("tb").innerHTML=rows||"<tr><td colspan=4>Inga stationer mäter "+S.pol+" i området.</td></tr>";
  $("lg").innerHTML=(LIM[S.pol]?`<span><i class="dot" style="background:#2e9e5b"></i>&lt;25 % av norm</span><span><i class="dot" style="background:#c8b400"></i>25–50 %</span><span><i class="dot" style="background:#e8890c"></i>50–75 %</span><span><i class="dot" style="background:#d8382f"></i>&gt;75 % (norm ${LIM[S.pol]})</span>`:"Ingen jämförelsenorm inlagd för denna förorening")+`<span><i class="dot" style="background:#9aa39c"></i>saknar data</span>`;
- status(n?`${n} station(er) med mätvärde för ${S.pol} ${d} kl ${String(h).padStart(2,"0")}:00.`:`Inga mätvärden för ${S.pol} vid vald tid (data kan saknas eller vara försenade).`,!n);
+ if(!S._lastErr) status(n?`${n} station(er) med mätvärde för ${S.pol} ${d} kl ${String(h).padStart(2,"0")}:00.`:`Inga mätvärden för ${S.pol} vid vald tid (data kan saknas eller vara försenade).`,!n);
  if(!S.sel||S.sel.pol!=S.pol)S.sel=S.series.find(s=>s.pol==S.pol);chart();
 }
 function chart(){
@@ -147,12 +211,11 @@ async function loadSources(){
 $("src").onclick=function(){if(map.hasLayer(srcLayer)){map.removeLayer(srcLayer);this.classList.remove("on")}else{srcLayer.addTo(map);this.classList.add("on");loadSources()}};
 $("chips").onclick=e=>{if(e.target.dataset.p){S.pol=e.target.dataset.p;S.sel=null;refresh()}};
 $("tb").onclick=e=>{const r=e.target.closest("tr.row");if(r){S.sel=S.series.find(s=>s.id==r.dataset.i);chart()}};
-$("date").onchange=refresh;$("hour").oninput=render;$("rad").onchange=()=>loadStations().catch(fail);
+$("date").onchange=()=>{S.cache={};refresh()};$("hour").oninput=render;$("rad").onchange=()=>loadStations();
 $("play").onclick=function(){if(S.timer){clearInterval(S.timer);S.timer=null;this.textContent="▶";return}this.textContent="⏸";S.timer=setInterval(()=>{const h=$("hour");h.value=(+h.value+1)%24;render()},1200)};
-function fail(e){status("Kunde inte hämta data från datavärden ("+e.message+"). Kontrollera att sidan körs via https och att API:t tillåter anrop från din domän (CORS); annars behövs en enkel proxy på din server.",1)}
 (function init(){
  const now=new Date();$("date").value=now.toLocaleDateString("sv-SE",{timeZone:TZ});$("date").max=$("date").value;
  $("hour").value=Math.max(0,+now.toLocaleString("sv-SE",{timeZone:TZ,hour:"2-digit",hourCycle:"h23"})-2);
- loadBoundary();loadStations().catch(fail);
+ loadBoundary();loadStations();
 })();
 </script></body></html>

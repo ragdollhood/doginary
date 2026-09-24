@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bildkartan – Norra Djurgårdsstaden</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--bg:#f2f6f7;--card:#fff;--ink:#12324a;--mute:#5b7183;--line:#d5e0e6;--accent:#2e7fa6}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1a22;--card:#172530;--ink:#e6eef3;--mute:#93a9b8;--line:#28404f;--accent:#5bb0d6}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:0 12px 32px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0 8px}
+h1{font-size:1.3rem;margin:0}
+.sub{margin:0 0 10px;color:var(--mute);font-size:.9rem}
+button,.btn{font:inherit;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;cursor:pointer}
+button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+#map{height:60vh;min-height:360px;border-radius:14px;border:1px solid var(--line)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px}
+.panel h2{font-size:1.02rem;margin:0 0 8px}
+label{display:block;font-size:.85rem;color:var(--mute);margin:8px 0 3px}
+textarea,input[type=file]{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:80px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.hint{font-size:.85rem;color:var(--mute)}
+.err{color:#c8452f;font-size:.85rem;margin-top:6px}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.tile{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg);cursor:pointer;text-align:left;padding:0}
+.tile img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.tile div{padding:6px 8px;font-size:.8rem;color:var(--mute)}
+.pic{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background-size:cover;background-position:center;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.pop img{width:220px;max-width:100%;border-radius:8px;display:block;margin-bottom:6px}
+.pop p{margin:4px 0;white-space:pre-wrap}.pop small{color:#666}
+.pin{font-size:26px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Bildkartan</h1><div><span id="who" class="hint"></span> <button id="authBtn">Logga in</button></div></header>
+<p class="sub">Tryck på kartan där du tog bilden. Bilder från andra syns som runda miniatyrer.</p>
+
+<div id="map" role="application" aria-label="Karta med bilder"></div>
+
+<div class="panel" id="form" hidden>
+  <h2>Ny bild</h2>
+  <p class="hint" id="pos"></p>
+  <label for="file">Bild</label>
+  <input type="file" id="file" accept="image/*">
+  <label for="txt">Text (valfritt)</label>
+  <textarea id="txt" maxlength="500" placeholder="Vad ser vi på bilden?"></textarea>
+  <div class="row"><button class="pri" id="send">Lägg upp</button><button id="cancel">Avbryt</button><button id="gps">Använd min position</button></div>
+  <div class="err" id="err"></div>
+</div>
+
+<div class="panel"><h2 id="lt">Senaste bilderna</h2><div class="grid" id="list"></div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ============ INSTÄLLNINGAR ============ */
+var API_BASE="";      // t.ex. "/api". Tomt = demoläge (sparas bara i din webbläsare).
+var MAX_PX=1280;      // bilder skalas ner före uppladdning
+
+/* ============ INLOGGNING (byt ut mot Doginary) ============
+   Kontraktet sidan behöver:
+   Auth.init()   -> Promise<{id,name}|null>   (finns användaren redan inloggad?)
+   Auth.login()  -> Promise<{id,name}>        (starta inloggning)
+   Auth.logout() -> Promise<void>
+   Auth.headers()-> objekt med ev. token som skickas till API_BASE
+*/
+var Auth={
+  init:function(){try{return Promise.resolve(JSON.parse(localStorage.getItem("demo_user")))}catch(e){return Promise.resolve(null)}},
+  login:function(){var n=(prompt("Ditt namn (demoinloggning):")||"").trim().slice(0,40);if(!n)return Promise.reject();
+    var u={id:"demo-"+n.toLowerCase(),name:n};localStorage.setItem("demo_user",JSON.stringify(u));return Promise.resolve(u)},
+  logout:function(){localStorage.removeItem("demo_user");return Promise.resolve()},
+  headers:function(){return{}}
+};
+
+/* ============ LAGRING (byt ut/behåll beroende på backend) ============ */
+var Store={
+  list:function(){
+    if(API_BASE)return fetch(API_BASE+"/photos").then(function(r){return r.json()});
+    try{return Promise.resolve(JSON.parse(localStorage.getItem("demo_photos"))||[])}catch(e){return Promise.resolve([])}
+  },
+  add:function(p,blob){
+    if(API_BASE){var f=new FormData();f.append("image",blob,"bild.jpg");f.append("lat",p.lat);f.append("lon",p.lon);f.append("text",p.text);
+      return fetch(API_BASE+"/photos",{method:"POST",body:f,headers:Auth.headers(),credentials:"include"}).then(function(r){if(!r.ok)throw new Error();return r.json()})}
+    return toDataURL(blob).then(function(d){p.img=d;var a=JSON.parse(localStorage.getItem("demo_photos")||"[]");a.unshift(p);
+      try{localStorage.setItem("demo_photos",JSON.stringify(a))}catch(e){throw new Error("Demolagret är fullt.")}return p});
+  },
+  del:function(id){
+    if(API_BASE)return fetch(API_BASE+"/photos/"+encodeURIComponent(id),{method:"DELETE",headers:Auth.headers(),credentials:"include"});
+    var a=JSON.parse(localStorage.getItem("demo_photos")||"[]").filter(function(p){return p.id!==id});localStorage.setItem("demo_photos",JSON.stringify(a));return Promise.resolve();
+  }
+};
+
+/* ============ KOD ============ */
+var user=null,photos=[],pending=null,pin=null;
+function $(i){return document.getElementById(i)}
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function toDataURL(b){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(b)})}
+function shrink(file){
+  return new Promise(function(res,rej){
+    var img=new Image(),u=URL.createObjectURL(file);
+    img.onload=function(){var s=Math.min(1,MAX_PX/Math.max(img.width,img.height)),c=document.createElement("canvas");
+      c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(u);c.toBlob(function(b){b?res(b):rej()},"image/jpeg",.82)};
+    img.onerror=function(){rej(new Error("Kunde inte läsa bilden."))};img.src=u;
+  });
+}
+var map=L.map("map").setView([59.3565,18.0925],15);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+var layer=L.layerGroup().addTo(map);
+
+function safeSrc(s){return/^(data:image\/(jpeg|png|webp);base64,|https?:\/\/|\/)/.test(s)?s:""}
+function popup(p){
+  var d=el("div","pop"),i=el("img");i.src=safeSrc(p.img);i.alt=p.text||"Bild";d.appendChild(i);
+  if(p.text)d.appendChild(el("p",0,p.text));
+  d.appendChild(el("small",0,p.author+" · "+new Date(p.created).toLocaleDateString("sv-SE")));
+  if(user&&user.id===p.userId){var b=el("button",0,"Ta bort");b.style.marginTop="6px";
+    b.onclick=function(){if(confirm("Ta bort bilden?"))Store.del(p.id).then(load)};d.appendChild(b)}
+  return d;
+}
+function draw(){
+  layer.clearLayers();var list=$("list");list.innerHTML="";
+  photos.forEach(function(p){
+    var m=L.marker([p.lat,p.lon],{icon:L.divIcon({className:"",iconSize:[44,44],iconAnchor:[22,22],
+      html:'<div class="pic" style="background-image:url(\''+encodeURI(safeSrc(p.img)).replace(/'/g,"%27")+'\')"></div>'})}).bindPopup(function(){return popup(p)},{minWidth:230});
+    m.addTo(layer);
+    var t=el("button","tile"),im=el("img");im.src=safeSrc(p.img);im.alt="";im.loading="lazy";t.appendChild(im);
+    t.appendChild(el("div",0,(p.text?p.text.slice(0,50)+" · ":"")+p.author));
+    t.onclick=function(){window.scrollTo({top:0,behavior:"smooth"});map.setView([p.lat,p.lon],17);m.openPopup()};
+    list.appendChild(t);
+  });
+  $("lt").textContent=photos.length?"Senaste bilderna ("+photos.length+")":"Inga bilder ännu – bli först!";
+}
+function load(){return Store.list().then(function(a){photos=a.sort(function(x,y){return new Date(y.created)-new Date(x.created)});draw()}).catch(function(){$("lt").textContent="Kunde inte hämta bilder."})}
+function setUser(u){user=u;$("who").textContent=u?u.name:"";$("authBtn").textContent=u?"Logga ut":"Logga in";draw()}
+function place(ll){
+  if(!user){alert("Logga in för att lägga upp en bild.");return}
+  pending={lat:ll.lat,lon:ll.lng};
+  if(pin)map.removeLayer(pin);
+  pin=L.marker(ll,{icon:L.divIcon({className:"",html:'<div class="pin">📍</div>',iconSize:[26,26],iconAnchor:[13,26]})}).addTo(map);
+  $("pos").textContent="Plats vald: "+ll.lat.toFixed(5)+", "+ll.lng.toFixed(5)+" (tryck på kartan för att flytta).";
+  $("form").hidden=false;$("err").textContent="";
+  $("form").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function reset(){$("form").hidden=true;$("file").value="";$("txt").value="";if(pin)map.removeLayer(pin);pin=null;pending=null}
+map.on("click",function(e){place(e.latlng)});
+$("cancel").onclick=reset;
+$("gps").onclick=function(){navigator.geolocation?navigator.geolocation.getCurrentPosition(function(p){var ll=L.latLng(p.coords.latitude,p.coords.longitude);map.setView(ll,17);place(ll)},function(){$("err").textContent="Kunde inte hämta din position."}):0};
+$("authBtn").onclick=function(){user?Auth.logout().then(function(){setUser(null)}):Auth.login().then(setUser).catch(function(){})};
+$("send").onclick=function(){
+  var f=$("file").files[0],b=$("send");$("err").textContent="";
+  if(!pending)return void($("err").textContent="Välj en plats på kartan.");
+  if(!f||!/^image\//.test(f.type))return void($("err").textContent="Välj en bildfil.");
+  b.disabled=true;b.textContent="Laddar upp…";
+  shrink(f).then(function(blob){
+    return Store.add({id:"p"+Date.now()+Math.random().toString(36).slice(2,7),lat:pending.lat,lon:pending.lon,text:$("txt").value.trim().slice(0,500),
+      author:user.name,userId:user.id,created:new Date().toISOString()},blob);
+  }).then(function(){reset();return load()}).catch(function(e){$("err").textContent=(e&&e.message)||"Något gick fel. Försök igen."})
+  .then(function(){b.disabled=false;b.textContent="Lägg upp"});
+};
+Auth.init().then(setUser).then(load);
+</script>
+</body>
+</html>

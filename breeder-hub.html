@@ -934,9 +934,15 @@ const I18N = {
     confirmDeleteItem: 'Ta bort "{name}" från lagret?',
     toastItemAdded: 'Vara tillagd', toastItemRemoved: 'Vara borttagen',
     emergencyContacts: 'Akutkontakter',
+    addContact: 'Lägg till kontakt', labelContactNameReq: 'Namn *', labelContactRole: 'Roll',
+    phContactRole: 't.ex. Veterinär, Akutklinik', labelContactPhone: 'Telefon',
+    confirmDeleteContact: 'Ta bort "{name}" från akutkontakter?',
+    toastContactAdded: 'Kontakt tillagd', toastContactRemoved: 'Kontakt borttagen', noContactsYet: 'Inga akutkontakter tillagda än.',
     kennelJournal: 'Kennelns journal', kennelJournalHint: 'Fria anteckningar',
     phTodayNote: 'Skriv dagens anteckning...', saveNote: 'Spara anteckning',
     titlesShows: 'Meriter & utställningar', noTitlesReg: 'Inga meriter registrerade.',
+    addTitle: 'Lägg till merit', labelDog: 'Hund *', labelTitleName: 'Titel/merit *',
+    phTitleSingle: 't.ex. SE UCH eller BIR på utställning', toastTitleAdded: 'Merit tillagd', noDogsYet: 'Lägg till en hund först under "Hundar".',
     noJournalYet: 'Inga anteckningar ännu.',
 
     yes: 'Ja', no: 'Nej',
@@ -1208,9 +1214,15 @@ const I18N = {
     confirmDeleteItem: 'Remove "{name}" from inventory?',
     toastItemAdded: 'Item added', toastItemRemoved: 'Item removed',
     emergencyContacts: 'Emergency contacts',
+    addContact: 'Add contact', labelContactNameReq: 'Name *', labelContactRole: 'Role',
+    phContactRole: 'e.g. Vet, Emergency clinic', labelContactPhone: 'Phone',
+    confirmDeleteContact: 'Remove "{name}" from emergency contacts?',
+    toastContactAdded: 'Contact added', toastContactRemoved: 'Contact removed', noContactsYet: 'No emergency contacts added yet.',
     kennelJournal: 'Kennel journal', kennelJournalHint: 'Free-form notes',
     phTodayNote: "Write today's note...", saveNote: 'Save note',
     titlesShows: 'Titles & shows', noTitlesReg: 'No titles registered.',
+    addTitle: 'Add title', labelDog: 'Dog *', labelTitleName: 'Title/show result *',
+    phTitleSingle: 'e.g. SE UCH or Best of Breed', toastTitleAdded: 'Title added', noDogsYet: 'Add a dog first under "Dogs".',
     noJournalYet: 'No notes yet.',
 
     yes: 'Yes', no: 'No',
@@ -3276,10 +3288,8 @@ function renderMore(){
         <div class="table-wrap"><table><thead><tr><th>${t('colItem')}</th><th></th><th></th></tr></thead>
           <tbody id="inventoryBody"></tbody>
         </table></div>
-        <div class="section-head"><h2>${t('emergencyContacts')}</h2></div>
-        <div class="card card-pad">
-          ${DB.contacts.map(c=>`<div class="milestone-row"><div style="flex:1"><div style="font-weight:600; font-size:13px;">${c.name}</div><div style="font-size:12px; color:var(--ink-soft);">${c.role}</div></div><div style="font-weight:600; font-size:13px;">${c.phone}</div></div>`).join('')}
-        </div>
+        <div class="section-head"><h2>${t('emergencyContacts')}</h2><button class="btn btn-primary btn-sm" id="addContactBtn">${t('addContact')}</button></div>
+        <div class="card card-pad" id="contactsBody"></div>
       </div>
       <div>
         <div class="section-head" style="margin-top:0;"><h2>${t('kennelJournal')}</h2><span class="hint">${t('kennelJournalHint')}</span></div>
@@ -3288,10 +3298,8 @@ function renderMore(){
           <button class="btn btn-primary btn-sm" id="addJournalBtn">${t('saveNote')}</button>
           <div class="timeline" style="margin-top:18px;" id="journalList"></div>
         </div>
-        <div class="section-head"><h2>${t('titlesShows')}</h2></div>
-        <div class="card card-pad">
-          ${DB.dogs.filter(d=>d.titles.length).map(d=>`<div style="margin-bottom:8px;"><strong>${d.name}</strong> — ${d.titles.join(', ')}</div>`).join('') || `<div style="color:var(--ink-soft);">${t('noTitlesReg')}</div>`}
-        </div>
+        <div class="section-head"><h2>${t('titlesShows')}</h2><button class="btn btn-primary btn-sm" id="addTitleBtn">${t('addTitle')}</button></div>
+        <div class="card card-pad" id="titlesBody"></div>
       </div>
     </div>
   `;
@@ -3308,6 +3316,10 @@ function renderMore(){
   drawJournal();
   document.getElementById('addInventoryBtn').addEventListener('click', openInventoryForm);
   drawInventoryBody();
+  document.getElementById('addContactBtn').addEventListener('click', ()=> openContactForm());
+  drawContactsBody();
+  document.getElementById('addTitleBtn').addEventListener('click', openTitleForm);
+  drawTitlesBody();
 }
 function drawInventoryBody(){
   document.getElementById('inventoryBody').innerHTML = DB.inventory.map(i=>`
@@ -3405,6 +3417,104 @@ function openInventoryForm(){
       low: Math.max(0, Number(f.get('low')) || 0),
     });
     saveDB(); closeDrawer(); drawInventoryBody(); toast(t('toastItemAdded'));
+  });
+}
+function drawContactsBody(){
+  document.getElementById('contactsBody').innerHTML = DB.contacts.map(c=>`
+    <div class="milestone-row">
+      <div style="flex:1">
+        <div style="font-weight:600; font-size:13px;">${escapeHtml(c.name)}</div>
+        <div style="font-size:12px; color:var(--ink-soft);">${escapeHtml(c.role)}</div>
+      </div>
+      <div style="font-weight:600; font-size:13px;">${escapeHtml(c.phone)}</div>
+      <div style="display:flex; gap:6px; margin-left:10px;">
+        <button type="button" class="btn btn-sm" data-edit-contact="${c.id}">${t('edit')}</button>
+        <button type="button" class="btn btn-sm btn-danger" data-del-contact="${c.id}">${t('delete')}</button>
+      </div>
+    </div>`).join('') || `<div style="color:var(--ink-soft); font-size:13px;">${t('noContactsYet')}</div>`;
+  document.getElementById('contactsBody').querySelectorAll('[data-edit-contact]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openContactForm(DB.contacts.find(c=>c.id===btn.dataset.editContact)));
+  });
+  document.getElementById('contactsBody').querySelectorAll('[data-del-contact]').forEach(btn=>{
+    btn.addEventListener('click', ()=> deleteContact(btn.dataset.delContact));
+  });
+}
+function deleteContact(id){
+  const c = DB.contacts.find(x=>x.id===id);
+  if(!c) return;
+  if(!confirm(t('confirmDeleteContact',{name:c.name}))) return;
+  DB.contacts = DB.contacts.filter(x=>x.id!==id);
+  saveDB(); drawContactsBody(); toast(t('toastContactRemoved'));
+}
+function openContactForm(existing){
+  const isEdit = !!existing;
+  const c = existing || {name:'',role:'',phone:''};
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">${isEdit?t('edit'):t('addContact')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="contactForm" class="form-grid">
+        <div class="field full"><label>${t('labelContactNameReq')}</label><input required name="name" value="${c.name}"></div>
+        <div class="field full"><label>${t('labelContactRole')}</label><input name="role" value="${c.role}" placeholder="${t('phContactRole')}"></div>
+        <div class="field full"><label>${t('labelContactPhone')}</label><input name="phone" value="${c.phone}"></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${isEdit?t('saveChanges'):t('save')}</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('contactForm').addEventListener('submit', e=>{
+    e.preventDefault(); const f = new FormData(e.target);
+    const vals = {name:f.get('name'), role:f.get('role')||'', phone:f.get('phone')||''};
+    if(isEdit){
+      Object.assign(existing, vals); saveDB(); toast(t('toastChangesSaved'));
+    } else {
+      DB.contacts.push(Object.assign({id:uid('c')}, vals)); saveDB(); toast(t('toastContactAdded'));
+    }
+    closeDrawer(); drawContactsBody();
+  });
+}
+function drawTitlesBody(){
+  const dogsWithTitles = DB.dogs.filter(d=> d.titles && d.titles.length);
+  document.getElementById('titlesBody').innerHTML = dogsWithTitles.map(d=>`
+    <div style="margin-bottom:10px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:4px;">${escapeHtml(d.name)}</div>
+      <div class="dog-tags">
+        ${d.titles.map((x,i)=>`<span class="tag" style="display:inline-flex; align-items:center; gap:5px;">${escapeHtml(x)}<button type="button" class="title-remove" data-dog="${d.id}" data-idx="${i}" title="${t('delete')}" style="border:none; background:none; cursor:pointer; color:inherit; font-size:11px; padding:0; line-height:1;">✕</button></span>`).join('')}
+      </div>
+    </div>`).join('') || `<div style="color:var(--ink-soft);">${t('noTitlesReg')}</div>`;
+  document.getElementById('titlesBody').querySelectorAll('.title-remove').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const dog = DB.dogs.find(d=>d.id===btn.dataset.dog);
+      if(!dog) return;
+      dog.titles.splice(Number(btn.dataset.idx), 1);
+      saveDB(); drawTitlesBody(); toast(t('toastChangesSaved'));
+    });
+  });
+}
+function openTitleForm(){
+  if(!DB.dogs.length){ toast(t('noDogsYet')); return; }
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">${t('addTitle')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="titleForm" class="form-grid">
+        <div class="field full"><label>${t('labelDog')}</label><select required name="dogId">${DB.dogs.map(d=>`<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('')}</select></div>
+        <div class="field full"><label>${t('labelTitleName')}</label><input required name="title" placeholder="${t('phTitleSingle')}"></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${t('save')}</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('titleForm').addEventListener('submit', e=>{
+    e.preventDefault(); const f = new FormData(e.target);
+    const dog = DB.dogs.find(d=>d.id===f.get('dogId'));
+    const val = (f.get('title')||'').trim();
+    if(!dog || !val) return;
+    dog.titles = dog.titles || [];
+    dog.titles.push(val);
+    saveDB(); closeDrawer(); drawTitlesBody(); toast(t('toastTitleAdded'));
   });
 }
 

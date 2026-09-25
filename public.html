@@ -105,6 +105,7 @@ a{color:inherit;}
 .card-meta{font-size:12.5px; color:var(--ink-soft); margin-top:3px;}
 .card-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
 .tag{background:var(--surface-2); border-radius:20px; padding:3px 10px; font-size:11px; color:var(--ink-soft);}
+.tag-price{background:var(--honey-tint); color:var(--honey-deep); font-weight:600;}
 
 .state{text-align:center; padding:80px 20px; color:var(--ink-soft); font-size:14px;}
 .state h2{font-family:var(--font-display); font-weight:500; color:var(--ink); font-size:22px; margin:0 0 8px;}
@@ -189,7 +190,7 @@ const I18N = {
     sexFemale:'Tik', sexMale:'Hane',
     ageDays:'{n} dgr', ageMonths:'{n} mån', ageYears:'{n} år',
     hipsPrefix:'HD',
-    pricePerPuppyLabel:'Pris per valp', priceApprox:'ca',
+    pricePerPuppyLabel:'Pris per valp', priceApprox:'ca', priceLabel:'Pris',
     footerText:'Skapad med Doginary',
     langAria:'Språk', currencyAria:'Valuta', unitsAria:'Måttenhet', doginaryAria:'Till doginary.com',
     contactTitle:'Kontakt',
@@ -207,7 +208,7 @@ const I18N = {
     sexFemale:'Female', sexMale:'Male',
     ageDays:'{n}d', ageMonths:'{n} mo', ageYears:'{n} yr',
     hipsPrefix:'HD',
-    pricePerPuppyLabel:'Price per puppy', priceApprox:'approx.',
+    pricePerPuppyLabel:'Price per puppy', priceApprox:'approx.', priceLabel:'Price',
     footerText:'Made with Doginary',
     langAria:'Language', currencyAria:'Currency', unitsAria:'Units', doginaryAria:'Go to doginary.com',
     contactTitle:'Contact',
@@ -345,6 +346,7 @@ function renderDogs(){
             <div class="card-name">${escapeHtml(d.name||'—')}</div>
             <div class="card-meta">${escapeHtml(d.breed||'')}${d.breed&&d.sex?' · ':''}${d.sex?sexLabel(d.sex):''}${(d.breed||d.sex)&&d.dob?' · ':''}${ageFromDob(d.dob)}</div>
             <div class="card-tags">
+              ${d.price?`<span class="tag tag-price">${t('priceLabel')}: ${formatPrice(d.price)}</span>`:''}
               ${d.color?`<span class="tag">${escapeHtml(d.color)}</span>`:''}
               ${heightStr?`<span class="tag">${heightStr}</span>`:''}
               ${weightStr?`<span class="tag">${weightStr}</span>`:''}
@@ -382,7 +384,7 @@ function updateHeroPrice(){
 function populateCurrencySelect(){
   const sel = document.getElementById('currencySelect');
   sel.innerHTML = CURRENCIES.map(c=>`<option value="${c}" ${c===CURRENCY?'selected':''}>${c}</option>`).join('');
-  sel.hidden = !(pub && pub.pricePerPuppy);
+  sel.hidden = !(pub && (pub.pricePerPuppy || allDogs.some(d=>d.price)));
 }
 function syncUnitButtons(){
   document.querySelectorAll('#unitToggle button').forEach(b=> b.classList.toggle('active', b.dataset.u===UNITS));
@@ -412,6 +414,7 @@ function bindControlsOnce(){
     CURRENCY = e.target.value;
     safeSet(lsKey('currency'), CURRENCY);
     updateHeroPrice();
+    renderDogs();
   });
   document.querySelectorAll('#unitToggle button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -468,14 +471,14 @@ async function init(){
       return;
     }
     pub = data.data;
+    allDogs = pub.dogs || [];
     initPreferences(pub);
     syncControlsUI();
     applyLangTexts();
 
     document.getElementById('kennelTitle').textContent = pub.kennelName || t('defaultKennelTitle');
-    allDogs = pub.dogs || [];
 
-    if(pub.pricePerPuppy){ FX_RATES = await getRates(BASE_CURRENCY); }
+    if(pub.pricePerPuppy || allDogs.some(d=>d.price)){ FX_RATES = await getRates(BASE_CURRENCY); }
     updateHeroPrice();
     renderDogs();
     renderContactBox();

@@ -833,7 +833,7 @@ const I18N = {
     tabInfo: 'Info', tabHealth: 'Hälsa', tabWeight: 'Vikt', tabNotes: 'Anteckningar',
     fieldCallName: 'Kallelsenamn', fieldSex: 'Kön', fieldBreed: 'Ras', fieldColor: 'Färg',
     fieldBorn: 'Född', fieldAge: 'Ålder', fieldChip: 'Chipnummer', fieldRegNo: 'Registreringsnr',
-    fieldHeight: 'Mankhöjd', fieldStatus: 'Status', fieldHips: 'HD', fieldElbows: 'AD',
+    fieldHeight: 'Mankhöjd', fieldStatus: 'Status', fieldPrice: 'Pris', fieldHips: 'HD', fieldElbows: 'AD',
     fieldEyes: 'Ögonlysning', fieldDna: 'DNA-tester',
     titlesLabel: 'MERITER', parentsLabel: 'FÖRÄLDRAR', sireLabel: 'Far', damLabel: 'Mor',
     dueBadge: 'Förfaller', nextLabel: ' · Nästa: ',
@@ -845,6 +845,7 @@ const I18N = {
     labelNameRequired: 'Namn *', labelRegName: 'Registrerat namn', labelBreedRequired: 'Ras *',
     labelSex: 'Kön', labelBorn: 'Född', labelColor: 'Färg', labelChip: 'Chipnummer',
     labelRegNo: 'Registreringsnr', labelStatus: 'Status', labelHeightCm: 'Mankhöjd (cm)',
+    labelDogPrice: 'Pris ({cur})', phDogPrice: 't.ex. 18000', dogPriceHint: 'Visas på den publika sidan om "Visa pris" är aktiverat under Publik sida.',
     pedigreeSection: 'Stamtavla', labelSire: 'Far (hane)', labelDam: 'Mor (tik)', unknownOption: '— Okänd —',
     healthTitlesSection: 'Hälsoresultat & meriter',
     labelHipsFull: 'HD (höftled)', phHips: 't.ex. A',
@@ -1113,7 +1114,7 @@ const I18N = {
     tabInfo: 'Info', tabHealth: 'Health', tabWeight: 'Weight', tabNotes: 'Notes',
     fieldCallName: 'Call name', fieldSex: 'Sex', fieldBreed: 'Breed', fieldColor: 'Color',
     fieldBorn: 'Born', fieldAge: 'Age', fieldChip: 'Chip number', fieldRegNo: 'Registration no.',
-    fieldHeight: 'Height at withers', fieldStatus: 'Status', fieldHips: 'HD', fieldElbows: 'AD',
+    fieldHeight: 'Height at withers', fieldStatus: 'Status', fieldPrice: 'Price', fieldHips: 'HD', fieldElbows: 'AD',
     fieldEyes: 'Eye exam', fieldDna: 'DNA tests',
     titlesLabel: 'TITLES', parentsLabel: 'PARENTS', sireLabel: 'Sire', damLabel: 'Dam',
     dueBadge: 'Due', nextLabel: ' · Next: ',
@@ -1125,6 +1126,7 @@ const I18N = {
     labelNameRequired: 'Name *', labelRegName: 'Registered name', labelBreedRequired: 'Breed *',
     labelSex: 'Sex', labelBorn: 'Born', labelColor: 'Color', labelChip: 'Chip number',
     labelRegNo: 'Registration no.', labelStatus: 'Status', labelHeightCm: 'Height at withers (cm)',
+    labelDogPrice: 'Price ({cur})', phDogPrice: 'e.g. 18000', dogPriceHint: 'Shown on the public page if "Show price" is enabled under Public page.',
     pedigreeSection: 'Pedigree', labelSire: 'Sire (male)', labelDam: 'Dam (female)', unknownOption: '— Unknown —',
     healthTitlesSection: 'Health results & titles',
     labelHipsFull: 'HD (hips)', phHips: 'e.g. A',
@@ -1901,7 +1903,8 @@ async function savePublicSnapshot(db){
     dob:d.dob, color:d.color, reg:d.reg, status:d.status, height:d.height,
     weight:(d.weightLog && d.weightLog.length) ? d.weightLog[d.weightLog.length-1].kg : null,
     hips:d.hips, elbows:d.elbows, eyes:d.eyes, dna:d.dna, titles:d.titles, sire:d.sire, dam:d.dam,
-    photoUrl:d.photoUrl||''
+    photoUrl:d.photoUrl||'',
+    price:(db.showPriceOnPublic && d.price) ? d.price : null
   }));
   const publicData = {
     kennelName: db.kennelName,
@@ -2372,6 +2375,7 @@ function openDogProfile(id){
           ${infoRow(t('fieldBorn'), fmtDate(d.dob), true)} ${infoRow(t('fieldAge'), ageFromDob(d.dob), true)}
           ${infoRow(t('fieldChip'), d.chip, false)} ${infoRow(t('fieldRegNo'), d.reg, true)}
           ${infoRow(t('fieldHeight'), d.height?d.height+' cm':'—', true)} ${infoRow(t('fieldStatus'), statusLabel(d.status), true)}
+          ${infoRow(t('fieldPrice'), d.price?formatMoney(d.price):'—', true)}
           ${infoRow(t('fieldHips'), d.hips||'—', true)} ${infoRow(t('fieldElbows'), d.elbows||'—', true)}
           ${infoRow(t('fieldEyes'), d.eyes||'—', true)} ${infoRow(t('fieldDna'), d.dna||'—', true)}
         </div>
@@ -2459,6 +2463,11 @@ function openDogForm(existing){
           <option value="deceased" ${sel(d.status,'deceased')}>${t('statusDeceased')}</option>
         </select></div>
         <div class="field"><label>${t('labelHeightCm')}</label><input type="number" name="height" value="${d.height||''}"></div>
+        <div class="field">
+          <label>${t('labelDogPrice',{cur:DB.currency||'SEK'})}</label>
+          <input type="number" min="0" step="1" name="price" value="${d.price||''}" placeholder="${t('phDogPrice')}">
+          <span style="font-size:11.5px; color:var(--ink-soft); margin-top:4px; display:block;">${t('dogPriceHint')}</span>
+        </div>
 
         <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">${t('pedigreeSection')}</label></div>
         <div class="field"><label>${t('labelSire')}</label><select name="sire">
@@ -2521,6 +2530,7 @@ function openDogForm(existing){
       name:f.get('name'), regName:f.get('regName')||f.get('name'), callName:f.get('name'),
       breed:f.get('breed'), sex:f.get('sex'), dob:f.get('dob')||new Date().toISOString().slice(0,10), color:f.get('color')||'',
       chip:f.get('chip')||'', reg:f.get('reg')||'', status:f.get('status'), height:Number(f.get('height'))||0,
+      price:f.get('price')?Math.max(0, Number(f.get('price'))||0):null,
       sire:f.get('sire')||'', dam:f.get('dam')||'',
       hips:f.get('hips')||'', elbows:f.get('elbows')||'', eyes:f.get('eyes')||'', dna:f.get('dna')||'',
       titles, notes:f.get('notes')||'', photoUrl

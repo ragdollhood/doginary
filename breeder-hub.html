@@ -855,6 +855,9 @@ const I18N = {
     addPuppyBtn: 'Lägg till valp', newPuppyTitle: 'Ny valp i {litter}', editPuppyTitle: 'Redigera {name}',
     dogsPageHint: 'Här visas dina egna hundar (avelsdjur och uppfödarens bestånd). Valpar som ska säljas läggs till och hanteras under Kullar — öppna en kull och klicka på "Lägg till valp".',
     editKennelNameTitle: 'Ändra kennelnamn', labelKennelName: 'Kennelnamn *', toastKennelNameSaved: 'Kennelnamn sparat',
+    newLitterBtn: 'Ny kull', newLitterTitle: 'Ny kull', labelLitterNameRequired: 'Kullnamn *', phLitterName: 't.ex. S-kullen',
+    saveLitter: 'Spara kull', toastLitterAdded: 'Kull tillagd',
+    litterNeedsDogsHint: 'Tips: lägg till tik och hane under "Hundar" först om de inte finns i listorna ovan.',
     labelPuppyNameRequired: 'Namn *', labelPuppySexRequired: 'Kön *', labelPuppyColor: 'Färg',
     labelPuppyBirthWeight: 'Födelsevikt (kg)', labelPuppyStatus: 'Status', savePuppy: 'Spara valp',
     toastPuppyAdded: 'Valp tillagd', toastPuppyStatusUpdated: 'Status uppdaterad', colActions: 'Åtgärd',
@@ -1093,6 +1096,9 @@ const I18N = {
     addPuppyBtn: 'Add puppy', newPuppyTitle: 'New puppy in {litter}', editPuppyTitle: 'Edit {name}',
     dogsPageHint: 'This shows your own dogs (breeding stock). Puppies for sale are added and managed under Litters — open a litter and click "Add puppy".',
     editKennelNameTitle: 'Change kennel name', labelKennelName: 'Kennel name *', toastKennelNameSaved: 'Kennel name saved',
+    newLitterBtn: 'New litter', newLitterTitle: 'New litter', labelLitterNameRequired: 'Litter name *', phLitterName: 'e.g. The S litter',
+    saveLitter: 'Save litter', toastLitterAdded: 'Litter added',
+    litterNeedsDogsHint: 'Tip: add the dam and sire under "Dogs" first if they are missing from the lists above.',
     labelPuppyNameRequired: 'Name *', labelPuppySexRequired: 'Sex *', labelPuppyColor: 'Color',
     labelPuppyBirthWeight: 'Birth weight (kg)', labelPuppyStatus: 'Status', savePuppy: 'Save puppy',
     toastPuppyAdded: 'Puppy added', toastPuppyStatusUpdated: 'Status updated', colActions: 'Action',
@@ -2524,6 +2530,10 @@ function openBreedingForm(){
 /* ---- LITTERS ---- */
 function renderLitters(){
   content.innerHTML = `
+    <div class="filter-row">
+      <span style="flex:1"></span>
+      <button class="btn btn-primary" id="addLitterBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newLitterBtn')}</button>
+    </div>
     <div class="grid-cards">
       ${DB.litters.map(l=>{
         const dam = dogById(l.dam), sire = dogById(l.sire);
@@ -2542,6 +2552,44 @@ function renderLitters(){
     </div>
   `;
   content.querySelectorAll('.litter-card').forEach(c=> c.addEventListener('click', ()=> openLitterDetail(c.dataset.id)));
+  document.getElementById('addLitterBtn').addEventListener('click', openLitterForm);
+}
+function openLitterForm(){
+  const damOptions = DB.dogs.filter(d=>d.sex==='female');
+  const sireOptions = DB.dogs.filter(d=>d.sex==='male');
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">${t('newLitterTitle')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="litterForm" class="form-grid">
+        <div class="field full"><label>${t('labelLitterNameRequired')}</label><input required name="name" placeholder="${t('phLitterName')}"></div>
+        <div class="field"><label>${t('labelDamRequired')}</label><select required name="dam">
+          <option value="">${t('unknownOption')}</option>
+          ${damOptions.map(x=>`<option value="${x.id}">${x.name}</option>`).join('')}
+        </select></div>
+        <div class="field"><label>${t('labelSireRequired')}</label><select required name="sire">
+          <option value="">${t('unknownOption')}</option>
+          ${sireOptions.map(x=>`<option value="${x.id}">${x.name}</option>`).join('')}
+        </select></div>
+        <div class="field full"><label>${t('labelBorn')}</label><input required type="date" name="birthDate" value="${new Date().toISOString().slice(0,10)}"></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${t('saveLitter')}</button>
+        </div>
+      </form>
+      ${(damOptions.length===0 || sireOptions.length===0) ? `<p style="font-size:12px; color:var(--ink-soft); margin-top:12px;">${t('litterNeedsDogsHint')}</p>` : ''}
+    </div>
+  `);
+  document.getElementById('litterForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const litter = {
+      id:uid('l'), name:f.get('name'), breedingId:'', dam:f.get('dam')||'', sire:f.get('sire')||'',
+      birthDate:f.get('birthDate'), puppies:[], milestones:[]
+    };
+    DB.litters.unshift(litter);
+    saveDB(); closeDrawer(); toast(t('toastLitterAdded'));
+    openLitterDetail(litter.id);
+  });
 }
 function openLitterDetail(id){
   const l = DB.litters.find(x=>x.id===id);

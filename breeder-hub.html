@@ -2970,6 +2970,7 @@ function openBuyerDetail(id){
         ${infoRow(t('colActivityLevel'), b.activity)} ${infoRow(t('colPrevOwner'), b.prevDog)}
         ${infoRow(t('colPreferredPuppy'), b.preferred)}
       </div>
+      <button class="btn btn-sm" id="editBuyerBtn" style="margin-bottom:16px;">${t('edit')}</button>
       <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('commLog')}</h2></div>
       <div class="timeline" id="buyerLog">
         ${b.log.slice().reverse().map(l=>`<div class="tl-item"><div class="tl-date">${fmtDate(l.date)}</div><div class="tl-desc">${l.note}</div></div>`).join('')}
@@ -2979,38 +2980,45 @@ function openBuyerDetail(id){
     </div>
   `);
   document.getElementById('buyerStatusSelect').addEventListener('change', e=>{ b.status=e.target.value; saveDB(); toast(t('toastStatusUpdated')); });
+  document.getElementById('editBuyerBtn').addEventListener('click', ()=> openBuyerForm(b));
   document.getElementById('addLogBtn').addEventListener('click', ()=>{
     const val = document.getElementById('newLogNote').value.trim();
     if(!val) return;
     b.log.push({date:new Date().toISOString().slice(0,10), note:val}); saveDB(); openBuyerDetail(id);
   });
 }
-function openBuyerForm(){
+function openBuyerForm(existing){
+  const isEdit = !!existing;
+  const b = existing || {name:'',email:'',phone:'',country:t('defaultCountry'),housing:'',activity:'',prevDog:'',preferred:''};
   openDrawer(`
-    <div class="drawer-head"><div class="drawer-title">${t('newProspect')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-head"><div class="drawer-title">${isEdit?t('edit')+' — '+b.name:t('newProspect')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="buyerForm" class="form-grid">
-        <div class="field"><label>${t('labelNameReq')}</label><input required name="name"></div>
-        <div class="field"><label>${t('labelEmail')}</label><input type="email" name="email"></div>
-        <div class="field"><label>${t('labelPhone')}</label><input name="phone"></div>
-        <div class="field"><label>${t('labelCountry')}</label><input name="country" value="${t('defaultCountry')}"></div>
-        <div class="field"><label>${t('labelHousingType')}</label><input name="housing"></div>
-        <div class="field"><label>${t('labelActivityLevel')}</label><input name="activity"></div>
-        <div class="field"><label>${t('labelPrevOwner')}</label><input name="prevDog"></div>
-        <div class="field"><label>${t('labelDesiredPuppy')}</label><input name="preferred"></div>
+        <div class="field"><label>${t('labelNameReq')}</label><input required name="name" value="${b.name}"></div>
+        <div class="field"><label>${t('labelEmail')}</label><input type="email" name="email" value="${b.email}"></div>
+        <div class="field"><label>${t('labelPhone')}</label><input name="phone" value="${b.phone}"></div>
+        <div class="field"><label>${t('labelCountry')}</label><input name="country" value="${b.country}"></div>
+        <div class="field"><label>${t('labelHousingType')}</label><input name="housing" value="${b.housing}"></div>
+        <div class="field"><label>${t('labelActivityLevel')}</label><input name="activity" value="${b.activity}"></div>
+        <div class="field"><label>${t('labelPrevOwner')}</label><input name="prevDog" value="${b.prevDog}"></div>
+        <div class="field"><label>${t('labelDesiredPuppy')}</label><input name="preferred" value="${b.preferred}"></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
-          <button type="submit" class="btn btn-primary">${t('save')}</button>
+          <button type="submit" class="btn btn-primary">${isEdit?t('saveChanges'):t('save')}</button>
         </div>
       </form>
     </div>
   `);
   document.getElementById('buyerForm').addEventListener('submit', e=>{
     e.preventDefault(); const f = new FormData(e.target);
-    DB.buyers.unshift({id:uid('bu'), name:f.get('name'), email:f.get('email')||'', phone:f.get('phone')||'', country:f.get('country')||'',
-      housing:f.get('housing')||'', activity:f.get('activity')||'', prevDog:f.get('prevDog')||'', preferred:f.get('preferred')||'',
-      status:'new', puppyId:'', log:[{date:new Date().toISOString().slice(0,10), note:t('prospectAddedLog')}]});
-    saveDB(); closeDrawer(); renderBuyers(); toast(t('toastBuyerAdded'));
+    const vals = {name:f.get('name'), email:f.get('email')||'', phone:f.get('phone')||'', country:f.get('country')||'',
+      housing:f.get('housing')||'', activity:f.get('activity')||'', prevDog:f.get('prevDog')||'', preferred:f.get('preferred')||''};
+    if(isEdit){
+      Object.assign(existing, vals); saveDB(); closeDrawer(); openBuyerDetail(existing.id); toast(t('toastBuyerAdded'));
+    } else {
+      DB.buyers.unshift({id:uid('bu'), ...vals, status:'new', puppyId:'', log:[{date:new Date().toISOString().slice(0,10), note:t('prospectAddedLog')}]});
+      saveDB(); closeDrawer(); renderBuyers(); toast(t('toastBuyerAdded'));
+    }
   });
 }
 

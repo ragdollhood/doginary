@@ -894,11 +894,12 @@ const I18N = {
     labelPuppyBirthWeight: 'Födelsevikt (kg)', labelPuppyStatus: 'Status', savePuppy: 'Spara valp',
     toastPuppyAdded: 'Valp tillagd', toastPuppyStatusUpdated: 'Status uppdaterad', colActions: 'Åtgärd',
 
-    availablePuppies: 'Tillgängliga valpar', temperamentEst: 'Temperament (uppskattat)',
+    availablePuppies: 'Tillgängliga valpar', temperamentEst: 'Temperament',
     traitEnergy: 'Energi', traitConfidence: 'Självförtroende', traitSociability: 'Sällskaplighet', traitTrainability: 'Träningsbarhet',
-    noAvailablePuppies: 'Inga tillgängliga valpar just nu.',
-    suggestedMatches: 'Föreslagna matchningar', suggestedMatchesHint: 'Baserat på aktivitetsnivå & önskemål',
-    colBuyer: 'Köpare', colWants: 'Önskar', colSuggestedPuppy: 'Föreslagen valp', colMatch: 'Matchning', bestMatch: 'Bästa matchning',
+    noAvailablePuppies: 'Inga tillgängliga valpar just nu.', temperamentNotSet: 'Ej bedömt ännu',
+    notAssessedPh: 'Ej bedömt', selectPuppyPlaceholder: '— Välj valp —', assignedYes: 'Tilldelad', assignedNo: 'Ej tilldelad',
+    suggestedMatches: 'Valptilldelning', suggestedMatchesHint: 'Koppla en väntande köpare till en tillgänglig valp',
+    colBuyer: 'Köpare', colWants: 'Önskar', colSuggestedPuppy: 'Tilldelad valp', colMatch: 'Status', bestMatch: 'Bästa matchning',
 
     buyerNew: 'Ny förfrågan', buyerWaiting: 'Väntelista', buyerApproved: 'Godkänd',
     buyerReserved: 'Reserverad', buyerSold: 'Såld', buyerRejected: 'Avböjd',
@@ -1167,11 +1168,12 @@ const I18N = {
     labelPuppyBirthWeight: 'Birth weight (kg)', labelPuppyStatus: 'Status', savePuppy: 'Save puppy',
     toastPuppyAdded: 'Puppy added', toastPuppyStatusUpdated: 'Status updated', colActions: 'Action',
 
-    availablePuppies: 'Available puppies', temperamentEst: 'Temperament (estimated)',
+    availablePuppies: 'Available puppies', temperamentEst: 'Temperament',
     traitEnergy: 'Energy', traitConfidence: 'Confidence', traitSociability: 'Sociability', traitTrainability: 'Trainability',
-    noAvailablePuppies: 'No available puppies right now.',
-    suggestedMatches: 'Suggested matches', suggestedMatchesHint: 'Based on activity level & preferences',
-    colBuyer: 'Buyer', colWants: 'Wants', colSuggestedPuppy: 'Suggested puppy', colMatch: 'Match', bestMatch: 'Best match',
+    noAvailablePuppies: 'No available puppies right now.', temperamentNotSet: 'Not assessed yet',
+    notAssessedPh: 'Not assessed', selectPuppyPlaceholder: '— Select puppy —', assignedYes: 'Assigned', assignedNo: 'Not assigned',
+    suggestedMatches: 'Puppy assignment', suggestedMatchesHint: 'Link a waiting buyer to an available puppy',
+    colBuyer: 'Buyer', colWants: 'Wants', colSuggestedPuppy: 'Assigned puppy', colMatch: 'Status', bestMatch: 'Best match',
 
     buyerNew: 'New inquiry', buyerWaiting: 'Waitlist', buyerApproved: 'Approved',
     buyerReserved: 'Reserved', buyerSold: 'Sold', buyerRejected: 'Declined',
@@ -2861,6 +2863,11 @@ function openPuppyForm(litterId, existing){
           <option value="reserved" ${sel(p.status,'reserved')}>${t('puppyReserved')}</option>
           <option value="sold" ${sel(p.status,'sold')}>${t('puppySold')}</option>
         </select></div>
+        <div class="field full" style="margin-top:8px;"><label style="font-weight:600;">${t('temperamentEst')}</label></div>
+        <div class="field"><label>${t('traitEnergy')}</label><input type="number" min="0" max="100" name="traitEnergy" placeholder="${t('notAssessedPh')}" value="${p.traitEnergy??''}"></div>
+        <div class="field"><label>${t('traitConfidence')}</label><input type="number" min="0" max="100" name="traitConfidence" placeholder="${t('notAssessedPh')}" value="${p.traitConfidence??''}"></div>
+        <div class="field"><label>${t('traitSociability')}</label><input type="number" min="0" max="100" name="traitSociability" placeholder="${t('notAssessedPh')}" value="${p.traitSociability??''}"></div>
+        <div class="field"><label>${t('traitTrainability')}</label><input type="number" min="0" max="100" name="traitTrainability" placeholder="${t('notAssessedPh')}" value="${p.traitTrainability??''}"></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
           <button type="submit" class="btn btn-primary">${isEdit?t('saveChanges'):t('savePuppy')}</button>
@@ -2871,9 +2878,12 @@ function openPuppyForm(litterId, existing){
   document.getElementById('puppyForm').addEventListener('submit', e=>{
     e.preventDefault();
     const f = new FormData(e.target);
+    const traitVal = (name)=>{ const v=f.get(name); return (v===''||v===null) ? undefined : Math.max(0,Math.min(100,Number(v))); };
     const patch = {
       name:f.get('name'), sex:f.get('sex'), color:f.get('color')||'',
-      birthWeight:Number(f.get('birthWeight'))||0, status:f.get('status')
+      birthWeight:Number(f.get('birthWeight'))||0, status:f.get('status'),
+      traitEnergy:traitVal('traitEnergy'), traitConfidence:traitVal('traitConfidence'),
+      traitSociability:traitVal('traitSociability'), traitTrainability:traitVal('traitTrainability')
     };
     if(isEdit){
       Object.assign(existing, patch);
@@ -2889,36 +2899,48 @@ function openPuppyForm(litterId, existing){
 /* ---- MATCHING ---- */
 function renderMatching(){
   const availablePuppies = DB.litters.flatMap(l=> l.puppies.filter(p=>p.status!=='sold').map(p=>({...p, litter:l.name})));
-  const waitingBuyers = DB.buyers.filter(b=> b.status==='waiting' || b.status==='approved');
+  const waitingBuyers = DB.buyers.filter(b=> b.status==='waiting' || b.status==='approved' || b.status==='reserved');
   content.innerHTML = `
     <div class="section-head" style="margin-top:0;"><h2>${t('availablePuppies')}</h2><span class="hint">${availablePuppies.length}</span></div>
     <div class="grid-cards" style="margin-bottom:26px;">
-      ${availablePuppies.map(p=>`
+      ${availablePuppies.map(p=>{
+        const traits = [['traitEnergy',p.traitEnergy],['traitConfidence',p.traitConfidence],['traitSociability',p.traitSociability],['traitTrainability',p.traitTrainability]];
+        const anySet = traits.some(([,v])=> v!=null && v!=='');
+        return `
         <div class="card card-pad">
           <div style="font-family:var(--font-display); font-size:16px; font-weight:500;">${p.name}</div>
           <div style="font-size:12px; color:var(--ink-soft); margin-bottom:8px;">${p.litter} · ${sexLabel(p.sex)} · ${p.color}</div>
-          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;">${t('temperamentEst')}</div>
-          ${trait(t('traitEnergy'), puppyTraitSeed(p.id,0))}
-          ${trait(t('traitConfidence'), puppyTraitSeed(p.id,1))}
-          ${trait(t('traitSociability'), puppyTraitSeed(p.id,2))}
-          ${trait(t('traitTrainability'), puppyTraitSeed(p.id,3))}
-        </div>`).join('') || `<div class="empty" style="grid-column:1/-1;">${t('noAvailablePuppies')}</div>`}
+          ${anySet ? `
+            <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;">${t('temperamentEst')}</div>
+            ${traits.map(([key,v])=> (v!=null && v!=='') ? trait(t(key), v) : '').join('')}
+          ` : `<div style="font-size:11.5px; color:var(--ink-soft);">${t('temperamentNotSet')}</div>`}
+        </div>`;
+      }).join('') || `<div class="empty" style="grid-column:1/-1;">${t('noAvailablePuppies')}</div>`}
     </div>
     <div class="section-head"><h2>${t('suggestedMatches')}</h2><span class="hint">${t('suggestedMatchesHint')}</span></div>
     <div class="table-wrap"><table>
       <thead><tr><th>${t('colBuyer')}</th><th>${t('colWants')}</th><th>${t('colSuggestedPuppy')}</th><th>${t('colMatch')}</th></tr></thead>
       <tbody>
         ${waitingBuyers.map(b=>{
-          const suggestion = availablePuppies[Math.floor(Math.random()*100+b.name.length) % (availablePuppies.length||1)];
-          return `<tr><td>${b.name}</td><td style="color:var(--ink-soft);">${b.preferred}</td><td>${suggestion?suggestion.name:'—'}</td><td><span class="badge ok">${t('bestMatch')}</span></td></tr>`;
+          const options = [`<option value="">${t('selectPuppyPlaceholder')}</option>`]
+            .concat(availablePuppies.map(p=> `<option value="${p.id}" ${p.id===b.puppyId?'selected':''}>${p.name} (${p.litter})</option>`));
+          return `<tr>
+            <td>${b.name}</td>
+            <td style="color:var(--ink-soft);">${b.preferred}</td>
+            <td><select class="match-assign-select" data-buyer="${b.id}">${options.join('')}</select></td>
+            <td>${b.puppyId ? `<span class="badge ok">${t('assignedYes')}</span>` : `<span class="badge muted">${t('assignedNo')}</span>`}</td>
+          </tr>`;
         }).join('') || emptyRow(4)}
       </tbody>
     </table></div>
   `;
-}
-function puppyTraitSeed(id, offset){
-  let h = 0; for(const c of id) h += c.charCodeAt(0);
-  return 40 + ((h*(offset+3)) % 55);
+  document.querySelectorAll('.match-assign-select').forEach(sel=>{
+    sel.addEventListener('change', e=>{
+      const buyer = DB.buyers.find(x=>x.id===e.target.dataset.buyer);
+      buyer.puppyId = e.target.value;
+      saveDB(); toast(t('toastChangesSaved')); renderMatching();
+    });
+  });
 }
 function trait(label, pct){
   return `<div style="margin-bottom:6px;"><div style="display:flex; justify-content:space-between; font-size:11px; color:var(--ink-soft);"><span>${label}</span></div><div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div></div>`;

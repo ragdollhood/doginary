@@ -161,6 +161,12 @@ a{color:inherit;}
 .section-head:first-child{margin-top:0;}
 .section-head h2{font-family:var(--font-display); font-size:18.5px; font-weight:500; margin:0;}
 .section-head .hint{font-size:12px; color:var(--ink-soft);}
+.privacy-note{
+  display:flex; gap:9px; align-items:flex-start; background:var(--honey-tint); border:1px solid var(--honey);
+  border-radius:var(--radius-s); padding:10px 12px; font-size:12.3px; line-height:1.45; color:var(--ink);
+  margin-bottom:14px;
+}
+.privacy-note svg{flex-shrink:0; margin-top:1px; color:var(--honey-deep);}
 
 .grid-cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
 
@@ -934,6 +940,11 @@ const I18N = {
     defaultCountry: 'Sverige', labelHousingType: 'Boendetyp', labelActivityLevel: 'Aktivitetsnivå',
     labelPrevOwner: 'Tidigare hundägare', labelDesiredPuppy: 'Önskad valp',
     prospectAddedLog: 'Intressent tillagd.',
+    colEmail: 'E-post', colPhone: 'Telefon', colInterestedPuppy: 'Intresserad av',
+    labelInterestedPuppy: 'Intresserad av (valp)', noPuppyOption: '— Ingen vald —',
+    sensitiveDataWarning: 'Registrera inte känsliga personuppgifter såsom hälsouppgifter, personnummer, ekonomiska uppgifter eller andra särskilda kategorier av personuppgifter.',
+    confirmDeleteBuyer: 'Ta bort kunden "{name}"? Detta går inte att ångra.',
+    toastBuyerRemoved: 'Kunden har tagits bort',
 
     newEvent: 'Ny händelse', allUpcomingEvents: 'Alla kommande händelser',
     labelTitleRequired: 'Titel *', labelDateReq: 'Datum *', labelType: 'Typ',
@@ -987,7 +998,7 @@ const I18N = {
     exColRelated: 'Kopplat till', exColLowAt: 'Lågnivå vid', exColUnit: 'Enhet',
     exColRole: 'Roll', exColPhone: 'Telefon',
     exHousingLine: 'Boende: {housing} &nbsp;·&nbsp; Aktivitetsnivå: {activity} &nbsp;·&nbsp; Tidigare hund: {prevDog}',
-    exWishLine: 'Önskemål: {preferred}', exLinkedPuppy: ' &nbsp;·&nbsp; Kopplad valp: {name}',
+    exWishLine: 'Önskemål: {preferred}', exLinkedPuppy: 'Intresserad av: {name}',
   },
   en: {
     hubOverviewLabel: 'Breeder overview',
@@ -1219,6 +1230,11 @@ const I18N = {
     defaultCountry: 'Sweden', labelHousingType: 'Housing type', labelActivityLevel: 'Activity level',
     labelPrevOwner: 'Previous dog owner', labelDesiredPuppy: 'Desired puppy',
     prospectAddedLog: 'Prospect added.',
+    colEmail: 'Email', colPhone: 'Phone', colInterestedPuppy: 'Interested in',
+    labelInterestedPuppy: 'Interested in (puppy)', noPuppyOption: '— None selected —',
+    sensitiveDataWarning: 'Do not enter sensitive personal information, such as health information, identification numbers, financial details or other special-category personal data.',
+    confirmDeleteBuyer: 'Remove customer "{name}"? This cannot be undone.',
+    toastBuyerRemoved: 'Customer removed',
 
     newEvent: 'New event', allUpcomingEvents: 'All upcoming events',
     labelTitleRequired: 'Title *', labelDateReq: 'Date *', labelType: 'Type',
@@ -1272,7 +1288,7 @@ const I18N = {
     exColRelated: 'Related to', exColLowAt: 'Restock at', exColUnit: 'Unit',
     exColRole: 'Role', exColPhone: 'Phone',
     exHousingLine: 'Housing: {housing} &nbsp;·&nbsp; Activity level: {activity} &nbsp;·&nbsp; Previous dog: {prevDog}',
-    exWishLine: 'Preferences: {preferred}', exLinkedPuppy: ' &nbsp;·&nbsp; Linked puppy: {name}',
+    exWishLine: 'Preferences: {preferred}', exLinkedPuppy: 'Interested in: {name}',
   }
 };
 
@@ -1784,7 +1800,7 @@ function seedSv(){
     }
   ];
   const buyers = [
-    {id:'bu1', name:'Anna & Erik Lindqvist', email:'anna.lindqvist@mail.com', phone:'070-123 45 67', country:'Sverige', housing:'Villa med trädgård', activity:'Hög — aktiv familj, löpning', prevDog:'Ja, labrador i barndomen', preferred:'Hane, lugnt temperament', status:'reserved', puppyId:'p2', log:[
+    {id:'bu1', name:'Anna & Erik Lindqvist', email:'anna.lindqvist@mail.com', phone:'070-123 45 67', status:'reserved', puppyId:'p2', log:[
       {date:'2025-06-01', note:'Första kontakt via formulär på hemsidan.'},
       {date:'2025-06-20', note:'Hembesök genomfört, mycket lämpligt hem.'},
       {date:'2025-07-15', note:'Reserverat Sigge, handpenning mottagen.'}
@@ -1875,7 +1891,7 @@ function seedEn(){
     }
   ];
   const buyers = [
-    {id:'bu1', name:'Anna & Erik Lindqvist', email:'anna.lindqvist@mail.com', phone:'070-123 45 67', country:'Sweden', housing:'House with garden', activity:'High — active family, running', prevDog:'Yes, a Labrador in childhood', preferred:'Male, calm temperament', status:'reserved', puppyId:'p2', log:[
+    {id:'bu1', name:'Anna & Erik Lindqvist', email:'anna.lindqvist@mail.com', phone:'070-123 45 67', status:'reserved', puppyId:'p2', log:[
       {date:'2025-06-01', note:'First contact via the website form.'},
       {date:'2025-06-20', note:'Home visit completed, very suitable home.'},
       {date:'2025-07-15', note:'Reserved Sigge, deposit received.'}
@@ -2071,9 +2087,8 @@ function exportAllData(){
   sections.push(`<h2>${t('exportBuyersTitle',{n:DB.buyers.length})}</h2>
     ${DB.buyers.map(b=>`
       <h3>${escapeHtml(b.name)} <span class="tag">${buyerStatusLabel(b.status)}</span></h3>
-      <p class="meta">${escapeHtml(b.email)} &nbsp;·&nbsp; ${escapeHtml(b.phone)} &nbsp;·&nbsp; ${escapeHtml(b.country)}</p>
-      <p class="meta">${t('exHousingLine',{housing:escapeHtml(b.housing),activity:escapeHtml(b.activity),prevDog:escapeHtml(b.prevDog)})}</p>
-      <p class="meta">${t('exWishLine',{preferred:escapeHtml(b.preferred)})} ${b.puppyId?(t('exLinkedPuppy',{name:escapeHtml((DB.litters.flatMap(l=>l.puppies).find(p=>p.id===b.puppyId)||{}).name)})):''}</p>
+      <p class="meta">${escapeHtml(b.email||'')} &nbsp;·&nbsp; ${escapeHtml(b.phone||'')}</p>
+      <p class="meta">${b.puppyId?(t('exLinkedPuppy',{name:escapeHtml((DB.litters.flatMap(l=>l.puppies).find(p=>p.id===b.puppyId)||{}).name)})):''}</p>
       ${(b.log||[]).length?`<ul class="loglist">${b.log.map(e=>`<li>${fmtDate(e.date)} — ${escapeHtml(e.note)}</li>`).join('')}</ul>`:''}
     `).join('')}`);
 
@@ -3019,18 +3034,17 @@ function renderMatching(){
     </div>
     <div class="section-head"><h2>${t('suggestedMatches')}</h2><span class="hint">${t('suggestedMatchesHint')}</span></div>
     <div class="table-wrap"><table>
-      <thead><tr><th>${t('colBuyer')}</th><th>${t('colWants')}</th><th>${t('colSuggestedPuppy')}</th><th>${t('colMatch')}</th></tr></thead>
+      <thead><tr><th>${t('colBuyer')}</th><th>${t('colSuggestedPuppy')}</th><th>${t('colMatch')}</th></tr></thead>
       <tbody>
         ${waitingBuyers.map(b=>{
           const options = [`<option value="">${t('selectPuppyPlaceholder')}</option>`]
             .concat(availablePuppies.map(p=> `<option value="${p.id}" ${p.id===b.puppyId?'selected':''}>${p.name} (${p.litter})</option>`));
           return `<tr>
-            <td>${b.name}</td>
-            <td style="color:var(--ink-soft);">${b.preferred}</td>
+            <td>${escapeHtml(b.name)}</td>
             <td><select class="match-assign-select" data-buyer="${b.id}">${options.join('')}</select></td>
             <td>${b.puppyId ? `<span class="badge ok">${t('assignedYes')}</span>` : `<span class="badge muted">${t('assignedNo')}</span>`}</td>
           </tr>`;
-        }).join('') || emptyRow(4)}
+        }).join('') || emptyRow(3)}
       </tbody>
     </table></div>
   `;
@@ -3058,29 +3072,58 @@ function renderBuyers(){
       <button class="btn btn-primary" id="addBuyerBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newProspect')}</button>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>${t('colName')}</th><th>${t('colCountry')}</th><th>${t('colHousing')}</th><th>${t('colPrefers')}</th><th>${t('buyerStatusLabel2')}</th></tr></thead>
+      <thead><tr><th>${t('colName')}</th><th>${t('colEmail')}</th><th>${t('colPhone')}</th><th>${t('colInterestedPuppy')}</th><th>${t('buyerStatusLabel2')}</th><th></th></tr></thead>
       <tbody id="buyersBody"></tbody>
     </table></div>
   `;
   content.querySelectorAll('.chip-filter').forEach(b=> b.addEventListener('click', ()=>{ buyerFilter=b.dataset.f; renderBuyers(); }));
-  document.getElementById('addBuyerBtn').addEventListener('click', openBuyerForm);
+  document.getElementById('addBuyerBtn').addEventListener('click', ()=>openBuyerForm());
   drawBuyersBody();
+}
+function buyerPuppyLabel(b){
+  const p = DB.litters.flatMap(l=>l.puppies.map(pp=>({...pp, litter:l.name}))).find(p=>p.id===b.puppyId);
+  return p ? `${p.name} (${p.litter})` : '—';
 }
 function drawBuyersBody(){
   let list = DB.buyers.filter(b=> buyerFilter==='all' || b.status===buyerFilter);
   document.getElementById('buyersBody').innerHTML = list.map(b=>`
-    <tr class="buyer-row" data-id="${b.id}" style="cursor:pointer;"><td>${b.name}</td><td>${b.country}</td><td style="color:var(--ink-soft);">${b.housing}</td><td style="color:var(--ink-soft);">${b.preferred}</td><td>${buyerBadge(b.status)}</td></tr>
-  `).join('') || emptyRow(5);
-  document.querySelectorAll('.buyer-row').forEach(r=> r.addEventListener('click', ()=> openBuyerDetail(r.dataset.id)));
+    <tr class="buyer-row" data-id="${b.id}">
+      <td style="cursor:pointer;">${escapeHtml(b.name)}</td>
+      <td style="cursor:pointer; color:var(--ink-soft);">${escapeHtml(b.email||'')}</td>
+      <td style="cursor:pointer; color:var(--ink-soft);">${escapeHtml(b.phone||'')}</td>
+      <td style="cursor:pointer; color:var(--ink-soft);">${buyerPuppyLabel(b)}</td>
+      <td style="cursor:pointer;">${buyerBadge(b.status)}</td>
+      <td><button type="button" class="btn btn-sm btn-danger" data-del-buyer="${b.id}">${t('delete')}</button></td>
+    </tr>
+  `).join('') || emptyRow(6);
+  document.getElementById('buyersBody').querySelectorAll('td[style*="cursor:pointer"]').forEach(td=>{
+    td.addEventListener('click', ()=> openBuyerDetail(td.closest('tr').dataset.id));
+  });
+  document.getElementById('buyersBody').querySelectorAll('[data-del-buyer]').forEach(btn=>{
+    btn.addEventListener('click', e=>{ e.stopPropagation(); deleteBuyer(btn.dataset.delBuyer); });
+  });
+}
+function deleteBuyer(id){
+  const b = DB.buyers.find(x=>x.id===id);
+  if(!b) return;
+  if(!confirm(t('confirmDeleteBuyer',{name:b.name}))) return;
+  DB.buyers = DB.buyers.filter(x=>x.id!==id);
+  saveDB(); drawBuyersBody(); toast(t('toastBuyerRemoved'));
 }
 function buyerBadge(s){
   const map = {new:'muted', waiting:'warn', approved:'ok', reserved:'ok', sold:'ok', rejected:'due'};
   return `<span class="badge ${map[s]}">${buyerStatusLabel(s)}</span>`;
 }
+function buyerPuppyOptions(selectedId){
+  const puppies = DB.litters.flatMap(l=> l.puppies.map(p=>({...p, litter:l.name})));
+  return [`<option value="">${t('noPuppyOption')}</option>`]
+    .concat(puppies.map(p=>`<option value="${p.id}" ${p.id===selectedId?'selected':''}>${escapeHtml(p.name)} (${escapeHtml(p.litter)})</option>`))
+    .join('');
+}
 function openBuyerDetail(id){
   const b = DB.buyers.find(x=>x.id===id);
   openDrawer(`
-    <div class="drawer-head"><div><div class="drawer-title">${b.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${b.email} · ${b.phone}</div></div>
+    <div class="drawer-head"><div><div class="drawer-title">${escapeHtml(b.name)}</div><div style="font-size:12.5px;color:var(--ink-soft);">${escapeHtml(b.email||'')} · ${escapeHtml(b.phone||'')}</div></div>
       <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <div class="field full" style="margin-bottom:16px;">
@@ -3088,21 +3131,28 @@ function openBuyerDetail(id){
         <select id="buyerStatusSelect">${BUYER_STATUSES.map(s=>`<option value="${s}" ${s===b.status?'selected':''}>${buyerStatusLabel(s)}</option>`).join('')}</select>
       </div>
       <div class="form-grid" style="font-size:13px; margin-bottom:16px;">
-        ${infoRow(t('colCountry'), b.country)} ${infoRow(t('colHousingType'), b.housing)}
-        ${infoRow(t('colActivityLevel'), b.activity)} ${infoRow(t('colPrevOwner'), b.prevDog)}
-        ${infoRow(t('colPreferredPuppy'), b.preferred)}
+        ${infoRow(t('colInterestedPuppy'), buyerPuppyLabel(b))}
       </div>
-      <button class="btn btn-sm" id="editBuyerBtn" style="margin-bottom:16px;">${t('edit')}</button>
+      <div style="display:flex; gap:8px; margin-bottom:16px;">
+        <button class="btn btn-sm" id="editBuyerBtn">${t('edit')}</button>
+        <button class="btn btn-sm btn-danger" id="deleteBuyerBtn">${t('delete')}</button>
+      </div>
       <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('commLog')}</h2></div>
       <div class="timeline" id="buyerLog">
-        ${b.log.slice().reverse().map(l=>`<div class="tl-item"><div class="tl-date">${fmtDate(l.date)}</div><div class="tl-desc">${l.note}</div></div>`).join('')}
+        ${b.log.slice().reverse().map(l=>`<div class="tl-item"><div class="tl-date">${fmtDate(l.date)}</div><div class="tl-desc">${escapeHtml(l.note)}</div></div>`).join('')}
       </div>
+      <div class="privacy-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.14A1.5 1.5 0 0 0 3.5 20.5h17a1.5 1.5 0 0 0 1.39-2.5L13.71 3.86a1.5 1.5 0 0 0-2.42 0z"/></svg><span>${t('sensitiveDataWarning')}</span></div>
       <div class="field full"><label>${t('addNote')}</label><textarea id="newLogNote" placeholder="${t('phLogNote')}"></textarea></div>
       <button class="btn btn-primary btn-sm" id="addLogBtn" style="margin-top:8px;">${t('add')}</button>
     </div>
   `);
-  document.getElementById('buyerStatusSelect').addEventListener('change', e=>{ b.status=e.target.value; saveDB(); toast(t('toastStatusUpdated')); });
+  document.getElementById('buyerStatusSelect').addEventListener('change', e=>{ b.status=e.target.value; saveDB(); toast(t('toastStatusUpdated')); drawBuyersBody(); });
   document.getElementById('editBuyerBtn').addEventListener('click', ()=> openBuyerForm(b));
+  document.getElementById('deleteBuyerBtn').addEventListener('click', ()=>{
+    if(!confirm(t('confirmDeleteBuyer',{name:b.name}))) return;
+    DB.buyers = DB.buyers.filter(x=>x.id!==id);
+    saveDB(); closeDrawer(); drawBuyersBody(); toast(t('toastBuyerRemoved'));
+  });
   document.getElementById('addLogBtn').addEventListener('click', ()=>{
     const val = document.getElementById('newLogNote').value.trim();
     if(!val) return;
@@ -3111,19 +3161,17 @@ function openBuyerDetail(id){
 }
 function openBuyerForm(existing){
   const isEdit = !!existing;
-  const b = existing || {name:'',email:'',phone:'',country:t('defaultCountry'),housing:'',activity:'',prevDog:'',preferred:''};
+  const b = existing || {name:'',email:'',phone:'',puppyId:'',status:'new'};
   openDrawer(`
-    <div class="drawer-head"><div class="drawer-title">${isEdit?t('edit')+' — '+b.name:t('newProspect')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-head"><div class="drawer-title">${isEdit?t('edit')+' — '+escapeHtml(b.name):t('newProspect')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
+      <div class="privacy-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.14A1.5 1.5 0 0 0 3.5 20.5h17a1.5 1.5 0 0 0 1.39-2.5L13.71 3.86a1.5 1.5 0 0 0-2.42 0z"/></svg><span>${t('sensitiveDataWarning')}</span></div>
       <form id="buyerForm" class="form-grid">
-        <div class="field"><label>${t('labelNameReq')}</label><input required name="name" value="${b.name}"></div>
-        <div class="field"><label>${t('labelEmail')}</label><input type="email" name="email" value="${b.email}"></div>
-        <div class="field"><label>${t('labelPhone')}</label><input name="phone" value="${b.phone}"></div>
-        <div class="field"><label>${t('labelCountry')}</label><input name="country" value="${b.country}"></div>
-        <div class="field"><label>${t('labelHousingType')}</label><input name="housing" value="${b.housing}"></div>
-        <div class="field"><label>${t('labelActivityLevel')}</label><input name="activity" value="${b.activity}"></div>
-        <div class="field"><label>${t('labelPrevOwner')}</label><input name="prevDog" value="${b.prevDog}"></div>
-        <div class="field"><label>${t('labelDesiredPuppy')}</label><input name="preferred" value="${b.preferred}"></div>
+        <div class="field full"><label>${t('labelNameReq')}</label><input required name="name" value="${b.name||''}"></div>
+        <div class="field"><label>${t('labelEmail')}</label><input type="email" name="email" value="${b.email||''}"></div>
+        <div class="field"><label>${t('labelPhone')}</label><input name="phone" value="${b.phone||''}"></div>
+        <div class="field full"><label>${t('labelInterestedPuppy')}</label><select name="puppyId">${buyerPuppyOptions(b.puppyId)}</select></div>
+        <div class="field full"><label>${t('buyerStatusLabel2')}</label><select name="status">${BUYER_STATUSES.map(s=>`<option value="${s}" ${s===b.status?'selected':''}>${buyerStatusLabel(s)}</option>`).join('')}</select></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
           <button type="submit" class="btn btn-primary">${isEdit?t('saveChanges'):t('save')}</button>
@@ -3133,12 +3181,11 @@ function openBuyerForm(existing){
   `);
   document.getElementById('buyerForm').addEventListener('submit', e=>{
     e.preventDefault(); const f = new FormData(e.target);
-    const vals = {name:f.get('name'), email:f.get('email')||'', phone:f.get('phone')||'', country:f.get('country')||'',
-      housing:f.get('housing')||'', activity:f.get('activity')||'', prevDog:f.get('prevDog')||'', preferred:f.get('preferred')||''};
+    const vals = {name:f.get('name'), email:f.get('email')||'', phone:f.get('phone')||'', puppyId:f.get('puppyId')||'', status:f.get('status')||'new'};
     if(isEdit){
       Object.assign(existing, vals); saveDB(); closeDrawer(); openBuyerDetail(existing.id); toast(t('toastBuyerAdded'));
     } else {
-      DB.buyers.unshift({id:uid('bu'), ...vals, status:'new', puppyId:'', log:[{date:new Date().toISOString().slice(0,10), note:t('prospectAddedLog')}]});
+      DB.buyers.unshift({id:uid('bu'), ...vals, log:[{date:new Date().toISOString().slice(0,10), note:t('prospectAddedLog')}]});
       saveDB(); closeDrawer(); renderBuyers(); toast(t('toastBuyerAdded'));
     }
   });

@@ -463,7 +463,7 @@ const STR = {
     navInsights: "Insikter",
     navGuidelines: "Riktlinjer",
     navHealth: "Hälsocenter",
-    navBreederHub: "Breeder Hub",
+    navBreederHub: "Kennel-hub",
     logKicker: "DAGBOK",
     logTitle: "Logga dagen för {name}",
     logSubtitle: "Promenader, uteliv, pälsvård, aptit, humör och sömn — loggat i en lugn dagbok, med försiktiga insikter över tid.",

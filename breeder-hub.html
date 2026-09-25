@@ -470,7 +470,12 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-foot">
-      <div class="kennel-name" id="kennelNameLabel"><span id="kennelNameText">Kennel von Bella</span><span class="demo-badge" id="demoBadge" style="display:none;">Exempel</span></div>
+      <div class="kennel-name" id="kennelNameLabel" style="display:flex; align-items:center; gap:7px;">
+        <span id="kennelNameText">Kennel von Bella</span><span class="demo-badge" id="demoBadge" style="display:none;">Exempel</span>
+        <button id="editKennelNameBtn" title="Ändra kennelnamn" style="background:none; border:none; color:#9FB3A9; cursor:pointer; padding:2px; display:flex; align-items:center;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+      </div>
       <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
         <span>Uppfödaröversikt</span>
         <button id="logoutBtn" style="background:none; border:none; color:#9FB3A9; cursor:pointer; font-size:12px; text-decoration:underline; padding:0;">Logga ut</button>
@@ -847,6 +852,12 @@ const I18N = {
     puppiesLabel: 'Valpar', colBirthWeight: 'Födelsevikt', milestonesLabel: 'Milstolpar',
     colName: 'Namn',
     puppyAvailable: 'Tillgänglig', puppyReserved: 'Reserverad', puppySold: 'Såld',
+    addPuppyBtn: 'Lägg till valp', newPuppyTitle: 'Ny valp i {litter}', editPuppyTitle: 'Redigera {name}',
+    dogsPageHint: 'Här visas dina egna hundar (avelsdjur och uppfödarens bestånd). Valpar som ska säljas läggs till och hanteras under Kullar — öppna en kull och klicka på "Lägg till valp".',
+    editKennelNameTitle: 'Ändra kennelnamn', labelKennelName: 'Kennelnamn *', toastKennelNameSaved: 'Kennelnamn sparat',
+    labelPuppyNameRequired: 'Namn *', labelPuppySexRequired: 'Kön *', labelPuppyColor: 'Färg',
+    labelPuppyBirthWeight: 'Födelsevikt (kg)', labelPuppyStatus: 'Status', savePuppy: 'Spara valp',
+    toastPuppyAdded: 'Valp tillagd', toastPuppyStatusUpdated: 'Status uppdaterad', colActions: 'Åtgärd',
 
     availablePuppies: 'Tillgängliga valpar', temperamentEst: 'Temperament (uppskattat)',
     traitEnergy: 'Energi', traitConfidence: 'Självförtroende', traitSociability: 'Sällskaplighet', traitTrainability: 'Träningsbarhet',
@@ -1079,6 +1090,12 @@ const I18N = {
     puppiesLabel: 'Puppies', colBirthWeight: 'Birth weight', milestonesLabel: 'Milestones',
     colName: 'Name',
     puppyAvailable: 'Available', puppyReserved: 'Reserved', puppySold: 'Sold',
+    addPuppyBtn: 'Add puppy', newPuppyTitle: 'New puppy in {litter}', editPuppyTitle: 'Edit {name}',
+    dogsPageHint: 'This shows your own dogs (breeding stock). Puppies for sale are added and managed under Litters — open a litter and click "Add puppy".',
+    editKennelNameTitle: 'Change kennel name', labelKennelName: 'Kennel name *', toastKennelNameSaved: 'Kennel name saved',
+    labelPuppyNameRequired: 'Name *', labelPuppySexRequired: 'Sex *', labelPuppyColor: 'Color',
+    labelPuppyBirthWeight: 'Birth weight (kg)', labelPuppyStatus: 'Status', savePuppy: 'Save puppy',
+    toastPuppyAdded: 'Puppy added', toastPuppyStatusUpdated: 'Status updated', colActions: 'Action',
 
     availablePuppies: 'Available puppies', temperamentEst: 'Temperament (estimated)',
     traitEnergy: 'Energy', traitConfidence: 'Confidence', traitSociability: 'Sociability', traitTrainability: 'Trainability',
@@ -1454,6 +1471,31 @@ async function handleLogout(){
 }
 document.getElementById('logoutBtn').addEventListener('click', handleLogout);
 document.getElementById('accountMenuLogout').addEventListener('click', handleLogout);
+
+function openKennelNameForm(){
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">${t('editKennelNameTitle')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="kennelNameForm" class="form-grid">
+        <div class="field full"><label>${t('labelKennelName')}</label><input required name="kennelName" value="${DB?.kennelName || ''}"></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${t('save')}</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('kennelNameForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const name = (f.get('kennelName')||'').trim();
+    if(!name || !DB) return;
+    DB.kennelName = name;
+    document.getElementById('kennelNameText').textContent = DB.kennelName;
+    saveDB(); closeDrawer(); toast(t('toastKennelNameSaved'));
+  });
+}
+document.getElementById('editKennelNameBtn').addEventListener('click', openKennelNameForm);
 
 // Slår upp (eller, som reservlösning om signup-triggern i databasen av
 // någon anledning inte kört, skapar) den kennel som den inloggade
@@ -2133,6 +2175,7 @@ function upcomingBirthdays(){
 let dogFilter = 'all', dogSearch = '';
 function renderDogs(){
   content.innerHTML = `
+    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 16px; max-width:640px;">${t('dogsPageHint')}</p>
     <div class="filter-row">
       <div class="search-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input type="text" id="dogSearchInput" placeholder="${t('searchDogsPlaceholder')}" value="${dogSearch}"></div>
@@ -2266,7 +2309,7 @@ function openDogForm(existing){
         <div class="field"><label>${t('labelChip')}</label><input name="chip" value="${d.chip||''}"></div>
         <div class="field"><label>${t('labelRegNo')}</label><input name="reg" value="${d.reg||''}"></div>
         <div class="field"><label>${t('labelStatus')}</label><select name="status">
-          <option value="puppy" ${sel(d.status,'puppy')}>${t('statusPuppy')}</option>
+          ${(isEdit && d.status==='puppy') ? `<option value="puppy" selected>${t('statusPuppy')}</option>` : ''}
           <option value="adult" ${sel(d.status,'adult')||(!isEdit?'selected':'')}>${t('statusAdult')}</option>
           <option value="retired" ${sel(d.status,'retired')}>${t('statusRetired')}</option>
           <option value="deceased" ${sel(d.status,'deceased')}>${t('statusDeceased')}</option>
@@ -2507,9 +2550,17 @@ function openLitterDetail(id){
     <div class="drawer-head"><div><div class="drawer-title">${l.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${dam?.name} × ${sire?.name} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div></div>
       <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
-      <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('puppiesLabel')}</h2></div>
-      <div class="table-wrap"><table><thead><tr><th>${t('colName')}</th><th>${t('colStatus').replace(t('colStatus'),'')}${t('fieldSex')}</th><th>${t('exColColor')}</th><th>${t('colBirthWeight')}</th><th>${t('colStatus')}</th></tr></thead>
-        <tbody>${l.puppies.map(p=>`<tr><td>${p.name}</td><td>${sexLabel(p.sex)}</td><td>${p.color}</td><td>${p.birthWeight} kg</td><td>${puppyStatusBadge(p.status)}</td></tr>`).join('')}</tbody>
+      <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('puppiesLabel')}</h2><button type="button" class="btn btn-sm" id="addPuppyBtn">${t('addPuppyBtn')}</button></div>
+      <div class="table-wrap"><table><thead><tr><th>${t('colName')}</th><th>${t('fieldSex')}</th><th>${t('exColColor')}</th><th>${t('colBirthWeight')}</th><th>${t('colStatus')}</th><th>${t('colActions')}</th></tr></thead>
+        <tbody>${l.puppies.map(p=>`<tr>
+            <td>${p.name}</td><td>${sexLabel(p.sex)}</td><td>${p.color}</td><td>${p.birthWeight} kg</td>
+            <td><select class="puppy-status-select" data-id="${p.id}" style="font-size:12.5px; padding:4px 6px; border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--ink);">
+              <option value="available" ${p.status==='available'?'selected':''}>${t('puppyAvailable')}</option>
+              <option value="reserved" ${p.status==='reserved'?'selected':''}>${t('puppyReserved')}</option>
+              <option value="sold" ${p.status==='sold'?'selected':''}>${t('puppySold')}</option>
+            </select></td>
+            <td><button type="button" class="link-btn edit-puppy-btn" data-id="${p.id}">${t('edit')}</button></td>
+          </tr>`).join('') || `<tr><td colspan="6" style="color:var(--ink-soft);">${t('noAvailablePuppies')}</td></tr>`}</tbody>
       </table></div>
       <div class="section-head"><h2 style="font-size:15px;">${t('milestonesLabel')}</h2></div>
       <div class="card card-pad">
@@ -2529,10 +2580,65 @@ function openLitterDetail(id){
       saveDB(); openLitterDetail(id);
     });
   });
+  document.querySelectorAll('.puppy-status-select').forEach(sel=>{
+    sel.addEventListener('change', ()=>{
+      const p = l.puppies.find(x=>x.id===sel.dataset.id);
+      if(p){ p.status = sel.value; saveDB(); toast(t('toastPuppyStatusUpdated')); }
+    });
+  });
+  document.querySelectorAll('.edit-puppy-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const p = l.puppies.find(x=>x.id===btn.dataset.id);
+      openPuppyForm(id, p);
+    });
+  });
+  document.getElementById('addPuppyBtn')?.addEventListener('click', ()=> openPuppyForm(id));
 }
 function puppyStatusBadge(s){
   const map = {available:'ok',reserved:'warn',sold:'muted'};
   return `<span class="badge ${map[s]||'muted'}">${puppyStatusLabel(s)}</span>`;
+}
+function openPuppyForm(litterId, existing){
+  const l = DB.litters.find(x=>x.id===litterId);
+  const isEdit = !!existing;
+  const p = existing || {};
+  const sel = (val, cur)=> val===cur ? 'selected' : '';
+  openDrawer(`
+    <div class="drawer-head"><div class="drawer-title">${isEdit?t('editPuppyTitle',{name:p.name}):t('newPuppyTitle',{litter:l.name})}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body">
+      <form id="puppyForm" class="form-grid">
+        <div class="field"><label>${t('labelPuppyNameRequired')}</label><input required name="name" value="${p.name||''}"></div>
+        <div class="field"><label>${t('labelPuppySexRequired')}</label><select name="sex"><option value="female" ${sel(p.sex,'female')}>${t('sexFemale')}</option><option value="male" ${sel(p.sex,'male')||(!isEdit?'selected':'')}>${t('sexMale')}</option></select></div>
+        <div class="field"><label>${t('labelPuppyColor')}</label><input name="color" value="${p.color||''}"></div>
+        <div class="field"><label>${t('labelPuppyBirthWeight')}</label><input type="number" step="0.01" min="0" name="birthWeight" value="${p.birthWeight||''}"></div>
+        <div class="field"><label>${t('labelPuppyStatus')}</label><select name="status">
+          <option value="available" ${sel(p.status,'available')||(!isEdit?'selected':'')}>${t('puppyAvailable')}</option>
+          <option value="reserved" ${sel(p.status,'reserved')}>${t('puppyReserved')}</option>
+          <option value="sold" ${sel(p.status,'sold')}>${t('puppySold')}</option>
+        </select></div>
+        <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
+          <button type="submit" class="btn btn-primary">${isEdit?t('saveChanges'):t('savePuppy')}</button>
+        </div>
+      </form>
+    </div>
+  `);
+  document.getElementById('puppyForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const patch = {
+      name:f.get('name'), sex:f.get('sex'), color:f.get('color')||'',
+      birthWeight:Number(f.get('birthWeight'))||0, status:f.get('status')
+    };
+    if(isEdit){
+      Object.assign(existing, patch);
+      saveDB(); toast(t('toastChangesSaved'));
+    } else {
+      l.puppies.push(Object.assign({id:uid('p')}, patch));
+      saveDB(); toast(t('toastPuppyAdded'));
+    }
+    openLitterDetail(litterId);
+  });
 }
 
 /* ---- MATCHING ---- */

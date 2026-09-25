@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personuppgiftsbiträdesavtal — Doginary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF6EF; --surface:#FFFFFF; --surface-2:#F3EEE3;
+  --ink:#1C2420; --ink-soft:#54615B;
+  --pine:#22403A; --pine-deep:#122420; --pine-tint:#E7EFEC;
+  --honey:#C08F45; --honey-deep:#A0762F; --honey-tint:#F5E9D4;
+  --line:#E4DDCC; --line-soft:#EEE8DA;
+  --radius-s:6px; --radius-m:10px; --radius-l:16px;
+  --shadow: 0 1px 2px rgba(28,36,32,.05), 0 8px 24px -12px rgba(28,36,32,.18);
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1A211D; --surface-2:#212823;
+  --ink:#ECE7DA; --ink-soft:#A7B0A9;
+  --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
+  --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
+  --line:#2A322C; --line-soft:#232B26;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121815; --surface:#1A211D; --surface-2:#212823;
+    --ink:#ECE7DA; --ink-soft:#A7B0A9;
+    --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
+    --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
+    --line:#2A322C; --line-soft:#232B26;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;}
+a{color:var(--honey-deep);}
+.topbar{background:var(--pine-deep); color:#EDE7D9; padding:16px 20px;}
+.topbar-inner{max-width:820px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.brand{font-family:var(--font-display); font-style:italic; font-weight:500; font-size:18px; color:#F3E4C6; text-decoration:none;}
+.lang-toggle{display:flex; border:1px solid rgba(255,255,255,.22); border-radius:20px; overflow:hidden;}
+.lang-flag-btn{background:transparent; border:none; font-size:16px; line-height:1; padding:5px 11px; cursor:pointer; opacity:.55;}
+.lang-flag-btn.active{background:rgba(255,255,255,.18); opacity:1;}
+.wrap{max-width:820px; margin:0 auto; padding:36px 20px 70px;}
+h1{font-family:var(--font-display); font-weight:500; font-size:clamp(24px,4vw,32px); margin:0 0 6px;}
+.updated{font-size:12.5px; color:var(--ink-soft); margin:0 0 30px;}
+h2{font-family:var(--font-display); font-weight:500; font-size:18px; margin:32px 0 8px; color:var(--pine);}
+h3{font-family:var(--font-display); font-weight:500; font-size:15.5px; margin:18px 0 6px; color:var(--ink);}
+:root[data-theme="dark"] h2{color:var(--honey);}
+p{margin:0 0 12px;}
+ul{margin:0 0 12px; padding-left:20px;}
+li{margin-bottom:5px;}
+table{width:100%; border-collapse:collapse; margin:0 0 16px; font-size:13.5px;}
+th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em;}
+.note{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-m); padding:14px 16px; font-size:13.5px; color:var(--ink-soft); margin:0 0 28px;}
+.annex{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-l); padding:20px 22px; margin-top:14px; box-shadow:var(--shadow);}
+.lang-block{display:none;}
+.lang-block.active{display:block;}
+.footer{text-align:center; font-size:11.5px; color:var(--ink-soft); padding:20px; border-top:1px solid var(--line); margin-top:40px;}
+.footer a{color:var(--ink-soft); text-decoration:underline;}
+.legal-nav{display:flex; gap:10px; flex-wrap:wrap; font-size:12px; margin:0 0 26px;}
+.legal-nav a{color:var(--ink-soft); text-decoration:underline;}
+.legal-nav a:hover{color:var(--honey-deep);}
+.legal-nav .dot{opacity:.5;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="breeder-hub.html">Doginary</a>
+    <div class="lang-toggle" id="langToggle" role="group">
+      <button type="button" class="lang-flag-btn" data-lang="sv" title="Svenska">🇸🇪</button>
+      <button type="button" class="lang-flag-btn" data-lang="en" title="English">🇬🇧</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="lang-block" data-lang="sv">
+    <div class="legal-nav">
+      <a href="terms.html">Användarvillkor</a><span class="dot">·</span>
+      <a href="privacy.html">Integritetspolicy</a><span class="dot">·</span>
+      <span>Personuppgiftsbiträdesavtal</span><span class="dot">·</span>
+      <a href="mailto:doginary@gmail.com">Kontakt</a>
+    </div>
+    <h1>Doginary Personuppgiftsbiträdesavtal (DPA)</h1>
+    <p class="updated">Version: 25 september 2026 · Kontakt: <a href="mailto:doginary@gmail.com">doginary@gmail.com</a></p>
+    <div class="note">Detta avtal ("DPA") gäller när du som kennelägare/användare av Breeder Hub registrerar personuppgifter om valpköpare, spekulanter, kunder, kontakter eller andra individer i Tjänsten. Det utgör en del av avtalet mellan dig och Doginary tillsammans med <a href="terms.html">Användarvillkoren</a>, och gäller automatiskt i den utsträckning sådan behandling sker, utan att du behöver underteckna ett separat dokument.</div>
+
+    <h2>1. Parternas roller</h2>
+    <p>För personuppgifter som du som kennelägare/användare ("Controller", personuppgiftsansvarig) matar in i Breeder Hub om köpare, spekulanter eller andra individer, agerar du som <strong>personuppgiftsansvarig</strong> och Doginary ("Processor") som <strong>personuppgiftsbiträde</strong>, i enlighet med artikel 28 GDPR.</p>
+    <p>Detta DPA gäller inte nödvändigtvis för behandling där Doginary självständigt bestämmer ändamål och medel för behandlingen, till exempel Doginarys egen kontoadministration, säkerhetsarbete, fakturering eller uppfyllande av rättsliga förpliktelser gentemot dig som kund. I den utsträckningen agerar Doginary som självständigt personuppgiftsansvarig, vilket beskrivs närmare i vår <a href="privacy.html">Integritetspolicy</a>.</p>
+
+    <h2>2. Föremål och varaktighet</h2>
+    <p>Detta DPA reglerar Doginarys behandling av personuppgifter för Controllerns räkning i samband med tillhandahållandet av Breeder Hub. Avtalet gäller så länge Doginary behandlar sådana personuppgifter för Controllerns räkning, det vill säga under hela avtalsförhållandet, samt därefter under den tid som krävs enligt tillämplig lag eller som är tekniskt nödvändig som en del av en laglig raderingsprocess.</p>
+
+    <h2>3. Behandlingens art och syfte</h2>
+    <p>Behandlingen omfattar lagring, organisering, hämtning, visning, ändring, export, radering och andra åtgärder som är nödvändiga för att tillhandahålla den Breeder Hub-funktionalitet som Controllern efterfrågar, i syfte att stödja Controllerns kennelverksamhet (t.ex. hantering av valpköpare och intressenter).</p>
+
+    <h2>4. Kategorier av registrerade</h2>
+    <ul>
+      <li>Presumtiva valpköpare</li>
+      <li>Valpköpare/kunder</li>
+      <li>Kennelkontakter</li>
+      <li>Affärskontakter</li>
+      <li>Andra individer vars uppgifter Controllern lagligen matar in</li>
+    </ul>
+
+    <h2>5. Typer av personuppgifter</h2>
+    <ul>
+      <li>Namn</li>
+      <li>E-postadress</li>
+      <li>Telefonnummer</li>
+      <li>Land/ort</li>
+      <li>Boendeinformation</li>
+      <li>Aktivitetsnivå/livsstilsinformation</li>
+      <li>Information om tidigare hundinnehav</li>
+      <li>Valppreferenser</li>
+      <li>Status som spekulant/kund</li>
+      <li>Kommunikationsanteckningar</li>
+      <li>Övrig information som Controllern frivilligt registrerar</li>
+    </ul>
+
+    <h2>6. Controllerns ansvar</h2>
+    <p>Controllern (kennelägaren) ansvarar för att:</p>
+    <ul>
+      <li>ha en rättslig grund för behandling av personuppgifter som matas in i Doginary,</li>
+      <li>lämna nödvändig information/integritetsinformation till de registrerade,</li>
+      <li>avgöra vilken kund-/spekulantinformation som bör samlas in,</li>
+      <li>hålla uppgifterna korrekta där så krävs,</li>
+      <li>fastställa lagringstider,</li>
+      <li>hantera förfrågningar från registrerade,</li>
+      <li>radera information när den inte längre lagligen behöver sparas,</li>
+      <li>inhämta samtycke där samtycke är den rättsliga grunden, och</li>
+      <li>säkerställa att instruktioner som ges till Doginary är lagliga.</li>
+    </ul>
+
+    <h2>7. Behandlingsinstruktioner</h2>
+    <p>Doginary behandlar personuppgifter för Controllerns räkning endast enligt dokumenterade instruktioner från Controllern — i första hand så som dessa instruktioner kommer till uttryck genom Controllerns användning av Breeder Hubs funktioner (t.ex. att registrera, redigera, exportera eller radera uppgifter om en köpare) samt genom detta DPA och Användarvillkoren. Doginary underrättar Controllern om en instruktion enligt Doginarys bedömning strider mot GDPR eller annan tillämplig dataskyddslagstiftning, om detta lagligen är möjligt.</p>
+
+    <h2>8. Konfidentialitet</h2>
+    <p>Doginary säkerställer att personer med behörighet att behandla personuppgifterna har åtagit sig konfidentialitet eller omfattas av en lämplig lagstadgad tystnadsplikt.</p>
+
+    <h2>9. Säkerhet</h2>
+    <p>Doginary vidtar lämpliga tekniska och organisatoriska säkerhetsåtgärder med beaktande av behandlingens art, omfattning och risk, för att skydda personuppgifter mot obehörig eller olaglig behandling samt mot förlust, förstöring eller skada. Doginary utfäster inga specifika säkerhetsstandarder, certifieringar, krypteringsmetoder eller svarstider utöver vad som faktiskt tillämpas och dokumenteras av Doginary vid var tid.</p>
+
+    <h2>10. Backuper och tillgänglighet</h2>
+    <p>Controllern uppmanas att regelbundet använda Doginarys exportfunktion för att hålla en egen, oberoende kopia av viktig kund- och kennelinformation. Doginary ska inte betraktas som den enda arkivplatsen för oersättliga kennel- eller kunduppgifter. I den utsträckning tillämplig lag tillåter garanterar Doginary inte permanent lagring eller oavbruten tillgänglighet. Denna skrivning inskränker inte Doginarys tvingande skyldigheter som personuppgiftsbiträde enligt artikel 28 GDPR.</p>
+
+    <h2>11. Underbiträden</h2>
+    <p>Controllern ger Doginary ett generellt godkännande att anlita underbiträden för att tillhandahålla Tjänsten, förutsatt att Doginary ingår avtal med underbiträdet som ålägger detta motsvarande dataskyddsskyldigheter som de som gäller för Doginary enligt detta DPA. Aktuella underbiträden framgår av Annex II nedan. Väsentliga ändringar av underbiträden kan meddelas via Tjänsten eller på denna sida, så att Controllern kan utöva de rättigheter som finns tillgängliga enligt tillämplig lag, till exempel att invända mot ett nytt underbiträde.</p>
+
+    <h2>12. Internationella överföringar</h2>
+    <p>Om ett underbiträde behandlar eller överför personuppgifter till ett land utanför EU/EES, säkerställer Doginary att lämpliga skyddsåtgärder finns på plats, till exempel EU-kommissionens standardavtalsklausuler eller annan giltig överföringsmekanism enligt tillämplig dataskyddslagstiftning.</p>
+
+    <h2>13. Förfrågningar från registrerade</h2>
+    <p>I den utsträckning Controllern inte själv kan hantera en förfrågan från en registrerad direkt i Breeder Hub (t.ex. via redigerings- eller raderingsfunktioner), bistår Doginary Controllern, genom lämpliga tekniska och organisatoriska åtgärder, med att uppfylla Controllerns skyldighet att besvara förfrågningar om utövande av registrerades rättigheter enligt GDPR kapitel III.</p>
+
+    <h2>14. Säkerhetsincidenter</h2>
+    <p>Om Doginary får kännedom om en personuppgiftsincident som rör Controllerns personuppgifter, underrättar Doginary Controllern utan onödigt dröjsmål efter att ha fått kännedom om incidenten, och bistår Controllern med den information som rimligen är tillgänglig för att Controllern ska kunna uppfylla sina egna eventuella underrättelseskyldigheter enligt artikel 33–34 GDPR.</p>
+
+    <h2>15. Konsekvensbedömningar (DPIA)</h2>
+    <p>Doginary bistår Controllern, med beaktande av behandlingens art och den information som är tillgänglig för Doginary, med att genomföra konsekvensbedömningar avseende dataskydd och eventuellt föregående samråd med tillsynsmyndighet, i den utsträckning detta krävs enligt artikel 35–36 GDPR och är rimligt att begära av Doginary.</p>
+
+    <h2>16. Återlämnande och radering av personuppgifter</h2>
+    <p>Vid avslutande av tjänsterelationen kan Controllern exportera sina uppgifter via Tjänstens exportfunktion. Efter kontots avslutande raderar Doginary, i den utsträckning tillämplig lag tillåter och inom en rimlig tidsperiod, Controllerns personuppgifter, såvida inte lagring krävs enligt tillämplig lag.</p>
+
+    <h2>17. Visa efterlevnad och granskning</h2>
+    <p>Doginary tillhandahåller Controllern den information som rimligen krävs för att visa efterlevnad av de skyldigheter som anges i artikel 28 GDPR, och medverkar till granskningar och inspektioner som genomförs av Controllern eller en av Controllern utsedd granskare, i rimlig omfattning och efter rimligt varsel.</p>
+
+    <h2>18. Instruktioner som strider mot GDPR</h2>
+    <p>Om Doginary anser att en instruktion från Controllern strider mot GDPR eller annan tillämplig dataskyddslagstiftning, underrättar Doginary Controllern om detta, i den utsträckning det lagligen är möjligt, innan instruktionen genomförs.</p>
+
+    <h2>19. Ansvar</h2>
+    <p>Vardera parts ansvar under detta DPA regleras av de ansvarsbegränsningar som anges i Användarvillkoren, i den utsträckning tillämplig lag tillåter. Ingenting i detta DPA utesluter ansvar som inte lagligen kan uteslutas.</p>
+
+    <h2>20. Rangordning</h2>
+    <p>Vid motstridighet mellan detta DPA och Användarvillkoren ska detta DPA ha företräde vad gäller behandlingen av personuppgifter som omfattas av DPA:t. I övrigt gäller Användarvillkoren.</p>
+
+    <h2>21. Ändringar av DPA:t</h2>
+    <p>Doginary kan uppdatera detta DPA från tid till annan, t.ex. för att spegla ändrad lagstiftning eller ändrade underbiträden. Väsentliga ändringar meddelas i Tjänsten. Versionsdatumet högst upp visar senaste uppdatering.</p>
+
+    <h2>22. Uppsägning</h2>
+    <p>Detta DPA gäller så länge Doginary behandlar personuppgifter för Controllerns räkning och upphör automatiskt när Användarvillkoren upphör att gälla eller när all sådan behandling har avslutats, i enlighet med avsnitt 16 ovan.</p>
+
+    <h2>23. Kontakt</h2>
+    <p>Frågor om detta DPA kan skickas till <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>.</p>
+
+    <div class="annex">
+      <h2 style="margin-top:0;">Annex I — Behandlingsuppgifter</h2>
+      <table>
+        <tr><th>Personuppgiftsansvarig (Controller)</th><td>Doginary Breeder Hub-användaren / kennelägaren.</td></tr>
+        <tr><th>Personuppgiftsbiträde (Processor)</th><td>Doginary.</td></tr>
+        <tr><th>Föremål</th><td>Tillhandahållande av Doginary Breeder Hub.</td></tr>
+        <tr><th>Varaktighet</th><td>Under avtalsförhållandets löptid, samt därefter den tid som krävs enligt tillämplig lag eller som är tekniskt nödvändig för laglig radering.</td></tr>
+        <tr><th>Art</th><td>Lagring, organisering, hämtning, visning, ändring, export, radering och andra åtgärder nödvändiga för att tillhandahålla efterfrågad Breeder Hub-funktionalitet.</td></tr>
+        <tr><th>Syfte</th><td>Att tillhandahålla den kennelhanteringsfunktionalitet som Controllern efterfrågar.</td></tr>
+        <tr><th>Kategorier av registrerade</th><td>Se avsnitt 4 ovan.</td></tr>
+        <tr><th>Typer av personuppgifter</th><td>Se avsnitt 5 ovan.</td></tr>
+      </table>
+    </div>
+
+    <div class="annex">
+      <h2 style="margin-top:0;">Annex II — Underbiträden</h2>
+      <table>
+        <tr><th>Leverantör</th><th>Roll/syfte</th></tr>
+        <tr><td>Supabase</td><td>Databas-, backend-, autentiserings- och lagringsfunktionalitet.</td></tr>
+        <tr><td>Stripe</td><td>Hantering av betalningar och prenumerationer.</td></tr>
+        <tr><td>GitHub</td><td>Utveckling och teknisk infrastruktur.</td></tr>
+      </table>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; margin-bottom:0;">Listan beskriver leverantörernas generella roll. Alla leverantörer tar nödvändigtvis inte emot samtliga kategorier av personuppgifter som behandlas i Tjänsten. Listan kan komma att uppdateras; väsentliga ändringar meddelas i enlighet med avsnitt 11 ovan.</p>
+    </div>
+  </div>
+
+  <div class="lang-block" data-lang="en">
+    <div class="legal-nav">
+      <a href="terms.html">Terms &amp; Conditions</a><span class="dot">·</span>
+      <a href="privacy.html">Privacy Policy</a><span class="dot">·</span>
+      <span>Data Processing Agreement</span><span class="dot">·</span>
+      <a href="mailto:doginary@gmail.com">Contact</a>
+    </div>
+    <h1>Doginary Data Processing Agreement (DPA)</h1>
+    <p class="updated">Version: 25 September 2026 · Contact: <a href="mailto:doginary@gmail.com">doginary@gmail.com</a></p>
+    <div class="note">This Data Processing Agreement ("DPA") applies where you, as a Breeder Hub kennel owner/user, enter personal data concerning puppy buyers, prospects, customers, contacts or other individuals into the Service. It forms part of the agreement between you and Doginary together with the <a href="terms.html">Terms &amp; Conditions</a>, and applies automatically to the extent such processing occurs, without requiring a separately signed document.</div>
+
+    <h2>1. Roles of the parties</h2>
+    <p>For personal data that you, as the kennel owner/user ("Controller"), enter into Breeder Hub about buyers, prospects or other individuals, you act as the <strong>data controller</strong> and Doginary ("Processor") acts as the <strong>data processor</strong>, in accordance with Article 28 GDPR.</p>
+    <p>This DPA does not necessarily apply to processing where Doginary independently determines the purposes and means of processing, such as Doginary's own account administration, security operations, billing, or compliance with legal obligations towards you as a customer. In that context, Doginary acts as an independent controller, as further described in our <a href="privacy.html">Privacy Policy</a>.</p>
+
+    <h2>2. Subject matter and duration</h2>
+    <p>This DPA governs Doginary's processing of personal data on behalf of the Controller in connection with providing Breeder Hub. It applies for as long as Doginary processes such personal data on the Controller's behalf — i.e. for the duration of the service relationship — and thereafter for the period required by applicable law or technically necessary as part of a lawful deletion process.</p>
+
+    <h2>3. Nature and purpose of processing</h2>
+    <p>The processing comprises storage, organization, retrieval, display, modification, export, deletion and other operations necessary to provide the Breeder Hub functionality requested by the Controller, for the purpose of supporting the Controller's kennel operations (e.g. managing puppy buyers and prospects).</p>
+
+    <h2>4. Categories of Data Subjects</h2>
+    <ul>
+      <li>Prospective puppy buyers</li>
+      <li>Puppy buyers / customers</li>
+      <li>Kennel contacts</li>
+      <li>Business contacts</li>
+      <li>Other individuals whose information the Controller lawfully enters</li>
+    </ul>
+
+    <h2>5. Types of Personal Data</h2>
+    <ul>
+      <li>Name</li>
+      <li>Email address</li>
+      <li>Telephone number</li>
+      <li>Country/location</li>
+      <li>Housing information</li>
+      <li>Activity/lifestyle information</li>
+      <li>Previous dog ownership information</li>
+      <li>Puppy preferences</li>
+      <li>Prospect/customer status</li>
+      <li>Communication notes</li>
+      <li>Other information voluntarily entered by the Controller</li>
+    </ul>
+
+    <h2>6. Controller responsibilities</h2>
+    <p>The Controller (kennel owner) is responsible for:</p>
+    <ul>
+      <li>having a lawful basis to process personal data entered into Doginary,</li>
+      <li>providing required privacy notices to data subjects,</li>
+      <li>determining which customer/prospect information should be collected,</li>
+      <li>keeping the information accurate where required,</li>
+      <li>determining retention periods,</li>
+      <li>handling data subject requests,</li>
+      <li>deleting information once it is no longer lawfully required,</li>
+      <li>obtaining consent where consent is relied upon as the legal basis, and</li>
+      <li>ensuring instructions given to Doginary are lawful.</li>
+    </ul>
+
+    <h2>7. Processing instructions</h2>
+    <p>Doginary processes personal data on behalf of the Controller only on documented instructions from the Controller — primarily as expressed through the Controller's use of Breeder Hub's features (e.g. recording, editing, exporting or deleting information about a buyer), together with this DPA and the Terms &amp; Conditions. Doginary will inform the Controller if, in Doginary's assessment, an instruction infringes the GDPR or other applicable data protection law, where legally permitted to do so.</p>
+
+    <h2>8. Confidentiality</h2>
+    <p>Doginary ensures that persons authorized to process the personal data have committed themselves to confidentiality or are under an appropriate statutory obligation of confidentiality.</p>
+
+    <h2>9. Security</h2>
+    <p>Doginary implements appropriate technical and organizational security measures, taking into account the nature, scope and risk of the processing, to protect personal data against unauthorized or unlawful processing and against loss, destruction or damage. Doginary does not represent any specific security standards, certifications, encryption methods, or response times beyond those actually implemented and documented by Doginary from time to time.</p>
+
+    <h2>10. Backups and availability</h2>
+    <p>The Controller is encouraged to regularly use Doginary's export functionality to maintain an independent copy of important customer and kennel information. Doginary should not be treated as the sole archival repository for irreplaceable kennel or customer records. To the maximum extent permitted by applicable law, Doginary does not guarantee permanent storage or uninterrupted availability. This wording does not limit Doginary's mandatory obligations as a processor under Article 28 GDPR.</p>
+
+    <h2>11. Sub-processors</h2>
+    <p>The Controller provides Doginary with general authorization to engage sub-processors to provide the Service, provided Doginary enters into an agreement with the sub-processor imposing data protection obligations equivalent to those set out in this DPA. Current sub-processors are listed in Annex II below. Material changes to sub-processors may be communicated via the Service or on this page, so the Controller can exercise any rights available under applicable law, such as objecting to a new sub-processor.</p>
+
+    <h2>12. International transfers</h2>
+    <p>Where a sub-processor processes or transfers personal data to a country outside the EU/EEA, Doginary ensures appropriate safeguards are in place, such as the European Commission's Standard Contractual Clauses or another valid transfer mechanism under applicable data protection law.</p>
+
+    <h2>13. Data Subject requests</h2>
+    <p>To the extent the Controller cannot handle a data subject request directly within Breeder Hub (e.g. via editing or deletion features), Doginary shall, through appropriate technical and organizational measures, assist the Controller in fulfilling its obligation to respond to requests for the exercise of data subjects' rights under Chapter III of the GDPR.</p>
+
+    <h2>14. Security incidents</h2>
+    <p>If Doginary becomes aware of a personal data breach affecting the Controller's personal data, Doginary will notify the Controller without undue delay after becoming aware of it, and will assist the Controller with information reasonably available to Doginary so the Controller can fulfil any notification obligations under Articles 33–34 GDPR.</p>
+
+    <h2>15. Data Protection Impact Assessments</h2>
+    <p>Doginary shall assist the Controller, taking into account the nature of the processing and the information available to Doginary, with carrying out data protection impact assessments and any prior consultation with a supervisory authority, to the extent required under Articles 35–36 GDPR and reasonable to request from Doginary.</p>
+
+    <h2>16. Return and deletion of Personal Data</h2>
+    <p>Upon termination of the service relationship, the Controller may export its data using the Service's export functionality. Following account closure, Doginary will delete the Controller's personal data, to the extent permitted by applicable law and within a reasonable period, unless retention is required by applicable law.</p>
+
+    <h2>17. Demonstrating compliance and audits</h2>
+    <p>Doginary will make available to the Controller the information reasonably necessary to demonstrate compliance with the obligations set out in Article 28 GDPR, and will contribute to audits and inspections conducted by the Controller or an auditor appointed by the Controller, to a reasonable extent and upon reasonable notice.</p>
+
+    <h2>18. Instructions contrary to GDPR</h2>
+    <p>If Doginary considers that an instruction from the Controller infringes the GDPR or other applicable data protection law, Doginary will inform the Controller, to the extent legally permitted, before carrying out the instruction.</p>
+
+    <h2>19. Liability</h2>
+    <p>Each party's liability under this DPA is governed by the limitations of liability set out in the Terms &amp; Conditions, to the maximum extent permitted by applicable law. Nothing in this DPA excludes liability that cannot lawfully be excluded.</p>
+
+    <h2>20. Order of precedence</h2>
+    <p>In the event of a conflict between this DPA and the Terms &amp; Conditions, this DPA prevails with respect to the processing of personal data covered by it. In all other respects, the Terms &amp; Conditions apply.</p>
+
+    <h2>21. Changes to the DPA</h2>
+    <p>Doginary may update this DPA from time to time, e.g. to reflect changes in law or sub-processors. Material changes will be communicated within the Service. The version date at the top shows the latest update.</p>
+
+    <h2>22. Termination</h2>
+    <p>This DPA remains in effect for as long as Doginary processes personal data on the Controller's behalf, and terminates automatically when the Terms &amp; Conditions cease to apply or when all such processing has ended, in accordance with Section 16 above.</p>
+
+    <h2>23. Contact</h2>
+    <p>Questions about this DPA can be sent to <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>.</p>
+
+    <div class="annex">
+      <h2 style="margin-top:0;">Annex I — Processing Details</h2>
+      <table>
+        <tr><th>Controller</th><td>The Doginary Breeder Hub user / kennel owner.</td></tr>
+        <tr><th>Processor</th><td>Doginary.</td></tr>
+        <tr><th>Subject matter</th><td>Provision of Doginary Breeder Hub.</td></tr>
+        <tr><th>Duration</th><td>For the duration of the service relationship, plus retention required by applicable law or technically required as part of lawful deletion processes.</td></tr>
+        <tr><th>Nature</th><td>Storage, organization, retrieval, display, modification, export, deletion and other operations necessary to provide the requested Breeder Hub functionality.</td></tr>
+        <tr><th>Purpose</th><td>Providing the kennel-management functionality requested by the Controller.</td></tr>
+        <tr><th>Categories of Data Subjects</th><td>See Section 4 above.</td></tr>
+        <tr><th>Types of Personal Data</th><td>See Section 5 above.</td></tr>
+      </table>
+    </div>
+
+    <div class="annex">
+      <h2 style="margin-top:0;">Annex II — Sub-processors</h2>
+      <table>
+        <tr><th>Provider</th><th>Role/purpose</th></tr>
+        <tr><td>Supabase</td><td>Database, backend, authentication and storage functionality.</td></tr>
+        <tr><td>Stripe</td><td>Payment and subscription processing.</td></tr>
+        <tr><td>GitHub</td><td>Development and technical infrastructure.</td></tr>
+      </table>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin-top:10px; margin-bottom:0;">This list describes each provider's general role. Not all providers necessarily receive every category of personal data processed in the Service. The list may be updated from time to time; material changes will be communicated in accordance with Section 11 above.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <a href="terms.html">Terms &amp; Conditions</a> · <a href="privacy.html">Privacy Policy</a> · <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>
+</div>
+
+<script>
+function getLang(){
+  try{
+    const saved = localStorage.getItem('bh_legal_lang');
+    if(saved === 'en' || saved === 'sv') return saved;
+  }catch(e){}
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('lang')==='en' || params.get('lang')==='sv') return params.get('lang');
+  return (navigator.language||'').toLowerCase().startsWith('en') ? 'en' : 'sv';
+}
+function setLang(lang){
+  document.documentElement.lang = lang;
+  document.title = lang === 'en' ? 'Data Processing Agreement — Doginary' : 'Personuppgiftsbiträdesavtal — Doginary';
+  document.querySelectorAll('.lang-block').forEach(el=> el.classList.toggle('active', el.dataset.lang===lang));
+  document.querySelectorAll('.lang-flag-btn').forEach(b=> b.classList.toggle('active', b.dataset.lang===lang));
+  try{ localStorage.setItem('bh_legal_lang', lang); }catch(e){}
+}
+document.querySelectorAll('.lang-flag-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> setLang(btn.dataset.lang));
+});
+setLang(getLang());
+</script>
+</body>
+</html>

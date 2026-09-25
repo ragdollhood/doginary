@@ -199,7 +199,7 @@ const I18N = {
     footerText:'Skapad med Doginary',
     langAria:'Språk', currencyAria:'Valuta', unitsAria:'Måttenhet', doginaryAria:'Till doginary.com',
     contactTitle:'Kontakt',
-    termsPageLabel:'Användarvillkor', privacyPageLabel:'Integritetspolicy', contactLinkLabel:'Kontakt',
+    termsPageLabel:'Användarvillkor', privacyPageLabel:'Integritetspolicy', dpaPageLabel:'Personuppgiftsbiträdesavtal', contactLinkLabel:'Kontakt',
   },
   en: {
     loadingTitle:'Loading…', loadingDogs:'Loading dogs…',
@@ -218,7 +218,7 @@ const I18N = {
     footerText:'Made with Doginary',
     langAria:'Language', currencyAria:'Currency', unitsAria:'Units', doginaryAria:'Go to doginary.com',
     contactTitle:'Contact',
-    termsPageLabel:'Terms & Conditions', privacyPageLabel:'Privacy Policy', contactLinkLabel:'Contact',
+    termsPageLabel:'Terms & Conditions', privacyPageLabel:'Privacy Policy', dpaPageLabel:'Data Processing Agreement', contactLinkLabel:'Contact',
   }
 };
 function t(key, vars){
@@ -440,6 +440,7 @@ function applyLangTexts(){
   if(legal){
     legal.innerHTML = `<a href="terms.html" target="_blank" rel="noopener">${t('termsPageLabel')}</a>` +
       `<span class="dot">·</span><a href="privacy.html" target="_blank" rel="noopener">${t('privacyPageLabel')}</a>` +
+      `<span class="dot">·</span><a href="dpa.html" target="_blank" rel="noopener">${t('dpaPageLabel')}</a>` +
       `<span class="dot">·</span><a href="mailto:doginary@gmail.com">${t('contactLinkLabel')}</a>`;
   }
   document.getElementById('langToggle').setAttribute('aria-label', t('langAria'));

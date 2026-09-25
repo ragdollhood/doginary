@@ -747,7 +747,7 @@ const I18N = {
     authErrMustAgree: 'Du måste godkänna användarvillkoren för att skapa ett konto.',
     authAgreeText: 'Jag godkänner {terms} och bekräftar att jag har tagit del av {privacy}.',
     termsLinkLabel: 'användarvillkoren', privacyLinkLabel: 'integritetspolicyn', contactLinkLabel: 'Kontakt',
-    termsPageLabel: 'Användarvillkor', privacyPageLabel: 'Integritetspolicy',
+    termsPageLabel: 'Användarvillkor', privacyPageLabel: 'Integritetspolicy', dpaPageLabel: 'Personuppgiftsbiträdesavtal',
     authSignupSuccess: 'Konto skapat! Kolla din e-post för att bekräfta adressen innan du loggar in.',
     authLoadFail: 'Kunde inte ladda din kennel. Kontrollera att SQL-schemat är kört i Supabase.',
     authForgot: 'Glömt lösenordet?',
@@ -1032,7 +1032,7 @@ const I18N = {
     authErrMustAgree: 'You must agree to the Terms & Conditions to create an account.',
     authAgreeText: 'I agree to the {terms} and acknowledge the {privacy}.',
     termsLinkLabel: 'Terms & Conditions', privacyLinkLabel: 'Privacy Policy', contactLinkLabel: 'Contact',
-    termsPageLabel: 'Terms & Conditions', privacyPageLabel: 'Privacy Policy',
+    termsPageLabel: 'Terms & Conditions', privacyPageLabel: 'Privacy Policy', dpaPageLabel: 'Data Processing Agreement',
     authSignupSuccess: 'Account created! Check your email to confirm your address before logging in.',
     authLoadFail: 'Could not load your kennel. Make sure the SQL schema has been run in Supabase.',
     authForgot: 'Forgot your password?',
@@ -1325,6 +1325,7 @@ const TERMS_VERSION = '2026-09-25';
 function legalLinksHtml(){
   return `<a href="terms.html" target="_blank" rel="noopener">${t('termsPageLabel')}</a>` +
     `<span class="dot">·</span><a href="privacy.html" target="_blank" rel="noopener">${t('privacyPageLabel')}</a>` +
+    `<span class="dot">·</span><a href="dpa.html" target="_blank" rel="noopener">${t('dpaPageLabel')}</a>` +
     `<span class="dot">·</span><a href="mailto:doginary@gmail.com">${t('contactLinkLabel')}</a>`;
 }
 function renderLegalLinks(){

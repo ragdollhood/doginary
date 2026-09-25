@@ -42,6 +42,12 @@
   font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:22px;
   margin:0 0 6px; color:var(--ink,#2B241C);
 }
+#doginaryAuthTrialBadge{
+  display:inline-block; font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  color:var(--reward,#4B6B3E); background:rgba(75,107,62,.12);
+  border:1px solid rgba(75,107,62,.25); border-radius:20px;
+  padding:5px 12px; margin:0 0 12px;
+}
 #doginaryAuthDesc{ font-size:14px; line-height:1.5; color:var(--ink-soft,#6E6455); margin:0 0 18px; }
 
 #doginaryAuthForm{ display:flex; flex-direction:column; gap:6px; }
@@ -177,6 +183,59 @@
 }
 .doginary-loggedout-card button:hover{ background:#3A322A; }
 
+#doginaryAccountSubStatus{ min-height:14px; font-size:12px; margin:6px 0 0; line-height:1.4; }
+#doginaryAccountSubStatus.error{ color:var(--warn,#9C3B2C); }
+
 @media (max-width:480px){
   #doginaryAccountMenu{ width:min(272px,88vw); }
 }
+
+/* =======================================================================
+   PAYWALL — visas för inloggade konton vars provperiod gått ut och som
+   saknar aktivt Stripe-abonnemang. Fristående från inloggningsmodalen
+   ovan (#doginaryAuthModal) men återanvänder samma kort-look; ligger på
+   en högre z-index så den alltid hamnar överst, oavsett vad sidan i
+   övrigt visar.
+   ======================================================================= */
+#doginaryPaywallGate{
+  position:fixed; inset:0; z-index:600; display:flex; align-items:center;
+  justify-content:center; padding:20px;
+  background:rgba(43,36,28,.72); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  opacity:0; pointer-events:none; transition:opacity .2s ease;
+}
+#doginaryPaywallGate.show{ opacity:1; pointer-events:auto; }
+
+#doginaryPaywallCard{
+  width:min(400px,100%); max-height:88vh; overflow-y:auto;
+  background:var(--surface,#F8F5EC); border:1px solid var(--hair,#DCD3BF);
+  border-radius:var(--radius-lg,22px); padding:32px 26px 28px;
+  box-shadow:0 24px 60px rgba(0,0,0,.32);
+  transform:translateY(10px) scale(.98); transition:transform .2s ease;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--ink,#2B241C); text-align:center;
+}
+#doginaryPaywallGate.show #doginaryPaywallCard{ transform:translateY(0) scale(1); }
+
+#doginaryPaywallTitle{
+  font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:23px;
+  margin:0 0 8px; color:var(--ink,#2B241C);
+}
+#doginaryPaywallDesc{ font-size:14.5px; line-height:1.55; color:var(--ink-soft,#6E6455); margin:0 0 22px; }
+
+#doginaryPaywallMessage{ min-height:16px; font-size:12.5px; margin:0 0 8px; line-height:1.4; }
+#doginaryPaywallMessage.error{ color:var(--warn,#9C3B2C); }
+
+#doginaryPaywallUnlockBtn{
+  width:100%; font-family:inherit; font-size:15.5px; font-weight:600;
+  color:var(--surface,#F8F5EC); background:var(--teal,#33505A); border:none;
+  border-radius:30px; padding:13px; cursor:pointer; transition:background .15s ease;
+}
+#doginaryPaywallUnlockBtn:hover{ background:var(--ink,#2B241C); }
+#doginaryPaywallUnlockBtn:disabled{ opacity:.65; cursor:default; }
+
+#doginaryPaywallLogoutBtn{
+  display:block; margin:14px auto 0; font-family:inherit; font-size:13px;
+  color:var(--ink-soft,#6E6455); background:none; border:none; cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px;
+}
+#doginaryPaywallLogoutBtn:hover{ color:var(--ink,#2B241C); }

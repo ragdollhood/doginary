@@ -58,6 +58,9 @@
     console.error('doginary-auth.js: DoginaryAuth/DoginaryDB saknas — kontrollera att doginary-supabase.js laddas före den här filen.');
     return;
   }
+  if (!global.DoginaryBilling) {
+    console.error('doginary-auth.js: DoginaryBilling saknas — uppdatera doginary-supabase.js till versionen med prenumerations-/provperiodsstöd.');
+  }
 
   // ---------- Språk (svenska / engelska) ----------
   //
@@ -85,8 +88,9 @@
       passwordLabel: 'Lösenord',
       passwordPlaceholder: 'Minst 6 tecken',
       forgot: 'Glömt lösenord?',
+      trialBadge: '14 dagar fritt att testa — inget kort behövs',
       signupTitle: 'Skapa konto',
-      signupDesc: 'Skapa ett konto med mejl och lösenord, så sparas din hunds dagbok och syncar mellan dina enheter.',
+      signupDesc: 'Skapa ett konto med mejl och lösenord, så sparas din hunds dagbok och syncar mellan dina enheter. Du får 14 dagars fri provperiod direkt vid registrering.',
       signupSubmit: 'Skapa konto',
       signupToggle: 'Har du redan ett konto? Logga in',
       signinTitle: 'Logga in',
@@ -121,7 +125,18 @@
       saving: 'Sparar …',
       saved: 'Sparat.',
       saveFailed: 'Kunde inte spara just nu — försök igen.',
-      logout: 'Logga ut'
+      logout: 'Logga ut',
+      trialDaysLeft: '{days} dagar kvar av provperioden',
+      trialLastDay: 'Sista dagen av provperioden',
+      manageSubscription: 'Hantera prenumeration',
+      portalRedirecting: 'Öppnar …',
+      portalError: 'Kunde inte öppna prenumerationshanteringen — försök igen.',
+      paywallTitle: 'Din provperiod har gått ut',
+      paywallDesc: 'Lås upp Doginary för att fortsätta logga dagbok och se insikter om din hund.',
+      paywallUnlock: 'Lås upp Doginary',
+      paywallRedirecting: 'Öppnar betalning …',
+      paywallError: 'Något gick fel — försök igen.',
+      paywallLogout: 'Logga ut'
     },
     en: {
       close: 'Close',
@@ -130,8 +145,9 @@
       passwordLabel: 'Password',
       passwordPlaceholder: 'At least 6 characters',
       forgot: 'Forgot your password?',
+      trialBadge: '14 days free to try — no card needed',
       signupTitle: 'Create account',
-      signupDesc: 'Create an account with your email and a password, and your dog’s diary is saved and synced across your devices.',
+      signupDesc: 'Create an account with your email and a password, and your dog’s diary is saved and synced across your devices. You get a 14-day free trial as soon as you sign up.',
       signupSubmit: 'Create account',
       signupToggle: 'Already have an account? Log in',
       signinTitle: 'Log in',
@@ -166,7 +182,18 @@
       saving: 'Saving …',
       saved: 'Saved.',
       saveFailed: 'Couldn’t save right now — please try again.',
-      logout: 'Log out'
+      logout: 'Log out',
+      trialDaysLeft: '{days} days left in your trial',
+      trialLastDay: 'Last day of your trial',
+      manageSubscription: 'Manage subscription',
+      portalRedirecting: 'Opening …',
+      portalError: 'Could not open subscription management — please try again.',
+      paywallTitle: 'Your trial has ended',
+      paywallDesc: 'Unlock Doginary to keep logging your dog’s diary and seeing insights.',
+      paywallUnlock: 'Unlock Doginary',
+      paywallRedirecting: 'Redirecting to checkout …',
+      paywallError: 'Something went wrong — please try again.',
+      paywallLogout: 'Log out'
     }
   };
 
@@ -215,6 +242,7 @@
     if (next === uiLang) return;
     uiLang = next;
     if (modalEl) applyModalTexts();
+    if (paywallEl) applyPaywallTexts();
     renderAccountChip();
   }
 
@@ -230,6 +258,7 @@
 
   var currentSession = null;
   var currentDog = null; // hämtas lat, se getCurrentDog()
+  var currentSubscription = null; // { active, trial_ends_at, stripe_customer_id } — se checkAccess()
   var _resolveReady;
   var readyPromise = new Promise(function (resolve) { _resolveReady = resolve; });
 
@@ -279,10 +308,145 @@
     });
   }
 
+  // ---------- Paywall: 14 dagars provperiod + Stripe ----------
+  //
+  // Körs varje gång en inloggad session blir känd (bootstrap + varje
+  // onAuthStateChange). Bygger och visar en heltäckande ruta
+  // (#doginaryPaywallGate) som blockerar resten av sidan så fort
+  // provperioden gått ut och inget aktivt abonnemang finns — oavsett
+  // vilken sida (index/logga/insikter) den här filen råkar vara laddad
+  // på, eftersom den inte behöver känna till sidans egen DOM-struktur.
+  //
+  // Fail CLOSED: om statusen inte går att läsa (nätverksfel, RLS-avslag
+  // osv) visas paywallen ändå, precis som i Breeder Hub — hellre en
+  // legitim användare som får ladda om sidan än att ett fel av misstag
+  // låser upp något som borde vara stängt.
+  var paywallEl, paywallTitleEl, paywallDescEl, paywallMessageEl, paywallUnlockBtn, paywallLogoutBtn;
+
+  function buildPaywall() {
+    if (document.getElementById('doginaryPaywallGate')) return;
+    paywallEl = document.createElement('div');
+    paywallEl.id = 'doginaryPaywallGate';
+    paywallEl.setAttribute('role', 'dialog');
+    paywallEl.setAttribute('aria-modal', 'true');
+    paywallEl.setAttribute('aria-labelledby', 'doginaryPaywallTitle');
+    paywallEl.innerHTML =
+      '<div id="doginaryPaywallCard">' +
+        '<p class="doginaryAuthEyebrow">Doginary</p>' +
+        '<h2 id="doginaryPaywallTitle"></h2>' +
+        '<p id="doginaryPaywallDesc"></p>' +
+        '<p id="doginaryPaywallMessage" role="alert"></p>' +
+        '<button type="button" id="doginaryPaywallUnlockBtn"></button>' +
+        '<button type="button" id="doginaryPaywallLogoutBtn"></button>' +
+      '</div>';
+    document.body.appendChild(paywallEl);
+
+    paywallTitleEl = document.getElementById('doginaryPaywallTitle');
+    paywallDescEl = document.getElementById('doginaryPaywallDesc');
+    paywallMessageEl = document.getElementById('doginaryPaywallMessage');
+    paywallUnlockBtn = document.getElementById('doginaryPaywallUnlockBtn');
+    paywallLogoutBtn = document.getElementById('doginaryPaywallLogoutBtn');
+
+    paywallUnlockBtn.addEventListener('click', startPaywallCheckout);
+    paywallLogoutBtn.addEventListener('click', function () {
+      global.DoginaryAuth.signOut().then(function () {
+        global.location.reload();
+      });
+    });
+  }
+
+  function applyPaywallTexts() {
+    if (!paywallEl) return;
+    paywallTitleEl.textContent = T('paywallTitle');
+    paywallDescEl.textContent = T('paywallDesc');
+    paywallUnlockBtn.textContent = T('paywallUnlock');
+    paywallLogoutBtn.textContent = T('paywallLogout');
+  }
+
+  function showPaywall() {
+    buildPaywall();
+    applyPaywallTexts();
+    paywallMessageEl.textContent = '';
+    paywallMessageEl.className = '';
+    paywallUnlockBtn.disabled = false;
+    paywallUnlockBtn.textContent = T('paywallUnlock');
+    paywallEl.classList.add('show');
+    // Modalen för inloggning ska aldrig kunna stå öppen samtidigt som
+    // paywallen — annars kan en redan inloggad-men-spärrad användare
+    // öppna den (t.ex. via en gammal "Logga in"-länk) och den skulle stå
+    // ovanpå/under på ett förvirrande sätt.
+    closeModal();
+  }
+
+  function hidePaywall() {
+    if (paywallEl) paywallEl.classList.remove('show');
+  }
+
+  function startPaywallCheckout() {
+    if (!global.DoginaryBilling) return;
+    paywallUnlockBtn.disabled = true;
+    paywallMessageEl.textContent = '';
+    paywallMessageEl.className = '';
+    paywallUnlockBtn.textContent = T('paywallRedirecting');
+    global.DoginaryBilling.startCheckout(global.location.href).then(function (data) {
+      if (!data || !data.url) throw new Error('No checkout URL returned');
+      global.location.href = data.url;
+    }).catch(function (err) {
+      console.error('Doginary: kunde inte starta checkout', err);
+      paywallMessageEl.textContent = T('paywallError');
+      paywallMessageEl.className = 'error';
+      paywallUnlockBtn.disabled = false;
+      paywallUnlockBtn.textContent = T('paywallUnlock');
+    });
+  }
+
+  // true om raden har ett giltigt, ännu inte passerat trial_ends_at.
+  function isTrialActive(sub) {
+    return !!(sub && sub.trial_ends_at && new Date(sub.trial_ends_at).getTime() > Date.now());
+  }
+
+  function hasAccess(sub) {
+    return !!(sub && (sub.active === true || isTrialActive(sub)));
+  }
+
+  function evaluateAccess(sub) {
+    currentSubscription = sub;
+    if (hasAccess(sub)) {
+      hidePaywall();
+    } else {
+      showPaywall();
+    }
+    // Uppdatera ev. "X dagar kvar"/"Hantera prenumeration" i kontomenyn,
+    // om den redan är byggd (renderAccountChip byggde den innan
+    // statusen hunnit läsas klart).
+    if (currentSession && document.getElementById('doginaryAccountMenu')) {
+      renderAccountChip();
+    }
+  }
+
+  function checkAccess() {
+    if (!global.DoginaryBilling || !currentSession) {
+      hidePaywall();
+      return;
+    }
+    var userId = currentSession.user.id;
+    global.DoginaryBilling.getSubscriptionStatus(userId).then(function (sub) {
+      if (sub) return evaluateAccess(sub);
+      // Ingen rad än — troligen ett konto som just skapats (eller ett
+      // äldre konto från innan provperiods-funktionen infördes). Starta
+      // trialen (idempotent, servern sätter trial_ends_at) och evaluera
+      // sedan på riktigt.
+      return global.DoginaryBilling.startTrial().then(evaluateAccess);
+    }).catch(function (err) {
+      console.error('Doginary: kunde inte läsa prenumerationsstatus', err);
+      showPaywall(); // fail closed, se kommentar ovanför funktionerna
+    });
+  }
+
   // ---------- Modal + kontoknapp: bygg DOM ----------
 
   var modalEl, formEl, emailInput, passwordInput, messageEl, submitBtn,
-      titleEl, descEl, toggleBtn, forgotBtn, closeBtn;
+      titleEl, descEl, trialBadgeEl, toggleBtn, forgotBtn, closeBtn;
   var mode = 'signup'; // 'signup' | 'signin'
 
   function buildModal() {
@@ -300,6 +464,7 @@
         '<button type="button" id="doginaryAuthClose">&times;</button>' +
         '<p class="doginaryAuthEyebrow">Doginary</p>' +
         '<h2 id="doginaryAuthTitle"></h2>' +
+        '<p id="doginaryAuthTrialBadge" style="display:none"></p>' +
         '<p id="doginaryAuthDesc"></p>' +
         '<form id="doginaryAuthForm" novalidate>' +
           '<label for="doginaryAuthEmail" id="doginaryAuthEmailLabel"></label>' +
@@ -320,6 +485,7 @@
     messageEl = document.getElementById('doginaryAuthMessage');
     submitBtn = document.getElementById('doginaryAuthSubmit');
     titleEl = document.getElementById('doginaryAuthTitle');
+    trialBadgeEl = document.getElementById('doginaryAuthTrialBadge');
     descEl = document.getElementById('doginaryAuthDesc');
     toggleBtn = document.getElementById('doginaryAuthToggle');
     forgotBtn = document.getElementById('doginaryAuthForgot');
@@ -420,11 +586,14 @@
     forgotBtn.textContent = T('forgot');
     if (mode === 'signup') {
       titleEl.textContent = T('signupTitle');
+      trialBadgeEl.textContent = T('trialBadge');
+      trialBadgeEl.style.display = '';
       descEl.textContent = T('signupDesc');
       submitBtn.textContent = T('signupSubmit');
       toggleBtn.textContent = T('signupToggle');
     } else {
       titleEl.textContent = T('signinTitle');
+      trialBadgeEl.style.display = 'none';
       descEl.textContent = T('signinDesc');
       submitBtn.textContent = T('signinSubmit');
       toggleBtn.textContent = T('signinToggle');
@@ -635,6 +804,29 @@
     });
   }
 
+  // Bygger raden i kontomenyn som visar antingen "X dagar kvar av
+  // provperioden" (under trial) eller en "Hantera prenumeration"-knapp
+  // (aktivt betalande konto). Tomt om statusen inte hunnit läsas klart
+  // än (currentSubscription är null direkt efter inloggning, innan
+  // checkAccess() svarat) — dyker upp av sig själv när renderAccountChip()
+  // körs igen från evaluateAccess().
+  function subscriptionMenuHtml() {
+    if (!currentSubscription) return '';
+    if (currentSubscription.active === true) {
+      return '<button type="button" id="doginaryAccountManageSub" class="doginaryAccountMenu__logout">' + escapeHtml(T('manageSubscription')) + '</button>' +
+             '<p id="doginaryAccountSubStatus" role="status" aria-live="polite"></p>' +
+             '<div class="doginaryAccountMenu__divider"></div>';
+    }
+    if (isTrialActive(currentSubscription)) {
+      var msLeft = new Date(currentSubscription.trial_ends_at).getTime() - Date.now();
+      var daysLeft = Math.max(1, Math.ceil(msLeft / (24 * 60 * 60 * 1000)));
+      var label = daysLeft <= 1 ? T('trialLastDay') : T('trialDaysLeft', { days: daysLeft });
+      return '<p class="doginaryAccountMenu__label" style="text-transform:none;letter-spacing:normal;margin-top:0;">' + escapeHtml(label) + '</p>' +
+             '<div class="doginaryAccountMenu__divider"></div>';
+    }
+    return '';
+  }
+
   function renderAccountChip() {
     var root = document.getElementById('doginaryAuthRoot');
     if (!root) return;
@@ -658,6 +850,7 @@
           '<button type="button" id="doginaryAccountDogSave">' + escapeHtml(T('save')) + '</button>' +
           '<p id="doginaryAccountDogStatus" role="status" aria-live="polite"></p>' +
           '<div class="doginaryAccountMenu__divider"></div>' +
+          subscriptionMenuHtml() +
           '<button type="button" id="doginaryAccountLogout" class="doginaryAccountMenu__logout">' + escapeHtml(T('logout')) + '</button>' +
         '</div>';
 
@@ -680,6 +873,26 @@
       dogNameMenuInput.addEventListener('keydown', function (ev) {
         if (ev.key === 'Enter') { ev.preventDefault(); saveDogProfileFromMenu(); }
       });
+
+      var manageSubBtn = document.getElementById('doginaryAccountManageSub');
+      if (manageSubBtn) {
+        manageSubBtn.addEventListener('click', function () {
+          var statusEl = document.getElementById('doginaryAccountSubStatus');
+          var original = manageSubBtn.textContent;
+          manageSubBtn.disabled = true;
+          manageSubBtn.textContent = T('portalRedirecting');
+          if (statusEl) { statusEl.textContent = ''; statusEl.className = ''; }
+          global.DoginaryBilling.startPortal(global.location.href).then(function (data) {
+            if (!data || !data.url) throw new Error('No portal URL returned');
+            global.location.href = data.url;
+          }).catch(function (err) {
+            console.error('Doginary: kunde inte öppna prenumerationsportalen', err);
+            if (statusEl) { statusEl.textContent = T('portalError'); statusEl.className = 'error'; }
+            manageSubBtn.disabled = false;
+            manageSubBtn.textContent = original;
+          });
+        });
+      }
 
       getCurrentDog().then(fillDogFormFields);
     } else {
@@ -730,6 +943,11 @@
     // den — och utan att själva behöva hålla reda på språket.
     breedOptionsHtml: dogBreedOptionsHtml,
     breedInCurrentLang: breedInCurrentLang,
+    // Prenumerations-/provperiodsstatus för sidor som själva vill visa
+    // t.ex. "X dagar kvar" någon annanstans än kontomenyn. null tills
+    // checkAccess() svarat en första gång.
+    getSubscription: function () { return currentSubscription; },
+    hasAccess: function () { return hasAccess(currentSubscription); },
     // Slår an EN gång med den allra första inloggningsstatusen (session
     // eller null) så att andra script (t.ex. app.js) kan vänta in det
     // säkert, istället för att chansa på om "doginary:auth" redan hunnit
@@ -743,6 +961,7 @@
 
   global.DoginaryAuth.getSession().then(function (session) {
     currentSession = session;
+    checkAccess();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function () { renderAccountChip(); fireAuthEvent(); _resolveReady(session); });
     } else {
@@ -756,7 +975,8 @@
     var wasLoggedIn = !!currentSession;
     currentSession = session;
     if (session) currentDog = null; // hämta hunden på nytt för det (nya) kontot
-    else currentDog = null;
+    else { currentDog = null; currentSubscription = null; hidePaywall(); }
+    checkAccess();
     renderAccountChip();
     if (session && modalEl && modalEl.classList.contains('show')) closeModal();
     fireAuthEvent();

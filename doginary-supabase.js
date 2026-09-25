@@ -348,6 +348,70 @@
       });
   }
 
+  // ---------- Prenumeration / 14 dagars provperiod ----------
+  //
+  // Kräver att doginary-subscriptions-schema.sql körts (skapar tabellen
+  // `doginary_subscriptions` + RLS) och att Edge Functions
+  // doginary-start-trial / create-doginary-checkout / create-doginary-portal
+  // / doginary-stripe-webhook är deployade, se kommentarerna i varje
+  // funktionsfil. Läsning av statusen (getSubscriptionStatus) går direkt
+  // mot tabellen och funkar tack vare RLS-policyn som låter en användare
+  // läsa sin egen rad; att STARTA en trial eller öppna Checkout/Portal
+  // går alltid via Edge Functions eftersom det kräver service-role-
+  // rättigheter (raden går inte att skriva till direkt från klienten).
+
+  // Returnerar raden ur doginary_subscriptions för den inloggade
+  // användaren, eller null om den inte finns än (t.ex. innan
+  // startTrial() hunnit köras en första gång).
+  function getSubscriptionStatus(userId) {
+    return client
+      .from('doginary_subscriptions')
+      .select('user_id, active, trial_ends_at, stripe_customer_id')
+      .eq('user_id', userId)
+      .maybeSingle()
+      .then(function (res) {
+        if (res.error) throw res.error;
+        return res.data || null;
+      });
+  }
+
+  // Idempotent — skapar bara raden (med trial_ends_at = 14 dagar från nu,
+  // satt av servern) om den saknas. Rör aldrig en befintlig rad, så det
+  // är säkert att anropa den här varje gång en inloggad session upptäcks
+  // utan någon lokal prenumerationsrad.
+  function startTrial() {
+    return client.functions.invoke('doginary-start-trial', { method: 'POST' }).then(function (res) {
+      if (res.error) throw res.error;
+      return res.data;
+    });
+  }
+
+  // Startar Stripe Checkout och returnerar { url } att skicka besökaren
+  // vidare till. returnUrl är sidan Stripe skickar tillbaka besökaren
+  // till efter (avbruten eller lyckad) betalning — normalt bara
+  // window.location.href för sidan där knappen klickades.
+  function startCheckout(returnUrl) {
+    return client.functions.invoke('create-doginary-checkout', {
+      method: 'POST',
+      body: { returnUrl: returnUrl }
+    }).then(function (res) {
+      if (res.error) throw res.error;
+      return res.data;
+    });
+  }
+
+  // Öppnar Stripe Customer Portal (för att uppdatera kort, se kvitton,
+  // säga upp sig) och returnerar { url }.
+  function startPortal(returnUrl) {
+    return client.functions.invoke('create-doginary-portal', {
+      method: 'POST',
+      body: { returnUrl: returnUrl }
+    }).then(function (res) {
+      if (res.error) throw res.error;
+      return res.data;
+    });
+  }
+
   global.DoginaryAuth = {
     client: client,
     getSession: getSession,
@@ -356,6 +420,13 @@
     resetPassword: resetPassword,
     signOut: signOut,
     onAuthStateChange: onAuthStateChange
+  };
+
+  global.DoginaryBilling = {
+    getSubscriptionStatus: getSubscriptionStatus,
+    startTrial: startTrial,
+    startCheckout: startCheckout,
+    startPortal: startPortal
   };
 
   global.DoginaryDB = {

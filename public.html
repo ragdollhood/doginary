@@ -48,13 +48,34 @@ img{max-width:100%;display:block;}
 a{color:inherit;}
 
 .wrap{max-width:1080px; margin:0 auto; padding:0 20px 60px;}
+
 .hero{
-  background:var(--pine-deep); color:#EDE7D9; padding:44px 20px 40px; margin-bottom:36px;
+  background:var(--pine-deep); color:#EDE7D9; padding:20px 20px 40px; margin-bottom:36px;
 }
+.hero-topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  max-width:1080px; margin:0 auto 26px; padding:0 20px;
+}
+.hero-logo{display:flex; align-items:center; text-decoration:none; flex-shrink:0;}
+.hero-logo img{height:24px; width:auto; display:block;}
+.hero-logo-fallback{font-family:var(--font-display); font-style:italic; font-weight:500; font-size:18px; color:#F3E4C6;}
+.hero-controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+.hero-select{
+  color-scheme:dark;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.22); color:#EDE7D9;
+  border-radius:20px; padding:6px 12px; font-size:12px; font-family:inherit; font-weight:500; cursor:pointer;
+}
+.hero-select:hover{border-color:var(--honey);}
+.hero-select:focus{outline:none; border-color:var(--honey);}
+.unit-toggle{display:flex; border:1px solid rgba(255,255,255,.22); border-radius:20px; overflow:hidden;}
+.unit-toggle button{background:transparent; border:none; color:#EDE7D9; font-size:12px; padding:6px 13px; cursor:pointer; font-family:inherit; font-weight:500;}
+.unit-toggle button.active{background:rgba(255,255,255,.18);}
+
 .hero-inner{max-width:1080px; margin:0 auto; padding:0 20px; text-align:center;}
 .hero-eyebrow{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:#9FB3A9; margin-bottom:10px;}
 .hero-title{font-family:var(--font-display); font-weight:500; font-style:italic; font-size:clamp(28px,5vw,42px); margin:0;}
 .hero-sub{font-size:13.5px; color:#B7C4BC; margin-top:10px;}
+.hero-price{font-size:13px; color:#E4C892; margin-top:10px;}
 
 .filter-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:22px;}
 .chip{
@@ -84,24 +105,58 @@ a{color:inherit;}
 .state{text-align:center; padding:80px 20px; color:var(--ink-soft); font-size:14px;}
 .state h2{font-family:var(--font-display); font-weight:500; color:var(--ink); font-size:22px; margin:0 0 8px;}
 
+.contact-box{
+  margin-top:36px; padding:20px 22px; background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--radius-l); box-shadow:var(--shadow); text-align:center;
+}
+.contact-title{font-family:var(--font-display); font-size:16px; font-weight:500; margin-bottom:6px;}
+.contact-text{font-size:13.5px; color:var(--ink-soft); white-space:pre-line; line-height:1.6;}
+
 .footer{text-align:center; font-size:11.5px; color:var(--ink-soft); padding:30px 20px 10px;}
+
+@media (max-width:480px){
+  .hero-topbar{justify-content:center;}
+  .hero-controls{justify-content:center; width:100%;}
+}
 </style>
 </head>
 <body>
 
 <div class="hero">
+  <div class="hero-topbar">
+    <a class="hero-logo" href="https://doginary.com" target="_blank" rel="noopener">
+      <img src="assets/title-doginary.png" alt="Doginary" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+      <span class="hero-logo-fallback" style="display:none;">Doginary</span>
+    </a>
+    <div class="hero-controls">
+      <select id="langSelect" class="hero-select">
+        <option value="sv">Svenska</option>
+        <option value="en">English</option>
+      </select>
+      <select id="currencySelect" class="hero-select" hidden></select>
+      <div class="unit-toggle" id="unitToggle">
+        <button type="button" data-u="metric">cm/kg</button>
+        <button type="button" data-u="imperial">in/lb</button>
+      </div>
+    </div>
+  </div>
   <div class="hero-inner">
     <div class="hero-eyebrow">KENNEL</div>
-    <h1 class="hero-title" id="kennelTitle">Laddar…</h1>
+    <h1 class="hero-title" id="kennelTitle">…</h1>
     <p class="hero-sub" id="kennelSub"></p>
+    <p class="hero-price" id="heroPrice" hidden></p>
   </div>
 </div>
 
 <div class="wrap">
-  <div id="content"><div class="state">Laddar hundar…</div></div>
+  <div id="content"><div class="state" id="initialLoadingState">…</div></div>
+  <div class="contact-box" id="contactBox" hidden>
+    <div class="contact-title" id="contactTitle"></div>
+    <div class="contact-text" id="contactText"></div>
+  </div>
 </div>
 
-<div class="footer">Byggd med Breeder Hub</div>
+<div class="footer" id="footerText"></div>
 
 <script>
 const SUPABASE_URL = 'https://jjbziqsjapyiihdrlnsw.supabase.co';
@@ -110,33 +165,159 @@ const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE
 
 const PAW_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>';
 
-const STATUS_LABEL = {puppy:'Valp', adult:'Vuxen', retired:'Pensionerad', deceased:'Avliden'};
-const SEX_LABEL = {female:'Tik', male:'Hane'};
+/* ---------------- I18N ----------------
+   Samma mönster som språkväxlaren i breeder-hub.html: en enkel
+   nyckel/värde-ordbok per språk och en t()-hjälpfunktion. Besökarens
+   val sparas per kennel i localStorage; standardspråket kommer annars
+   från kennel_public-datan (satt av uppfödaren under Publik sida). */
+const LOCALE = { sv:'sv-SE', en:'en-GB' };
+const I18N = {
+  sv: {
+    loadingTitle:'Laddar…', loadingDogs:'Laddar hundar…',
+    kennelDefaultSub:'Våra hundar', defaultKennelTitle:'Vår kennel',
+    notFoundTitle:'Sidan hittades inte',
+    noKennelTitle:'Ingen kennel angiven', noKennelDesc:'Länken saknar en giltig kennel-id.',
+    kennelNotFoundTitle:'Vi kunde inte hitta den här kenneln', kennelNotFoundDesc:'Kontrollera att länken stämmer.',
+    genericErrorTitle:'Något gick fel', genericErrorDesc:'Kunde inte ladda sidan. Försök igen om en liten stund.',
+    emptyTitle:'Inga hundar att visa än', emptyDesc:'Kom tillbaka snart.',
+    filterAll:'Alla', filterPuppy:'Valpar', filterAdult:'Vuxna', filterRetired:'Pensionerade',
+    statusPuppy:'Valp', statusAdult:'Vuxen', statusRetired:'Pensionerad', statusDeceased:'Avliden',
+    sexFemale:'Tik', sexMale:'Hane',
+    ageDays:'{n} dgr', ageMonths:'{n} mån', ageYears:'{n} år',
+    hipsPrefix:'HD',
+    pricePerPuppyLabel:'Pris per valp', priceApprox:'ca',
+    footerText:'Byggd med Breeder Hub',
+    langAria:'Språk', currencyAria:'Valuta', unitsAria:'Måttenhet', doginaryAria:'Till doginary.com',
+    contactTitle:'Kontakt',
+  },
+  en: {
+    loadingTitle:'Loading…', loadingDogs:'Loading dogs…',
+    kennelDefaultSub:'Our dogs', defaultKennelTitle:'Our kennel',
+    notFoundTitle:'Page not found',
+    noKennelTitle:'No kennel specified', noKennelDesc:'The link is missing a valid kennel ID.',
+    kennelNotFoundTitle:"We couldn't find this kennel", kennelNotFoundDesc:'Please check that the link is correct.',
+    genericErrorTitle:'Something went wrong', genericErrorDesc:"Couldn't load the page. Please try again shortly.",
+    emptyTitle:'No dogs to show yet', emptyDesc:'Check back soon.',
+    filterAll:'All', filterPuppy:'Puppies', filterAdult:'Adults', filterRetired:'Retired',
+    statusPuppy:'Puppy', statusAdult:'Adult', statusRetired:'Retired', statusDeceased:'Deceased',
+    sexFemale:'Female', sexMale:'Male',
+    ageDays:'{n}d', ageMonths:'{n} mo', ageYears:'{n} yr',
+    hipsPrefix:'HD',
+    pricePerPuppyLabel:'Price per puppy', priceApprox:'approx.',
+    footerText:'Built with Breeder Hub',
+    langAria:'Language', currencyAria:'Currency', unitsAria:'Units', doginaryAria:'Go to doginary.com',
+    contactTitle:'Contact',
+  }
+};
+function t(key, vars){
+  let s = (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (I18N.sv[key] != null ? I18N.sv[key] : key);
+  if(vars) Object.keys(vars).forEach(k=>{ s = s.replace('{'+k+'}', vars[k]); });
+  return s;
+}
+
+/* ---------------- STATE ---------------- */
+let KENNEL_ID = null;
+let LANG = 'sv';
+let UNITS = 'metric';       // 'metric' | 'imperial' — styr visning av mankhöjd/vikt
+let CURRENCY = 'SEK';       // valutan besökaren ser priset i just nu
+let BASE_CURRENCY = 'SEK';  // valutan uppfödaren har angett priset i (Breeder Hub → Publik sida)
+let FX_RATES = null;        // { SEK:1, EUR:.., ... } relativt BASE_CURRENCY
+let pub = null;             // hela kennel_public-payloaden
+let allDogs = [];
+let activeFilter = 'all';
+
+const CURRENCIES = ['SEK','EUR','USD','GBP','NOK','DKK'];
+// Ungefärliga reservkurser (mot SEK) om live-kursen inte går att hämta.
+// Uppdateras normalt automatiskt via Frankfurter (ECB) vid sidladdning.
+const FX_FALLBACK_FROM_SEK = { SEK:1, EUR:0.089, USD:0.093, GBP:0.075, NOK:0.99, DKK:0.665 };
+
+function safeGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function safeSet(k,v){ try{ localStorage.setItem(k, v); }catch(e){ /* ignore */ } }
+function lsKey(name){ return 'bh_public_' + name + '_' + (KENNEL_ID || 'global'); }
+
+function initPreferences(pubData){
+  BASE_CURRENCY = (pubData.currency && CURRENCIES.includes(pubData.currency)) ? pubData.currency : 'SEK';
+
+  const savedLang = safeGet(lsKey('lang'));
+  if(savedLang === 'en' || savedLang === 'sv') LANG = savedLang;
+  else if(pubData.lang === 'en' || pubData.lang === 'sv') LANG = pubData.lang;
+  else LANG = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'sv';
+
+  const savedUnits = safeGet(lsKey('units'));
+  if(savedUnits === 'imperial' || savedUnits === 'metric') UNITS = savedUnits;
+  else UNITS = pubData.units === 'imperial' ? 'imperial' : 'metric';
+
+  const savedCurrency = safeGet(lsKey('currency'));
+  CURRENCY = (savedCurrency && CURRENCIES.includes(savedCurrency)) ? savedCurrency : BASE_CURRENCY;
+}
+
+async function getRates(base){
+  const cacheKey = 'bh_fx_' + base;
+  try{
+    const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+    if(cached && Date.now() - cached.t < 12*3600*1000) return cached.rates;
+  }catch(e){ /* ignore */ }
+  try{
+    const others = CURRENCIES.filter(c=>c!==base).join(',');
+    const res = await fetch('https://api.frankfurter.app/latest?base=' + base + '&symbols=' + others);
+    if(!res.ok) throw new Error('fx http ' + res.status);
+    const json = await res.json();
+    const rates = Object.assign({}, json.rates, { [base]: 1 });
+    try{ localStorage.setItem(cacheKey, JSON.stringify({ t:Date.now(), rates })); }catch(e){ /* ignore */ }
+    return rates;
+  }catch(e){
+    const rates = {};
+    CURRENCIES.forEach(c=>{ rates[c] = FX_FALLBACK_FROM_SEK[c] / FX_FALLBACK_FROM_SEK[base]; });
+    return rates;
+  }
+}
+
+function formatPrice(amountInBase){
+  if(amountInBase == null) return '';
+  const rate = (FX_RATES && FX_RATES[CURRENCY]) || 1;
+  const converted = amountInBase * rate;
+  let formatted;
+  try{
+    formatted = new Intl.NumberFormat(LOCALE[LANG], { style:'currency', currency:CURRENCY, maximumFractionDigits:0 }).format(converted);
+  }catch(e){
+    formatted = Math.round(converted).toLocaleString(LOCALE[LANG]) + ' ' + CURRENCY;
+  }
+  return CURRENCY === BASE_CURRENCY ? formatted : (t('priceApprox') + ' ' + formatted);
+}
+function formatHeight(cm){
+  if(!cm) return '';
+  return UNITS === 'imperial' ? (cm/2.54).toFixed(1) + ' in' : Math.round(cm) + ' cm';
+}
+function formatWeight(kg){
+  if(kg == null) return '';
+  return UNITS === 'imperial' ? (kg*2.20462).toFixed(1) + ' lb' : (Math.round(kg*10)/10) + ' kg';
+}
+
+function statusLabel(s){ return {puppy:t('statusPuppy'), adult:t('statusAdult'), retired:t('statusRetired'), deceased:t('statusDeceased')}[s] || s; }
+function sexLabel(s){ return {female:t('sexFemale'), male:t('sexMale')}[s] || s; }
 
 function ageFromDob(dob){
   if(!dob) return '';
   const d = new Date(dob+'T00:00:00'); const now = new Date();
   if(isNaN(d)) return '';
   let months = (now.getFullYear()-d.getFullYear())*12 + (now.getMonth()-d.getMonth());
-  if(months < 1){ const days = Math.round((now-d)/86400000); return days + ' dgr'; }
-  if(months < 24) return months + ' mån';
-  return (months/12).toFixed(1).replace('.0','') + ' år';
+  if(months < 1){ const days = Math.round((now-d)/86400000); return t('ageDays', {n:days}); }
+  if(months < 24) return t('ageMonths', {n:months});
+  return t('ageYears', {n:(months/12).toFixed(1).replace('.0','')});
 }
 
 function escapeHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-let allDogs = [];
-let activeFilter = 'all';
-
+/* ---------------- RENDER ---------------- */
 function renderDogs(){
   const content = document.getElementById('content');
   let list = allDogs.filter(d=> d.status !== 'deceased');
   if(activeFilter !== 'all') list = list.filter(d=> d.status === activeFilter);
 
   const filters = ['all','puppy','adult','retired'].filter(f=> f==='all' || allDogs.some(d=>d.status===f));
-  const filterLabels = {all:'Alla', puppy:'Valpar', adult:'Vuxna', retired:'Pensionerade'};
+  const filterLabels = {all:t('filterAll'), puppy:t('filterPuppy'), adult:t('filterAdult'), retired:t('filterRetired')};
 
   const filterHtml = filters.length > 1 ? `
     <div class="filter-row">
@@ -144,60 +325,154 @@ function renderDogs(){
     </div>` : '';
 
   if(!list.length){
-    content.innerHTML = filterHtml + `<div class="state"><h2>Inga hundar att visa än</h2><p>Kom tillbaka snart.</p></div>`;
+    content.innerHTML = filterHtml + `<div class="state"><h2>${t('emptyTitle')}</h2><p>${t('emptyDesc')}</p></div>`;
   } else {
     content.innerHTML = filterHtml + `<div class="grid">
-      ${list.map(d=>`
+      ${list.map(d=>{
+        const heightStr = formatHeight(d.height);
+        const weightStr = formatWeight(d.weight);
+        return `
         <div class="card">
           <div class="card-photo">
-            ${d.status && d.status!=='adult' ? `<span class="status-chip">${STATUS_LABEL[d.status]||d.status}</span>` : ''}
+            ${d.status && d.status!=='adult' ? `<span class="status-chip">${statusLabel(d.status)}</span>` : ''}
             ${d.photoUrl ? `<img src="${escapeHtml(d.photoUrl)}" alt="${escapeHtml(d.name)}">` : PAW_SVG}
           </div>
           <div class="card-body">
             <div class="card-name">${escapeHtml(d.name||'—')}</div>
-            <div class="card-meta">${escapeHtml(d.breed||'')}${d.breed&&d.sex?' · ':''}${d.sex?(SEX_LABEL[d.sex]||''):''}${(d.breed||d.sex)&&d.dob?' · ':''}${ageFromDob(d.dob)}</div>
+            <div class="card-meta">${escapeHtml(d.breed||'')}${d.breed&&d.sex?' · ':''}${d.sex?sexLabel(d.sex):''}${(d.breed||d.sex)&&d.dob?' · ':''}${ageFromDob(d.dob)}</div>
             <div class="card-tags">
               ${d.color?`<span class="tag">${escapeHtml(d.color)}</span>`:''}
-              ${d.hips?`<span class="tag">HD ${escapeHtml(d.hips)}</span>`:''}
+              ${heightStr?`<span class="tag">${heightStr}</span>`:''}
+              ${weightStr?`<span class="tag">${weightStr}</span>`:''}
+              ${d.hips?`<span class="tag">${t('hipsPrefix')} ${escapeHtml(d.hips)}</span>`:''}
               ${(d.titles||[]).slice(0,2).map(x=>`<span class="tag">${escapeHtml(x)}</span>`).join('')}
             </div>
           </div>
-        </div>
-      `).join('')}
+        </div>`;
+      }).join('')}
     </div>`;
   }
   content.querySelectorAll('.chip').forEach(b=> b.addEventListener('click', ()=>{ activeFilter = b.dataset.f; renderDogs(); }));
 }
 
+function renderContactBox(){
+  const box = document.getElementById('contactBox');
+  const info = pub && pub.contactInfo ? String(pub.contactInfo).trim() : '';
+  if(!info){ box.hidden = true; return; }
+  document.getElementById('contactTitle').textContent = t('contactTitle');
+  document.getElementById('contactText').textContent = info;
+  box.hidden = false;
+}
+
+function updateHeroPrice(){
+  const el = document.getElementById('heroPrice');
+  if(pub && pub.pricePerPuppy){
+    el.hidden = false;
+    el.textContent = t('pricePerPuppyLabel') + ': ' + formatPrice(pub.pricePerPuppy);
+  } else {
+    el.hidden = true;
+  }
+}
+
+/* ---------------- CONTROLS (språk / valuta / enheter) ---------------- */
+function populateCurrencySelect(){
+  const sel = document.getElementById('currencySelect');
+  sel.innerHTML = CURRENCIES.map(c=>`<option value="${c}" ${c===CURRENCY?'selected':''}>${c}</option>`).join('');
+  sel.hidden = !(pub && pub.pricePerPuppy);
+}
+function syncUnitButtons(){
+  document.querySelectorAll('#unitToggle button').forEach(b=> b.classList.toggle('active', b.dataset.u===UNITS));
+}
+function syncControlsUI(){
+  document.getElementById('langSelect').value = LANG;
+  populateCurrencySelect();
+  syncUnitButtons();
+}
+function bindControlsOnce(){
+  document.getElementById('langSelect').addEventListener('change', e=>{
+    LANG = e.target.value === 'en' ? 'en' : 'sv';
+    safeSet(lsKey('lang'), LANG);
+    applyLangTexts();
+    populateCurrencySelect();
+    updateHeroPrice();
+    renderDogs();
+    renderContactBox();
+  });
+  document.getElementById('currencySelect').addEventListener('change', e=>{
+    CURRENCY = e.target.value;
+    safeSet(lsKey('currency'), CURRENCY);
+    updateHeroPrice();
+  });
+  document.querySelectorAll('#unitToggle button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      UNITS = btn.dataset.u;
+      safeSet(lsKey('units'), UNITS);
+      syncUnitButtons();
+      renderDogs();
+    });
+  });
+}
+
+function applyLangTexts(){
+  document.documentElement.lang = LANG;
+  document.getElementById('footerText').textContent = t('footerText');
+  document.getElementById('langSelect').setAttribute('aria-label', t('langAria'));
+  document.getElementById('currencySelect').setAttribute('aria-label', t('currencyAria'));
+  document.getElementById('unitToggle').setAttribute('aria-label', t('unitsAria'));
+  const logo = document.querySelector('.hero-logo');
+  if(logo) logo.setAttribute('aria-label', t('doginaryAria'));
+  if(pub){
+    document.getElementById('kennelSub').textContent = t('kennelDefaultSub');
+    document.title = (pub.kennelName || t('defaultKennelTitle')) + ' — ' + t('kennelDefaultSub');
+  } else {
+    document.getElementById('kennelTitle').textContent = t('loadingTitle');
+    const ls = document.getElementById('initialLoadingState');
+    if(ls) ls.textContent = t('loadingDogs');
+  }
+}
+
+/* ---------------- INIT ---------------- */
 async function init(){
   const params = new URLSearchParams(window.location.search);
-  const kennelId = params.get('k');
+  KENNEL_ID = params.get('k');
+
+  initPreferences({});
+  bindControlsOnce();
+  syncControlsUI();
+  applyLangTexts();
+
   const content = document.getElementById('content');
 
-  if(!kennelId || !sb){
-    document.getElementById('kennelTitle').textContent = 'Sidan hittades inte';
-    content.innerHTML = `<div class="state"><h2>Ingen kennel angiven</h2><p>Länken saknar en giltig kennel-id.</p></div>`;
+  if(!KENNEL_ID || !sb){
+    document.getElementById('kennelTitle').textContent = t('notFoundTitle');
+    content.innerHTML = `<div class="state"><h2>${t('noKennelTitle')}</h2><p>${t('noKennelDesc')}</p></div>`;
     return;
   }
 
   try{
-    const { data, error } = await sb.from('bh_kennel_public').select('data').eq('kennel_id', kennelId).maybeSingle();
+    const { data, error } = await sb.from('bh_kennel_public').select('data').eq('kennel_id', KENNEL_ID).maybeSingle();
     if(error) throw error;
     if(!data || !data.data){
-      document.getElementById('kennelTitle').textContent = 'Sidan hittades inte';
-      content.innerHTML = `<div class="state"><h2>Vi kunde inte hitta den här kenneln</h2><p>Kontrollera att länken stämmer.</p></div>`;
+      document.getElementById('kennelTitle').textContent = t('notFoundTitle');
+      content.innerHTML = `<div class="state"><h2>${t('kennelNotFoundTitle')}</h2><p>${t('kennelNotFoundDesc')}</p></div>`;
       return;
     }
-    const pub = data.data;
-    document.title = (pub.kennelName || 'Kennel') + ' — Våra hundar';
-    document.getElementById('kennelTitle').textContent = pub.kennelName || 'Vår kennel';
-    document.getElementById('kennelSub').textContent = 'Våra hundar';
+    pub = data.data;
+    initPreferences(pub);
+    syncControlsUI();
+    applyLangTexts();
+
+    document.getElementById('kennelTitle').textContent = pub.kennelName || t('defaultKennelTitle');
     allDogs = pub.dogs || [];
+
+    if(pub.pricePerPuppy){ FX_RATES = await getRates(BASE_CURRENCY); }
+    updateHeroPrice();
     renderDogs();
+    renderContactBox();
   }catch(e){
     console.error(e);
-    document.getElementById('kennelTitle').textContent = 'Något gick fel';
-    content.innerHTML = `<div class="state"><h2>Kunde inte ladda sidan</h2><p>Försök igen om en liten stund.</p></div>`;
+    document.getElementById('kennelTitle').textContent = t('genericErrorTitle');
+    content.innerHTML = `<div class="state"><h2>${t('genericErrorTitle')}</h2><p>${t('genericErrorDesc')}</p></div>`;
   }
 }
 init();

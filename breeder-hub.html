@@ -281,6 +281,18 @@ tbody tr:hover{background:var(--surface-2);}
 .auth-forgot-row button{font-family:inherit; font-size:12px; color:var(--ink-soft); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline;}
 .auth-forgot-row button:hover{color:var(--honey-deep);}
 .auth-forgot-row button:disabled{opacity:.6; cursor:default;}
+.auth-consent-row{display:flex; align-items:flex-start; gap:8px; margin-top:14px;}
+.auth-consent-row input[type="checkbox"]{width:16px; height:16px; margin-top:2px; flex-shrink:0; accent-color:var(--pine); cursor:pointer;}
+.auth-consent-row label{font-size:12px; font-weight:400; color:var(--ink-soft); margin-top:0; line-height:1.5; cursor:pointer;}
+.auth-consent-row label a{color:var(--honey-deep); text-decoration:underline;}
+#authMessage.error.consent-error{font-weight:600;}
+.legal-footer-links{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-soft); margin-top:10px;}
+.legal-footer-links a, .legal-footer-links button{font-family:inherit; font-size:11.5px; color:var(--ink-soft); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline;}
+.legal-footer-links a:hover, .legal-footer-links button:hover{color:var(--honey-deep);}
+.legal-footer-links .dot{opacity:.5;}
+#sidebarLegalLinks{color:#7E9088;}
+#sidebarLegalLinks a, #sidebarLegalLinks button{color:#9FB3A9;}
+#sidebarLegalLinks a:hover, #sidebarLegalLinks button:hover{color:#F3E4C6;}
 
 /* password-reset gate — visas när användaren kommer tillbaka via
    återställningslänken i mejlet (Supabase-eventet PASSWORD_RECOVERY).
@@ -480,6 +492,7 @@ tbody tr:hover{background:var(--surface-2);}
         <span>Uppfödaröversikt</span>
         <button id="logoutBtn" style="background:none; border:none; color:#9FB3A9; cursor:pointer; font-size:12px; text-decoration:underline; padding:0;">Logga ut</button>
       </div>
+      <div class="legal-footer-links" id="sidebarLegalLinks" style="color:#7E9088; margin-top:10px;"></div>
     </div>
   </aside>
 
@@ -532,12 +545,17 @@ tbody tr:hover{background:var(--surface-2);}
       <label>E-post</label><input type="email" name="email" required autocomplete="username">
       <label>Lösenord</label><input type="password" name="password" required autocomplete="current-password" minlength="6">
       <div class="auth-forgot-row"><button type="button" id="authForgotBtn">Glömt lösenordet?</button></div>
+      <div class="auth-consent-row" id="authConsentRow" hidden>
+        <input type="checkbox" id="authConsentCheckbox">
+        <label for="authConsentCheckbox" id="authConsentLabel"></label>
+      </div>
       <div id="authMessage"></div>
       <button type="submit" id="authSubmit">Logga in</button>
     </form>
     <div class="auth-switch">
       <span id="authSwitchText">Inget konto än?</span> <button type="button" id="authSwitchBtn">Skapa konto</button>
     </div>
+    <div class="legal-footer-links" id="authLegalLinks"></div>
   </div>
 </div>
 
@@ -726,6 +744,10 @@ const I18N = {
     authErrInvalid: 'Fel e-post eller lösenord.',
     authErrExists: 'Det finns redan ett konto med den e-postadressen — logga in istället.',
     authErrPwLen: 'Lösenordet måste vara minst 6 tecken.',
+    authErrMustAgree: 'Du måste godkänna användarvillkoren för att skapa ett konto.',
+    authAgreeText: 'Jag godkänner {terms} och bekräftar att jag har tagit del av {privacy}.',
+    termsLinkLabel: 'användarvillkoren', privacyLinkLabel: 'integritetspolicyn', contactLinkLabel: 'Kontakt',
+    termsPageLabel: 'Användarvillkor', privacyPageLabel: 'Integritetspolicy',
     authSignupSuccess: 'Konto skapat! Kolla din e-post för att bekräfta adressen innan du loggar in.',
     authLoadFail: 'Kunde inte ladda din kennel. Kontrollera att SQL-schemat är kört i Supabase.',
     authForgot: 'Glömt lösenordet?',
@@ -1007,6 +1029,10 @@ const I18N = {
     authErrInvalid: 'Incorrect email or password.',
     authErrExists: 'An account with that email already exists — log in instead.',
     authErrPwLen: 'Password must be at least 6 characters.',
+    authErrMustAgree: 'You must agree to the Terms & Conditions to create an account.',
+    authAgreeText: 'I agree to the {terms} and acknowledge the {privacy}.',
+    termsLinkLabel: 'Terms & Conditions', privacyLinkLabel: 'Privacy Policy', contactLinkLabel: 'Contact',
+    termsPageLabel: 'Terms & Conditions', privacyPageLabel: 'Privacy Policy',
     authSignupSuccess: 'Account created! Check your email to confirm your address before logging in.',
     authLoadFail: 'Could not load your kennel. Make sure the SQL schema has been run in Supabase.',
     authForgot: 'Forgot your password?',
@@ -1290,6 +1316,29 @@ function applyChrome() {
   if (prLabel) prLabel.textContent = t('passwordResetLabel');
   const prSubmit = document.getElementById('passwordResetSubmit');
   if (prSubmit) prSubmit.textContent = t('passwordResetSubmit');
+  renderLegalLinks();
+}
+
+/* ---- Legal (Terms & Privacy) länkar + samtyckesrad ----
+   Öppnas i ny flik och kräver ingen inloggning; se terms.html/privacy.html. */
+const TERMS_VERSION = '2026-09-25';
+function legalLinksHtml(){
+  return `<a href="terms.html" target="_blank" rel="noopener">${t('termsPageLabel')}</a>` +
+    `<span class="dot">·</span><a href="privacy.html" target="_blank" rel="noopener">${t('privacyPageLabel')}</a>` +
+    `<span class="dot">·</span><a href="mailto:doginary@gmail.com">${t('contactLinkLabel')}</a>`;
+}
+function renderLegalLinks(){
+  const a = document.getElementById('authLegalLinks');
+  if(a) a.innerHTML = legalLinksHtml();
+  const s = document.getElementById('sidebarLegalLinks');
+  if(s) s.innerHTML = legalLinksHtml();
+  const label = document.getElementById('authConsentLabel');
+  if(label){
+    label.innerHTML = t('authAgreeText', {
+      terms: `<a href="terms.html" target="_blank" rel="noopener">${t('termsLinkLabel')}</a>`,
+      privacy: `<a href="privacy.html" target="_blank" rel="noopener">${t('privacyLinkLabel')}</a>`
+    });
+  }
 }
 
 function setLang(newLang) {
@@ -1383,6 +1432,11 @@ function setAuthMode(mode){
   if (labels[0]) labels[0].textContent = t('authEmailLabel');
   if (labels[1]) labels[1].textContent = t('authPasswordLabel');
   authMsg.textContent = ''; authMsg.className = '';
+  const consentRow = document.getElementById('authConsentRow');
+  const consentCheckbox = document.getElementById('authConsentCheckbox');
+  if(consentRow) consentRow.hidden = (mode !== 'signup');
+  if(consentCheckbox) consentCheckbox.checked = false;
+  renderLegalLinks();
 }
 document.getElementById('authSwitchBtn').addEventListener('click', ()=> setAuthMode(authMode==='signin' ? 'signup' : 'signin'));
 
@@ -1390,14 +1444,25 @@ authForm.addEventListener('submit', async e=>{
   e.preventDefault();
   const f = new FormData(authForm);
   const email = f.get('email'), password = f.get('password');
-  authSubmit.disabled = true; authMsg.textContent = ''; authMsg.className = '';
+  authMsg.textContent = ''; authMsg.className = '';
+  if(authMode==='signup' && !document.getElementById('authConsentCheckbox')?.checked){
+    authMsg.textContent = t('authErrMustAgree');
+    authMsg.className = 'error consent-error';
+    return;
+  }
+  authSubmit.disabled = true;
   try{
     if(authMode==='signin'){
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if(error) throw error;
       // onAuthStateChange tar hand om resten (döljer gate, laddar kenneln)
     } else {
-      const { data, error } = await sb.auth.signUp({ email, password });
+      // Sparar villkorsversion + tidpunkt för samtycket i användarens
+      // auth-metadata (kräver ingen egen tabell och följer med kontot).
+      const { data, error } = await sb.auth.signUp({
+        email, password,
+        options: { data: { terms_accepted_version: TERMS_VERSION, terms_accepted_at: new Date().toISOString() } }
+      });
       if(error) throw error;
       if(!data.session){
         authMsg.textContent = t('authSignupSuccess');

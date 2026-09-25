@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integritetspolicy — Doginary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF6EF; --surface:#FFFFFF; --surface-2:#F3EEE3;
+  --ink:#1C2420; --ink-soft:#54615B;
+  --pine:#22403A; --pine-deep:#122420; --pine-tint:#E7EFEC;
+  --honey:#C08F45; --honey-deep:#A0762F; --honey-tint:#F5E9D4;
+  --line:#E4DDCC; --line-soft:#EEE8DA;
+  --radius-s:6px; --radius-m:10px; --radius-l:16px;
+  --shadow: 0 1px 2px rgba(28,36,32,.05), 0 8px 24px -12px rgba(28,36,32,.18);
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1A211D; --surface-2:#212823;
+  --ink:#ECE7DA; --ink-soft:#A7B0A9;
+  --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
+  --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
+  --line:#2A322C; --line-soft:#232B26;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121815; --surface:#1A211D; --surface-2:#212823;
+    --ink:#ECE7DA; --ink-soft:#A7B0A9;
+    --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
+    --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
+    --line:#2A322C; --line-soft:#232B26;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;}
+a{color:var(--honey-deep);}
+.topbar{background:var(--pine-deep); color:#EDE7D9; padding:16px 20px;}
+.topbar-inner{max-width:760px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.brand{font-family:var(--font-display); font-style:italic; font-weight:500; font-size:18px; color:#F3E4C6; text-decoration:none;}
+.lang-toggle{display:flex; border:1px solid rgba(255,255,255,.22); border-radius:20px; overflow:hidden;}
+.lang-flag-btn{background:transparent; border:none; font-size:16px; line-height:1; padding:5px 11px; cursor:pointer; opacity:.55;}
+.lang-flag-btn.active{background:rgba(255,255,255,.18); opacity:1;}
+.wrap{max-width:760px; margin:0 auto; padding:36px 20px 70px;}
+h1{font-family:var(--font-display); font-weight:500; font-size:clamp(26px,4vw,34px); margin:0 0 6px;}
+.updated{font-size:12.5px; color:var(--ink-soft); margin:0 0 30px;}
+h2{font-family:var(--font-display); font-weight:500; font-size:18px; margin:32px 0 8px; color:var(--pine);}
+:root[data-theme="dark"] h2{color:var(--honey);}
+p{margin:0 0 12px;}
+ul{margin:0 0 12px; padding-left:20px;}
+li{margin-bottom:5px;}
+table{width:100%; border-collapse:collapse; margin:0 0 16px; font-size:13.5px;}
+th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em;}
+.note{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-m); padding:14px 16px; font-size:13.5px; color:var(--ink-soft); margin:0 0 28px;}
+.lang-block{display:none;}
+.lang-block.active{display:block;}
+.footer{text-align:center; font-size:11.5px; color:var(--ink-soft); padding:20px; border-top:1px solid var(--line); margin-top:40px;}
+.footer a{color:var(--ink-soft); text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="breeder-hub.html">Doginary</a>
+    <div class="lang-toggle" id="langToggle" role="group">
+      <button type="button" class="lang-flag-btn" data-lang="sv" title="Svenska">🇸🇪</button>
+      <button type="button" class="lang-flag-btn" data-lang="en" title="English">🇬🇧</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="lang-block" data-lang="sv">
+    <h1>Integritetspolicy</h1>
+    <p class="updated">Senast uppdaterad: 25 september 2026</p>
+    <div class="note">Denna policy beskriver hur Doginary behandlar personuppgifter när du använder Breeder Hub och den publika kennelsidan.</div>
+
+    <h2>1. Vilka uppgifter vi behandlar</h2>
+    <p>Doginary kan behandla följande kategorier av personuppgifter:</p>
+    <ul>
+      <li>Din kontoinformation, t.ex. e-postadress och autentiseringsuppgifter</li>
+      <li>Prenumerations- och betalningsrelaterad information (hanteras via Stripe)</li>
+      <li>Kennelinformation du själv registrerar (t.ex. hundar, kullar, hälsodata)</li>
+      <li>Information du frivilligt matar in i Breeder Hub, inklusive uppgifter om köpare och intressenter som du själv väljer att registrera</li>
+      <li>Supportkommunikation mellan dig och oss</li>
+      <li>Teknisk information som krävs för att tillhandahålla och skydda Tjänsten (t.ex. loggar, säkerhetshändelser)</li>
+    </ul>
+    <p>Breeder Hub kan alltså innehålla personuppgifter om valpköpare och spekulanter som du som kennelägare själv väljer att lägga in. För dessa uppgifter är <strong>du</strong> personuppgiftsansvarig, och Doginary behandlar dem som personuppgiftsbiträde på ditt uppdrag.</p>
+
+    <h2>2. Ändamål och rättslig grund</h2>
+    <table>
+      <tr><th>Ändamål</th><th>Rättslig grund</th></tr>
+      <tr><td>Tillhandahålla och drifta Tjänsten (konto, kennelregister, publik kennelsida)</td><td>Fullgörande av avtal</td></tr>
+      <tr><td>Hantera prenumeration och betalning</td><td>Fullgörande av avtal</td></tr>
+      <tr><td>Säkerhet, felsökning och förhindra missbruk</td><td>Berättigat intresse</td></tr>
+      <tr><td>Support och kommunikation med dig</td><td>Fullgörande av avtal / berättigat intresse</td></tr>
+      <tr><td>Uppfylla bokförings- och andra rättsliga krav</td><td>Rättslig förpliktelse</td></tr>
+      <tr><td>Nyhetsutskick, om du aktivt valt detta</td><td>Samtycke</td></tr>
+    </table>
+    <p>Vad gäller personuppgifter om köpare och intressenter som du själv registrerar i Breeder Hub ansvarar du som kennelägare för att fastställa och ha en lämplig rättslig grund för den behandlingen (t.ex. berättigat intresse i samband med en pågående köpprocess, eller samtycke).</p>
+
+    <h2>3. Tjänsteleverantörer (mottagare)</h2>
+    <p>Vi anlitar följande viktiga tredjepartsleverantörer för att driva Tjänsten:</p>
+    <ul>
+      <li><strong>Supabase</strong> — används för backend, databas, autentisering och fillagring.</li>
+      <li><strong>Stripe</strong> — används för hantering av prenumerationer och betalningar. Doginary lagrar inte dina fullständiga kortuppgifter; dessa hanteras direkt av Stripe.</li>
+      <li><strong>GitHub</strong> — används för utveckling och teknisk infrastruktur.</li>
+    </ul>
+    <p>Dessa leverantörer behandlar uppgifter på våra vägnar i enlighet med sina egna säkerhets- och sekretessrutiner samt tillämpliga dataskyddsavtal.</p>
+
+    <h2>4. Internationella överföringar</h2>
+    <p>Våra leverantörer kan behandla data i eller överföra data till länder utanför EU/EES. I sådana fall vidtar vi lämpliga skyddsåtgärder, t.ex. EU-kommissionens standardavtalsklausuler, i enlighet med tillämplig dataskyddslagstiftning.</p>
+
+    <h2>5. Lagring</h2>
+    <p>Vi sparar uppgifter så länge ditt konto är aktivt och därefter under den period som är nödvändig för att uppfylla de ändamål som beskrivs ovan, inklusive eventuella rättsliga eller bokföringsmässiga krav. Du kan när som helst exportera eller radera din kennelinformation, och du kan begära att ditt konto avslutas.</p>
+
+    <h2>6. Säkerhet</h2>
+    <p>Vi vidtar lämpliga tekniska och organisatoriska åtgärder för att skydda dina uppgifter, bland annat kryptering under överföring och åtkomstbegränsningar. Ingen tjänst kan dock garantera fullständig säkerhet, och du ansvarar själv för att skydda dina inloggningsuppgifter.</p>
+
+    <h2>7. Den publika kennelsidan</h2>
+    <p>Om du aktiverar din publika kennelsida delas endast den information du uttryckligen valt att visa där, t.ex. grunddata om dina hundar, foton, eventuellt pris och kontaktuppgifter du själv angett för publicering. Privat information — såsom köparuppgifter, kennelns journal, dokument, interna anteckningar och lagerhantering — delas aldrig till den publika sidan.</p>
+
+    <h2>8. Dina rättigheter</h2>
+    <p>Du har rätt att begära tillgång till, rättelse av, radering av eller begränsning av behandlingen av dina personuppgifter, samt rätt till dataportabilitet och att invända mot viss behandling. Du har även rätt att lämna klagomål till Integritetsskyddsmyndigheten (IMY) eller motsvarande tillsynsmyndighet.</p>
+    <p>Om du är en valpköpare eller intressent vars uppgifter en kennelägare har registrerat i Breeder Hub, kontakta i första hand den aktuella kenneln direkt eftersom de är personuppgiftsansvariga för sådana uppgifter.</p>
+
+    <h2>9. Kontakt</h2>
+    <p>Frågor om denna policy eller om dina personuppgifter kan skickas till <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>.</p>
+
+    <h2>10. Ändringar av policyn</h2>
+    <p>Vi kan uppdatera denna policy från tid till annan. Väsentliga ändringar meddelas i Tjänsten. Datumet högst upp på sidan visar när policyn senast uppdaterades.</p>
+  </div>
+
+  <div class="lang-block" data-lang="en">
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: September 25, 2026</p>
+    <div class="note">This policy explains how Doginary processes personal data when you use Breeder Hub and the public kennel page.</div>
+
+    <h2>1. What data we process</h2>
+    <p>Doginary may process the following categories of personal data:</p>
+    <ul>
+      <li>Your account information, e.g. email address and authentication credentials</li>
+      <li>Subscription and payment-related information (handled via Stripe)</li>
+      <li>Kennel information you enter yourself (e.g. dogs, litters, health data)</li>
+      <li>Information you voluntarily enter into Breeder Hub, including information about buyers and prospects that you choose to record</li>
+      <li>Support communications between you and us</li>
+      <li>Technical information necessary to provide and secure the Service (e.g. logs, security events)</li>
+    </ul>
+    <p>Breeder Hub can therefore contain personal data about puppy buyers and prospects that you, as the kennel owner, choose to enter. For that data, <strong>you</strong> are the data controller, and Doginary processes it as a data processor on your behalf.</p>
+
+    <h2>2. Purposes and legal bases</h2>
+    <table>
+      <tr><th>Purpose</th><th>Legal basis</th></tr>
+      <tr><td>Providing and operating the Service (account, kennel records, public kennel page)</td><td>Performance of a contract</td></tr>
+      <tr><td>Managing subscriptions and payments</td><td>Performance of a contract</td></tr>
+      <tr><td>Security, troubleshooting and preventing misuse</td><td>Legitimate interest</td></tr>
+      <tr><td>Support and communication with you</td><td>Performance of a contract / legitimate interest</td></tr>
+      <tr><td>Meeting accounting and other legal requirements</td><td>Legal obligation</td></tr>
+      <tr><td>Newsletters, if you have actively opted in</td><td>Consent</td></tr>
+    </table>
+    <p>With respect to personal data about buyers and prospects that you enter into Breeder Hub yourself, you as the kennel owner are responsible for determining and having an appropriate legal basis for that processing (e.g. legitimate interest in connection with an ongoing sale, or consent).</p>
+
+    <h2>3. Service providers (recipients)</h2>
+    <p>We rely on the following key third-party providers to operate the Service:</p>
+    <ul>
+      <li><strong>Supabase</strong> — used for backend, database, authentication and file storage functionality.</li>
+      <li><strong>Stripe</strong> — used for subscription and payment processing. Doginary does not store your full card details; these are handled directly by Stripe.</li>
+      <li><strong>GitHub</strong> — used for development and technical infrastructure.</li>
+    </ul>
+    <p>These providers process data on our behalf in accordance with their own security and confidentiality practices and applicable data-processing agreements.</p>
+
+    <h2>4. International transfers</h2>
+    <p>Our providers may process or transfer data to countries outside the EU/EEA. Where this occurs, we implement appropriate safeguards, such as the European Commission's Standard Contractual Clauses, in accordance with applicable data protection law.</p>
+
+    <h2>5. Retention</h2>
+    <p>We retain data for as long as your account is active, and thereafter for as long as necessary to fulfil the purposes described above, including any legal or accounting requirements. You can export or delete your kennel information at any time, and you can request that your account be closed.</p>
+
+    <h2>6. Security</h2>
+    <p>We take appropriate technical and organizational measures to protect your data, including encryption in transit and access restrictions. However, no service can guarantee complete security, and you are responsible for protecting your own login credentials.</p>
+
+    <h2>7. The public kennel page</h2>
+    <p>If you enable your public kennel page, only the information you have explicitly chosen to show there is shared — e.g. basic details about your dogs, photos, an optional price, and contact details you have chosen to publish. Private information — such as buyer data, the kennel's private journal, documents, internal notes and inventory — is never shared to the public page.</p>
+
+    <h2>8. Your rights</h2>
+    <p>You have the right to request access to, correction of, deletion of, or restriction of processing of your personal data, as well as the right to data portability and to object to certain processing. You also have the right to lodge a complaint with your local data protection authority (in Sweden, the IMY).</p>
+    <p>If you are a puppy buyer or prospect whose data has been recorded by a kennel owner in Breeder Hub, please contact that kennel directly in the first instance, as they are the data controller for that data.</p>
+
+    <h2>9. Contact</h2>
+    <p>Questions about this policy or your personal data can be sent to <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>.</p>
+
+    <h2>10. Changes to this Policy</h2>
+    <p>We may update this policy from time to time. Material changes will be communicated within the Service. The date at the top of this page shows when the policy was last updated.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  <a href="terms.html">Terms &amp; Conditions / Användarvillkor</a> · <a href="mailto:doginary@gmail.com">doginary@gmail.com</a>
+</div>
+
+<script>
+function getLang(){
+  try{
+    const saved = localStorage.getItem('bh_legal_lang');
+    if(saved === 'en' || saved === 'sv') return saved;
+  }catch(e){}
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('lang')==='en' || params.get('lang')==='sv') return params.get('lang');
+  return (navigator.language||'').toLowerCase().startsWith('en') ? 'en' : 'sv';
+}
+function setLang(lang){
+  document.documentElement.lang = lang;
+  document.title = lang === 'en' ? 'Privacy Policy — Doginary' : 'Integritetspolicy — Doginary';
+  document.querySelectorAll('.lang-block').forEach(el=> el.classList.toggle('active', el.dataset.lang===lang));
+  document.querySelectorAll('.lang-flag-btn').forEach(b=> b.classList.toggle('active', b.dataset.lang===lang));
+  try{ localStorage.setItem('bh_legal_lang', lang); }catch(e){}
+}
+document.querySelectorAll('.lang-flag-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> setLang(btn.dataset.lang));
+});
+setLang(getLang());
+</script>
+</body>
+</html>

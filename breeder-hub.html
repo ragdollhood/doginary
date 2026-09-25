@@ -191,7 +191,7 @@ a{color:inherit;}
 .dog-tags{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
 .tag{font-size:10.5px; padding:3px 8px; border-radius:5px; background:var(--surface-2); color:var(--ink-soft);}
 
-.table-wrap{border:1px solid var(--line); border-radius:var(--radius-m); overflow:hidden; background:var(--surface);}
+.table-wrap{border:1px solid var(--line); border-radius:var(--radius-m); overflow-x:auto; overflow-y:hidden; background:var(--surface);}
 table{width:100%; border-collapse:collapse; font-size:13.2px;}
 th{
   text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);
@@ -1709,6 +1709,20 @@ function startDemo(){
   goTo('dashboard');
 }
 if(cloudEnabled){
+  // wasAuthenticated håller reda på om vi någonsin sett en riktig
+  // inloggad session i den här fliken. Supabase-js kör en session-
+  // koll varje gång fliken/fönstret får fokus igen (visibilitychange).
+  // Om man t.ex. markerar text med musen och drar utanför
+  // webbläsarfönstret hinner fönstret tappa och återfå fokus, vilket
+  // kan trigga onAuthStateChange med session=null även fast man
+  // fortfarande är inloggad (en känd Supabase-egenhet). Utan skyddet
+  // nedan slängdes man då tillbaka till inloggningsrutan mitt i
+  // användningen. Vi litar därför bara blint på ett "utloggad"-läge om
+  // (a) vi aldrig varit inloggade i den här fliken än, eller
+  // (b) eventet uttryckligen är SIGNED_OUT. Alla andra fall med
+  // session=null dubbelkollas mot sb.auth.getSession() innan vi
+  // faktiskt loggar ut användaren och visar inloggningsrutan.
+  let wasAuthenticated = false;
   sb.auth.onAuthStateChange(async (event, session)=>{
     // Användaren kom hit via länken i återställningsmejlet: Supabase har
     // redan gett en giltig session, men lösenordet är inte bytt än — visa
@@ -1718,6 +1732,7 @@ if(cloudEnabled){
       return;
     }
     if(session){
+      wasAuthenticated = true;
       authGate.classList.remove('show');
       hidePasswordResetGate();
       try{
@@ -1739,6 +1754,18 @@ if(cloudEnabled){
         authMsg.textContent = t('authLoadFail');
         authMsg.className = 'error';
       }
+    } else if(wasAuthenticated && event !== 'SIGNED_OUT'){
+      // Misstänkt falskt utloggnings-event (t.ex. efter att fönstret
+      // tappat och återfått fokus mitt i en textmarkering) — dubbelkolla
+      // med en riktig sessionsfråga innan vi kastar ut användaren.
+      const { data } = await sb.auth.getSession();
+      if(data?.session){
+        return; // Sessionen finns kvar — ignorera det falska eventet.
+      }
+      hideAccountMenuWrap();
+      hidePaywall();
+      setAuthMode('signin');
+      authGate.classList.add('show');
     } else {
       hideAccountMenuWrap();
       hidePaywall();

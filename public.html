@@ -70,6 +70,10 @@ a{color:inherit;}
 .unit-toggle{display:flex; border:1px solid rgba(255,255,255,.22); border-radius:20px; overflow:hidden;}
 .unit-toggle button{background:transparent; border:none; color:#EDE7D9; font-size:12px; padding:6px 13px; cursor:pointer; font-family:inherit; font-weight:500;}
 .unit-toggle button.active{background:rgba(255,255,255,.18);}
+.lang-toggle{display:flex; border:1px solid rgba(255,255,255,.22); border-radius:20px; overflow:hidden;}
+.lang-flag-btn{background:transparent; border:none; font-size:16px; line-height:1; padding:5px 11px; cursor:pointer; opacity:.55; transition:opacity .15s, background .15s;}
+.lang-flag-btn:hover{opacity:1;}
+.lang-flag-btn.active{background:rgba(255,255,255,.18); opacity:1;}
 
 .hero-inner{max-width:1080px; margin:0 auto; padding:0 20px; text-align:center;}
 .hero-eyebrow{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:#9FB3A9; margin-bottom:10px;}
@@ -129,10 +133,10 @@ a{color:inherit;}
       <span class="hero-logo-fallback" style="display:none;">Doginary</span>
     </a>
     <div class="hero-controls">
-      <select id="langSelect" class="hero-select">
-        <option value="sv">Svenska</option>
-        <option value="en">English</option>
-      </select>
+      <div class="lang-toggle" id="langToggle" role="group">
+        <button type="button" class="lang-flag-btn" data-lang="sv" aria-label="Svenska" title="Svenska">🇸🇪</button>
+        <button type="button" class="lang-flag-btn" data-lang="en" aria-label="English" title="English">🇬🇧</button>
+      </div>
       <select id="currencySelect" class="hero-select" hidden></select>
       <div class="unit-toggle" id="unitToggle">
         <button type="button" data-u="metric">cm/kg</button>
@@ -186,7 +190,7 @@ const I18N = {
     ageDays:'{n} dgr', ageMonths:'{n} mån', ageYears:'{n} år',
     hipsPrefix:'HD',
     pricePerPuppyLabel:'Pris per valp', priceApprox:'ca',
-    footerText:'Byggd med Breeder Hub',
+    footerText:'Skapad med Doginary',
     langAria:'Språk', currencyAria:'Valuta', unitsAria:'Måttenhet', doginaryAria:'Till doginary.com',
     contactTitle:'Kontakt',
   },
@@ -204,7 +208,7 @@ const I18N = {
     ageDays:'{n}d', ageMonths:'{n} mo', ageYears:'{n} yr',
     hipsPrefix:'HD',
     pricePerPuppyLabel:'Price per puppy', priceApprox:'approx.',
-    footerText:'Built with Breeder Hub',
+    footerText:'Made with Doginary',
     langAria:'Language', currencyAria:'Currency', unitsAria:'Units', doginaryAria:'Go to doginary.com',
     contactTitle:'Contact',
   }
@@ -383,20 +387,26 @@ function populateCurrencySelect(){
 function syncUnitButtons(){
   document.querySelectorAll('#unitToggle button').forEach(b=> b.classList.toggle('active', b.dataset.u===UNITS));
 }
+function syncLangButtons(){
+  document.querySelectorAll('.lang-flag-btn').forEach(b=> b.classList.toggle('active', b.dataset.lang===LANG));
+}
 function syncControlsUI(){
-  document.getElementById('langSelect').value = LANG;
+  syncLangButtons();
   populateCurrencySelect();
   syncUnitButtons();
 }
 function bindControlsOnce(){
-  document.getElementById('langSelect').addEventListener('change', e=>{
-    LANG = e.target.value === 'en' ? 'en' : 'sv';
-    safeSet(lsKey('lang'), LANG);
-    applyLangTexts();
-    populateCurrencySelect();
-    updateHeroPrice();
-    renderDogs();
-    renderContactBox();
+  document.querySelectorAll('.lang-flag-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      LANG = btn.dataset.lang === 'en' ? 'en' : 'sv';
+      safeSet(lsKey('lang'), LANG);
+      syncLangButtons();
+      applyLangTexts();
+      populateCurrencySelect();
+      updateHeroPrice();
+      renderDogs();
+      renderContactBox();
+    });
   });
   document.getElementById('currencySelect').addEventListener('change', e=>{
     CURRENCY = e.target.value;
@@ -416,7 +426,7 @@ function bindControlsOnce(){
 function applyLangTexts(){
   document.documentElement.lang = LANG;
   document.getElementById('footerText').textContent = t('footerText');
-  document.getElementById('langSelect').setAttribute('aria-label', t('langAria'));
+  document.getElementById('langToggle').setAttribute('aria-label', t('langAria'));
   document.getElementById('currencySelect').setAttribute('aria-label', t('currencyAria'));
   document.getElementById('unitToggle').setAttribute('aria-label', t('unitsAria'));
   const logo = document.querySelector('.hero-logo');

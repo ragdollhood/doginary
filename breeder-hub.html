@@ -2065,7 +2065,19 @@ function closeDrawer(){
   // man kvarvarande gammal data tills man byter sida och går tillbaka.
   if(DB && typeof renderPage === 'function' && currentPage) renderPage(currentPage);
 }
-document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') closeDrawer(); });
+// Stänger bara panelen om BÅDE mousedown och click landar direkt på overlayen.
+// Annars: markerar man text i ett fält (t.ex. "Ras") och drar musen ett par
+// pixlar utanför panelen innan man släpper, registreras click-eventet på
+// overlayen trots att markeringen startade inuti panelen — vilket stängde
+// panelen av misstag mitt i en textmarkering.
+let overlayMouseDownWasOnOverlay = false;
+document.getElementById('overlay').addEventListener('mousedown', e=>{
+  overlayMouseDownWasOnOverlay = (e.target.id === 'overlay');
+});
+document.getElementById('overlay').addEventListener('click', e=>{
+  if(e.target.id==='overlay' && overlayMouseDownWasOnOverlay) closeDrawer();
+  overlayMouseDownWasOnOverlay = false;
+});
 
 /* ---------------- NAV / ROUTER ---------------- */
 let currentPage = 'dashboard';

@@ -3,7 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Breeder Hub — Doginary</title>
+<title>Breeder Hub — Kennelhantering för hunduppfödare | Doginary</title>
+<meta name="description" content="Breeder Hub är ett verktyg för hunduppfödare: hundregister, hälsojournal, parningar, kullar, valpmatchning och köpar-CRM på ett ställe. 14 dagar fritt att testa.">
+<link rel="canonical" href="https://doginary.com/breeder-hub.html">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph / social-förhandsvisningar -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Doginary">
+<meta property="og:title" content="Breeder Hub — Kennelhantering för hunduppfödare">
+<meta property="og:description" content="Hundregister, hälsojournal, parningar, kullar, valpmatchning och köpar-CRM på ett ställe. 14 dagar fritt att testa.">
+<meta property="og:url" content="https://doginary.com/breeder-hub.html">
+<meta property="og:image" content="https://doginary.com/assets/breeder-hub-social.png">
+<meta property="og:locale" content="sv_SE">
+<meta property="og:locale:alternate" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Breeder Hub — Kennelhantering för hunduppfödare">
+<meta name="twitter:description" content="Hundregister, hälsojournal, parningar, kullar, valpmatchning och köpar-CRM på ett ställe. 14 dagar fritt att testa.">
+<meta name="twitter:image" content="https://doginary.com/assets/breeder-hub-social.png">
+
+<meta name="theme-color" content="#22403A">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="manifest" href="manifest.json">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -473,6 +498,35 @@ tbody tr:hover{background:var(--surface-2);}
   .main{margin-left:0;}
 }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Breeder Hub",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "url": "https://doginary.com/breeder-hub.html",
+  "description": "Kennelhanteringsverktyg för hunduppfödare: hundregister, hälsojournal, parningar, kullar, valpmatchning och köpar-CRM.",
+  "offers": {
+    "@type": "Offer",
+    "price": "9.99",
+    "priceCurrency": "USD",
+    "priceSpecification": {
+      "@type": "UnitPriceSpecification",
+      "price": "9.99",
+      "priceCurrency": "USD",
+      "billingIncrement": 1,
+      "unitCode": "MON"
+    }
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Doginary",
+    "url": "https://doginary.com/"
+  },
+  "featureList": ["Hundregister", "Hälsojournal", "Pedigree", "Valpmatchning", "Köpar-CRM", "Kalender"]
+}
+</script>
 </head>
 <body>
 
@@ -545,8 +599,9 @@ tbody tr:hover{background:var(--surface-2);}
 <div id="authGate">
   <div class="auth-card" id="authCard">
     <div class="auth-eyebrow">BREEDER HUB</div>
-    <div class="auth-title" id="authTitle">Logga in</div>
+    <h1 class="auth-title" id="authTitle">Logga in</h1>
     <p class="auth-desc" id="authDesc">Logga in för att komma åt din kennels hundregister, hälsojournal och kalender.</p>
+    <p class="auth-seo-blurb" style="font-size:12px; color:var(--ink-soft); margin:-4px 0 16px; line-height:1.5;">Breeder Hub är Doginarys verktyg för hunduppfödare — samla hundregister, hälsojournal, parningar, kullar, valpmatchning och köpar-CRM på ett ställe.</p>
     <form id="authForm">
       <label>E-post</label><input type="email" name="email" required autocomplete="username">
       <label>Lösenord</label><input type="password" name="password" required autocomplete="current-password" minlength="6">
@@ -582,7 +637,7 @@ tbody tr:hover{background:var(--surface-2);}
 <div id="paywallGate">
   <div class="paywall-card">
     <div class="paywall-eyebrow">BREEDER HUB</div>
-    <h1 class="paywall-title">Breeder Hub</h1>
+    <h2 class="paywall-title">Breeder Hub</h2>
     <p class="paywall-subtitle">Professional kennel management for modern breeders.</p>
 
     <div class="paywall-features">

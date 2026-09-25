@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Våra hundar — Breeder Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#FAF6EF; --surface:#FFFFFF; --surface-2:#F3EEE3;
+  --ink:#1C2420; --ink-soft:#54615B;
+  --pine:#22403A; --pine-deep:#122420; --pine-tint:#E7EFEC;
+  --honey:#C08F45; --honey-deep:#A0762F; --honey-tint:#F5E9D4;
+  --line:#E4DDCC; --line-soft:#EEE8DA;
+  --radius-s:6px; --radius-m:10px; --radius-l:16px;
+  --shadow: 0 1px 2px rgba(28,36,32,.05), 0 8px 24px -12px rgba(28,36,32,.18);
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1A211D; --surface-2:#212823;
+  --ink:#ECE7DA; --ink-soft:#A7B0A9;
+  --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
+  --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
+  --line:#2A322C; --line-soft:#232B26;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121815; --surface:#1A211D; --surface-2:#212823;
+    --ink:#ECE7DA; --ink-soft:#A7B0A9;
+    --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
+    --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
+    --line:#2A322C; --line-soft:#232B26;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+
+.wrap{max-width:1080px; margin:0 auto; padding:0 20px 60px;}
+.hero{
+  background:var(--pine-deep); color:#EDE7D9; padding:44px 20px 40px; margin-bottom:36px;
+}
+.hero-inner{max-width:1080px; margin:0 auto; padding:0 20px; text-align:center;}
+.hero-eyebrow{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:#9FB3A9; margin-bottom:10px;}
+.hero-title{font-family:var(--font-display); font-weight:500; font-style:italic; font-size:clamp(28px,5vw,42px); margin:0;}
+.hero-sub{font-size:13.5px; color:#B7C4BC; margin-top:10px;}
+
+.filter-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:22px;}
+.chip{
+  border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:20px;
+  padding:7px 15px; font-size:12.5px; cursor:pointer; font-family:inherit; font-weight:500;
+}
+.chip.active{background:var(--pine); border-color:var(--pine); color:#fff;}
+
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:18px;}
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-l); overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.card-photo{height:210px; background:var(--pine-tint); position:relative; display:flex; align-items:center; justify-content:center;}
+.card-photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.card-photo svg{width:56px; height:56px; color:var(--pine); opacity:.5;}
+.status-chip{
+  position:absolute; top:12px; right:12px; font-size:10.5px; padding:4px 10px; border-radius:20px; font-weight:600;
+  background:var(--surface); border:1px solid var(--line); letter-spacing:.02em;
+}
+.card-body{padding:16px 18px 18px;}
+.card-name{font-family:var(--font-display); font-size:19px; font-weight:500;}
+.card-meta{font-size:12.5px; color:var(--ink-soft); margin-top:3px;}
+.card-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+.tag{background:var(--surface-2); border-radius:20px; padding:3px 10px; font-size:11px; color:var(--ink-soft);}
+
+.state{text-align:center; padding:80px 20px; color:var(--ink-soft); font-size:14px;}
+.state h2{font-family:var(--font-display); font-weight:500; color:var(--ink); font-size:22px; margin:0 0 8px;}
+
+.footer{text-align:center; font-size:11.5px; color:var(--ink-soft); padding:30px 20px 10px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">KENNEL</div>
+    <h1 class="hero-title" id="kennelTitle">Laddar…</h1>
+    <p class="hero-sub" id="kennelSub"></p>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="content"><div class="state">Laddar hundar…</div></div>
+</div>
+
+<div class="footer">Byggd med Breeder Hub</div>
+
+<script>
+const SUPABASE_URL = 'https://jjbziqsjapyiihdrlnsw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnppcXNqYXB5aWloZHJsbnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2ODkxMTgsImV4cCI6MjEwNDI2NTExOH0.MEzM2wN8eENlVBAsN-I6hhIYFnF53avdFacfbNwCBBw';
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+const PAW_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>';
+
+const STATUS_LABEL = {puppy:'Valp', adult:'Vuxen', retired:'Pensionerad', deceased:'Avliden'};
+const SEX_LABEL = {female:'Tik', male:'Hane'};
+
+function ageFromDob(dob){
+  if(!dob) return '';
+  const d = new Date(dob+'T00:00:00'); const now = new Date();
+  if(isNaN(d)) return '';
+  let months = (now.getFullYear()-d.getFullYear())*12 + (now.getMonth()-d.getMonth());
+  if(months < 1){ const days = Math.round((now-d)/86400000); return days + ' dgr'; }
+  if(months < 24) return months + ' mån';
+  return (months/12).toFixed(1).replace('.0','') + ' år';
+}
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+let allDogs = [];
+let activeFilter = 'all';
+
+function renderDogs(){
+  const content = document.getElementById('content');
+  let list = allDogs.filter(d=> d.status !== 'deceased');
+  if(activeFilter !== 'all') list = list.filter(d=> d.status === activeFilter);
+
+  const filters = ['all','puppy','adult','retired'].filter(f=> f==='all' || allDogs.some(d=>d.status===f));
+  const filterLabels = {all:'Alla', puppy:'Valpar', adult:'Vuxna', retired:'Pensionerade'};
+
+  const filterHtml = filters.length > 1 ? `
+    <div class="filter-row">
+      ${filters.map(f=>`<button class="chip ${activeFilter===f?'active':''}" data-f="${f}">${filterLabels[f]}</button>`).join('')}
+    </div>` : '';
+
+  if(!list.length){
+    content.innerHTML = filterHtml + `<div class="state"><h2>Inga hundar att visa än</h2><p>Kom tillbaka snart.</p></div>`;
+  } else {
+    content.innerHTML = filterHtml + `<div class="grid">
+      ${list.map(d=>`
+        <div class="card">
+          <div class="card-photo">
+            ${d.status && d.status!=='adult' ? `<span class="status-chip">${STATUS_LABEL[d.status]||d.status}</span>` : ''}
+            ${d.photoUrl ? `<img src="${escapeHtml(d.photoUrl)}" alt="${escapeHtml(d.name)}">` : PAW_SVG}
+          </div>
+          <div class="card-body">
+            <div class="card-name">${escapeHtml(d.name||'—')}</div>
+            <div class="card-meta">${escapeHtml(d.breed||'')}${d.breed&&d.sex?' · ':''}${d.sex?(SEX_LABEL[d.sex]||''):''}${(d.breed||d.sex)&&d.dob?' · ':''}${ageFromDob(d.dob)}</div>
+            <div class="card-tags">
+              ${d.color?`<span class="tag">${escapeHtml(d.color)}</span>`:''}
+              ${d.hips?`<span class="tag">HD ${escapeHtml(d.hips)}</span>`:''}
+              ${(d.titles||[]).slice(0,2).map(x=>`<span class="tag">${escapeHtml(x)}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+  content.querySelectorAll('.chip').forEach(b=> b.addEventListener('click', ()=>{ activeFilter = b.dataset.f; renderDogs(); }));
+}
+
+async function init(){
+  const params = new URLSearchParams(window.location.search);
+  const kennelId = params.get('k');
+  const content = document.getElementById('content');
+
+  if(!kennelId || !sb){
+    document.getElementById('kennelTitle').textContent = 'Sidan hittades inte';
+    content.innerHTML = `<div class="state"><h2>Ingen kennel angiven</h2><p>Länken saknar en giltig kennel-id.</p></div>`;
+    return;
+  }
+
+  try{
+    const { data, error } = await sb.from('bh_kennel_public').select('data').eq('kennel_id', kennelId).maybeSingle();
+    if(error) throw error;
+    if(!data || !data.data){
+      document.getElementById('kennelTitle').textContent = 'Sidan hittades inte';
+      content.innerHTML = `<div class="state"><h2>Vi kunde inte hitta den här kenneln</h2><p>Kontrollera att länken stämmer.</p></div>`;
+      return;
+    }
+    const pub = data.data;
+    document.title = (pub.kennelName || 'Kennel') + ' — Våra hundar';
+    document.getElementById('kennelTitle').textContent = pub.kennelName || 'Vår kennel';
+    document.getElementById('kennelSub').textContent = 'Våra hundar';
+    allDogs = pub.dogs || [];
+    renderDogs();
+  }catch(e){
+    console.error(e);
+    document.getElementById('kennelTitle').textContent = 'Något gick fel';
+    content.innerHTML = `<div class="state"><h2>Kunde inte ladda sidan</h2><p>Försök igen om en liten stund.</p></div>`;
+  }
+}
+init();
+</script>
+</body>
+</html>

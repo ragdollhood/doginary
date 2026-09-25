@@ -713,7 +713,7 @@ const I18N = {
     pmCalendarTitle: 'Kalender', pmCalendarSub: 'Alla viktiga datum på ett ställe',
     pmDocumentsTitle: 'Dokument', pmDocumentsSub: 'Kontrakt, intyg och certifikat',
     pmMoreTitle: 'Kennelverktyg', pmMoreSub: 'Löpcykel, lager, journal & mer',
-    pmDashboardSubWelcome: 'Välkommen tillbaka till {name}',
+    pmDashboardSubWelcome: 'Välkommen tillbaka!',
     pmDashboardSubDemo: 'Så här ser Breeder Hub ut — logga in eller skapa konto för din egen kennel',
 
     authTitleSignin: 'Logga in', authTitleSignup: 'Skapa konto',
@@ -764,6 +764,20 @@ const I18N = {
     saveDbFail: 'Kunde inte spara till Supabase',
     loadDbFail: 'Kunde inte läsa kenneldata från Supabase',
     savePublicFail: 'Kunde inte uppdatera den publika sidans data',
+
+    navPublicPage: 'Publik sida',
+    pmPublicTitle: 'Publik sida', pmPublicSub: 'Visa dina hundar på en publik länk',
+    publicPageIntro: 'Alla dina hundar kan visas på en enkel publik sida som vem som helst kan öppna, utan att logga in — perfekt att dela med valpspekulanter eller på sociala medier. Namn, ras, foto och grunddata visas; köpare, dokument och privata anteckningar visas aldrig.',
+    publicPageNeedsAccount: 'Logga in eller skapa ett konto för att få en publik sida för din kennel.',
+    publicPageUrlLabel: 'Din publika länk',
+    copyLink: 'Kopiera länk', openPublicPage: 'Öppna sidan',
+    linkCopied: 'Länken är kopierad',
+    publicPageWhatsShown: 'Vad visas på sidan?',
+    publicPageShownList: 'Kennelnamn, samt för varje hund: foto, namn, ras, kön, ålder, färg, status (valp/vuxen/pensionerad) och eventuella titlar/meriter. Uppdateras automatiskt varje gång du sparar en ändring i Hundregistret.',
+    publicPageDogsCount: '{n} hundar visas just nu på sidan, varav {p} har ett foto.',
+    labelPhoto: 'Foto', choosePhoto: 'Välj foto', removePhoto: 'Ta bort foto',
+    photoHint: 'JPG eller PNG, visas beskuren i en cirkel.',
+    toastPhotoUploadFail: 'Kunde inte ladda upp fotot — sparade en lokal förhandsvisning istället.',
 
     confirmDeleteDogParent: 'Ta bort {name}? Hunden är registrerad som förälder till andra hundar — deras stamtavla kommer visa "Okänd" istället. Detta går inte att ångra.',
     confirmDeleteDog: 'Ta bort {name}? Detta går inte att ångra.',
@@ -857,6 +871,8 @@ const I18N = {
     editKennelNameTitle: 'Ändra kennelnamn', labelKennelName: 'Kennelnamn *', toastKennelNameSaved: 'Kennelnamn sparat',
     newLitterBtn: 'Ny kull', newLitterTitle: 'Ny kull', labelLitterNameRequired: 'Kullnamn *', phLitterName: 't.ex. S-kullen',
     saveLitter: 'Spara kull', toastLitterAdded: 'Kull tillagd',
+    confirmDeletePuppy: 'Ta bort {name} från kullen? Detta går inte att ångra.', toastPuppyRemoved: 'Valp borttagen',
+    confirmDeleteLitter: 'Ta bort kullen "{name}" och alla dess valpar? Detta går inte att ångra.', toastLitterRemoved: 'Kull borttagen',
     litterNeedsDogsHint: 'Tips: lägg till tik och hane under "Hundar" först om de inte finns i listorna ovan.',
     labelPuppyNameRequired: 'Namn *', labelPuppySexRequired: 'Kön *', labelPuppyColor: 'Färg',
     labelPuppyBirthWeight: 'Födelsevikt (kg)', labelPuppyStatus: 'Status', savePuppy: 'Spara valp',
@@ -888,7 +904,7 @@ const I18N = {
 
 
     kennelInventory: 'Kennellager', kennelInventoryHint: 'Foder, tillskott & mediciner',
-    defaultKennelName: 'Min kennel',
+    defaultKennelName: 'Din kennel',
     colItem: 'Artikel', colQty: 'Antal', restock: 'Fyll på', ok: 'OK',
     addItem: 'Lägg till vara', labelItemNameReq: 'Varunamn *', labelQtyReq: 'Antal *',
     adjustStock: 'Justera lager', stockLabel: 'Lager',
@@ -954,7 +970,7 @@ const I18N = {
     pmCalendarTitle: 'Calendar', pmCalendarSub: 'All important dates in one place',
     pmDocumentsTitle: 'Documents', pmDocumentsSub: 'Contracts, certificates and documents',
     pmMoreTitle: 'Kennel tools', pmMoreSub: 'Heat cycle, inventory, journal & more',
-    pmDashboardSubWelcome: 'Welcome back to {name}',
+    pmDashboardSubWelcome: 'Welcome back!',
     pmDashboardSubDemo: "This is what Breeder Hub looks like — log in or create an account for your own kennel",
 
     authTitleSignin: 'Log in', authTitleSignup: 'Create account',
@@ -1005,6 +1021,20 @@ const I18N = {
     saveDbFail: 'Could not save to Supabase',
     loadDbFail: 'Could not read kennel data from Supabase',
     savePublicFail: "Could not update the public page's data",
+
+    navPublicPage: 'Public page',
+    pmPublicTitle: 'Public page', pmPublicSub: 'Show your dogs on a public link',
+    publicPageIntro: 'All your dogs can be shown on a simple public page that anyone can open, without logging in — great for sharing with puppy buyers or on social media. Name, breed, photo and basic details are shown; buyers, documents and private notes are never shown.',
+    publicPageNeedsAccount: 'Log in or create an account to get a public page for your kennel.',
+    publicPageUrlLabel: 'Your public link',
+    copyLink: 'Copy link', openPublicPage: 'Open page',
+    linkCopied: 'Link copied',
+    publicPageWhatsShown: "What's shown on the page?",
+    publicPageShownList: 'Kennel name, plus for each dog: photo, name, breed, sex, age, colour, status (puppy/adult/retired) and any titles. Updates automatically every time you save a change in the Dog register.',
+    publicPageDogsCount: '{n} dogs currently shown on the page, {p} of which have a photo.',
+    labelPhoto: 'Photo', choosePhoto: 'Choose photo', removePhoto: 'Remove photo',
+    photoHint: 'JPG or PNG, shown cropped into a circle.',
+    toastPhotoUploadFail: 'Could not upload the photo — saved a local preview instead.',
 
     confirmDeleteDogParent: 'Remove {name}? This dog is registered as a parent of other dogs — their pedigree will show "Unknown" instead. This cannot be undone.',
     confirmDeleteDog: 'Remove {name}? This cannot be undone.',
@@ -1098,6 +1128,8 @@ const I18N = {
     editKennelNameTitle: 'Change kennel name', labelKennelName: 'Kennel name *', toastKennelNameSaved: 'Kennel name saved',
     newLitterBtn: 'New litter', newLitterTitle: 'New litter', labelLitterNameRequired: 'Litter name *', phLitterName: 'e.g. The S litter',
     saveLitter: 'Save litter', toastLitterAdded: 'Litter added',
+    confirmDeletePuppy: 'Remove {name} from the litter? This cannot be undone.', toastPuppyRemoved: 'Puppy removed',
+    confirmDeleteLitter: 'Delete the litter "{name}" and all its puppies? This cannot be undone.', toastLitterRemoved: 'Litter deleted',
     litterNeedsDogsHint: 'Tip: add the dam and sire under "Dogs" first if they are missing from the lists above.',
     labelPuppyNameRequired: 'Name *', labelPuppySexRequired: 'Sex *', labelPuppyColor: 'Color',
     labelPuppyBirthWeight: 'Birth weight (kg)', labelPuppyStatus: 'Status', savePuppy: 'Save puppy',
@@ -1129,7 +1161,7 @@ const I18N = {
 
 
     kennelInventory: 'Kennel inventory', kennelInventoryHint: 'Food, supplements & medicine',
-    defaultKennelName: 'My kennel',
+    defaultKennelName: 'Your kennel',
     colItem: 'Item', colQty: 'Quantity', restock: 'Restock', ok: 'OK',
     addItem: 'Add item', labelItemNameReq: 'Item name *', labelQtyReq: 'Quantity *',
     adjustStock: 'Adjust stock', stockLabel: 'Stock',
@@ -1241,6 +1273,7 @@ const ICONS = {
   documents:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
   analytics:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>',
   more:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+  publicpage:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.6 3.6 5.8 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.8-3.6-9s1.2-6.4 3.6-9z"/></svg>',
 };
 
 function getNav(){
@@ -1265,6 +1298,7 @@ function getNav(){
     {group:t('navGroupAdmin'), items:[
       {id:'calendar', label:t('navCalendar'), icon:'calendar'},
       {id:'documents', label:t('navDocuments'), icon:'documents'},
+      {id:'publicpage', label:t('navPublicPage'), icon:'publicpage'},
       {id:'more', label:t('navMore'), icon:'more'},
     ]},
   ];
@@ -1819,7 +1853,8 @@ async function savePublicSnapshot(db){
   const publicDogs = (db.dogs||[]).map(d=>({
     id:d.id, name:d.name, regName:d.regName, callName:d.callName, breed:d.breed, sex:d.sex,
     dob:d.dob, color:d.color, reg:d.reg, status:d.status, height:d.height,
-    hips:d.hips, elbows:d.elbows, eyes:d.eyes, dna:d.dna, titles:d.titles, sire:d.sire, dam:d.dam
+    hips:d.hips, elbows:d.elbows, eyes:d.eyes, dna:d.dna, titles:d.titles, sire:d.sire, dam:d.dam,
+    photoUrl:d.photoUrl||''
   }));
   try{
     await sb.from('bh_kennel_public').upsert({
@@ -1970,7 +2005,14 @@ function openDrawer(html){
   document.getElementById('drawer').innerHTML = html;
   document.getElementById('overlay').classList.add('open');
 }
-function closeDrawer(){ document.getElementById('overlay').classList.remove('open'); }
+function closeDrawer(){
+  document.getElementById('overlay').classList.remove('open');
+  // Bakgrundssidan renderades med data som fanns *innan* drawern öppnades.
+  // Om formuläret i drawern ändrade något (ny kull, ändrad valpstatus,
+  // redigerad hund/köpare osv.) måste sidan bakom ritas om, annars ser
+  // man kvarvarande gammal data tills man byter sida och går tillbaka.
+  if(DB && typeof renderPage === 'function' && currentPage) renderPage(currentPage);
+}
 document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') closeDrawer(); });
 
 /* ---------------- NAV / ROUTER ---------------- */
@@ -1989,6 +2031,7 @@ function getPageMeta(){
     calendar:{title:t('pmCalendarTitle'), sub:t('pmCalendarSub')},
     documents:{title:t('pmDocumentsTitle'), sub:t('pmDocumentsSub')},
     more:{title:t('pmMoreTitle'), sub:t('pmMoreSub')},
+    publicpage:{title:t('pmPublicTitle'), sub:t('pmPublicSub')},
   };
 }
 
@@ -2033,7 +2076,8 @@ function renderPage(page){
   content.innerHTML = '';
   const fns = {dashboard:renderDashboard, analytics:renderAnalytics, dogs:renderDogs, health:renderHealth,
     pedigree:renderPedigree, breeding:renderBreeding, litters:renderLitters, matching:renderMatching,
-    buyers:renderBuyers, calendar:renderCalendar, documents:renderDocuments, more:renderMore};
+    buyers:renderBuyers, calendar:renderCalendar, documents:renderDocuments, more:renderMore,
+    publicpage:renderPublicPage};
   fns[page]();
 }
 
@@ -2203,7 +2247,7 @@ function drawDogGrid(){
   grid.innerHTML = list.map(d=>`
     <div class="dog-card" data-id="${d.id}">
       <div class="dog-photo"><span class="status-chip ${d.status}">${statusLabel(d.status)}</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>
+        ${d.photoUrl ? `<img src="${d.photoUrl}" alt="${d.name}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>`}
       </div>
       <div class="dog-body">
         <div class="dog-name">${d.name}</div>
@@ -2220,7 +2264,12 @@ function openDogProfile(id){
   const dogHealth = DB.health.filter(h=>h.dogId===id);
   openDrawer(`
     <div class="drawer-head">
-      <div><div class="drawer-title">${d.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${d.regName}</div></div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:44px; height:44px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--pine-tint); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:17px; color:var(--pine);">
+          ${d.photoUrl ? `<img src="${d.photoUrl}" alt="${d.name}" style="width:100%;height:100%;object-fit:cover;">` : (d.name?d.name[0]:'?')}
+        </div>
+        <div><div class="drawer-title">${d.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${d.regName}</div></div>
+      </div>
       <div style="display:flex; align-items:center; gap:4px;">
         <button class="btn btn-sm" id="editDogBtn">${t('edit')}</button>
         <button class="btn btn-sm btn-danger" id="deleteDogBtn">${t('delete')}</button>
@@ -2306,6 +2355,19 @@ function openDogForm(existing){
     <div class="drawer-head"><div class="drawer-title">${isEdit?t('editDogTitle',{name:d.name}):t('newDogTitle')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="dogForm" class="form-grid">
+        <div class="field full">
+          <label>${t('labelPhoto')}</label>
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div id="dogPhotoPreview" style="width:76px; height:76px; border-radius:50%; overflow:hidden; background:var(--pine-tint); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              ${d.photoUrl ? `<img src="${d.photoUrl}" alt="" style="width:100%; height:100%; object-fit:cover;">` : `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--pine); opacity:.55;"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>`}
+            </div>
+            <div>
+              <label class="btn btn-sm" style="cursor:pointer;">${t('choosePhoto')}<input type="file" id="dogPhotoInput" accept="image/*" style="display:none;"></label>
+              <button type="button" class="btn btn-sm" id="removeDogPhotoBtn" style="margin-left:6px; ${d.photoUrl?'':'display:none;'}">${t('removePhoto')}</button>
+              <div style="font-size:11.5px; color:var(--ink-soft); margin-top:5px;">${t('photoHint')}</div>
+            </div>
+          </div>
+        </div>
         <div class="field"><label>${t('labelNameRequired')}</label><input required name="name" value="${d.name||''}"></div>
         <div class="field"><label>${t('labelRegName')}</label><input name="regName" value="${d.regName||''}"></div>
         <div class="field"><label>${t('labelBreedRequired')}</label><input required name="breed" value="${d.breed||'Golden Retriever'}"></div>
@@ -2347,25 +2409,84 @@ function openDogForm(existing){
       </form>
     </div>
   `);
-  document.getElementById('dogForm').addEventListener('submit', e=>{
+  const newDogId = isEdit ? existing.id : uid('d');
+  let pendingPhoto = null; // File object to upload, or 'remove', or null (no change)
+  document.getElementById('dogPhotoInput').addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    pendingPhoto = file;
+    document.getElementById('removeDogPhotoBtn').style.display = '';
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      document.getElementById('dogPhotoPreview').innerHTML = `<img src="${ev.target.result}" alt="" style="width:100%; height:100%; object-fit:cover;">`;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('removeDogPhotoBtn').addEventListener('click', ()=>{
+    pendingPhoto = 'remove';
+    document.getElementById('dogPhotoInput').value = '';
+    document.getElementById('removeDogPhotoBtn').style.display = 'none';
+    document.getElementById('dogPhotoPreview').innerHTML = `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--pine); opacity:.55;"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>`;
+  });
+  document.getElementById('dogForm').addEventListener('submit', async e=>{
     e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
     const f = new FormData(e.target);
     const titles = (f.get('titles')||'').split(',').map(t=>t.trim()).filter(Boolean);
+    let photoUrl = (isEdit && existing.photoUrl) || '';
+    if(pendingPhoto === 'remove'){
+      photoUrl = '';
+    } else if(pendingPhoto){
+      const uploaded = await uploadDogPhoto(pendingPhoto, newDogId);
+      if(uploaded) photoUrl = uploaded;
+    }
     const patch = {
       name:f.get('name'), regName:f.get('regName')||f.get('name'), callName:f.get('name'),
       breed:f.get('breed'), sex:f.get('sex'), dob:f.get('dob')||new Date().toISOString().slice(0,10), color:f.get('color')||'',
       chip:f.get('chip')||'', reg:f.get('reg')||'', status:f.get('status'), height:Number(f.get('height'))||0,
       sire:f.get('sire')||'', dam:f.get('dam')||'',
       hips:f.get('hips')||'', elbows:f.get('elbows')||'', eyes:f.get('eyes')||'', dna:f.get('dna')||'',
-      titles, notes:f.get('notes')||''
+      titles, notes:f.get('notes')||'', photoUrl
     };
     if(isEdit){
       Object.assign(existing, patch);
       saveDB(); closeDrawer(); openDogProfile(existing.id); toast(t('toastChangesSaved'));
     } else {
-      const dog = Object.assign({id:uid('d'), weightLog:[]}, patch);
+      const dog = Object.assign({id:newDogId, weightLog:[]}, patch);
       DB.dogs.unshift(dog); saveDB(); closeDrawer(); renderDogs(); toast(t('toastDogAdded'));
     }
+    submitBtn.disabled = false;
+  });
+}
+
+// Laddar upp ett hundfoto till Supabase Storage (bucket "dog-photos",
+// mapp per kennel) och returnerar en publik URL. I demo-läge (ingen
+// inloggning/moln) eller om uppladdningen misslyckas faller den
+// tillbaka på en inbäddad data-URL så förhandsvisningen alltid funkar.
+async function uploadDogPhoto(file, dogId){
+  if(!sb || !KENNEL_ID){
+    return await fileToDataUrl(file);
+  }
+  try{
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+    const path = `${KENNEL_ID}/${dogId}-${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from('dog-photos').upload(path, file, { upsert:true, cacheControl:'3600' });
+    if(error) throw error;
+    const { data } = sb.storage.from('dog-photos').getPublicUrl(path);
+    return data.publicUrl;
+  }catch(e){
+    console.error('Dog photo upload failed', e);
+    toast(t('toastPhotoUploadFail'));
+    return await fileToDataUrl(file);
+  }
+}
+function fileToDataUrl(file){
+  return new Promise(resolve=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result);
+    reader.onerror = ()=> resolve(null);
+    reader.readAsDataURL(file);
   });
 }
 
@@ -2399,6 +2520,13 @@ function drawHealthBody(){
   }).join('') || emptyRow(6);
 }
 function openHealthForm(){
+  if(!DB.dogs.length){
+    openDrawer(`
+      <div class="drawer-head"><div class="drawer-title">${t('newHealthRecordTitle')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+      <div class="drawer-body"><p style="font-size:12.5px; color:var(--ink-soft);">${t('noDogsRegisteredYet')}</p></div>
+    `);
+    return;
+  }
   openDrawer(`
     <div class="drawer-head"><div class="drawer-title">${t('newHealthRecordTitle')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
@@ -2505,9 +2633,10 @@ function openBreedingForm(){
   openDrawer(`
     <div class="drawer-head"><div class="drawer-title">${t('newBreedingPlan')}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
+      ${(dams.length===0 || sires.length===0) ? `<p style="font-size:12px; color:var(--ink-soft); margin:0 0 14px;">${t('litterNeedsDogsHint')}</p>` : ''}
       <form id="breedingForm" class="form-grid">
-        <div class="field"><label>${t('labelDamRequired')}</label><select required name="dam">${dams.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
-        <div class="field"><label>${t('labelSireRequired')}</label><select required name="sire">${sires.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div class="field"><label>${t('labelDamRequired')}</label><select required name="dam"><option value="">${t('unknownOption')}</option>${dams.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div class="field"><label>${t('labelSireRequired')}</label><select required name="sire"><option value="">${t('unknownOption')}</option>${sires.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
         <div class="field"><label>${t('matingDateLabel')}</label><input type="date" name="matingDate"></div>
         <div class="field"><label>${t('labelExpectedCount')}</label><input type="number" name="expectedCount"></div>
         <div class="field full"><label>${t('labelNotes')}</label><textarea name="notes"></textarea></div>
@@ -2520,6 +2649,7 @@ function openBreedingForm(){
   `);
   document.getElementById('breedingForm').addEventListener('submit', e=>{
     e.preventDefault(); const f = new FormData(e.target);
+    if(!f.get('dam') || !f.get('sire')) return;
     let due = '';
     if(f.get('matingDate')){ const d = new Date(f.get('matingDate')+'T00:00:00'); d.setDate(d.getDate()+63); due = d.toISOString().slice(0,10); }
     DB.breedings.unshift({id:uid('b'), dam:f.get('dam'), sire:f.get('sire'), matingDate:f.get('matingDate')||'', dueDate:due, confirmed:false, ultrasound:'', expectedCount:Number(f.get('expectedCount'))||0, notes:f.get('notes')||''});
@@ -2596,7 +2726,10 @@ function openLitterDetail(id){
   const dam = dogById(l.dam), sire = dogById(l.sire);
   openDrawer(`
     <div class="drawer-head"><div><div class="drawer-title">${l.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${dam?.name} × ${sire?.name} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div></div>
-      <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+      <div style="display:flex; align-items:center; gap:4px;">
+        <button class="btn btn-sm btn-danger" id="deleteLitterBtn">${t('delete')}</button>
+        <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div></div>
     <div class="drawer-body">
       <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('puppiesLabel')}</h2><button type="button" class="btn btn-sm" id="addPuppyBtn">${t('addPuppyBtn')}</button></div>
       <div class="table-wrap"><table><thead><tr><th>${t('colName')}</th><th>${t('fieldSex')}</th><th>${t('exColColor')}</th><th>${t('colBirthWeight')}</th><th>${t('colStatus')}</th><th>${t('colActions')}</th></tr></thead>
@@ -2607,7 +2740,7 @@ function openLitterDetail(id){
               <option value="reserved" ${p.status==='reserved'?'selected':''}>${t('puppyReserved')}</option>
               <option value="sold" ${p.status==='sold'?'selected':''}>${t('puppySold')}</option>
             </select></td>
-            <td><button type="button" class="link-btn edit-puppy-btn" data-id="${p.id}">${t('edit')}</button></td>
+            <td style="white-space:nowrap;"><button type="button" class="link-btn edit-puppy-btn" data-id="${p.id}">${t('edit')}</button> · <button type="button" class="link-btn delete-puppy-btn" data-id="${p.id}" style="color:var(--danger);">${t('delete')}</button></td>
           </tr>`).join('') || `<tr><td colspan="6" style="color:var(--ink-soft);">${t('noAvailablePuppies')}</td></tr>`}</tbody>
       </table></div>
       <div class="section-head"><h2 style="font-size:15px;">${t('milestonesLabel')}</h2></div>
@@ -2640,7 +2773,21 @@ function openLitterDetail(id){
       openPuppyForm(id, p);
     });
   });
+  document.querySelectorAll('.delete-puppy-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const p = l.puppies.find(x=>x.id===btn.dataset.id);
+      if(!p) return;
+      if(!confirm(t('confirmDeletePuppy',{name:p.name}))) return;
+      l.puppies = l.puppies.filter(x=>x.id!==p.id);
+      saveDB(); toast(t('toastPuppyRemoved')); openLitterDetail(id);
+    });
+  });
   document.getElementById('addPuppyBtn')?.addEventListener('click', ()=> openPuppyForm(id));
+  document.getElementById('deleteLitterBtn').addEventListener('click', ()=>{
+    if(!confirm(t('confirmDeleteLitter',{name:l.name}))) return;
+    DB.litters = DB.litters.filter(x=>x.id!==id);
+    saveDB(); closeDrawer(); toast(t('toastLitterRemoved'));
+  });
 }
 function puppyStatusBadge(s){
   const map = {available:'ok',reserved:'warn',sold:'muted'};
@@ -2917,6 +3064,47 @@ function drawDocBody(){
   document.getElementById('docBody').innerHTML = DB.documents.map(d=>`
     <tr><td>${d.name}</td><td><span class="tag">${d.type}</span></td><td>${fmtDate(d.date)}</td><td style="color:var(--ink-soft);">${d.relatedTo}</td></tr>
   `).join('') || emptyRow(4);
+}
+
+/* ---- PUBLIK SIDA ---- */
+function publicPageUrl(){
+  if(!KENNEL_ID) return '';
+  return new URL('public.html?k=' + encodeURIComponent(KENNEL_ID), window.location.href).toString();
+}
+function renderPublicPage(){
+  const url = publicPageUrl();
+  const visibleDogs = DB.dogs.length;
+  const withPhoto = DB.dogs.filter(d=>d.photoUrl).length;
+  content.innerHTML = `
+    <div style="max-width:640px;">
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 20px;">${t('publicPageIntro')}</p>
+      ${!KENNEL_ID ? `
+        <div class="empty">${t('publicPageNeedsAccount')}</div>
+      ` : `
+        <div class="field" style="margin-bottom:18px;">
+          <label>${t('publicPageUrlLabel')}</label>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <input readonly id="publicPageUrlInput" value="${url}" style="flex:1; min-width:220px;">
+            <button class="btn btn-primary btn-sm" id="copyPublicLinkBtn">${t('copyLink')}</button>
+            <a class="btn btn-sm" href="${url}" target="_blank" rel="noopener">${t('openPublicPage')}</a>
+          </div>
+        </div>
+        <div class="section-head" style="margin-top:26px;"><h2 style="font-size:15px;">${t('publicPageWhatsShown')}</h2></div>
+        <p style="font-size:13px; color:var(--ink-soft); line-height:1.6;">${t('publicPageShownList')}</p>
+        <p style="font-size:12.5px; color:var(--ink-soft); margin-top:14px;">${t('publicPageDogsCount', {n:visibleDogs, p:withPhoto})}</p>
+      `}
+    </div>
+  `;
+  document.getElementById('copyPublicLinkBtn')?.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText(url);
+      toast(t('linkCopied'));
+    }catch(e){
+      document.getElementById('publicPageUrlInput').select();
+      document.execCommand('copy');
+      toast(t('linkCopied'));
+    }
+  });
 }
 
 /* ---- MER (KENNELVERKTYG) ---- */

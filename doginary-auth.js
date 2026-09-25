@@ -424,19 +424,31 @@
     }
   }
 
+  // Slår ihop trial-raden (doginary_subscriptions.trial_ends_at) med den
+  // delade betalstatusen (breeder_subscriptions.active — se kommentaren
+  // vid getBreederActive() i doginary-supabase.js) till ett enda objekt
+  // som hasAccess()/isTrialActive() kan läsa som vanligt.
   function checkAccess() {
     if (!global.DoginaryBilling || !currentSession) {
       hidePaywall();
       return;
     }
     var userId = currentSession.user.id;
-    global.DoginaryBilling.getSubscriptionStatus(userId).then(function (sub) {
-      if (sub) return evaluateAccess(sub);
+
+    global.DoginaryBilling.getSubscriptionStatus(userId).then(function (trialRow) {
       // Ingen rad än — troligen ett konto som just skapats (eller ett
       // äldre konto från innan provperiods-funktionen infördes). Starta
-      // trialen (idempotent, servern sätter trial_ends_at) och evaluera
-      // sedan på riktigt.
-      return global.DoginaryBilling.startTrial().then(evaluateAccess);
+      // trialen (idempotent, servern sätter trial_ends_at) innan vi går
+      // vidare.
+      if (trialRow) return trialRow;
+      return global.DoginaryBilling.startTrial();
+    }).then(function (trialRow) {
+      return global.DoginaryBilling.getBreederActive(userId).then(function (paidActive) {
+        evaluateAccess({
+          trial_ends_at: trialRow ? trialRow.trial_ends_at : null,
+          active: paidActive
+        });
+      });
     }).catch(function (err) {
       console.error('Doginary: kunde inte läsa prenumerationsstatus', err);
       showPaywall(); // fail closed, se kommentar ovanför funktionerna

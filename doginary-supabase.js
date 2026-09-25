@@ -350,19 +350,28 @@
 
   // ---------- Prenumeration / 14 dagars provperiod ----------
   //
-  // Kräver att doginary-subscriptions-schema.sql körts (skapar tabellen
-  // `doginary_subscriptions` + RLS) och att Edge Functions
-  // doginary-start-trial / create-doginary-checkout / create-doginary-portal
-  // / doginary-stripe-webhook är deployade, se kommentarerna i varje
-  // funktionsfil. Läsning av statusen (getSubscriptionStatus) går direkt
-  // mot tabellen och funkar tack vare RLS-policyn som låter en användare
-  // läsa sin egen rad; att STARTA en trial eller öppna Checkout/Portal
-  // går alltid via Edge Functions eftersom det kräver service-role-
-  // rättigheter (raden går inte att skriva till direkt från klienten).
+  // Doginary har sin EGEN trial (tabellen `doginary_subscriptions`,
+  // kolumnen trial_ends_at, satt av Edge Function doginary-start-trial)
+  // men delar själva betalningen med Breeder Hub — samma Stripe-pris,
+  // samma Checkout/Portal-funktioner (create-breeder-checkout /
+  // create-breeder-portal) och samma tabell för betalstatus
+  // (breeder_subscriptions.active, satt av stripe-webhook). Se
+  // getBreederActive() nedan och checkAccess() i doginary-auth.js för
+  // hur de två slås ihop. Läsning av statusen går direkt mot tabellerna
+  // och funkar tack vare RLS-policyer som låter en användare läsa sin
+  // egen rad; att STARTA en trial eller öppna Checkout/Portal går
+  // alltid via Edge Functions eftersom det kräver service-role-
+  // rättigheter (raderna går inte att skriva till direkt från klienten).
 
   // Returnerar raden ur doginary_subscriptions för den inloggade
   // användaren, eller null om den inte finns än (t.ex. innan
   // startTrial() hunnit köras en första gång).
+  //
+  // OBS: den här raden används numera BARA för trial_ends_at (de 14
+  // dagarnas provperiod). Själva betalningen delas med Breeder Hub, se
+  // getBreederActive() nedan — doginary_subscriptions.active sätts
+  // aldrig av någon Edge Function och ska INTE användas för att avgöra
+  // om användaren betalat.
   function getSubscriptionStatus(userId) {
     return client
       .from('doginary_subscriptions')
@@ -372,6 +381,26 @@
       .then(function (res) {
         if (res.error) throw res.error;
         return res.data || null;
+      });
+  }
+
+  // Doginary och Breeder Hub delar samma Stripe-pris och samma
+  // Checkout/Portal-funktioner (create-breeder-checkout /
+  // create-breeder-portal, se startCheckout/startPortal nedan) — en
+  // betald prenumeration låser alltså upp BÅDA produkterna. Statusen
+  // för det skrivs av stripe-webhook till breeder_subscriptions.active,
+  // så det är den tabellen vi måste läsa för att veta om Doginary-
+  // användaren har betalat (doginary_subscriptions har ingen
+  // motsvarande rad — bara trial_ends_at).
+  function getBreederActive(userId) {
+    return client
+      .from('breeder_subscriptions')
+      .select('active')
+      .eq('user_id', userId)
+      .maybeSingle()
+      .then(function (res) {
+        if (res.error) throw res.error;
+        return !!(res.data && res.data.active === true);
       });
   }
 
@@ -391,7 +420,7 @@
   // till efter (avbruten eller lyckad) betalning — normalt bara
   // window.location.href för sidan där knappen klickades.
   function startCheckout(returnUrl) {
-    return client.functions.invoke('create-doginary-checkout', {
+    return client.functions.invoke('create-breeder-checkout', {
       method: 'POST',
       body: { returnUrl: returnUrl }
     }).then(function (res) {
@@ -403,7 +432,7 @@
   // Öppnar Stripe Customer Portal (för att uppdatera kort, se kvitton,
   // säga upp sig) och returnerar { url }.
   function startPortal(returnUrl) {
-    return client.functions.invoke('create-doginary-portal', {
+    return client.functions.invoke('create-breeder-portal', {
       method: 'POST',
       body: { returnUrl: returnUrl }
     }).then(function (res) {
@@ -424,6 +453,7 @@
 
   global.DoginaryBilling = {
     getSubscriptionStatus: getSubscriptionStatus,
+    getBreederActive: getBreederActive,
     startTrial: startTrial,
     startCheckout: startCheckout,
     startPortal: startPortal

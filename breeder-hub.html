@@ -871,11 +871,11 @@ const I18N = {
     linkCopied: 'Länken är kopierad',
     publicPageWhatsShown: 'Vad visas publikt — och vad är privat?',
     publicPageShownLabel: 'Visas publikt (synligt för alla, ingen inloggning krävs)',
-    publicPageShownList: 'Kennelnamn, den kontaktuppgift du själv väljer att fylla i nedan, samt för varje hund: foto, namn, ras, kön, ålder (beräknad från födelsedatum — inget exakt datum visas), färg, mankhöjd, vikt (senaste vägningen), HD-resultat och upp till två meriter/titlar. Status visas som en liten etikett för valpar och pensionerade hundar (avlidna hundar visas aldrig på sidan). Uppdateras automatiskt varje gång du sparar en ändring i Hundregistret. Besökare kan själva välja språk och måttenhet (metriskt/imperialt) på sidan.',
+    publicPageShownList: 'Kennelnamn, den kontaktuppgift du själv väljer att fylla i nedan, samt för varje hund: foto, namn, ras, kön, ålder (beräknad från födelsedatum — inget exakt datum visas), färg, mankhöjd, vikt (senaste vägningen), HD-resultat och upp till två meriter/titlar. Status visas som en liten etikett för valpar och pensionerade hundar (avlidna hundar visas aldrig på sidan). Dina kullar under "Kullar" visas också: kullnamn, ras, föräldradjur, födelsedatum samt varje valps namn, kön, färg och status (tillgänglig/reserverad/såld). Uppdateras automatiskt varje gång du sparar en ändring i Hundregistret eller Kullar. Besökare kan själva välja språk och måttenhet (metriskt/imperialt) på sidan.',
     publicPagePartialLabel: 'Sparas i den publika datan, men visas inte i sidans nuvarande utseende',
     publicPagePartialList: 'Registreringsnummer, kennelnamn/pedigrenamn, armbågs- (AD) och ögonresultat, DNA-testresultat, samt vilka hundar som är far/mor till varandra. Den här informationen skickas med till den publika sidans data (går alltså tekniskt att hämta av den som vet var man ska leta), men syns inte för besökare i sidans nuvarande design.',
     publicPageHiddenLabel: 'Visas aldrig (stannar privat i din kennel)',
-    publicPageHiddenList: 'Köpare/valpspekulanter, dokument, kenneljournal, lager, akutkontakter, dina privata anteckningar om hundarna, parningsplaner samt kullar/valpar under "Kullar". Trots att sidtexten där antyder motsatsen skickas valpar i nuläget inte till den publika sidan — vill du visa dem där behöver du lägga till dem som egna hundar med status "Valp" i Hundregistret istället. Det här lämnar annars aldrig ditt konto.',
+    publicPageHiddenList: 'Köpare/valpspekulanter, dokument, kenneljournal, lager, akutkontakter, dina privata anteckningar om hundarna, parningsplaner samt valparnas temperamentsbedömningar och födelsevikt under "Kullar". Det här lämnar aldrig ditt konto.',
     publicPageDogsCount: '{n} hundar visas just nu på sidan, varav {p} har ett foto.',
     dogsPublicMirrorNote: 'Det som visas här speglar automatiskt din publika kennelsida: namn, ras, kön, ålder, färg, mankhöjd, vikt, HD-resultat, foto, status samt de två första meriterna för varje hund — plus pris om du aktiverat det under "Publik sida". Registreringsnummer, AD/ögon/DNA-resultat och föräldradjur sparas också i den publika datan men visas inte i sidans nuvarande utformning. Allt annat (hälsojournal, anteckningar, parningsplaner, kunder, dokument m.m.) är privat och lämnar aldrig ditt konto.',
     flagPublic: 'Publikt', flagPartial: 'Publikt (visas ej)', flagPrivate: 'Privat',
@@ -887,7 +887,7 @@ const I18N = {
     healthTabPrivateNote: 'Hälsojournalen (vaccinationer, veterinärbesök, tester) är privat och skickas aldrig till din publika sida — bara HD/AD/ögon/DNA-fälten på hundens infoflik hanteras separat (se dess egna markeringar).',
     pedigreePrivateNote: 'Stamtavlan här är privat. HD-resultat och första meriten per hund som visas i träden syns även på din publika sida (kopplat till respektive hund), men själva släktträdet/relationerna visas inte där.',
     breedingPrivateNote: 'Parningsplaner, dräktighetskalkylatorn och löptidsöversikten är privata och visas aldrig på din publika sida.',
-    littersGapNote: 'Kullar och valpar skickas i nuläget inte till din publika sida, trots att texten i appen kan ge intryck av motsatsen. Vill du visa en valp för försäljning på den publika sidan behöver du lägga till den som en egen hund med status "Valp" under Hundregistret istället.',
+    littersGapNote: 'Kullnamn, ras, föräldradjur, födelsedatum samt varje valps namn, kön, färg och status (tillgänglig/reserverad/såld) visas på din publika sida. Temperamentsbedömningar och födelsevikt är privata.',
     matchingPrivateNote: 'Valpmatchningen är privat — kopplingar mellan valpar och köpare visas aldrig på din publika sida.',
     buyersPrivateNote: 'Köpare/valpspekulanter (CRM) är privat kunddata och visas aldrig på din publika sida.',
     documentsPrivateNote: 'Dokument är privata filer och visas aldrig på din publika sida.',
@@ -1180,11 +1180,11 @@ const I18N = {
     linkCopied: 'Link copied',
     publicPageWhatsShown: "What's public — and what's private?",
     publicPageShownLabel: 'Shown publicly (visible to anyone, no login needed)',
-    publicPageShownList: 'Kennel name, the contact info you choose to fill in below, and for each dog: photo, name, breed, sex, age (calculated from the birth date — no exact date is shown), colour, height, weight (most recent weigh-in), HD result, and up to two titles. Status shows as a small label for puppies and retired dogs (deceased dogs are never shown on the page). Updates automatically every time you save a change in the Dog register. Visitors can choose their own language and unit system (metric/imperial) on the page.',
+    publicPageShownList: 'Kennel name, the contact info you choose to fill in below, and for each dog: photo, name, breed, sex, age (calculated from the birth date — no exact date is shown), colour, height, weight (most recent weigh-in), HD result, and up to two titles. Status shows as a small label for puppies and retired dogs (deceased dogs are never shown on the page). Your litters under "Litters" are also shown: litter name, breed, parent dogs, birth date, and each puppy\'s name, sex, colour and status (available/reserved/sold). Updates automatically every time you save a change in the Dog register or Litters. Visitors can choose their own language and unit system (metric/imperial) on the page.',
     publicPagePartialLabel: 'Saved in the public data, but not shown in the page\'s current design',
     publicPagePartialList: 'Registration number, kennel/pedigree name, elbow (AD) and eye results, DNA test results, and which dogs are each other\'s sire/dam. This information is included in the public page\'s data (so it\'s technically retrievable by anyone who knows where to look), but isn\'t displayed to visitors in the page\'s current design.',
     publicPageHiddenLabel: 'Never shown (stays private in your kennel)',
-    publicPageHiddenList: 'Buyers/prospects, documents, kennel journal, inventory, emergency contacts, your private notes on the dogs, mating plans, and litters/puppies under "Litters". Even though the text there suggests otherwise, puppies are not currently sent to the public page — to show one for sale there, add it as its own dog with status "Puppy" in the Dog register instead. Everything else here never leaves your account.',
+    publicPageHiddenList: 'Buyers/prospects, documents, kennel journal, inventory, emergency contacts, your private notes on the dogs, mating plans, and the puppies\' temperament assessments and birth weight under "Litters". This never leaves your account.',
     publicPageDogsCount: '{n} dogs currently shown on the page, {p} of which have a photo.',
     dogsPublicMirrorNote: 'What\'s shown here automatically mirrors your public kennel page: name, breed, sex, age, colour, height, weight, HD result, photo, status, and the first two titles for each dog — plus price if you\'ve turned that on under "Public page". Registration number, AD/eye/DNA results and parent dogs are also stored in the public data but aren\'t displayed in the page\'s current design. Everything else (health records, notes, mating plans, customers, documents etc.) is private and never leaves your account.',
     flagPublic: 'Public', flagPartial: 'Public (not shown)', flagPrivate: 'Private',
@@ -1196,7 +1196,7 @@ const I18N = {
     healthTabPrivateNote: 'The health record (vaccinations, vet visits, tests) is private and never sent to your public page — the HD/AD/eye/DNA fields on the dog\'s info tab are handled separately (see their own flags).',
     pedigreePrivateNote: 'The pedigree tree here is private. The HD result and top title per dog shown in the tree also appear on your public page (tied to that dog), but the family tree/relationships themselves aren\'t shown there.',
     breedingPrivateNote: 'Mating plans, the due-date calculator, and heat tracking are private and never shown on your public page.',
-    littersGapNote: 'Litters and puppies are not currently sent to your public page, even though the app\'s text can suggest otherwise. To show a puppy for sale on the public page, add it as its own dog with status "Puppy" in the Dog register instead.',
+    littersGapNote: 'Litter name, breed, parent dogs, birth date, and each puppy\'s name, sex, colour and status (available/reserved/sold) are shown on your public page. Temperament assessments and birth weight are private.',
     matchingPrivateNote: 'Puppy matching is private — links between puppies and buyers are never shown on your public page.',
     buyersPrivateNote: 'Buyers/prospects (CRM) are private customer data and are never shown on your public page.',
     documentsPrivateNote: 'Documents are private files and are never shown on your public page.',
@@ -1926,9 +1926,22 @@ async function savePublicSnapshot(db){
     photoUrl:d.photoUrl||'',
     price:(db.showPriceOnPublic && d.price) ? d.price : null
   }));
+  const publicLitters = (db.litters||[]).map(l=>{
+    const dam = (db.dogs||[]).find(d=>d.id===l.dam);
+    const sire = (db.dogs||[]).find(d=>d.id===l.sire);
+    return {
+      id:l.id, name:l.name, breed:(dam && dam.breed) || (sire && sire.breed) || '',
+      damName: dam ? dam.name : '', sireName: sire ? sire.name : '',
+      birthDate: l.birthDate,
+      puppies:(l.puppies||[]).map(p=>({
+        id:p.id, name:p.name, sex:p.sex, color:p.color, status:p.status
+      }))
+    };
+  });
   const publicData = {
     kennelName: db.kennelName,
     dogs: publicDogs,
+    litters: publicLitters,
     units: db.units || 'metric',
     currency: db.currency || 'SEK',
     lang: (db.publicLang === 'en' ? 'en' : 'sv'),
@@ -2787,7 +2800,7 @@ function openBreedingForm(){
 /* ---- LITTERS ---- */
 function renderLitters(){
   content.innerHTML = `
-    <div class="pub-note is-partial">${t('littersGapNote')}</div>
+    <div class="pub-note is-public">${t('littersGapNote')}</div>
     <div class="filter-row">
       <span style="flex:1"></span>
       <button class="btn btn-primary" id="addLitterBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newLitterBtn')}</button>
@@ -2859,7 +2872,7 @@ function openLitterDetail(id){
         <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div></div>
     <div class="drawer-body">
-      <div class="pub-note is-partial">${t('littersGapNote')}</div>
+      <div class="pub-note is-public">${t('littersGapNote')}</div>
       <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('puppiesLabel')}</h2><button type="button" class="btn btn-sm" id="addPuppyBtn">${t('addPuppyBtn')}</button></div>
       <div class="table-wrap"><table><thead><tr><th>${t('colName')}</th><th>${t('fieldSex')}</th><th>${t('exColColor')}</th><th>${t('colBirthWeight')}</th><th>${t('colStatus')}</th><th>${t('colActions')}</th></tr></thead>
         <tbody>${l.puppies.map(p=>`<tr>

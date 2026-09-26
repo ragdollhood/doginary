@@ -221,6 +221,9 @@ a{color:inherit;}
 .status-chip.adult{background:var(--ok-tint); color:var(--ok); border-color:transparent;}
 .status-chip.retired{background:var(--surface-2); color:var(--ink-soft); border-color:transparent;}
 .status-chip.deceased{background:var(--line-soft); color:var(--ink-soft); border-color:transparent;}
+.status-chip.available{background:var(--ok-tint); color:var(--ok); border-color:transparent;}
+.status-chip.reserved{background:var(--honey-tint); color:var(--honey-deep); border-color:transparent;}
+.status-chip.sold{background:var(--surface-2); color:var(--ink-soft); border-color:transparent;}
 .dog-body{padding:13px 15px 15px;}
 .dog-name{font-family:var(--font-display); font-size:16.5px; font-weight:500;}
 .dog-meta{font-size:12px; color:var(--ink-soft); margin-top:3px;}
@@ -871,7 +874,7 @@ const I18N = {
     linkCopied: 'Länken är kopierad',
     publicPageWhatsShown: 'Vad visas publikt — och vad är privat?',
     publicPageShownLabel: 'Visas publikt (synligt för alla, ingen inloggning krävs)',
-    publicPageShownList: 'Kennelnamn, den kontaktuppgift du själv väljer att fylla i nedan, samt för varje hund: foto, namn, ras, kön, ålder (beräknad från födelsedatum — inget exakt datum visas), färg, mankhöjd, vikt (senaste vägningen), HD-resultat och upp till två meriter/titlar. Status visas som en liten etikett för valpar och pensionerade hundar (avlidna hundar visas aldrig på sidan). Dina kullar under "Kullar" visas också: kullnamn, ras, föräldradjur, födelsedatum samt varje valps namn, kön, färg och status (tillgänglig/reserverad/såld). Uppdateras automatiskt varje gång du sparar en ändring i Hundregistret eller Kullar. Besökare kan själva välja språk och måttenhet (metriskt/imperialt) på sidan.',
+    publicPageShownList: 'Kennelnamn, den kontaktuppgift du själv väljer att fylla i nedan, samt för varje hund: foto, namn, ras, kön, ålder (beräknad från födelsedatum — inget exakt datum visas), färg, mankhöjd, vikt (senaste vägningen), HD-resultat och upp till två meriter/titlar. Status visas som en liten etikett för valpar och pensionerade hundar (avlidna hundar visas aldrig på sidan). Dina kullar under "Kullar" visas också: kullnamn, ras, föräldradjur, födelsedatum samt varje valps foto, namn, kön, färg och status (tillgänglig/reserverad/såld). Uppdateras automatiskt varje gång du sparar en ändring i Hundregistret eller Kullar. Besökare kan själva välja språk och måttenhet (metriskt/imperialt) på sidan.',
     publicPagePartialLabel: 'Sparas i den publika datan, men visas inte i sidans nuvarande utseende',
     publicPagePartialList: 'Registreringsnummer, kennelnamn/pedigrenamn, armbågs- (AD) och ögonresultat, DNA-testresultat, samt vilka hundar som är far/mor till varandra. Den här informationen skickas med till den publika sidans data (går alltså tekniskt att hämta av den som vet var man ska leta), men syns inte för besökare i sidans nuvarande design.',
     publicPageHiddenLabel: 'Visas aldrig (stannar privat i din kennel)',
@@ -994,6 +997,8 @@ const I18N = {
 
     puppiesUnit: 'valpar', malesUnit: 'hanar', femalesUnit: 'tikar', bornOn: 'Född {date}',
     noLittersYet: 'Inga kullar registrerade än.',
+    littersPageHint: 'Kullar och valpar hanteras här, separat från Hundregistret — en valp behöver oftast bara vara här en kort tid tills den säljs. Behåller du en valp själv eller vill ge den en permanent profil med hälsojournal och stamtavla? Lägg då till den som en egen hund i Hundregistret istället (den lämnar då Kullar).',
+    noPuppiesInLitter: 'Inga valpar tillagda ännu.',
     puppiesLabel: 'Valpar', colBirthWeight: 'Födelsevikt', milestonesLabel: 'Milstolpar',
     colName: 'Namn',
     puppyAvailable: 'Tillgänglig', puppyReserved: 'Reserverad', puppySold: 'Såld',
@@ -1180,7 +1185,7 @@ const I18N = {
     linkCopied: 'Link copied',
     publicPageWhatsShown: "What's public — and what's private?",
     publicPageShownLabel: 'Shown publicly (visible to anyone, no login needed)',
-    publicPageShownList: 'Kennel name, the contact info you choose to fill in below, and for each dog: photo, name, breed, sex, age (calculated from the birth date — no exact date is shown), colour, height, weight (most recent weigh-in), HD result, and up to two titles. Status shows as a small label for puppies and retired dogs (deceased dogs are never shown on the page). Your litters under "Litters" are also shown: litter name, breed, parent dogs, birth date, and each puppy\'s name, sex, colour and status (available/reserved/sold). Updates automatically every time you save a change in the Dog register or Litters. Visitors can choose their own language and unit system (metric/imperial) on the page.',
+    publicPageShownList: 'Kennel name, the contact info you choose to fill in below, and for each dog: photo, name, breed, sex, age (calculated from the birth date — no exact date is shown), colour, height, weight (most recent weigh-in), HD result, and up to two titles. Status shows as a small label for puppies and retired dogs (deceased dogs are never shown on the page). Your litters under "Litters" are also shown: litter name, breed, parent dogs, birth date, and each puppy\'s photo, name, sex, colour and status (available/reserved/sold). Updates automatically every time you save a change in the Dog register or Litters. Visitors can choose their own language and unit system (metric/imperial) on the page.',
     publicPagePartialLabel: 'Saved in the public data, but not shown in the page\'s current design',
     publicPagePartialList: 'Registration number, kennel/pedigree name, elbow (AD) and eye results, DNA test results, and which dogs are each other\'s sire/dam. This information is included in the public page\'s data (so it\'s technically retrievable by anyone who knows where to look), but isn\'t displayed to visitors in the page\'s current design.',
     publicPageHiddenLabel: 'Never shown (stays private in your kennel)',
@@ -1303,6 +1308,8 @@ const I18N = {
 
     puppiesUnit: 'puppies', malesUnit: 'males', femalesUnit: 'females', bornOn: 'Born {date}',
     noLittersYet: 'No litters registered yet.',
+    littersPageHint: 'Litters and puppies are managed here, separately from the Dog register — a puppy usually only needs to stay here briefly until it\'s sold. Keeping a puppy yourself, or want to give it a permanent profile with health records and a pedigree? Add it as its own dog in the Dog register instead (it then leaves Litters).',
+    noPuppiesInLitter: 'No puppies added yet.',
     puppiesLabel: 'Puppies', colBirthWeight: 'Birth weight', milestonesLabel: 'Milestones',
     colName: 'Name',
     puppyAvailable: 'Available', puppyReserved: 'Reserved', puppySold: 'Sold',
@@ -1717,10 +1724,10 @@ function seedSv(){
   ];
   const litters = [
     {id:'l1', name:'S-kullen', breedingId:'b1', dam:'d1', sire:'d2', birthDate:'2025-05-14', puppies:[
-        {id:'p1', name:'Freja', sex:'female', color:'Gyllene', birthWeight:0.42, status:'reserved'},
-        {id:'p2', name:'Sigge', sex:'male', color:'Gyllene', birthWeight:0.48, status:'available'},
-        {id:'p3', name:'Saga', sex:'female', color:'Ljust gyllene', birthWeight:0.39, status:'sold'},
-        {id:'p4', name:'Simba', sex:'male', color:'Mörkt gyllene', birthWeight:0.51, status:'available'},
+        {id:'p1', name:'Freja', sex:'female', color:'Gyllene', birthWeight:0.42, status:'reserved', photoUrl:'https://place.dog/500/500?id=201'},
+        {id:'p2', name:'Sigge', sex:'male', color:'Gyllene', birthWeight:0.48, status:'available', photoUrl:'https://place.dog/500/500?id=202'},
+        {id:'p3', name:'Saga', sex:'female', color:'Ljust gyllene', birthWeight:0.39, status:'sold', photoUrl:'https://place.dog/500/500?id=203'},
+        {id:'p4', name:'Simba', sex:'male', color:'Mörkt gyllene', birthWeight:0.51, status:'available', photoUrl:'https://place.dog/500/500?id=204'},
         {id:'p5', name:'Sally', sex:'female', color:'Gyllene', birthWeight:0.44, status:'reserved'},
       ],
       milestones:[
@@ -1812,10 +1819,10 @@ function seedEn(){
   ];
   const litters = [
     {id:'l1', name:'The S-litter', breedingId:'b1', dam:'d1', sire:'d2', birthDate:'2025-05-14', puppies:[
-        {id:'p1', name:'Freja', sex:'female', color:'Golden', birthWeight:0.42, status:'reserved'},
-        {id:'p2', name:'Sigge', sex:'male', color:'Golden', birthWeight:0.48, status:'available'},
-        {id:'p3', name:'Saga', sex:'female', color:'Light golden', birthWeight:0.39, status:'sold'},
-        {id:'p4', name:'Simba', sex:'male', color:'Dark golden', birthWeight:0.51, status:'available'},
+        {id:'p1', name:'Freja', sex:'female', color:'Golden', birthWeight:0.42, status:'reserved', photoUrl:'https://place.dog/500/500?id=201'},
+        {id:'p2', name:'Sigge', sex:'male', color:'Golden', birthWeight:0.48, status:'available', photoUrl:'https://place.dog/500/500?id=202'},
+        {id:'p3', name:'Saga', sex:'female', color:'Light golden', birthWeight:0.39, status:'sold', photoUrl:'https://place.dog/500/500?id=203'},
+        {id:'p4', name:'Simba', sex:'male', color:'Dark golden', birthWeight:0.51, status:'available', photoUrl:'https://place.dog/500/500?id=204'},
         {id:'p5', name:'Sally', sex:'female', color:'Golden', birthWeight:0.44, status:'reserved'},
       ],
       milestones:[
@@ -1934,7 +1941,7 @@ async function savePublicSnapshot(db){
       damName: dam ? dam.name : '', sireName: sire ? sire.name : '',
       birthDate: l.birthDate,
       puppies:(l.puppies||[]).map(p=>({
-        id:p.id, name:p.name, sex:p.sex, color:p.color, status:p.status
+        id:p.id, name:p.name, sex:p.sex, color:p.color, status:p.status, photoUrl:p.photoUrl||''
       }))
     };
   });
@@ -2800,6 +2807,7 @@ function openBreedingForm(){
 /* ---- LITTERS ---- */
 function renderLitters(){
   content.innerHTML = `
+    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 16px; max-width:640px;">${t('littersPageHint')}</p>
     <div class="pub-note is-public">${t('littersGapNote')}</div>
     <div class="filter-row">
       <span style="flex:1"></span>
@@ -2808,14 +2816,20 @@ function renderLitters(){
     <div class="grid-cards">
       ${DB.litters.map(l=>{
         const dam = dogById(l.dam), sire = dogById(l.sire);
-        return `<div class="card litter-card" data-id="${l.id}" style="cursor:pointer;">
-          <div class="card-pad">
-            <div style="font-family:var(--font-display); font-size:17px; font-weight:500;">${l.name}</div>
-            <div style="font-size:12.5px; color:var(--ink-soft); margin-top:2px;">${dam?.name || '?'} × ${sire?.name || '?'} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div>
-            <div style="display:flex; gap:14px; margin-top:12px; font-size:12.5px;">
-              <div><strong>${l.puppies.length}</strong> ${t('puppiesUnit')}</div>
-              <div><strong>${l.puppies.filter(p=>p.sex==='male').length}</strong> ${t('malesUnit')}</div>
-              <div><strong>${l.puppies.filter(p=>p.sex==='female').length}</strong> ${t('femalesUnit')}</div>
+        const coverPhoto = (l.puppies.find(p=>p.photoUrl)||{}).photoUrl || (dam && dam.photoUrl) || '';
+        const availableCount = l.puppies.filter(p=>p.status==='available').length;
+        return `<div class="dog-card litter-card" data-id="${l.id}">
+          <div class="dog-photo">
+            ${availableCount ? `<span class="status-chip available">${availableCount} ${t('puppyAvailable')}</span>` : ''}
+            ${coverPhoto ? `<img src="${coverPhoto}" alt="${l.name}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="16" r="3"/><circle cx="17" cy="16" r="3"/><circle cx="12" cy="8" r="3.2"/></svg>`}
+          </div>
+          <div class="dog-body">
+            <div class="dog-name">${l.name}</div>
+            <div class="dog-meta">${dam?.name || '?'} × ${sire?.name || '?'} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div>
+            <div class="dog-tags">
+              <span class="tag">${l.puppies.length} ${t('puppiesUnit')}</span>
+              <span class="tag">${l.puppies.filter(p=>p.sex==='male').length} ${t('malesUnit')}</span>
+              <span class="tag">${l.puppies.filter(p=>p.sex==='female').length} ${t('femalesUnit')}</span>
             </div>
           </div>
         </div>`;
@@ -2874,17 +2888,29 @@ function openLitterDetail(id){
     <div class="drawer-body">
       <div class="pub-note is-public">${t('littersGapNote')}</div>
       <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('puppiesLabel')}</h2><button type="button" class="btn btn-sm" id="addPuppyBtn">${t('addPuppyBtn')}</button></div>
-      <div class="table-wrap"><table><thead><tr><th>${t('colName')}</th><th>${t('fieldSex')}</th><th>${t('exColColor')}</th><th>${t('colBirthWeight')}</th><th>${t('colStatus')}</th><th>${t('colActions')}</th></tr></thead>
-        <tbody>${l.puppies.map(p=>`<tr>
-            <td>${p.name}</td><td>${sexLabel(p.sex)}</td><td>${p.color}</td><td>${p.birthWeight} kg</td>
-            <td><select class="puppy-status-select" data-id="${p.id}" style="font-size:12.5px; padding:4px 6px; border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--ink);">
-              <option value="available" ${p.status==='available'?'selected':''}>${t('puppyAvailable')}</option>
-              <option value="reserved" ${p.status==='reserved'?'selected':''}>${t('puppyReserved')}</option>
-              <option value="sold" ${p.status==='sold'?'selected':''}>${t('puppySold')}</option>
-            </select></td>
-            <td style="white-space:nowrap;"><button type="button" class="link-btn edit-puppy-btn" data-id="${p.id}">${t('edit')}</button> · <button type="button" class="link-btn delete-puppy-btn" data-id="${p.id}" style="color:var(--danger);">${t('delete')}</button></td>
-          </tr>`).join('') || `<tr><td colspan="6" style="color:var(--ink-soft);">${t('noAvailablePuppies')}</td></tr>`}</tbody>
-      </table></div>
+      <div class="grid-cards" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin-bottom:22px;">
+        ${l.puppies.map(p=>`
+          <div class="dog-card puppy-card">
+            <div class="dog-photo" style="height:110px;">
+              <span class="status-chip ${p.status}">${puppyStatusLabel(p.status)}</span>
+              ${p.photoUrl ? `<img src="${p.photoUrl}" alt="${p.name}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>`}
+            </div>
+            <div class="dog-body" style="padding:10px 12px 12px; cursor:default;">
+              <div class="dog-name" style="font-size:14.5px;">${p.name}</div>
+              <div class="dog-meta">${sexLabel(p.sex)}${p.color?` · ${p.color}`:''}</div>
+              <select class="puppy-status-select" data-id="${p.id}" style="width:100%; margin-top:8px; font-size:12px; padding:4px 6px; border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--ink);">
+                <option value="available" ${p.status==='available'?'selected':''}>${t('puppyAvailable')}</option>
+                <option value="reserved" ${p.status==='reserved'?'selected':''}>${t('puppyReserved')}</option>
+                <option value="sold" ${p.status==='sold'?'selected':''}>${t('puppySold')}</option>
+              </select>
+              <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                <button type="button" class="link-btn edit-puppy-btn" data-id="${p.id}">${t('edit')}</button>
+                <button type="button" class="link-btn delete-puppy-btn" data-id="${p.id}" style="color:var(--danger);">${t('delete')}</button>
+              </div>
+            </div>
+          </div>
+        `).join('') || `<div class="empty" style="grid-column:1/-1;">${t('noPuppiesInLitter')}</div>`}
+      </div>
       <div class="section-head"><h2 style="font-size:15px;">${t('milestonesLabel')}</h2></div>
       <div class="card card-pad">
         ${l.milestones.map((m,i)=>`
@@ -2944,6 +2970,19 @@ function openPuppyForm(litterId, existing){
     <div class="drawer-head"><div class="drawer-title">${isEdit?t('editPuppyTitle',{name:p.name}):t('newPuppyTitle',{litter:l.name})}</div><button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="drawer-body">
       <form id="puppyForm" class="form-grid">
+        <div class="field full">
+          <label>${t('labelPhoto')}<span class="field-flag is-public">${t('flagPublic')}</span></label>
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div id="puppyPhotoPreview" style="width:64px; height:64px; border-radius:50%; overflow:hidden; background:var(--pine-tint); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              ${p.photoUrl ? `<img src="${p.photoUrl}" alt="" style="width:100%; height:100%; object-fit:cover;">` : `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--pine); opacity:.55;"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>`}
+            </div>
+            <div>
+              <label class="btn btn-sm" style="cursor:pointer;">${t('choosePhoto')}<input type="file" id="puppyPhotoInput" accept="image/*" style="display:none;"></label>
+              <button type="button" class="btn btn-sm" id="removePuppyPhotoBtn" style="margin-left:6px; ${p.photoUrl?'':'display:none;'}">${t('removePhoto')}</button>
+              <div style="font-size:11.5px; color:var(--ink-soft); margin-top:5px;">${t('photoHint')}</div>
+            </div>
+          </div>
+        </div>
         <div class="field"><label>${t('labelPuppyNameRequired')}</label><input required name="name" value="${p.name||''}"></div>
         <div class="field"><label>${t('labelPuppySexRequired')}</label><select name="sex"><option value="female" ${sel(p.sex,'female')}>${t('sexFemale')}</option><option value="male" ${sel(p.sex,'male')||(!isEdit?'selected':'')}>${t('sexMale')}</option></select></div>
         <div class="field"><label>${t('labelPuppyColor')}</label><input name="color" value="${p.color||''}"></div>
@@ -2959,19 +2998,53 @@ function openPuppyForm(litterId, existing){
         <div class="field"><label>${t('traitSociability')}</label><input type="number" min="0" max="100" name="traitSociability" placeholder="${t('notAssessedPh')}" value="${p.traitSociability??''}"></div>
         <div class="field"><label>${t('traitTrainability')}</label><input type="number" min="0" max="100" name="traitTrainability" placeholder="${t('notAssessedPh')}" value="${p.traitTrainability??''}"></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
+          ${isEdit ? `<button type="button" class="btn btn-danger" id="deletePuppyFormBtn" style="margin-right:auto;">${t('delete')}</button>` : ''}
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
           <button type="submit" class="btn btn-primary">${isEdit?t('saveChanges'):t('savePuppy')}</button>
         </div>
       </form>
     </div>
   `);
-  document.getElementById('puppyForm').addEventListener('submit', e=>{
+  const newPuppyId = isEdit ? existing.id : uid('p');
+  let pendingPuppyPhoto = null; // File object to upload, or 'remove', or null (no change)
+  document.getElementById('puppyPhotoInput').addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    pendingPuppyPhoto = file;
+    document.getElementById('removePuppyPhotoBtn').style.display = '';
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      document.getElementById('puppyPhotoPreview').innerHTML = `<img src="${ev.target.result}" alt="" style="width:100%; height:100%; object-fit:cover;">`;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('removePuppyPhotoBtn').addEventListener('click', ()=>{
+    pendingPuppyPhoto = 'remove';
+    document.getElementById('puppyPhotoInput').value = '';
+    document.getElementById('removePuppyPhotoBtn').style.display = 'none';
+    document.getElementById('puppyPhotoPreview').innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--pine); opacity:.55;"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>`;
+  });
+  document.getElementById('deletePuppyFormBtn')?.addEventListener('click', ()=>{
+    if(!confirm(t('confirmDeletePuppy',{name:existing.name}))) return;
+    l.puppies = l.puppies.filter(x=>x.id!==existing.id);
+    saveDB(); closeDrawer(); toast(t('toastPuppyRemoved')); openLitterDetail(litterId);
+  });
+  document.getElementById('puppyForm').addEventListener('submit', async e=>{
     e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
     const f = new FormData(e.target);
     const traitVal = (name)=>{ const v=f.get(name); return (v===''||v===null) ? undefined : Math.max(0,Math.min(100,Number(v))); };
+    let photoUrl = (isEdit && existing.photoUrl) || '';
+    if(pendingPuppyPhoto === 'remove'){
+      photoUrl = '';
+    } else if(pendingPuppyPhoto){
+      const uploaded = await uploadDogPhoto(pendingPuppyPhoto, newPuppyId);
+      if(uploaded) photoUrl = uploaded;
+    }
     const patch = {
       name:f.get('name'), sex:f.get('sex'), color:f.get('color')||'',
-      birthWeight:Number(f.get('birthWeight'))||0, status:f.get('status'),
+      birthWeight:Number(f.get('birthWeight'))||0, status:f.get('status'), photoUrl,
       traitEnergy:traitVal('traitEnergy'), traitConfidence:traitVal('traitConfidence'),
       traitSociability:traitVal('traitSociability'), traitTrainability:traitVal('traitTrainability')
     };
@@ -2979,9 +3052,10 @@ function openPuppyForm(litterId, existing){
       Object.assign(existing, patch);
       saveDB(); toast(t('toastChangesSaved'));
     } else {
-      l.puppies.push(Object.assign({id:uid('p')}, patch));
+      l.puppies.push(Object.assign({id:newPuppyId}, patch));
       saveDB(); toast(t('toastPuppyAdded'));
     }
+    submitBtn.disabled = false;
     openLitterDetail(litterId);
   });
 }

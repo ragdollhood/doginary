@@ -109,6 +109,10 @@
       errUserExists: 'Det finns redan ett konto med den mejladressen. Logga in istället.',
       errWeakPassword: 'Lösenordet är för kort — använd minst 6 tecken.',
       errRateLimit: 'För många försök just nu — vänta en stund och prova igen.',
+      authAgreeText: 'Jag godkänner {terms} och bekräftar att jag har tagit del av {privacy}.',
+      termsLinkLabel: 'användarvillkoren',
+      privacyLinkLabel: 'integritetspolicyn',
+      consentRequired: 'Du behöver godkänna villkoren för att skapa ett konto.',
       accountMenuAria: 'Kontomeny',
       loginAria: 'Logga in',
       dogNameLabel: 'Hundens namn',
@@ -166,6 +170,10 @@
       errUserExists: 'An account with that email address already exists. Log in instead.',
       errWeakPassword: 'That password is too short — use at least 6 characters.',
       errRateLimit: 'Too many attempts right now — wait a moment and try again.',
+      authAgreeText: 'I agree to the {terms} and acknowledge the {privacy}.',
+      termsLinkLabel: 'Terms & Conditions',
+      privacyLinkLabel: 'Privacy Policy',
+      consentRequired: 'You need to agree to the terms to create an account.',
       accountMenuAria: 'Account menu',
       loginAria: 'Log in',
       dogNameLabel: 'Dog’s name',
@@ -458,7 +466,8 @@
   // ---------- Modal + kontoknapp: bygg DOM ----------
 
   var modalEl, formEl, emailInput, passwordInput, messageEl, submitBtn,
-      titleEl, descEl, trialBadgeEl, toggleBtn, forgotBtn, closeBtn;
+      titleEl, descEl, trialBadgeEl, toggleBtn, forgotBtn, closeBtn,
+      consentRow, consentCheckbox, consentLabel;
   var mode = 'signup'; // 'signup' | 'signin'
 
   function buildModal() {
@@ -483,6 +492,10 @@
           '<input id="doginaryAuthEmail" type="email" autocomplete="email" required>' +
           '<label for="doginaryAuthPassword" id="doginaryAuthPasswordLabel"></label>' +
           '<input id="doginaryAuthPassword" type="password" autocomplete="new-password" required minlength="6">' +
+          '<div class="auth-consent-row" id="doginaryAuthConsentRow">' +
+            '<input type="checkbox" id="doginaryAuthConsentCheckbox">' +
+            '<label for="doginaryAuthConsentCheckbox" id="doginaryAuthConsentLabel"></label>' +
+          '</div>' +
           '<p id="doginaryAuthMessage" role="alert"></p>' +
           '<button type="submit" id="doginaryAuthSubmit"></button>' +
         '</form>' +
@@ -502,6 +515,9 @@
     toggleBtn = document.getElementById('doginaryAuthToggle');
     forgotBtn = document.getElementById('doginaryAuthForgot');
     closeBtn = document.getElementById('doginaryAuthClose');
+    consentRow = document.getElementById('doginaryAuthConsentRow');
+    consentCheckbox = document.getElementById('doginaryAuthConsentCheckbox');
+    consentLabel = document.getElementById('doginaryAuthConsentLabel');
 
     closeBtn.addEventListener('click', closeModal);
     modalEl.addEventListener('click', function (ev) {
@@ -536,6 +552,11 @@
       var email = emailInput.value.trim();
       var password = passwordInput.value;
       if (!email || !password) return;
+
+      if (mode === 'signup' && consentCheckbox && !consentCheckbox.checked) {
+        showMessage(T('consentRequired'), 'error');
+        return;
+      }
 
       submitBtn.disabled = true;
       showMessage(mode === 'signup' ? T('creating') : T('signingIn'), '');
@@ -603,12 +624,21 @@
       descEl.textContent = T('signupDesc');
       submitBtn.textContent = T('signupSubmit');
       toggleBtn.textContent = T('signupToggle');
+      if (consentRow) consentRow.hidden = false;
+      if (consentLabel) {
+        consentLabel.innerHTML = T('authAgreeText', {
+          terms: '<a href="terms.html" target="_blank" rel="noopener">' + T('termsLinkLabel') + '</a>',
+          privacy: '<a href="privacy.html" target="_blank" rel="noopener">' + T('privacyLinkLabel') + '</a>'
+        });
+      }
     } else {
       titleEl.textContent = T('signinTitle');
       trialBadgeEl.style.display = 'none';
       descEl.textContent = T('signinDesc');
       submitBtn.textContent = T('signinSubmit');
       toggleBtn.textContent = T('signinToggle');
+      // Samtycket gäller bara nya konton — dölj rutan helt vid inloggning.
+      if (consentRow) consentRow.hidden = true;
     }
   }
 
@@ -617,6 +647,7 @@
     showMessage('', '');
     emailInput.value = '';
     passwordInput.value = '';
+    if (consentCheckbox) consentCheckbox.checked = false;
     applyModalTexts();
   }
 

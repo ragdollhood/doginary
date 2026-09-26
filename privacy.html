@@ -43,10 +43,12 @@ body{background:var(--bg); color:var(--ink); font-family:var(--font-body); font-
 a{color:var(--honey-deep);}
 .topbar{background:var(--pine-deep); color:#EDE7D9; padding:16px 20px;}
 .topbar-inner{max-width:760px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-.brand{font-family:var(--font-display); font-style:italic; font-weight:500; font-size:18px; color:#F3E4C6; text-decoration:none;}
+.brand{display:inline-flex; align-items:center; text-decoration:none;}
+.brand-logo{height:30px; width:auto; display:block; border-radius:6px;}
 .lang-toggle{display:flex; border:1px solid rgba(255,255,255,.22); border-radius:20px; overflow:hidden;}
-.lang-flag-btn{background:transparent; border:none; font-size:16px; line-height:1; padding:5px 11px; cursor:pointer; opacity:.55;}
+.lang-flag-btn{background:transparent; border:none; line-height:1; padding:7px 11px; cursor:pointer; opacity:.55; display:flex; align-items:center;}
 .lang-flag-btn.active{background:rgba(255,255,255,.18); opacity:1;}
+.flag-icon{display:block; border-radius:2px;}
 .wrap{max-width:760px; margin:0 auto; padding:36px 20px 70px;}
 h1{font-family:var(--font-display); font-weight:500; font-size:clamp(26px,4vw,34px); margin:0 0 6px;}
 .updated{font-size:12.5px; color:var(--ink-soft); margin:0 0 30px;}
@@ -73,10 +75,10 @@ th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:upperc
 
 <div class="topbar">
   <div class="topbar-inner">
-    <a class="brand" href="breeder-hub.html">Doginary</a>
+    <a class="brand" href="breeder-hub.html"><img src="assets/title-doginary-blue.png" alt="Doginary" class="brand-logo"></a>
     <div class="lang-toggle" id="langToggle" role="group">
-      <button type="button" class="lang-flag-btn" data-lang="sv" title="Svenska">🇸🇪</button>
-      <button type="button" class="lang-flag-btn" data-lang="en" title="English">🇬🇧</button>
+      <button type="button" class="lang-flag-btn" data-lang="sv" title="Svenska"><svg class="flag-icon" viewBox="0 0 16 10" width="20" height="13" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
+      <button type="button" class="lang-flag-btn" data-lang="en" title="English"><svg class="flag-icon" viewBox="0 0 60 30" width="20" height="13" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-clip-privacy)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="uk-clip-privacy"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
     </div>
   </div>
 </div>

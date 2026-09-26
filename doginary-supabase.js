@@ -350,32 +350,30 @@
 
   // ---------- Prenumeration / 14 dagars provperiod ----------
   //
-  // Doginary har sin EGEN trial (tabellen `doginary_subscriptions`,
-  // kolumnen trial_ends_at, satt av Edge Function doginary-start-trial)
-  // men delar själva betalningen med Breeder Hub — samma Stripe-pris,
-  // samma Checkout/Portal-funktioner (create-breeder-checkout /
-  // create-breeder-portal) och samma tabell för betalstatus
-  // (breeder_subscriptions.active, satt av stripe-webhook). Se
-  // getBreederActive() nedan och checkAccess() i doginary-auth.js för
-  // hur de två slås ihop. Läsning av statusen går direkt mot tabellerna
-  // och funkar tack vare RLS-policyer som låter en användare läsa sin
-  // egen rad; att STARTA en trial eller öppna Checkout/Portal går
-  // alltid via Edge Functions eftersom det kräver service-role-
-  // rättigheter (raderna går inte att skriva till direkt från klienten).
-
-  // Returnerar raden ur doginary_subscriptions för den inloggade
-  // användaren, eller null om den inte finns än (t.ex. innan
-  // startTrial() hunnit köras en första gång).
+  // EN tabell för allt (`breeder_subscriptions`): trial_ends_at (satt av
+  // Edge Function doginary-start-trial när kontot skapas, oavsett om det
+  // skedde på index.html/logga.html eller breeder-hub.html) OCH active
+  // (satt av stripe-webhook när Stripe Checkout/Portal-betalningen går
+  // igenom). En betald prenumeration låser upp BÅDA produkterna eftersom
+  // Doginary och Breeder Hub delar samma Stripe-pris och samma
+  // Checkout/Portal-funktioner (create-breeder-checkout /
+  // create-breeder-portal, se startCheckout/startPortal nedan).
   //
-  // OBS: den här raden används numera BARA för trial_ends_at (de 14
-  // dagarnas provperiod). Själva betalningen delas med Breeder Hub, se
-  // getBreederActive() nedan — doginary_subscriptions.active sätts
-  // aldrig av någon Edge Function och ska INTE användas för att avgöra
-  // om användaren betalat.
+  // Läsning går direkt mot tabellen och funkar tack vare en RLS-policy
+  // som låter en användare läsa sin egen rad; att STARTA en trial eller
+  // öppna Checkout/Portal går alltid via Edge Functions eftersom det
+  // kräver service-role-rättigheter (raden går inte att skriva till
+  // direkt från klienten).
+
+  // Returnerar raden ur breeder_subscriptions för den inloggade
+  // användaren, eller null om den inte finns än (t.ex. innan
+  // startTrial() hunnit köras en första gång). Innehåller både
+  // trial_ends_at och active — checkAccess() i doginary-auth.js
+  // kombinerar dem till en enda ja/nej-åtkomst.
   function getSubscriptionStatus(userId) {
     return client
-      .from('doginary_subscriptions')
-      .select('user_id, active, trial_ends_at, stripe_customer_id')
+      .from('breeder_subscriptions')
+      .select('user_id, active, trial_ends_at, stripe_customer_id, stripe_subscription_id')
       .eq('user_id', userId)
       .maybeSingle()
       .then(function (res) {
@@ -384,24 +382,13 @@
       });
   }
 
-  // Doginary och Breeder Hub delar samma Stripe-pris och samma
-  // Checkout/Portal-funktioner (create-breeder-checkout /
-  // create-breeder-portal, se startCheckout/startPortal nedan) — en
-  // betald prenumeration låser alltså upp BÅDA produkterna. Statusen
-  // för det skrivs av stripe-webhook till breeder_subscriptions.active,
-  // så det är den tabellen vi måste läsa för att veta om Doginary-
-  // användaren har betalat (doginary_subscriptions har ingen
-  // motsvarande rad — bara trial_ends_at).
+  // Kvarlämnad som ett tunt bakåtkompatibelt alias om något annat
+  // fortfarande skulle anropa den direkt — läser numera samma tabell/rad
+  // som getSubscriptionStatus() ovan, bara filtrerat till active-fältet.
   function getBreederActive(userId) {
-    return client
-      .from('breeder_subscriptions')
-      .select('active')
-      .eq('user_id', userId)
-      .maybeSingle()
-      .then(function (res) {
-        if (res.error) throw res.error;
-        return !!(res.data && res.data.active === true);
-      });
+    return getSubscriptionStatus(userId).then(function (row) {
+      return !!(row && row.active === true);
+    });
   }
 
   // Idempotent — skapar bara raden (med trial_ends_at = 14 dagar från nu,

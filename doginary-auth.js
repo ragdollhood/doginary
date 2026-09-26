@@ -432,10 +432,12 @@
     }
   }
 
-  // Slår ihop trial-raden (doginary_subscriptions.trial_ends_at) med den
-  // delade betalstatusen (breeder_subscriptions.active — se kommentaren
-  // vid getBreederActive() i doginary-supabase.js) till ett enda objekt
-  // som hasAccess()/isTrialActive() kan läsa som vanligt.
+  // Läser den EN raden ur breeder_subscriptions (trial_ends_at + active,
+  // se getSubscriptionStatus() i doginary-supabase.js) och skickar den
+  // rakt vidare till hasAccess()/isTrialActive(). En betald Breeder
+  // Hub-prenumeration ger alltså automatiskt tillgång här också, och en
+  // provperiod startad här ger tillgång till Breeder Hub — samma rad,
+  // samma regel, oavsett vilken sida man skapade kontot på.
   function checkAccess() {
     if (!global.DoginaryBilling || !currentSession) {
       hidePaywall();
@@ -443,20 +445,16 @@
     }
     var userId = currentSession.user.id;
 
-    global.DoginaryBilling.getSubscriptionStatus(userId).then(function (trialRow) {
+    global.DoginaryBilling.getSubscriptionStatus(userId).then(function (row) {
       // Ingen rad än — troligen ett konto som just skapats (eller ett
       // äldre konto från innan provperiods-funktionen infördes). Starta
       // trialen (idempotent, servern sätter trial_ends_at) innan vi går
-      // vidare.
-      if (trialRow) return trialRow;
+      // vidare. Rör aldrig en befintlig rad, så det här är säkert att
+      // köra även om kontot redan har en aktiv, betald rad.
+      if (row) return row;
       return global.DoginaryBilling.startTrial();
-    }).then(function (trialRow) {
-      return global.DoginaryBilling.getBreederActive(userId).then(function (paidActive) {
-        evaluateAccess({
-          trial_ends_at: trialRow ? trialRow.trial_ends_at : null,
-          active: paidActive
-        });
-      });
+    }).then(function (row) {
+      evaluateAccess(row);
     }).catch(function (err) {
       console.error('Doginary: kunde inte läsa prenumerationsstatus', err);
       showPaywall(); // fail closed, se kommentar ovanför funktionerna

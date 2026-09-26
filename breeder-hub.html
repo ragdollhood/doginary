@@ -524,6 +524,15 @@ tbody tr:hover{background:var(--surface-2);}
 .ped-node .n{font-weight:700; font-size:13px;}
 .ped-node .m{color:var(--ink-soft); font-size:11px; margin-top:2px;}
 .ped-node .scores{display:flex; gap:5px; margin-top:5px; flex-wrap:wrap;}
+.ped-node.clickable{cursor:pointer; transition:border-color .12s ease, background .12s ease;}
+.ped-node.clickable:hover{border-color:var(--honey); background:var(--surface-2);}
+.ped-node.clickable:hover .n{color:var(--honey-deep);}
+
+/* --- Interna länkar (klickbar text som hoppar till en annan post i appen) --- */
+.rlink{cursor:pointer; text-decoration:underline; text-decoration-style:dotted; text-underline-offset:2px; text-decoration-color:var(--line-soft); border-radius:3px;}
+.rlink:hover{color:var(--honey-deep); text-decoration-color:currentColor;}
+.milestone-row.clickable{cursor:pointer; border-radius:var(--radius-s); margin:0 -8px; padding:8px; transition:background .12s ease;}
+.milestone-row.clickable:hover{background:var(--surface-2);}
 
 /* calendar */
 .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius-m); overflow:hidden;}
@@ -652,7 +661,7 @@ tbody tr:hover{background:var(--surface-2);}
   <button type="button" id="crossnavMenuBtn" class="crossnav-menu-btn" aria-label="Meny" aria-expanded="false" aria-controls="crossnavMobileMenu">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
-  <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
+  <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary-blue.png" alt="Doginary" class="crossnav-logo"></a>
   <div class="crossnav-right">
     <div class="crossnav-links">
       <a href="index.html" id="crossnavWeather">Väder</a>
@@ -893,6 +902,7 @@ const I18N = {
     publicPageDogsCount: '{n} hundar visas just nu på sidan, varav {p} har ett foto.',
     dogsPublicMirrorNote: 'Det som visas här speglar automatiskt din publika kennelsida: namn, ras, kön, ålder, färg, mankhöjd, vikt, HD-resultat, foto, status samt de två första meriterna för varje hund — plus pris om du aktiverat det under "Publik sida". Registreringsnummer, AD/ögon/DNA-resultat och föräldradjur sparas också i den publika datan men visas inte i sidans nuvarande utformning. Allt annat (hälsojournal, anteckningar, parningsplaner, kunder, dokument m.m.) är privat och lämnar aldrig ditt konto.',
     flagPublic: 'Publikt', flagPartial: 'Publikt (visas ej)', flagPrivate: 'Privat', readMore: 'Läs mer',
+    viewProfile: 'Visa profil', viewInPedigree: 'Visa i stamtavla', matchedBuyerLabel: 'Köpare:',
     infoTabPriceNote: 'Publikt endast om du har aktiverat "Visa pris" under Publik sida.',
     titlesPublicNote: 'De två första meriterna ovan visas på din publika sida — resten är bara synliga här.',
     parentsPublicNote: 'Far/mor sparas i den publika datan men visas inte på sidan i nuvarande design.',
@@ -1204,6 +1214,7 @@ const I18N = {
     publicPageDogsCount: '{n} dogs currently shown on the page, {p} of which have a photo.',
     dogsPublicMirrorNote: 'What\'s shown here automatically mirrors your public kennel page: name, breed, sex, age, colour, height, weight, HD result, photo, status, and the first two titles for each dog — plus price if you\'ve turned that on under "Public page". Registration number, AD/eye/DNA results and parent dogs are also stored in the public data but aren\'t displayed in the page\'s current design. Everything else (health records, notes, mating plans, customers, documents etc.) is private and never leaves your account.',
     flagPublic: 'Public', flagPartial: 'Public (not shown)', flagPrivate: 'Private', readMore: 'Read more',
+    viewProfile: 'View profile', viewInPedigree: 'View in pedigree', matchedBuyerLabel: 'Buyer:',
     infoTabPriceNote: 'Only public if you\'ve turned on "Show price" under Public page.',
     titlesPublicNote: 'The first two titles above are shown on your public page — the rest are only visible here.',
     parentsPublicNote: 'Sire/dam are stored in the public data but aren\'t displayed on the page in its current design.',
@@ -2019,6 +2030,30 @@ function buyerStatusLabel(s){ return {new:t('buyerNew'), waiting:t('buyerWaiting
 function sexLabel(s){ return {female:t('sexFemale'), male:t('sexMale')}[s] || s; }
 function puppyStatusLabel(s){ return {available:t('puppyAvailable'), reserved:t('puppyReserved'), sold:t('puppySold')}[s] || s; }
 function escapeHtml(v){ return String(v==null||v===''?'—':v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---- Interna länkar ----
+   Små HTML-hjälpare som gör namn/poster klickbara mot en annan vy i appen
+   (t.ex. en hunds namn i stamtavlan → öppnar den hundens fullständiga
+   profil). Den faktiska klick-hanteringen sker centralt i en enda
+   "delegated"-lyssnare (se bindInternalLinks nedan) så att varje ny länk
+   bara behöver ett data-attribut, ingen egen addEventListener. */
+function dogLink(id, label){
+  const d = dogById(id);
+  if(!d) return escapeHtml(label ?? '—');
+  return `<span class="rlink" data-open-dog="${d.id}">${escapeHtml(label ?? d.name)}</span>`;
+}
+function litterLink(id, label){
+  const l = DB.litters.find(x=>x.id===id);
+  if(!l) return escapeHtml(label ?? '—');
+  return `<span class="rlink" data-open-litter="${l.id}">${escapeHtml(label ?? l.name)}</span>`;
+}
+function buyerLink(id, label){
+  const b = DB.buyers.find(x=>x.id===id);
+  if(!b) return escapeHtml(label ?? '—');
+  return `<span class="rlink" data-open-buyer="${b.id}">${escapeHtml(label ?? b.name)}</span>`;
+}
+/* Hittar ev. köpare som är matchad mot en viss valp (via valpmatchningen). */
+function buyerForPuppy(puppyId){ return DB.buyers.find(b=>b.puppyId===puppyId); }
 function litterName(id){ const l = DB.litters.find(x=>x.id===id); return l ? l.name : '—'; }
 
 /* ---- EXPORT ALLT (PDF via utskriftsdialogen) ---- */
@@ -2142,6 +2177,32 @@ function openDrawer(html){
   document.getElementById('drawer').innerHTML = html;
   document.getElementById('overlay').classList.add('open');
 }
+/* Öppnar Stamtavla-sidan och centrerar trädet på en specifik hund
+   (t.ex. via en "Visa i stamtavla"-länk i hundens profil). */
+function openPedigreeFor(id){
+  closeDrawer();
+  goTo('pedigree');
+  const sel = document.getElementById('pedSelect');
+  if(sel){ sel.value = id; }
+  drawPedigree(id);
+}
+/* ---- Central klickhanterare för alla interna länkar ----
+   En enda "delegated"-lyssnare i capture-fasen fångar klick på valfritt
+   element med data-open-dog / data-open-litter / data-open-buyer /
+   data-goto-pedigree, var det än renderas (sida, drawer, kort, tabell).
+   Den körs FÖRE eventet bubblar vidare, så en länk inuti t.ex. ett
+   klickbart hund-/kull-kort stoppar propagationen och öppnar bara sitt
+   eget mål istället för att även trigga kortets egen click-lyssnare. */
+document.addEventListener('click', function(e){
+  const dogEl = e.target.closest('[data-open-dog]');
+  if(dogEl){ e.preventDefault(); e.stopPropagation(); openDogProfile(dogEl.dataset.openDog); return; }
+  const litterEl = e.target.closest('[data-open-litter]');
+  if(litterEl){ e.preventDefault(); e.stopPropagation(); openLitterDetail(litterEl.dataset.openLitter); return; }
+  const buyerEl = e.target.closest('[data-open-buyer]');
+  if(buyerEl){ e.preventDefault(); e.stopPropagation(); openBuyerDetail(buyerEl.dataset.openBuyer); return; }
+  const pedEl = e.target.closest('[data-goto-pedigree]');
+  if(pedEl){ e.preventDefault(); e.stopPropagation(); openPedigreeFor(pedEl.dataset.gotoPedigree); return; }
+}, true);
 function closeDrawer(){
   document.getElementById('overlay').classList.remove('open');
   // Bakgrundssidan renderades med data som fanns *innan* drawern öppnades.
@@ -2263,7 +2324,7 @@ function renderDashboard(){
         <div class="card card-pad">
           ${dueHealth.length ? dueHealth.map(h=>{
             const dog = dogById(h.dogId);
-            return `<div class="milestone-row"><div class="avatar-circle">${dog && dog.photoUrl ? `<img src="${dog.photoUrl}" alt="${dog.name}">` : (dog?dog.name:'?')[0]}</div>
+            return `<div class="milestone-row${dog?' clickable':''}"${dog?` data-open-dog="${dog.id}"`:''}><div class="avatar-circle">${dog && dog.photoUrl ? `<img src="${dog.photoUrl}" alt="${dog.name}">` : (dog?dog.name:'?')[0]}</div>
               <div style="flex:1"><div style="font-weight:600;font-size:13px;">${h.type} — ${dog?dog.name:t('unknownDog')}</div>
               <div style="font-size:12px;color:var(--ink-soft);">${t('dueOn',{date:fmtDate(h.due),detail:h.detail})}</div></div></div>`;
           }).join('') : `<div style="color:var(--ink-soft);font-size:13px;">${t('nothingUrgent')}</div>`}
@@ -2454,8 +2515,9 @@ function openDogProfile(id){
         <div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px;">${t('infoTabPriceNote')}</div>
         ${d.titles.length?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">${t('titlesLabel')}</div><div class="dog-tags">${d.titles.map(x=>`<span class="tag">${x}</span>`).join('')}</div><div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px;">${t('titlesPublicNote')}</div></div>`:''}
         ${(d.sire||d.dam)?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">${t('parentsLabel')}</div>
-          <div style="font-size:13px;">${d.sire?(t('sireLabel')+': '+ (dogById(d.sire)?.name||'—')):''} ${d.dam?('· '+t('damLabel')+': '+(dogById(d.dam)?.name||'—')):''}</div>
+          <div style="font-size:13px;">${d.sire?(t('sireLabel')+': '+ dogLink(d.sire)):''} ${d.dam?('· '+t('damLabel')+': '+dogLink(d.dam)):''}</div>
           <div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px;">${t('parentsPublicNote')}</div></div>`:''}
+        <div style="margin-top:16px;"><button type="button" class="link-btn" data-goto-pedigree="${d.id}">${t('viewInPedigree')} →</button></div>
       `;
     } else if(tab==='health'){
       body.innerHTML = `${pubFlag('private','healthTabPrivateNote')}` + (dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
@@ -2681,7 +2743,7 @@ function drawHealthBody(){
   list = list.slice().sort((a,b)=> new Date(b.date)-new Date(a.date));
   document.getElementById('healthBody').innerHTML = list.map(h=>{
     const dog = dogById(h.dogId);
-    return `<tr><td>${dog?dog.name:'—'}</td><td>${h.type}</td><td>${fmtDate(h.date)}</td><td>${h.due?fmtDate(h.due):'—'}</td><td style="color:var(--ink-soft);">${h.detail}</td><td>${h.status==='due'?`<span class="badge due">${t('dueSoon')}</span>`:`<span class="badge ok">${t('ok')}</span>`}</td></tr>`;
+    return `<tr><td>${dog?dogLink(dog.id):'—'}</td><td>${h.type}</td><td>${fmtDate(h.date)}</td><td>${h.due?fmtDate(h.due):'—'}</td><td style="color:var(--ink-soft);">${h.detail}</td><td>${h.status==='due'?`<span class="badge due">${t('dueSoon')}</span>`:`<span class="badge ok">${t('ok')}</span>`}</td></tr>`;
   }).join('') || emptyRow(6);
 }
 function openHealthForm(){
@@ -2734,7 +2796,9 @@ function renderPedigree(){
 }
 function pedNode(dog, isSelf){
   if(!dog) return `<div class="ped-node" style="opacity:.4;"><div class="ped-avatar">?</div><div><div class="n">${t('unknownDog')}</div><div class="m">${t('pedNoData')}</div></div></div>`;
-  return `<div class="ped-node ${isSelf?'self':''}">
+  // Varje ruta med en riktig hund går att klicka på för att öppna dess
+  // fullständiga profil (hälsa, vikt, anteckningar m.m.) — även huvudhunden.
+  return `<div class="ped-node ${isSelf?'self':''} clickable" data-open-dog="${dog.id}" title="${t('viewProfile')}">
     <div class="ped-avatar">${dog.photoUrl ? `<img src="${dog.photoUrl}" alt="${dog.name}">` : dog.name[0]}</div>
     <div><div class="n">${dog.name}</div><div class="m">${dog.breed}</div>
     <div class="scores">${dog.hips?`<span class="tag">HD ${dog.hips}</span>`:''}${dog.titles[0]?`<span class="tag">${dog.titles[0]}</span>`:''}</div></div>
@@ -2769,7 +2833,7 @@ function renderBreeding(){
       ${DB.breedings.slice().sort((a,b)=>new Date(b.matingDate)-new Date(a.matingDate)).map(b=>{
         const dam = dogById(b.dam), sire = dogById(b.sire);
         return `<div class="tl-item"><div class="tl-date">${fmtDate(b.matingDate)}</div>
-          <div class="tl-title">${dam?.name || '?'} × ${sire?.name || '?'} ${b.confirmed?`<span class="badge ok" style="margin-left:6px;">${t('confirmedPregnancy')}</span>`:`<span class="badge muted" style="margin-left:6px;">${t('planned')}</span>`}</div>
+          <div class="tl-title">${b.dam?dogLink(b.dam):'?'} × ${b.sire?dogLink(b.sire):'?'} ${b.confirmed?`<span class="badge ok" style="margin-left:6px;">${t('confirmedPregnancy')}</span>`:`<span class="badge muted" style="margin-left:6px;">${t('planned')}</span>`}</div>
           <div class="tl-desc">${b.dueDate?t('expectedWhelp',{date:fmtDate(b.dueDate)}):''}${b.expectedCount?t('expectedCountLabel',{n:b.expectedCount}):''}${b.ultrasound||''}</div>
           ${b.notes?`<div class="tl-desc" style="margin-top:2px;">${b.notes}</div>`:''}
         </div>`;
@@ -2785,7 +2849,7 @@ function renderBreeding(){
       <div class="card card-pad">
         <div class="section-head" style="margin-top:0;"><h2>${t('heatTracking')}</h2></div>
         ${DB.dogs.filter(d=>d.sex==='female' && d.status!=='deceased').map(d=>`
-          <div class="milestone-row"><div class="avatar-circle">${d.photoUrl ? `<img src="${d.photoUrl}" alt="${d.name}">` : d.name[0]}</div>
+          <div class="milestone-row clickable" data-open-dog="${d.id}"><div class="avatar-circle">${d.photoUrl ? `<img src="${d.photoUrl}" alt="${d.name}">` : d.name[0]}</div>
             <div style="flex:1"><div style="font-weight:600;font-size:13px;">${d.name}</div><div style="font-size:12px;color:var(--ink-soft);">${t('heatNotRecorded')}</div></div>
           </div>`).join('')}
       </div>
@@ -2848,7 +2912,7 @@ function renderLitters(){
           </div>
           <div class="dog-body">
             <div class="dog-name">${l.name}</div>
-            <div class="dog-meta">${dam?.name || '?'} × ${sire?.name || '?'} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div>
+            <div class="dog-meta">${l.dam?dogLink(l.dam):'?'} × ${l.sire?dogLink(l.sire):'?'} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div>
             <div class="dog-tags">
               <span class="tag">${l.puppies.length} ${t('puppiesUnit')}</span>
               <span class="tag">${l.puppies.filter(p=>p.sex==='male').length} ${t('malesUnit')}</span>
@@ -2903,7 +2967,7 @@ function openLitterDetail(id){
   const l = DB.litters.find(x=>x.id===id);
   const dam = dogById(l.dam), sire = dogById(l.sire);
   openDrawer(`
-    <div class="drawer-head"><div><div class="drawer-title">${l.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${dam?.name} × ${sire?.name} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div></div>
+    <div class="drawer-head"><div><div class="drawer-title">${l.name}</div><div style="font-size:12.5px;color:var(--ink-soft);">${l.dam?dogLink(l.dam):'?'} × ${l.sire?dogLink(l.sire):'?'} · ${t('bornOn',{date:fmtDate(l.birthDate)})}</div></div>
       <div style="display:flex; align-items:center; gap:4px;">
         <button class="btn btn-sm btn-danger" id="deleteLitterBtn">${t('delete')}</button>
         <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
@@ -2921,6 +2985,7 @@ function openLitterDetail(id){
             <div class="dog-body" style="padding:10px 12px 12px; cursor:default;">
               <div class="dog-name" style="font-size:14.5px;">${p.name}</div>
               <div class="dog-meta">${sexLabel(p.sex)}${p.color?` · ${p.color}`:''}</div>
+              ${buyerForPuppy(p.id)?`<div style="font-size:11.5px; color:var(--ink-soft); margin-top:4px;">${t('matchedBuyerLabel')} ${buyerLink(buyerForPuppy(p.id).id)}</div>`:''}
               <select class="puppy-status-select" data-id="${p.id}" style="width:100%; margin-top:8px; font-size:12px; padding:4px 6px; border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--ink);">
                 <option value="available" ${p.status==='available'?'selected':''}>${t('puppyAvailable')}</option>
                 <option value="reserved" ${p.status==='reserved'?'selected':''}>${t('puppyReserved')}</option>
@@ -3085,7 +3150,7 @@ function openPuppyForm(litterId, existing){
 
 /* ---- MATCHING ---- */
 function renderMatching(){
-  const availablePuppies = DB.litters.flatMap(l=> l.puppies.filter(p=>p.status!=='sold').map(p=>({...p, litter:l.name})));
+  const availablePuppies = DB.litters.flatMap(l=> l.puppies.filter(p=>p.status!=='sold').map(p=>({...p, litter:l.name, litterId:l.id})));
   const waitingBuyers = DB.buyers.filter(b=> b.status==='waiting' || b.status==='approved' || b.status==='reserved');
   content.innerHTML = `
     ${pubFlag('private','matchingPrivateNote')}
@@ -3097,7 +3162,7 @@ function renderMatching(){
         return `
         <div class="card card-pad">
           <div style="font-family:var(--font-display); font-size:16px; font-weight:500;">${p.name}</div>
-          <div style="font-size:12px; color:var(--ink-soft); margin-bottom:8px;">${p.litter} · ${sexLabel(p.sex)} · ${p.color}</div>
+          <div style="font-size:12px; color:var(--ink-soft); margin-bottom:8px;">${litterLink(p.litterId, p.litter)} · ${sexLabel(p.sex)} · ${p.color}</div>
           ${anySet ? `
             <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;">${t('temperamentEst')}</div>
             ${traits.map(([key,v])=> (v!=null && v!=='') ? trait(t(key), v) : '').join('')}
@@ -3113,7 +3178,7 @@ function renderMatching(){
           const options = [`<option value="">${t('selectPuppyPlaceholder')}</option>`]
             .concat(availablePuppies.map(p=> `<option value="${p.id}" ${p.id===b.puppyId?'selected':''}>${p.name} (${p.litter})</option>`));
           return `<tr>
-            <td>${escapeHtml(b.name)}</td>
+            <td>${buyerLink(b.id)}</td>
             <td><select class="match-assign-select" data-buyer="${b.id}">${options.join('')}</select></td>
             <td>${b.puppyId ? `<span class="badge ok">${t('assignedYes')}</span>` : `<span class="badge muted">${t('assignedNo')}</span>`}</td>
           </tr>`;
@@ -3158,6 +3223,11 @@ function buyerPuppyLabel(b){
   const p = DB.litters.flatMap(l=>l.puppies.map(pp=>({...pp, litter:l.name}))).find(p=>p.id===b.puppyId);
   return p ? `${p.name} (${p.litter})` : '—';
 }
+/* Samma sak, fast med kullens namn som en klickbar länk till kullen. */
+function buyerPuppyLinkHtml(b){
+  const p = DB.litters.flatMap(l=>l.puppies.map(pp=>({...pp, litter:l.name, litterId:l.id}))).find(p=>p.id===b.puppyId);
+  return p ? `${escapeHtml(p.name)} (${litterLink(p.litterId, p.litter)})` : '—';
+}
 function drawBuyersBody(){
   let list = DB.buyers.filter(b=> buyerFilter==='all' || b.status===buyerFilter);
   document.getElementById('buyersBody').innerHTML = list.map(b=>`
@@ -3165,7 +3235,7 @@ function drawBuyersBody(){
       <td style="cursor:pointer;">${escapeHtml(b.name)}</td>
       <td style="cursor:pointer; color:var(--ink-soft);">${escapeHtml(b.email||'')}</td>
       <td style="cursor:pointer; color:var(--ink-soft);">${escapeHtml(b.phone||'')}</td>
-      <td style="cursor:pointer; color:var(--ink-soft);">${buyerPuppyLabel(b)}</td>
+      <td style="cursor:pointer; color:var(--ink-soft);">${buyerPuppyLinkHtml(b)}</td>
       <td style="cursor:pointer;">${buyerBadge(b.status)}</td>
       <td><button type="button" class="btn btn-sm btn-danger" data-del-buyer="${b.id}">${t('delete')}</button></td>
     </tr>
@@ -3205,7 +3275,7 @@ function openBuyerDetail(id){
         <select id="buyerStatusSelect">${BUYER_STATUSES.map(s=>`<option value="${s}" ${s===b.status?'selected':''}>${buyerStatusLabel(s)}</option>`).join('')}</select>
       </div>
       <div class="form-grid" style="font-size:13px; margin-bottom:16px;">
-        ${infoRow(t('colInterestedPuppy'), buyerPuppyLabel(b))}
+        ${infoRow(t('colInterestedPuppy'), buyerPuppyLinkHtml(b))}
       </div>
       <div style="display:flex; gap:8px; margin-bottom:16px;">
         <button class="btn btn-sm" id="editBuyerBtn">${t('edit')}</button>
@@ -3682,7 +3752,7 @@ function drawTitlesBody(){
   const dogsWithTitles = DB.dogs.filter(d=> d.titles && d.titles.length);
   document.getElementById('titlesBody').innerHTML = dogsWithTitles.map(d=>`
     <div style="margin-bottom:10px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:4px;">${escapeHtml(d.name)}</div>
+      <div style="font-weight:600; font-size:13px; margin-bottom:4px;">${dogLink(d.id)}</div>
       <div class="dog-tags">
         ${d.titles.map((x,i)=>`<span class="tag" style="display:inline-flex; align-items:center; gap:5px;">${escapeHtml(x)}<button type="button" class="title-remove" data-dog="${d.id}" data-idx="${i}" title="${t('delete')}" style="border:none; background:none; cursor:pointer; color:inherit; font-size:11px; padding:0; line-height:1;">✕</button></span>`).join('')}
       </div>

@@ -232,6 +232,17 @@ tbody tr:hover{background:var(--surface-2);}
 .badge.due{background:var(--danger-tint); color:var(--danger);}
 .badge.muted{background:var(--surface-2); color:var(--ink-soft);}
 
+/* --- Publikt/privat-notiser (visar vilka fält som speglas till kennelns publika sida) --- */
+.pub-note{font-size:12.5px; line-height:1.6; padding:11px 14px; border-radius:var(--radius-s); margin:8px 0 16px;}
+.pub-note.is-public{background:var(--ok-tint); color:var(--ok);}
+.pub-note.is-partial{background:var(--honey-tint); color:var(--honey-deep);}
+.pub-note.is-private{background:var(--danger-tint); color:var(--danger);}
+.pub-note strong{font-weight:700;}
+.field-flag{display:inline-block; font-size:10px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:20px; margin-left:7px; vertical-align:middle; white-space:nowrap;}
+.field-flag.is-public{background:var(--ok-tint); color:var(--ok);}
+.field-flag.is-partial{background:var(--honey-tint); color:var(--honey-deep);}
+.field-flag.is-private{background:var(--surface-2); color:var(--ink-soft);}
+
 
 
 .filter-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:16px;}
@@ -277,50 +288,78 @@ tbody tr:hover{background:var(--surface-2);}
   pointer-events:none;
 }
 #authGate.show{display:flex;}
+/* Kortet nedan hårdkodar exakt samma rust/teal/papper-palett som
+   doginary-auth-ui.css (den delade inloggningsrutan på index.html/
+   logga.html/insikter.html) istället för att använda Breeder Hubs
+   egna --surface/--ink/--pine/--honey-variabler. De variablerna finns
+   redan satta på :root här (för resten av appen), så var(--surface,
+   #F8F5EC) skulle ändå plocka Breeder Hubs vita/gröna tema och inte
+   fallbacken — därför hårdkodade hex-värden istället, så rutan ser
+   likadan ut här som på index.html oavsett Breeder Hubs eget tema/
+   ljust-mörkt-läge.
+*/
 .auth-card{
-  width:min(380px,100%); background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-l);
-  padding:32px 28px 26px; box-shadow:0 18px 50px rgba(0,0,0,.28), 0 2px 10px rgba(0,0,0,.12);
+  position:relative;
+  width:min(380px,100%); max-height:88vh; overflow-y:auto;
+  background:#F8F5EC; border:1px solid #DCD3BF; border-radius:22px;
+  padding:30px 24px 26px; box-shadow:0 24px 60px rgba(0,0,0,.28);
   pointer-events:auto;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:#2B241C;
+}
+.auth-close-btn{
+  position:absolute; top:14px; right:14px; width:28px; height:28px; padding:0;
+  border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+  font-size:19px; line-height:1; color:#6E6455;
+  background:transparent; border:none; cursor:pointer;
+}
+.auth-close-btn:hover{background:rgba(0,0,0,.06); color:#2B241C;}
+.auth-trial-badge{
+  display:inline-block; font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  color:#4B6B3E; background:rgba(75,107,62,.12);
+  border:1px solid rgba(75,107,62,.25); border-radius:20px;
+  padding:5px 12px; margin:0 0 12px;
 }
 .demo-badge{
   display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
   background:var(--honey-tint); color:var(--honey-deep); padding:2px 8px; border-radius:10px; margin-left:6px;
 }
-.auth-eyebrow{font-size:12px; color:var(--ink-soft); margin:0 0 2px;}
-.auth-title{font-family:var(--font-display); font-size:23px; font-weight:500; margin:0 0 6px;}
-.auth-desc{font-size:13.5px; color:var(--ink-soft); margin:0 0 18px; line-height:1.5;}
-#authForm{display:flex; flex-direction:column; gap:5px;}
-#authForm label{font-size:12px; font-weight:600; color:var(--ink-soft); margin-top:10px;}
+.auth-eyebrow{margin:0 0 2px; font-size:12.5px; letter-spacing:.04em; color:#6E6455;}
+.auth-title{font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:22px; margin:0 0 6px; color:#2B241C;}
+.auth-desc{font-size:14px; line-height:1.5; color:#6E6455; margin:0 0 18px;}
+#authForm{display:flex; flex-direction:column; gap:6px;}
+#authForm label{font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:#6E6455; margin-top:10px;}
 #authForm input{
-  border:1px solid var(--line); border-radius:var(--radius-s); padding:10px 12px; font-size:14px;
-  background:var(--surface-2); color:var(--ink); font-family:inherit; outline:none;
+  box-sizing:border-box; width:100%; font-family:inherit; font-size:15px;
+  color:#2B241C; background:#F1ECDF;
+  border:1px solid #DCD3BF; border-radius:10px; padding:11px 12px;
+  outline:none; transition:border-color .15s ease;
 }
-#authForm input:focus{border-color:var(--honey);}
+#authForm input:focus{border-color:#33505A;}
 #authMessage{min-height:16px; font-size:12.5px; margin:10px 0 0; line-height:1.4;}
-#authMessage.error{color:var(--danger);}
-#authMessage.success{color:var(--ok);}
+#authMessage.error{color:#9C3B2C;}
+#authMessage.success{color:#4B6B3E;}
 #authSubmit{
-  margin-top:16px; width:100%; font-family:inherit; font-size:14.5px; font-weight:600;
-  color:#F4EFE2; background:var(--pine); border:none; border-radius:var(--radius-s); padding:11px; cursor:pointer;
+  margin-top:16px; width:100%; font-family:inherit; font-size:15px; font-weight:500;
+  color:#F8F5EC; background:#2B241C; border:none; border-radius:30px; padding:12px; cursor:pointer;
+  transition:background .15s ease;
 }
-#authSubmit:hover{background:var(--pine-deep);}
+#authSubmit:hover{background:#3A322A;}
 #authSubmit:disabled{opacity:.6; cursor:default;}
-.auth-switch{margin:12px 0 0; text-align:center; font-size:13px; color:var(--ink-soft);}
-.auth-switch button{font-family:inherit; font-size:13px; color:var(--honey-deep); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline;}
-#authConfigNote{font-size:12.5px; color:var(--ink-soft); line-height:1.5; text-align:center; max-width:340px;}
-#authConfigNote code{background:var(--surface-2); padding:1px 5px; border-radius:4px;}
-.auth-forgot-row{text-align:right; margin-top:6px;}
-.auth-forgot-row button{font-family:inherit; font-size:12px; color:var(--ink-soft); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline;}
-.auth-forgot-row button:hover{color:var(--honey-deep);}
-.auth-forgot-row button:disabled{opacity:.6; cursor:default;}
+.auth-switch{margin:10px 0 0; text-align:center; font-size:13px; color:#6E6455;}
+.auth-switch button{font-family:inherit; font-size:13px; color:#33505A; background:none; border:none; padding:0; cursor:pointer; text-decoration:underline; text-underline-offset:3px;}
+.auth-switch button:hover{color:#2B241C;}
+.auth-switch button:disabled{opacity:.6; cursor:default;}
+#authConfigNote{font-size:12.5px; color:#6E6455; line-height:1.5; text-align:center; max-width:340px;}
+#authConfigNote code{background:#F1ECDF; padding:1px 5px; border-radius:4px;}
 .auth-consent-row{display:flex; align-items:flex-start; gap:8px; margin-top:14px;}
 .auth-consent-row[hidden]{display:none;}
-.auth-consent-row input[type="checkbox"]{width:16px; height:16px; margin-top:2px; flex-shrink:0; accent-color:var(--pine); cursor:pointer;}
-.auth-consent-row label{font-size:12px; font-weight:400; color:var(--ink-soft); margin-top:0; line-height:1.5; cursor:pointer;}
-.auth-consent-row label a{color:var(--honey-deep); text-decoration:underline;}
+.auth-consent-row input[type="checkbox"]{width:16px; height:16px; margin-top:2px; flex-shrink:0; accent-color:#33505A; cursor:pointer;}
+.auth-consent-row label{flex:1 1 auto; min-width:0; font-size:12px; font-weight:400; color:#6E6455; margin-top:0; line-height:1.5; cursor:pointer;}
+.auth-consent-row label a{color:#33505A; text-decoration:underline;}
 #authMessage.error.consent-error{font-weight:600;}
-.legal-footer-links{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-soft); margin-top:10px;}
-.legal-footer-links a, .legal-footer-links button{font-family:inherit; font-size:11.5px; color:var(--ink-soft); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline;}
+.legal-footer-links{display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:11.5px; color:#6E6455; margin-top:10px;}
+.legal-footer-links a, .legal-footer-links button{font-family:inherit; font-size:11.5px; color:#6E6455; background:none; border:none; padding:0; cursor:pointer; text-decoration:underline;}
 .legal-footer-links a:hover, .legal-footer-links button:hover{color:var(--honey-deep);}
 .legal-footer-links .dot{opacity:.5;}
 /* Sidebar is narrow, so its legal links stack vertically instead of
@@ -337,24 +376,27 @@ tbody tr:hover{background:var(--surface-2);}
 #passwordResetGate{
   position:fixed; inset:0; z-index:450; display:none;
   align-items:center; justify-content:center; padding:20px;
-  background:rgba(20,24,21,.35);
+  background:rgba(43,36,28,.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
 }
 #passwordResetGate.show{display:flex;}
-#passwordResetForm{display:flex; flex-direction:column; gap:5px;}
-#passwordResetForm label{font-size:12px; font-weight:600; color:var(--ink-soft); margin-top:10px;}
+#passwordResetForm{display:flex; flex-direction:column; gap:6px;}
+#passwordResetForm label{font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:#6E6455; margin-top:10px;}
 #passwordResetForm input{
-  border:1px solid var(--line); border-radius:var(--radius-s); padding:10px 12px; font-size:14px;
-  background:var(--surface-2); color:var(--ink); font-family:inherit; outline:none;
+  box-sizing:border-box; width:100%; font-family:inherit; font-size:15px;
+  color:#2B241C; background:#F1ECDF;
+  border:1px solid #DCD3BF; border-radius:10px; padding:11px 12px;
+  outline:none; transition:border-color .15s ease;
 }
-#passwordResetForm input:focus{border-color:var(--honey);}
+#passwordResetForm input:focus{border-color:#33505A;}
 #passwordResetMessage{min-height:16px; font-size:12.5px; margin:10px 0 0; line-height:1.4;}
-#passwordResetMessage.error{color:var(--danger);}
-#passwordResetMessage.success{color:var(--ok);}
+#passwordResetMessage.error{color:#9C3B2C;}
+#passwordResetMessage.success{color:#4B6B3E;}
 #passwordResetSubmit{
-  margin-top:16px; width:100%; font-family:inherit; font-size:14.5px; font-weight:600;
-  color:#F4EFE2; background:var(--pine); border:none; border-radius:var(--radius-s); padding:11px; cursor:pointer;
+  margin-top:16px; width:100%; font-family:inherit; font-size:15px; font-weight:500;
+  color:#F8F5EC; background:#2B241C; border:none; border-radius:30px; padding:12px; cursor:pointer;
+  transition:background .15s ease;
 }
-#passwordResetSubmit:hover{background:var(--pine-deep);}
+#passwordResetSubmit:hover{background:#3A322A;}
 #passwordResetSubmit:disabled{opacity:.6; cursor:default;}
 
 /* paywall gate — visas för inloggade användare utan aktivt Stripe-
@@ -687,31 +729,32 @@ tbody tr:hover{background:var(--surface-2);}
 
 <div id="authGate">
   <div class="auth-card" id="authCard">
-    <div class="auth-eyebrow">BREEDER HUB</div>
-    <h1 class="auth-title" id="authTitle">Logga in</h1>
-    <p class="auth-desc" id="authDesc">Logga in för att komma åt din kennels hundregister, hälsojournal och kalender.</p>
-    <p class="auth-seo-blurb" style="font-size:12px; color:var(--ink-soft); margin:-4px 0 16px; line-height:1.5;">Breeder Hub är Doginarys verktyg för hunduppfödare — samla hundregister, hälsojournal, parningar, kullar, valpmatchning och köpar-CRM på ett ställe.</p>
+    <button type="button" class="auth-close-btn" id="authCloseBtn" aria-label="Stäng">&times;</button>
+    <div class="auth-eyebrow">DOGINARY</div>
+    <h1 class="auth-title" id="authTitle">Skapa konto</h1>
+    <p class="auth-trial-badge" id="authTrialBadge">14 dagar fritt att testa — inget kort behövs</p>
+    <p class="auth-desc" id="authDesc">Skapa ett konto så får du en egen kennel att fylla med hundar, hälsodata och mer.</p>
     <form id="authForm">
       <label>E-post</label><input type="email" name="email" required autocomplete="username">
       <label>Lösenord</label><input type="password" name="password" required autocomplete="current-password" minlength="6">
-      <div class="auth-forgot-row"><button type="button" id="authForgotBtn">Glömt lösenordet?</button></div>
-      <div class="auth-consent-row" id="authConsentRow" hidden>
+      <div class="auth-consent-row" id="authConsentRow">
         <input type="checkbox" id="authConsentCheckbox">
         <label for="authConsentCheckbox" id="authConsentLabel"></label>
       </div>
       <div id="authMessage"></div>
-      <button type="submit" id="authSubmit">Logga in</button>
+      <button type="submit" id="authSubmit">Skapa konto</button>
     </form>
-    <div class="auth-switch">
-      <span id="authSwitchText">Inget konto än?</span> <button type="button" id="authSwitchBtn">Skapa konto</button>
-    </div>
+    <p class="auth-switch">
+      <span id="authSwitchText">Har du redan ett konto?</span> <button type="button" id="authSwitchBtn">Logga in</button>
+    </p>
+    <p class="auth-switch"><button type="button" id="authForgotBtn">Glömt lösenordet?</button></p>
     <div class="legal-footer-links" id="authLegalLinks"></div>
   </div>
 </div>
 
 <div id="passwordResetGate">
   <div class="auth-card" id="passwordResetCard">
-    <div class="auth-eyebrow">BREEDER HUB</div>
+    <div class="auth-eyebrow">DOGINARY</div>
     <div class="auth-title" id="passwordResetTitle">Välj nytt lösenord</div>
     <p class="auth-desc" id="passwordResetDesc">Ange ett nytt lösenord för ditt konto.</p>
     <form id="passwordResetForm">
@@ -886,6 +929,7 @@ const I18N = {
     pmDashboardSubDemo: 'Så här ser Breeder Hub ut — logga in eller skapa konto för din egen kennel',
 
     authTitleSignin: 'Logga in', authTitleSignup: 'Skapa konto',
+    authTrialBadge: '14 dagar fritt att testa — inget kort behövs',
     authDescSignin: 'Logga in för att komma åt din kennels hundregister, hälsojournal och kalender.',
     authDescSignup: 'Skapa ett konto så får du en egen kennel att fylla med hundar, hälsodata och mer.',
     authSubmitSignin: 'Logga in', authSubmitSignup: 'Skapa konto',
@@ -947,10 +991,27 @@ const I18N = {
     linkCopied: 'Länken är kopierad',
     publicPageWhatsShown: 'Vad visas publikt — och vad är privat?',
     publicPageShownLabel: 'Visas publikt (synligt för alla, ingen inloggning krävs)',
-    publicPageShownList: 'Kennelnamn, den kontaktuppgift du själv väljer att fylla i nedan, samt för varje hund: foto, namn, ras, kön, ålder, färg, mankhöjd, vikt, status (valp/vuxen/pensionerad) och eventuella titlar/meriter. Uppdateras automatiskt varje gång du sparar en ändring i Hundregistret. Besökare kan själva välja språk och måttenhet (metriskt/imperialt) på sidan.',
+    publicPageShownList: 'Kennelnamn, den kontaktuppgift du själv väljer att fylla i nedan, samt för varje hund: foto, namn, ras, kön, ålder (beräknad från födelsedatum — inget exakt datum visas), färg, mankhöjd, vikt (senaste vägningen), HD-resultat och upp till två meriter/titlar. Status visas som en liten etikett för valpar och pensionerade hundar (avlidna hundar visas aldrig på sidan). Uppdateras automatiskt varje gång du sparar en ändring i Hundregistret. Besökare kan själva välja språk och måttenhet (metriskt/imperialt) på sidan.',
+    publicPagePartialLabel: 'Sparas i den publika datan, men visas inte i sidans nuvarande utseende',
+    publicPagePartialList: 'Registreringsnummer, kennelnamn/pedigrenamn, armbågs- (AD) och ögonresultat, DNA-testresultat, samt vilka hundar som är far/mor till varandra. Den här informationen skickas med till den publika sidans data (går alltså tekniskt att hämta av den som vet var man ska leta), men syns inte för besökare i sidans nuvarande design.',
     publicPageHiddenLabel: 'Visas aldrig (stannar privat i din kennel)',
-    publicPageHiddenList: 'Köpare/valpspekulanter, dokument, kenneljournal, lager, akutkontakter och dina privata anteckningar om hundarna. Det här lämnar aldrig ditt konto.',
+    publicPageHiddenList: 'Köpare/valpspekulanter, dokument, kenneljournal, lager, akutkontakter, dina privata anteckningar om hundarna, parningsplaner samt kullar/valpar under "Kullar". Trots att sidtexten där antyder motsatsen skickas valpar i nuläget inte till den publika sidan — vill du visa dem där behöver du lägga till dem som egna hundar med status "Valp" i Hundregistret istället. Det här lämnar annars aldrig ditt konto.',
     publicPageDogsCount: '{n} hundar visas just nu på sidan, varav {p} har ett foto.',
+    dogsPublicMirrorNote: 'Det som visas här speglar automatiskt din publika kennelsida: namn, ras, kön, ålder, färg, mankhöjd, vikt, HD-resultat, foto, status samt de två första meriterna för varje hund — plus pris om du aktiverat det under "Publik sida". Registreringsnummer, AD/ögon/DNA-resultat och föräldradjur sparas också i den publika datan men visas inte i sidans nuvarande utformning. Allt annat (hälsojournal, anteckningar, parningsplaner, kunder, dokument m.m.) är privat och lämnar aldrig ditt konto.',
+    flagPublic: 'Publikt', flagPartial: 'Publikt (visas ej)', flagPrivate: 'Privat',
+    infoTabPriceNote: 'Publikt endast om du har aktiverat "Visa pris" under Publik sida.',
+    titlesPublicNote: 'De två första meriterna ovan visas på din publika sida — resten är bara synliga här.',
+    parentsPublicNote: 'Far/mor sparas i den publika datan men visas inte på sidan i nuvarande design.',
+    weightTabPublicNote: 'Endast den senaste vägningen visas på din publika sida. Hela viktloggen och grafen här är privat.',
+    notesTabPrivateNote: 'Anteckningar är privata och visas aldrig på din publika sida.',
+    healthTabPrivateNote: 'Hälsojournalen (vaccinationer, veterinärbesök, tester) är privat och skickas aldrig till din publika sida — bara HD/AD/ögon/DNA-fälten på hundens infoflik hanteras separat (se dess egna markeringar).',
+    pedigreePrivateNote: 'Stamtavlan här är privat. HD-resultat och första meriten per hund som visas i träden syns även på din publika sida (kopplat till respektive hund), men själva släktträdet/relationerna visas inte där.',
+    breedingPrivateNote: 'Parningsplaner, dräktighetskalkylatorn och löptidsöversikten är privata och visas aldrig på din publika sida.',
+    littersGapNote: 'Kullar och valpar skickas i nuläget inte till din publika sida, trots att texten i appen kan ge intryck av motsatsen. Vill du visa en valp för försäljning på den publika sidan behöver du lägga till den som en egen hund med status "Valp" under Hundregistret istället.',
+    matchingPrivateNote: 'Valpmatchningen är privat — kopplingar mellan valpar och köpare visas aldrig på din publika sida.',
+    buyersPrivateNote: 'Köpare/valpspekulanter (CRM) är privat kunddata och visas aldrig på din publika sida.',
+    documentsPrivateNote: 'Dokument är privata filer och visas aldrig på din publika sida.',
+    morePrivateNote: 'Lager, akutkontakter och kenneljournalen nedan är privata och visas aldrig på din publika sida. Meriter/titlar du lägger till här visas publikt om de även läggs till på respektive hund i Hundregistret (endast de två första per hund).',
     labelPublicContact: 'Kontaktuppgift (visas publikt)',
     phPublicContact: 'T.ex. namn, e-post, telefon och/eller ort',
     publicContactHint: 'Frivilligt. Det du skriver här visas öppet på sidan så att valpspekulanter kan höra av sig. Lämna fältet tomt om du inte vill visa någon kontaktväg.',
@@ -1177,6 +1238,7 @@ const I18N = {
     pmDashboardSubDemo: "This is what Breeder Hub looks like — log in or create an account for your own kennel",
 
     authTitleSignin: 'Log in', authTitleSignup: 'Create account',
+    authTrialBadge: '14 days free to try — no card needed',
     authDescSignin: "Log in to access your kennel's dog register, health records and calendar.",
     authDescSignup: 'Create an account to get your own kennel to fill with dogs, health data and more.',
     authSubmitSignin: 'Log in', authSubmitSignup: 'Create account',
@@ -1238,10 +1300,27 @@ const I18N = {
     linkCopied: 'Link copied',
     publicPageWhatsShown: "What's public — and what's private?",
     publicPageShownLabel: 'Shown publicly (visible to anyone, no login needed)',
-    publicPageShownList: 'Kennel name, the contact info you choose to fill in below, plus for each dog: photo, name, breed, sex, age, colour, height, weight, status (puppy/adult/retired) and any titles. Updates automatically every time you save a change in the Dog register. Visitors can choose their own language and unit system (metric/imperial) on the page.',
+    publicPageShownList: 'Kennel name, the contact info you choose to fill in below, and for each dog: photo, name, breed, sex, age (calculated from the birth date — no exact date is shown), colour, height, weight (most recent weigh-in), HD result, and up to two titles. Status shows as a small label for puppies and retired dogs (deceased dogs are never shown on the page). Updates automatically every time you save a change in the Dog register. Visitors can choose their own language and unit system (metric/imperial) on the page.',
+    publicPagePartialLabel: 'Saved in the public data, but not shown in the page\'s current design',
+    publicPagePartialList: 'Registration number, kennel/pedigree name, elbow (AD) and eye results, DNA test results, and which dogs are each other\'s sire/dam. This information is included in the public page\'s data (so it\'s technically retrievable by anyone who knows where to look), but isn\'t displayed to visitors in the page\'s current design.',
     publicPageHiddenLabel: 'Never shown (stays private in your kennel)',
-    publicPageHiddenList: 'Buyers/prospects, documents, kennel journal, inventory, emergency contacts, and your private notes on the dogs. This never leaves your account.',
+    publicPageHiddenList: 'Buyers/prospects, documents, kennel journal, inventory, emergency contacts, your private notes on the dogs, mating plans, and litters/puppies under "Litters". Even though the text there suggests otherwise, puppies are not currently sent to the public page — to show one for sale there, add it as its own dog with status "Puppy" in the Dog register instead. Everything else here never leaves your account.',
     publicPageDogsCount: '{n} dogs currently shown on the page, {p} of which have a photo.',
+    dogsPublicMirrorNote: 'What\'s shown here automatically mirrors your public kennel page: name, breed, sex, age, colour, height, weight, HD result, photo, status, and the first two titles for each dog — plus price if you\'ve turned that on under "Public page". Registration number, AD/eye/DNA results and parent dogs are also stored in the public data but aren\'t displayed in the page\'s current design. Everything else (health records, notes, mating plans, customers, documents etc.) is private and never leaves your account.',
+    flagPublic: 'Public', flagPartial: 'Public (not shown)', flagPrivate: 'Private',
+    infoTabPriceNote: 'Only public if you\'ve turned on "Show price" under Public page.',
+    titlesPublicNote: 'The first two titles above are shown on your public page — the rest are only visible here.',
+    parentsPublicNote: 'Sire/dam are stored in the public data but aren\'t displayed on the page in its current design.',
+    weightTabPublicNote: 'Only the most recent weigh-in is shown on your public page. The full weight log and chart here are private.',
+    notesTabPrivateNote: 'Notes are private and never shown on your public page.',
+    healthTabPrivateNote: 'The health record (vaccinations, vet visits, tests) is private and never sent to your public page — the HD/AD/eye/DNA fields on the dog\'s info tab are handled separately (see their own flags).',
+    pedigreePrivateNote: 'The pedigree tree here is private. The HD result and top title per dog shown in the tree also appear on your public page (tied to that dog), but the family tree/relationships themselves aren\'t shown there.',
+    breedingPrivateNote: 'Mating plans, the due-date calculator, and heat tracking are private and never shown on your public page.',
+    littersGapNote: 'Litters and puppies are not currently sent to your public page, even though the app\'s text can suggest otherwise. To show a puppy for sale on the public page, add it as its own dog with status "Puppy" in the Dog register instead.',
+    matchingPrivateNote: 'Puppy matching is private — links between puppies and buyers are never shown on your public page.',
+    buyersPrivateNote: 'Buyers/prospects (CRM) are private customer data and are never shown on your public page.',
+    documentsPrivateNote: 'Documents are private files and are never shown on your public page.',
+    morePrivateNote: 'Inventory, emergency contacts, and the kennel journal below are private and never shown on your public page. Titles you add here are shown publicly if also added to the matching dog in the Dog register (only the first two per dog).',
     labelPublicContact: 'Contact info (shown publicly)',
     phPublicContact: 'e.g. name, email, phone and/or location',
     publicContactHint: 'Optional. What you write here is shown openly on the page so puppy buyers can reach out. Leave it blank to show no contact info.',
@@ -1597,7 +1676,7 @@ let KENNEL_ID = null;
 let DEMO_MODE = true;
 
 /* ---------------- AUTH ---------------- */
-let authMode = 'signin'; // or 'signup'
+let authMode = 'signup'; // or 'signin'
 const authGate = document.getElementById('authGate');
 const authForm = document.getElementById('authForm');
 const authMsg = document.getElementById('authMessage');
@@ -1610,6 +1689,11 @@ function setAuthMode(mode){
   authSubmit.textContent = mode==='signin' ? t('authSubmitSignin') : t('authSubmitSignup');
   document.getElementById('authSwitchText').textContent = mode==='signin' ? t('authSwitchTextSignin') : t('authSwitchTextSignup');
   document.getElementById('authSwitchBtn').textContent = mode==='signin' ? t('authSwitchBtnSignin') : t('authSwitchBtnSignup');
+  const trialBadge = document.getElementById('authTrialBadge');
+  if(trialBadge){
+    if(mode === 'signup'){ trialBadge.textContent = t('authTrialBadge'); trialBadge.style.display = ''; }
+    else { trialBadge.style.display = 'none'; }
+  }
   const emailLabel = authForm.querySelector('label[for=""]') || authForm.querySelectorAll('label')[0];
   const labels = authForm.querySelectorAll('label');
   if (labels[0]) labels[0].textContent = t('authEmailLabel');
@@ -1622,6 +1706,7 @@ function setAuthMode(mode){
   renderLegalLinks();
 }
 document.getElementById('authSwitchBtn').addEventListener('click', ()=> setAuthMode(authMode==='signin' ? 'signup' : 'signin'));
+document.getElementById('authCloseBtn').addEventListener('click', ()=> authGate.classList.remove('show'));
 
 authForm.addEventListener('submit', async e=>{
   e.preventDefault();
@@ -1935,14 +2020,14 @@ if(cloudEnabled){
     } else {
       hideAccountMenuWrap();
       hidePaywall();
-      setAuthMode('signin');
+      setAuthMode('signup');
       authGate.classList.add('show');
       if(!DEMO_MODE) startDemo();
     }
   });
 } else {
   document.getElementById('authCard').innerHTML = `
-    <div class="auth-eyebrow">BREEDER HUB</div>
+    <div class="auth-eyebrow">DOGINARY</div>
     <div class="auth-title">${t('authNotConfiguredTitle')}</div>
     <div id="authConfigNote">
       ${t('authNotConfiguredNote')}
@@ -2596,6 +2681,7 @@ let dogFilter = 'all', dogSearch = '';
 function renderDogs(){
   content.innerHTML = `
     <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 16px; max-width:640px;">${t('dogsPageHint')}</p>
+    <div class="pub-note is-public" style="max-width:640px;">${t('dogsPublicMirrorNote')}</div>
     <div class="filter-row">
       <div class="search-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input type="text" id="dogSearchInput" placeholder="${t('searchDogsPlaceholder')}" value="${dogSearch}"></div>
@@ -2661,26 +2747,28 @@ function openDogProfile(id){
     if(tab==='info'){
       body.innerHTML = `
         <div class="form-grid" style="font-size:13px;">
-          ${infoRow(t('fieldCallName'), d.callName, true)} ${infoRow(t('fieldSex'), sexLabel(d.sex), true)}
-          ${infoRow(t('fieldBreed'), d.breed, true)} ${infoRow(t('fieldColor'), d.color, true)}
-          ${infoRow(t('fieldBorn'), fmtDate(d.dob), true)} ${infoRow(t('fieldAge'), ageFromDob(d.dob), true)}
-          ${infoRow(t('fieldChip'), d.chip, false)} ${infoRow(t('fieldRegNo'), d.reg, true)}
-          ${infoRow(t('fieldHeight'), d.height?d.height+' cm':'—', true)} ${infoRow(t('fieldStatus'), statusLabel(d.status), true)}
-          ${infoRow(t('fieldPrice'), d.price?formatMoney(d.price):'—', true)}
-          ${infoRow(t('fieldHips'), d.hips||'—', true)} ${infoRow(t('fieldElbows'), d.elbows||'—', true)}
-          ${infoRow(t('fieldEyes'), d.eyes||'—', true)} ${infoRow(t('fieldDna'), d.dna||'—', true)}
+          ${infoRow(t('fieldCallName'), d.callName, 'public')} ${infoRow(t('fieldSex'), sexLabel(d.sex), 'public')}
+          ${infoRow(t('fieldBreed'), d.breed, 'public')} ${infoRow(t('fieldColor'), d.color, 'public')}
+          ${infoRow(t('fieldBorn'), fmtDate(d.dob), 'private')} ${infoRow(t('fieldAge'), ageFromDob(d.dob), 'public')}
+          ${infoRow(t('fieldChip'), d.chip, 'private')} ${infoRow(t('fieldRegNo'), d.reg, 'partial')}
+          ${infoRow(t('fieldHeight'), d.height?d.height+' cm':'—', 'public')} ${infoRow(t('fieldStatus'), statusLabel(d.status), 'public')}
+          ${infoRow(t('fieldPrice'), d.price?formatMoney(d.price):'—', 'public')}
+          ${infoRow(t('fieldHips'), d.hips||'—', 'public')} ${infoRow(t('fieldElbows'), d.elbows||'—', 'partial')}
+          ${infoRow(t('fieldEyes'), d.eyes||'—', 'partial')} ${infoRow(t('fieldDna'), d.dna||'—', 'partial')}
         </div>
-        ${d.titles.length?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">${t('titlesLabel')}</div><div class="dog-tags">${d.titles.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div>`:''}
+        <div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px;">${t('infoTabPriceNote')}</div>
+        ${d.titles.length?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">${t('titlesLabel')}</div><div class="dog-tags">${d.titles.map(x=>`<span class="tag">${x}</span>`).join('')}</div><div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px;">${t('titlesPublicNote')}</div></div>`:''}
         ${(d.sire||d.dam)?`<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;">${t('parentsLabel')}</div>
-          <div style="font-size:13px;">${d.sire?(t('sireLabel')+': '+ (dogById(d.sire)?.name||'—')):''} ${d.dam?('· '+t('damLabel')+': '+(dogById(d.dam)?.name||'—')):''}</div></div>`:''}
+          <div style="font-size:13px;">${d.sire?(t('sireLabel')+': '+ (dogById(d.sire)?.name||'—')):''} ${d.dam?('· '+t('damLabel')+': '+(dogById(d.dam)?.name||'—')):''}</div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px;">${t('parentsPublicNote')}</div></div>`:''}
       `;
     } else if(tab==='health'){
-      body.innerHTML = (dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
+      body.innerHTML = `<div class="pub-note is-private">${t('healthTabPrivateNote')}</div>` + (dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
         <div class="tl-item"><div class="tl-date">${fmtDate(h.date)}</div><div class="tl-title">${h.type} ${h.status==='due'?`<span class=\"badge due\" style=\"margin-left:6px;\">${t('dueBadge')}</span>`:''}</div><div class="tl-desc">${h.detail}${h.due?(t('nextLabel')+fmtDate(h.due)):''}</div></div>
       `).join('')}</div>` : `<div class="empty">${t('noHealthRecords')}</div>`);
     } else if(tab==='weight'){
-      if(!d.weightLog.length){ body.innerHTML = `<div class="empty">${t('noWeightData')}</div>`; return; }
-      body.innerHTML = `<canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>${t('colDate')}</th><th>${t('weightKg')}</th></tr></thead><tbody>
+      if(!d.weightLog.length){ body.innerHTML = `<div class="pub-note is-partial">${t('weightTabPublicNote')}</div><div class="empty">${t('noWeightData')}</div>`; return; }
+      body.innerHTML = `<div class="pub-note is-partial">${t('weightTabPublicNote')}</div><canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>${t('colDate')}</th><th>${t('weightKg')}</th></tr></thead><tbody>
         ${d.weightLog.slice().reverse().map(w=>`<tr><td>${fmtDate(w.d)}</td><td>${w.kg} kg</td></tr>`).join('')}
       </tbody></table></div>`;
       const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
@@ -2691,7 +2779,7 @@ function openDogProfile(id){
         options:{ plugins:{legend:{display:false}}, scales:{x:{ticks:{color:ink}}, y:{ticks:{color:ink}}} }
       });
     } else if(tab==='notes'){
-      body.innerHTML = `<div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || t('noNotes')}</div>`;
+      body.innerHTML = `<div class="pub-note is-private">${t('notesTabPrivateNote')}</div><div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || t('noNotes')}</div>`;
     }
   }
   document.querySelectorAll('.tab-btn').forEach(b=> b.addEventListener('click', ()=>{
@@ -2711,8 +2799,9 @@ function deleteDog(id){
   DB.health = DB.health.filter(h=> h.dogId!==id);
   saveDB(); closeDrawer(); renderDogs(); toast(t('toastDogRemoved',{name:d.name}));
 }
-function infoRow(label,val){
-  return `<div class="field"><label>${label}</label><div style="padding:8px 0; font-weight:500;">${val}</div></div>`;
+function infoRow(label,val,flag){
+  const flagHtml = flag ? `<span class="field-flag is-${flag}">${t('flag'+flag.charAt(0).toUpperCase()+flag.slice(1))}</span>` : '';
+  return `<div class="field"><label>${label}${flagHtml}</label><div style="padding:8px 0; font-weight:500;">${val}</div></div>`;
 }
 
 function openDogForm(existing){
@@ -2727,7 +2816,7 @@ function openDogForm(existing){
     <div class="drawer-body">
       <form id="dogForm" class="form-grid">
         <div class="field full">
-          <label>${t('labelPhoto')}</label>
+          <label>${t('labelPhoto')}<span class="field-flag is-public">${t('flagPublic')}</span></label>
           <div style="display:flex; align-items:center; gap:14px;">
             <div id="dogPhotoPreview" style="width:76px; height:76px; border-radius:50%; overflow:hidden; background:var(--pine-tint); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
               ${d.photoUrl ? `<img src="${d.photoUrl}" alt="" style="width:100%; height:100%; object-fit:cover;">` : `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--pine); opacity:.55;"><path d="M10 5.2C8.5 4 6.8 4 6 5c-1 1.2-.4 3.4.6 4.4M14 5.2c1.5-1.2 3.2-1.2 4 0 1 1 .4 3.2-.6 4M12 8c-3.5 0-6 2.6-6 6.4 0 3.4 2.7 5.6 6 5.6s6-2.2 6-5.6C18 10.6 15.5 8 12 8z"/></svg>`}
@@ -2739,45 +2828,48 @@ function openDogForm(existing){
             </div>
           </div>
         </div>
-        <div class="field"><label>${t('labelNameRequired')}</label><input required name="name" value="${d.name||''}"></div>
-        <div class="field"><label>${t('labelRegName')}</label><input name="regName" value="${d.regName||''}"></div>
-        <div class="field"><label>${t('labelBreedRequired')}</label><input required name="breed" value="${d.breed||'Golden Retriever'}"></div>
-        <div class="field"><label>${t('labelSex')}</label><select name="sex"><option value="female" ${sel(d.sex,'female')}>${t('sexFemale')}</option><option value="male" ${sel(d.sex,'male')}>${t('sexMale')}</option></select></div>
-        <div class="field"><label>${t('labelBorn')}</label><input type="date" name="dob" value="${d.dob||''}"></div>
-        <div class="field"><label>${t('labelColor')}</label><input name="color" value="${d.color||''}"></div>
-        <div class="field"><label>${t('labelChip')}</label><input name="chip" value="${d.chip||''}"></div>
-        <div class="field"><label>${t('labelRegNo')}</label><input name="reg" value="${d.reg||''}"></div>
-        <div class="field"><label>${t('labelStatus')}</label><select name="status">
+        <div class="field"><label>${t('labelNameRequired')}<span class="field-flag is-public">${t('flagPublic')}</span></label><input required name="name" value="${d.name||''}"></div>
+        <div class="field"><label>${t('labelRegName')}<span class="field-flag is-partial">${t('flagPartial')}</span></label><input name="regName" value="${d.regName||''}"></div>
+        <div class="field"><label>${t('labelBreedRequired')}<span class="field-flag is-public">${t('flagPublic')}</span></label><input required name="breed" value="${d.breed||'Golden Retriever'}"></div>
+        <div class="field"><label>${t('labelSex')}<span class="field-flag is-public">${t('flagPublic')}</span></label><select name="sex"><option value="female" ${sel(d.sex,'female')}>${t('sexFemale')}</option><option value="male" ${sel(d.sex,'male')}>${t('sexMale')}</option></select></div>
+        <div class="field"><label>${t('labelBorn')}<span class="field-flag is-private">${t('flagPrivate')}</span></label><input type="date" name="dob" value="${d.dob||''}"></div>
+        <div class="field"><label>${t('labelColor')}<span class="field-flag is-public">${t('flagPublic')}</span></label><input name="color" value="${d.color||''}"></div>
+        <div class="field"><label>${t('labelChip')}<span class="field-flag is-private">${t('flagPrivate')}</span></label><input name="chip" value="${d.chip||''}"></div>
+        <div class="field"><label>${t('labelRegNo')}<span class="field-flag is-partial">${t('flagPartial')}</span></label><input name="reg" value="${d.reg||''}"></div>
+        <div class="field"><label>${t('labelStatus')}<span class="field-flag is-public">${t('flagPublic')}</span></label><select name="status">
           ${(isEdit && d.status==='puppy') ? `<option value="puppy" selected>${t('statusPuppy')}</option>` : ''}
           <option value="adult" ${sel(d.status,'adult')||(!isEdit?'selected':'')}>${t('statusAdult')}</option>
           <option value="retired" ${sel(d.status,'retired')}>${t('statusRetired')}</option>
           <option value="deceased" ${sel(d.status,'deceased')}>${t('statusDeceased')}</option>
         </select></div>
-        <div class="field"><label>${t('labelHeightCm')}</label><input type="number" name="height" value="${d.height||''}"></div>
+        <div class="field"><label>${t('labelHeightCm')}<span class="field-flag is-public">${t('flagPublic')}</span></label><input type="number" name="height" value="${d.height||''}"></div>
         <div class="field">
-          <label>${t('labelDogPrice',{cur:DB.currency||'SEK'})}</label>
+          <label>${t('labelDogPrice',{cur:DB.currency||'SEK'})}<span class="field-flag is-public">${t('flagPublic')}</span></label>
           <input type="number" min="0" step="1" name="price" value="${d.price||''}" placeholder="${t('phDogPrice')}">
-          <span style="font-size:11.5px; color:var(--ink-soft); margin-top:4px; display:block;">${t('dogPriceHint')}</span>
+          <span style="font-size:11.5px; color:var(--ink-soft); margin-top:4px; display:block;">${t('dogPriceHint')} ${t('infoTabPriceNote')}</span>
         </div>
 
         <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">${t('pedigreeSection')}</label></div>
-        <div class="field"><label>${t('labelSire')}</label><select name="sire">
+        <div class="field"><label>${t('labelSire')}<span class="field-flag is-partial">${t('flagPartial')}</span></label><select name="sire">
           <option value="">${t('unknownOption')}</option>
           ${sireOptions.map(x=>`<option value="${x.id}" ${sel(d.sire,x.id)}>${x.name}</option>`).join('')}
         </select></div>
-        <div class="field"><label>${t('labelDam')}</label><select name="dam">
+        <div class="field"><label>${t('labelDam')}<span class="field-flag is-partial">${t('flagPartial')}</span></label><select name="dam">
           <option value="">${t('unknownOption')}</option>
           ${damOptions.map(x=>`<option value="${x.id}" ${sel(d.dam,x.id)}>${x.name}</option>`).join('')}
         </select></div>
+        <div class="field full" style="margin-top:-8px;"><span style="font-size:11.5px; color:var(--ink-soft);">${t('parentsPublicNote')}</span></div>
 
         <div class="field full" style="border-top:1px solid var(--line); margin-top:6px; padding-top:14px;"><label style="font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;">${t('healthTitlesSection')}</label></div>
-        <div class="field"><label>${t('labelHipsFull')}</label><input name="hips" value="${d.hips||''}" placeholder="${t('phHips')}"></div>
-        <div class="field"><label>${t('labelElbowsFull')}</label><input name="elbows" value="${d.elbows||''}" placeholder="${t('phElbows')}"></div>
-        <div class="field"><label>${t('labelEyesFull')}</label><input name="eyes" value="${d.eyes||''}" placeholder="${t('phEyes')}"></div>
-        <div class="field"><label>${t('labelDnaFull')}</label><input name="dna" value="${d.dna||''}" placeholder="${t('phDna')}"></div>
-        <div class="field full"><label>${t('labelTitlesCsv')}</label><input name="titles" value="${(d.titles||[]).join(', ')}" placeholder="${t('phTitles')}"></div>
+        <div class="field"><label>${t('labelHipsFull')}<span class="field-flag is-public">${t('flagPublic')}</span></label><input name="hips" value="${d.hips||''}" placeholder="${t('phHips')}"></div>
+        <div class="field"><label>${t('labelElbowsFull')}<span class="field-flag is-partial">${t('flagPartial')}</span></label><input name="elbows" value="${d.elbows||''}" placeholder="${t('phElbows')}"></div>
+        <div class="field"><label>${t('labelEyesFull')}<span class="field-flag is-partial">${t('flagPartial')}</span></label><input name="eyes" value="${d.eyes||''}" placeholder="${t('phEyes')}"></div>
+        <div class="field"><label>${t('labelDnaFull')}<span class="field-flag is-partial">${t('flagPartial')}</span></label><input name="dna" value="${d.dna||''}" placeholder="${t('phDna')}"></div>
+        <div class="field full"><label>${t('labelTitlesCsv')}<span class="field-flag is-public">${t('flagPublic')}</span></label><input name="titles" value="${(d.titles||[]).join(', ')}" placeholder="${t('phTitles')}">
+          <span style="font-size:11.5px; color:var(--ink-soft); margin-top:4px; display:block;">${t('titlesPublicNote')}</span>
+        </div>
 
-        <div class="field full"><label>${t('labelNotesPrivate')}</label><textarea name="notes">${d.notes||''}</textarea></div>
+        <div class="field full"><label>${t('labelNotesPrivate')}<span class="field-flag is-private">${t('flagPrivate')}</span></label><textarea name="notes">${d.notes||''}</textarea></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
           <button type="submit" class="btn btn-primary">${isEdit?t('saveChanges'):t('saveDog')}</button>
@@ -2871,6 +2963,7 @@ function fileToDataUrl(file){
 let healthFilterDog = 'all';
 function renderHealth(){
   content.innerHTML = `
+    <div class="pub-note is-private">${t('healthTabPrivateNote')}</div>
     <div class="filter-row">
       <select class="chip-filter" id="healthDogFilter" style="border-radius:8px;">
         <option value="all">${t('allDogs')}</option>
@@ -2935,6 +3028,7 @@ function renderPedigree(){
     return;
   }
   content.innerHTML = `
+    <div class="pub-note is-partial">${t('pedigreePrivateNote')}</div>
     <div class="filter-row">
       <select class="chip-filter" id="pedSelect" style="border-radius:8px;">${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select>
     </div>
@@ -2972,6 +3066,7 @@ function drawPedigree(id){
 /* ---- BREEDING ---- */
 function renderBreeding(){
   content.innerHTML = `
+    <div class="pub-note is-private">${t('breedingPrivateNote')}</div>
     <div class="filter-row"><span style="flex:1"></span>
       <button class="btn btn-primary" id="addBreedingBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newBreedingPlan')}</button>
     </div>
@@ -3040,6 +3135,7 @@ function openBreedingForm(){
 /* ---- LITTERS ---- */
 function renderLitters(){
   content.innerHTML = `
+    <div class="pub-note is-partial">${t('littersGapNote')}</div>
     <div class="filter-row">
       <span style="flex:1"></span>
       <button class="btn btn-primary" id="addLitterBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newLitterBtn')}</button>
@@ -3111,6 +3207,7 @@ function openLitterDetail(id){
         <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div></div>
     <div class="drawer-body">
+      <div class="pub-note is-partial">${t('littersGapNote')}</div>
       <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('puppiesLabel')}</h2><button type="button" class="btn btn-sm" id="addPuppyBtn">${t('addPuppyBtn')}</button></div>
       <div class="table-wrap"><table><thead><tr><th>${t('colName')}</th><th>${t('fieldSex')}</th><th>${t('exColColor')}</th><th>${t('colBirthWeight')}</th><th>${t('colStatus')}</th><th>${t('colActions')}</th></tr></thead>
         <tbody>${l.puppies.map(p=>`<tr>
@@ -3229,6 +3326,7 @@ function renderMatching(){
   const availablePuppies = DB.litters.flatMap(l=> l.puppies.filter(p=>p.status!=='sold').map(p=>({...p, litter:l.name})));
   const waitingBuyers = DB.buyers.filter(b=> b.status==='waiting' || b.status==='approved' || b.status==='reserved');
   content.innerHTML = `
+    <div class="pub-note is-private">${t('matchingPrivateNote')}</div>
     <div class="section-head" style="margin-top:0;"><h2>${t('availablePuppies')}</h2><span class="hint">${availablePuppies.length}</span></div>
     <div class="grid-cards" style="margin-bottom:26px;">
       ${availablePuppies.map(p=>{
@@ -3278,6 +3376,7 @@ let buyerFilter = 'all';
 const BUYER_STATUSES = ['new','waiting','approved','reserved','sold','rejected'];
 function renderBuyers(){
   content.innerHTML = `
+    <div class="pub-note is-private">${t('buyersPrivateNote')}</div>
     <div class="filter-row">
       <button class="chip-filter ${buyerFilter==='all'?'active':''}" data-f="all">${t('filterAll')}</button>
       ${BUYER_STATUSES.map(s=>`<button class="chip-filter ${buyerFilter===s?'active':''}" data-f="${s}">${buyerStatusLabel(s)}</button>`).join('')}
@@ -3484,6 +3583,7 @@ function openEventForm(){
 /* ---- DOCUMENTS ---- */
 function renderDocuments(){
   content.innerHTML = `
+    <div class="pub-note is-private">${t('documentsPrivateNote')}</div>
     <div class="filter-row"><span style="flex:1"></span>
       <label class="btn btn-primary btn-sm" style="cursor:pointer;">${t('uploadDoc')}<input type="file" id="docUpload" style="display:none;" multiple></label>
     </div>
@@ -3533,6 +3633,10 @@ function renderPublicPage(){
         <div class="card card-pad" style="border-left:3px solid var(--ok); margin-bottom:10px;">
           <div style="font-weight:600; font-size:12.5px; color:var(--ok); text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px;">${t('publicPageShownLabel')}</div>
           <p style="font-size:13px; color:var(--ink-soft); line-height:1.6; margin:0;">${t('publicPageShownList')}</p>
+        </div>
+        <div class="card card-pad" style="border-left:3px solid var(--honey); margin-bottom:10px;">
+          <div style="font-weight:600; font-size:12.5px; color:var(--honey-deep); text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px;">${t('publicPagePartialLabel')}</div>
+          <p style="font-size:13px; color:var(--ink-soft); line-height:1.6; margin:0;">${t('publicPagePartialList')}</p>
         </div>
         <div class="card card-pad" style="border-left:3px solid var(--danger);">
           <div style="font-weight:600; font-size:12.5px; color:var(--danger); text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px;">${t('publicPageHiddenLabel')}</div>
@@ -3612,6 +3716,7 @@ function renderPublicPage(){
 /* ---- MER (KENNELVERKTYG) ---- */
 function renderMore(){
   content.innerHTML = `
+    <div class="pub-note is-private">${t('morePrivateNote')}</div>
     <div class="two-col">
       <div>
         <div class="section-head" style="margin-top:0;">
@@ -3635,6 +3740,7 @@ function renderMore(){
           <div class="timeline" style="margin-top:18px;" id="journalList"></div>
         </div>
         <div class="section-head"><h2>${t('titlesShows')}</h2><button class="btn btn-primary btn-sm" id="addTitleBtn">${t('addTitle')}</button></div>
+        <div style="font-size:11.5px; color:var(--ink-soft); margin:-6px 0 8px;">${t('titlesPublicNote')}</div>
         <div class="card card-pad" id="titlesBody"></div>
       </div>
     </div>
@@ -3835,7 +3941,9 @@ function openTitleForm(){
     <div class="drawer-body">
       <form id="titleForm" class="form-grid">
         <div class="field full"><label>${t('labelDog')}</label><select required name="dogId">${DB.dogs.map(d=>`<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('')}</select></div>
-        <div class="field full"><label>${t('labelTitleName')}</label><input required name="title" placeholder="${t('phTitleSingle')}"></div>
+        <div class="field full"><label>${t('labelTitleName')}<span class="field-flag is-public">${t('flagPublic')}</span></label><input required name="title" placeholder="${t('phTitleSingle')}">
+          <span style="font-size:11.5px; color:var(--ink-soft); margin-top:4px; display:block;">${t('titlesPublicNote')}</span>
+        </div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
           <button type="submit" class="btn btn-primary">${t('save')}</button>

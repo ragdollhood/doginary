@@ -251,6 +251,17 @@ tbody tr:hover{background:var(--surface-2);}
 .pub-note.is-partial{background:var(--honey-tint); color:var(--honey-deep);}
 .pub-note.is-private{background:var(--danger-tint); color:var(--danger);}
 .pub-note strong{font-weight:700;}
+
+/* --- Kompakt publikt/privat-badge med "Läs mer" --- */
+.pub-flag{display:flex; align-items:center; flex-wrap:wrap; gap:9px; margin:8px 0 16px;}
+.pub-flag-pill{font-size:11.5px; font-weight:700; padding:3px 11px; border-radius:20px; border:1.5px solid currentColor; white-space:nowrap;}
+.pub-flag.is-public .pub-flag-pill{color:var(--ok); background:var(--ok-tint);}
+.pub-flag.is-partial .pub-flag-pill{color:var(--honey-deep); background:var(--honey-tint);}
+.pub-flag.is-private .pub-flag-pill{color:var(--danger); background:var(--danger-tint);}
+.pub-flag-toggle{background:none; border:none; padding:0; font-size:12px; color:var(--ink-soft); text-decoration:underline; cursor:pointer;}
+.pub-flag-toggle:hover{color:var(--ink);}
+.pub-flag-detail{display:none; flex-basis:100%; font-size:12.5px; line-height:1.6; color:var(--ink-soft); margin-top:2px;}
+.pub-flag.open .pub-flag-detail{display:block;}
 .field-flag{display:inline-block; font-size:10px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:20px; margin-left:7px; vertical-align:middle; white-space:nowrap;}
 .field-flag.is-public{background:var(--ok-tint); color:var(--ok);}
 .field-flag.is-partial{background:var(--honey-tint); color:var(--honey-deep);}
@@ -881,7 +892,7 @@ const I18N = {
     publicPageHiddenList: 'Köpare/valpspekulanter, dokument, kenneljournal, lager, akutkontakter, dina privata anteckningar om hundarna, parningsplaner samt valparnas temperamentsbedömningar och födelsevikt under "Kullar". Det här lämnar aldrig ditt konto.',
     publicPageDogsCount: '{n} hundar visas just nu på sidan, varav {p} har ett foto.',
     dogsPublicMirrorNote: 'Det som visas här speglar automatiskt din publika kennelsida: namn, ras, kön, ålder, färg, mankhöjd, vikt, HD-resultat, foto, status samt de två första meriterna för varje hund — plus pris om du aktiverat det under "Publik sida". Registreringsnummer, AD/ögon/DNA-resultat och föräldradjur sparas också i den publika datan men visas inte i sidans nuvarande utformning. Allt annat (hälsojournal, anteckningar, parningsplaner, kunder, dokument m.m.) är privat och lämnar aldrig ditt konto.',
-    flagPublic: 'Publikt', flagPartial: 'Publikt (visas ej)', flagPrivate: 'Privat',
+    flagPublic: 'Publikt', flagPartial: 'Publikt (visas ej)', flagPrivate: 'Privat', readMore: 'Läs mer',
     infoTabPriceNote: 'Publikt endast om du har aktiverat "Visa pris" under Publik sida.',
     titlesPublicNote: 'De två första meriterna ovan visas på din publika sida — resten är bara synliga här.',
     parentsPublicNote: 'Far/mor sparas i den publika datan men visas inte på sidan i nuvarande design.',
@@ -1192,7 +1203,7 @@ const I18N = {
     publicPageHiddenList: 'Buyers/prospects, documents, kennel journal, inventory, emergency contacts, your private notes on the dogs, mating plans, and the puppies\' temperament assessments and birth weight under "Litters". This never leaves your account.',
     publicPageDogsCount: '{n} dogs currently shown on the page, {p} of which have a photo.',
     dogsPublicMirrorNote: 'What\'s shown here automatically mirrors your public kennel page: name, breed, sex, age, colour, height, weight, HD result, photo, status, and the first two titles for each dog — plus price if you\'ve turned that on under "Public page". Registration number, AD/eye/DNA results and parent dogs are also stored in the public data but aren\'t displayed in the page\'s current design. Everything else (health records, notes, mating plans, customers, documents etc.) is private and never leaves your account.',
-    flagPublic: 'Public', flagPartial: 'Public (not shown)', flagPrivate: 'Private',
+    flagPublic: 'Public', flagPartial: 'Public (not shown)', flagPrivate: 'Private', readMore: 'Read more',
     infoTabPriceNote: 'Only public if you\'ve turned on "Show price" under Public page.',
     titlesPublicNote: 'The first two titles above are shown on your public page — the rest are only visible here.',
     parentsPublicNote: 'Sire/dam are stored in the public data but aren\'t displayed on the page in its current design.',
@@ -1408,6 +1419,18 @@ function t(key, vars) {
   let s = (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (I18N.sv[key] != null ? I18N.sv[key] : key);
   if (vars) { for (const k in vars) s = s.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]); }
   return s;
+}
+
+// Kompakt publikt/privat-indikator: visar bara en liten badge (Publikt/Privat/Publikt visas ej)
+// plus en "Läs mer"-knapp som fäller ut hela förklaringstexten vid behov.
+function pubFlag(state, key, opts) {
+  const flagKey = state === 'public' ? 'flagPublic' : state === 'partial' ? 'flagPartial' : 'flagPrivate';
+  const style = (opts && opts.style) ? ` style="${opts.style}"` : '';
+  return `<div class="pub-flag is-${state}"${style}>
+      <span class="pub-flag-pill">${t(flagKey)}</span>
+      <button type="button" class="pub-flag-toggle" onclick="this.closest('.pub-flag').classList.toggle('open')">${t('readMore')}</button>
+      <div class="pub-flag-detail">${t(key)}</div>
+    </div>`;
 }
 
 const langBtnSvEl = document.getElementById('langBtnSv');
@@ -2353,7 +2376,7 @@ let dogFilter = 'all', dogSearch = '';
 function renderDogs(){
   content.innerHTML = `
     <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 16px; max-width:640px;">${t('dogsPageHint')}</p>
-    <div class="pub-note is-public" style="max-width:640px;">${t('dogsPublicMirrorNote')}</div>
+    ${pubFlag('public','dogsPublicMirrorNote',{style:'max-width:640px;'})}
     <div class="filter-row">
       <div class="search-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input type="text" id="dogSearchInput" placeholder="${t('searchDogsPlaceholder')}" value="${dogSearch}"></div>
@@ -2435,12 +2458,12 @@ function openDogProfile(id){
           <div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px;">${t('parentsPublicNote')}</div></div>`:''}
       `;
     } else if(tab==='health'){
-      body.innerHTML = `<div class="pub-note is-private">${t('healthTabPrivateNote')}</div>` + (dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
+      body.innerHTML = `${pubFlag('private','healthTabPrivateNote')}` + (dogHealth.length ? `<div class="timeline">${dogHealth.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`
         <div class="tl-item"><div class="tl-date">${fmtDate(h.date)}</div><div class="tl-title">${h.type} ${h.status==='due'?`<span class=\"badge due\" style=\"margin-left:6px;\">${t('dueBadge')}</span>`:''}</div><div class="tl-desc">${h.detail}${h.due?(t('nextLabel')+fmtDate(h.due)):''}</div></div>
       `).join('')}</div>` : `<div class="empty">${t('noHealthRecords')}</div>`);
     } else if(tab==='weight'){
-      if(!d.weightLog.length){ body.innerHTML = `<div class="pub-note is-partial">${t('weightTabPublicNote')}</div><div class="empty">${t('noWeightData')}</div>`; return; }
-      body.innerHTML = `<div class="pub-note is-partial">${t('weightTabPublicNote')}</div><canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>${t('colDate')}</th><th>${t('weightKg')}</th></tr></thead><tbody>
+      if(!d.weightLog.length){ body.innerHTML = `${pubFlag('partial','weightTabPublicNote')}<div class="empty">${t('noWeightData')}</div>`; return; }
+      body.innerHTML = `${pubFlag('partial','weightTabPublicNote')}<canvas id="weightChart" height="180"></canvas><div class="table-wrap" style="margin-top:14px;"><table><thead><tr><th>${t('colDate')}</th><th>${t('weightKg')}</th></tr></thead><tbody>
         ${d.weightLog.slice().reverse().map(w=>`<tr><td>${fmtDate(w.d)}</td><td>${w.kg} kg</td></tr>`).join('')}
       </tbody></table></div>`;
       const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
@@ -2451,7 +2474,7 @@ function openDogProfile(id){
         options:{ plugins:{legend:{display:false}}, scales:{x:{ticks:{color:ink}}, y:{ticks:{color:ink}}} }
       });
     } else if(tab==='notes'){
-      body.innerHTML = `<div class="pub-note is-private">${t('notesTabPrivateNote')}</div><div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || t('noNotes')}</div>`;
+      body.innerHTML = `${pubFlag('private','notesTabPrivateNote')}<div style="font-size:13.5px; white-space:pre-wrap;">${d.notes || t('noNotes')}</div>`;
     }
   }
   document.querySelectorAll('.tab-btn').forEach(b=> b.addEventListener('click', ()=>{
@@ -2635,7 +2658,7 @@ function fileToDataUrl(file){
 let healthFilterDog = 'all';
 function renderHealth(){
   content.innerHTML = `
-    <div class="pub-note is-private">${t('healthTabPrivateNote')}</div>
+    ${pubFlag('private','healthTabPrivateNote')}
     <div class="filter-row">
       <select class="chip-filter" id="healthDogFilter" style="border-radius:8px;">
         <option value="all">${t('allDogs')}</option>
@@ -2700,7 +2723,7 @@ function renderPedigree(){
     return;
   }
   content.innerHTML = `
-    <div class="pub-note is-partial">${t('pedigreePrivateNote')}</div>
+    ${pubFlag('partial','pedigreePrivateNote')}
     <div class="filter-row">
       <select class="chip-filter" id="pedSelect" style="border-radius:8px;">${DB.dogs.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select>
     </div>
@@ -2738,7 +2761,7 @@ function drawPedigree(id){
 /* ---- BREEDING ---- */
 function renderBreeding(){
   content.innerHTML = `
-    <div class="pub-note is-private">${t('breedingPrivateNote')}</div>
+    ${pubFlag('private','breedingPrivateNote')}
     <div class="filter-row"><span style="flex:1"></span>
       <button class="btn btn-primary" id="addBreedingBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newBreedingPlan')}</button>
     </div>
@@ -2808,7 +2831,7 @@ function openBreedingForm(){
 function renderLitters(){
   content.innerHTML = `
     <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 16px; max-width:640px;">${t('littersPageHint')}</p>
-    <div class="pub-note is-public">${t('littersGapNote')}</div>
+    ${pubFlag('public','littersGapNote')}
     <div class="filter-row">
       <span style="flex:1"></span>
       <button class="btn btn-primary" id="addLitterBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>${t('newLitterBtn')}</button>
@@ -2886,7 +2909,7 @@ function openLitterDetail(id){
         <button class="close-x" onclick="closeDrawer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div></div>
     <div class="drawer-body">
-      <div class="pub-note is-public">${t('littersGapNote')}</div>
+      ${pubFlag('public','littersGapNote')}
       <div class="section-head" style="margin-top:0;"><h2 style="font-size:15px;">${t('puppiesLabel')}</h2><button type="button" class="btn btn-sm" id="addPuppyBtn">${t('addPuppyBtn')}</button></div>
       <div class="grid-cards" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin-bottom:22px;">
         ${l.puppies.map(p=>`
@@ -3065,7 +3088,7 @@ function renderMatching(){
   const availablePuppies = DB.litters.flatMap(l=> l.puppies.filter(p=>p.status!=='sold').map(p=>({...p, litter:l.name})));
   const waitingBuyers = DB.buyers.filter(b=> b.status==='waiting' || b.status==='approved' || b.status==='reserved');
   content.innerHTML = `
-    <div class="pub-note is-private">${t('matchingPrivateNote')}</div>
+    ${pubFlag('private','matchingPrivateNote')}
     <div class="section-head" style="margin-top:0;"><h2>${t('availablePuppies')}</h2><span class="hint">${availablePuppies.length}</span></div>
     <div class="grid-cards" style="margin-bottom:26px;">
       ${availablePuppies.map(p=>{
@@ -3115,7 +3138,7 @@ let buyerFilter = 'all';
 const BUYER_STATUSES = ['new','waiting','approved','reserved','sold','rejected'];
 function renderBuyers(){
   content.innerHTML = `
-    <div class="pub-note is-private">${t('buyersPrivateNote')}</div>
+    ${pubFlag('private','buyersPrivateNote')}
     <div class="filter-row">
       <button class="chip-filter ${buyerFilter==='all'?'active':''}" data-f="all">${t('filterAll')}</button>
       ${BUYER_STATUSES.map(s=>`<button class="chip-filter ${buyerFilter===s?'active':''}" data-f="${s}">${buyerStatusLabel(s)}</button>`).join('')}
@@ -3322,7 +3345,7 @@ function openEventForm(){
 /* ---- DOCUMENTS ---- */
 function renderDocuments(){
   content.innerHTML = `
-    <div class="pub-note is-private">${t('documentsPrivateNote')}</div>
+    ${pubFlag('private','documentsPrivateNote')}
     <div class="filter-row"><span style="flex:1"></span>
       <label class="btn btn-primary btn-sm" style="cursor:pointer;">${t('uploadDoc')}<input type="file" id="docUpload" style="display:none;" multiple></label>
     </div>
@@ -3455,7 +3478,7 @@ function renderPublicPage(){
 /* ---- MER (KENNELVERKTYG) ---- */
 function renderMore(){
   content.innerHTML = `
-    <div class="pub-note is-private">${t('morePrivateNote')}</div>
+    ${pubFlag('private','morePrivateNote')}
     <div class="two-col">
       <div>
         <div class="section-head" style="margin-top:0;">

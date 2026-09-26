@@ -64,11 +64,20 @@
     });
   }
 
+  // Version av användarvillkoren som gäller just nu. Måste hållas i synk
+  // för hand med versionen i terms.html — det finns ingen automatisk
+  // koppling. Stämplas på kontot vid registrering (se signUp() nedan) som
+  // bevis på VAD man godkände och NÄR, ifall villkoren ändras senare.
+  var TERMS_VERSION = '2026-09-25';
+
   function signUp(email, password) {
     return client.auth.signUp({
       email: email,
       password: password,
-      options: { emailRedirectTo: global.location.href }
+      options: {
+        emailRedirectTo: global.location.href,
+        data: { terms_accepted_version: TERMS_VERSION, terms_accepted_at: new Date().toISOString() }
+      }
     }).then(function (res) {
       if (res.error) throw res.error;
       // Om "Confirm email" är avstängt i Supabase-projektet kommer en
@@ -89,8 +98,14 @@
   }
 
   function resetPassword(email) {
+    // Pekar på en fristående sida (inte tillbaka hit) eftersom den sida
+    // man RÅKAR stå på när man klickar "glömt lösenord" inte
+    // nödvändigtvis är samma sida man klickar länken i mejlet ifrån
+    // senare (mejlet kan öppnas på en annan enhet). reset-password.html
+    // hanterar Supabases PASSWORD_RECOVERY-session och skickar sedan
+    // vidare till index.html.
     return client.auth.resetPasswordForEmail(email, {
-      redirectTo: global.location.href
+      redirectTo: 'https://doginary.com/reset-password.html'
     }).then(function (res) {
       if (res.error) throw res.error;
       return true;

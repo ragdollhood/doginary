@@ -34,6 +34,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="doginary-auth-ui.css">
+<script src="doginary-supabase.js"></script>
+<script>
+  // Skapar man konto härifrån ska man bli kvar på breeder-hub.html (och
+  // få sin kennel uppstartad av bootApp() nedan) istället för att som
+  // standard skickas till logga.html, vilket doginary-auth.js annars gör
+  // efter en lyckad registrering.
+  window.DOGINARY_STAY_AFTER_SIGNUP = true;
+</script>
+<script src="doginary-auth.js"></script>
 <style>
 /* ============ TOKENS ============ */
 :root{
@@ -720,89 +730,10 @@ tbody tr:hover{background:var(--surface-2);}
         <button class="icon-btn" id="themeBtn" title="Byt tema">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
         </button>
-        <div class="account-menu-wrap" id="accountMenuWrap" style="display:none;">
-          <button class="icon-btn" id="accountIconBtn" title="Konto" aria-haspopup="true" aria-expanded="false">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </button>
-          <div class="account-menu" id="accountMenu" role="menu">
-            <p class="account-menu-email" id="accountMenuEmail"></p>
-            <button type="button" class="account-menu-item" id="manageSubscriptionBtn">Manage subscription</button>
-            <p class="account-menu-msg" id="accountMenuMsg"></p>
-            <div class="account-menu-divider"></div>
-            <button type="button" class="account-menu-item danger" id="accountMenuLogout">Logga ut</button>
-          </div>
-        </div>
+        <div id="doginaryAuthRoot"></div>
       </div>
     </div>
     <div class="content" id="content"></div>
-  </div>
-</div>
-
-<div id="authGate">
-  <div class="auth-card" id="authCard">
-    <button type="button" class="auth-close-btn" id="authCloseBtn" aria-label="Stäng">&times;</button>
-    <div class="auth-eyebrow">DOGINARY</div>
-    <h1 class="auth-title" id="authTitle">Skapa konto</h1>
-    <p class="auth-trial-badge" id="authTrialBadge">14 dagar fritt att testa — inget kort behövs</p>
-    <p class="auth-desc" id="authDesc">Skapa ett konto så får du en egen kennel att fylla med hundar, hälsodata och mer.</p>
-    <form id="authForm">
-      <label>E-post</label><input type="email" name="email" required autocomplete="username">
-      <label>Lösenord</label><input type="password" name="password" required autocomplete="current-password" minlength="6">
-      <div class="auth-consent-row" id="authConsentRow">
-        <input type="checkbox" id="authConsentCheckbox">
-        <label for="authConsentCheckbox" id="authConsentLabel"></label>
-      </div>
-      <div id="authMessage"></div>
-      <button type="submit" id="authSubmit">Skapa konto</button>
-    </form>
-    <p class="auth-switch">
-      <span id="authSwitchText">Har du redan ett konto?</span> <button type="button" id="authSwitchBtn">Logga in</button>
-    </p>
-    <p class="auth-switch"><button type="button" id="authForgotBtn">Glömt lösenordet?</button></p>
-    <div class="legal-footer-links" id="authLegalLinks"></div>
-  </div>
-</div>
-
-<div id="passwordResetGate">
-  <div class="auth-card" id="passwordResetCard">
-    <div class="auth-eyebrow">DOGINARY</div>
-    <div class="auth-title" id="passwordResetTitle">Välj nytt lösenord</div>
-    <p class="auth-desc" id="passwordResetDesc">Ange ett nytt lösenord för ditt konto.</p>
-    <form id="passwordResetForm">
-      <label id="passwordResetLabel">Nytt lösenord</label>
-      <input type="password" name="newPassword" required autocomplete="new-password" minlength="6">
-      <div id="passwordResetMessage"></div>
-      <button type="submit" id="passwordResetSubmit">Spara nytt lösenord</button>
-    </form>
-  </div>
-</div>
-
-<div id="paywallGate">
-  <div class="paywall-card">
-    <div class="paywall-eyebrow">BREEDER HUB</div>
-    <h2 class="paywall-title">Breeder Hub</h2>
-    <p class="paywall-subtitle">Professional kennel management for modern breeders.</p>
-
-    <div class="paywall-features">
-      <div class="paywall-features-label">Manage:</div>
-      <ul class="paywall-feature-list">
-        <li>Dogs</li>
-        <li>Litters</li>
-        <li>Pedigrees</li>
-        <li>Health records</li>
-        <li>Puppy matching</li>
-        <li>Buyers &amp; CRM</li>
-      </ul>
-    </div>
-
-    <div class="paywall-price-row">
-      <span class="paywall-price">$4.99</span><span class="paywall-price-period">/month</span>
-    </div>
-    <p class="paywall-cta-sub">Start your subscription today.</p>
-
-    <div id="paywallMessage" class="paywall-message"></div>
-    <button type="button" id="unlockBtn" class="btn btn-primary paywall-unlock-btn">Unlock Breeder Hub</button>
-    <button type="button" id="paywallLogoutBtn" class="paywall-logout-link">Log out</button>
   </div>
 </div>
 
@@ -822,79 +753,10 @@ tbody tr:hover{background:var(--surface-2);}
    ============================================================ */
 
 /* ---------------- SUBSCRIPTION / PAYWALL ----------------
-   Låser hela Breeder Hub bakom ett aktivt Stripe-abonnemang.
-
-   - checkSubscriptionActive(userId) slår upp raden i
-     breeder_subscriptions för den inloggade användaren. Alla fel
-     (ingen rad, nätverksfel, RLS-avslag osv.) tolkas som "inaktivt"
-     — fail closed, så hubben aldrig av misstag låses upp.
-   - showPaywall()/hidePaywall() döljer resp. visar .app (sidebar +
-     topbar + content) i sin helhet. bootApp(), som laddar den
-     riktiga kenneldatan, anropas aldrig så länge paywallen visas —
-     se AUTH-sektionen längre ned där kontrollen körs.
-   - startCheckout() startar Stripe Checkout genom att anropa Edge-
-     funktionen på
-       POST https://jjbziqsjapyiihdrlnsw.supabase.co/functions/v1/create-breeder-checkout
-     via sb.functions.invoke(), som automatiskt bifogar den inloggade
-     användarens auth-token — funktionen behöver det för att veta
-     vilken användare/kund den ska koppla abonnemanget till. */
-async function checkSubscriptionActive(userId){
-  try{
-    const { data, error } = await sb
-      .from('breeder_subscriptions')
-      .select('active')
-      .eq('user_id', userId)
-      .maybeSingle();
-    if(error) throw error;
-    return data?.active === true;
-  }catch(err){
-    console.error('Subscription lookup failed', err);
-    return false;
-  }
-}
-
-function showPaywall(){
-  const appEl = document.querySelector('.app');
-  if(appEl) appEl.style.display = 'none';
-  document.getElementById('paywallGate')?.classList.add('show');
-}
-
-function hidePaywall(){
-  document.getElementById('paywallGate')?.classList.remove('show');
-  const appEl = document.querySelector('.app');
-  if(appEl) appEl.style.display = '';
-}
-
-async function startCheckout(){
-  const btn = document.getElementById('unlockBtn');
-  const msg = document.getElementById('paywallMessage');
-  if(!btn) return;
-  const originalLabel = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = 'Redirecting to checkout…';
-  if(msg){ msg.textContent = ''; msg.className = 'paywall-message'; }
-  try{
-    const { data, error } = await sb.functions.invoke('create-breeder-checkout', { method: 'POST' });
-    if(error) throw error;
-    if(!data?.url) throw new Error('No checkout URL returned');
-    window.location.href = data.url;
-  }catch(err){
-    console.error('startCheckout failed', err);
-    if(msg){
-      msg.textContent = 'Something went wrong starting checkout. Please try again.';
-      msg.className = 'paywall-message error';
-    }
-    btn.disabled = false;
-    btn.textContent = originalLabel;
-  }
-}
-
-document.getElementById('unlockBtn')?.addEventListener('click', startCheckout);
-document.getElementById('paywallLogoutBtn')?.addEventListener('click', async ()=>{
-  hidePaywall();
-  if(cloudEnabled) await sb.auth.signOut();
-  location.reload();
-});
+   Sköts nu helt av den delade doginary-auth.js/-ui.css (samma
+   betalvägg, samma Stripe checkout/portal-anrop) — se 'AUTH' längre
+   ned där checkSubscriptionActive/startCheckout/showPaywall/hidePaywall
+   tidigare låg. Ingenting kvar att göra här. */
 
 /* ---------------- I18N ---------------- */
 const LANG_KEY = 'breederhub_lang';
@@ -902,6 +764,13 @@ let LANG = (() => {
   try {
     const saved = localStorage.getItem(LANG_KEY);
     if (saved === 'en' || saved === 'sv') return saved;
+    // Ingen sparad preferens för just Breeder Hub än (första besöket) —
+    // följ det delade språkvalet från index.html/logga.html/insikter.html
+    // istället för att alltid falla tillbaka på svenska, så
+    // inloggningsrutan/kontomenyn (som bara känner till 'dogWeatherLang')
+    // och resten av sidan börjar i samma språk.
+    const shared = localStorage.getItem('dogWeatherLang');
+    if (shared === 'en' || shared === 'sv') return shared;
   } catch { /* localStorage may be unavailable */ }
   return 'sv';
 })();
@@ -1617,7 +1486,14 @@ function renderLegalLinks(){
 function setLang(newLang) {
   if ((newLang !== 'en' && newLang !== 'sv') || newLang === LANG) return;
   LANG = newLang;
-  try { localStorage.setItem(LANG_KEY, LANG); } catch { /* ignore */ }
+  try {
+    localStorage.setItem(LANG_KEY, LANG);
+    // Håll den delade inloggningsrutan/kontomenyn (doginary-auth.js, som
+    // bara känner till 'dogWeatherLang') i synk med Breeder Hubs eget
+    // språkval, så de aldrig visar olika språk samtidigt.
+    localStorage.setItem('dogWeatherLang', LANG);
+  } catch { /* ignore */ }
+  document.dispatchEvent(new CustomEvent('doginary:langchange'));
   applyChrome();
   closeDrawer();
   if (DEMO_MODE) {
@@ -1675,234 +1551,33 @@ function getNav(){
 }
 
 /* ---------------- STORE ---------------- */
-/* ==== SUPABASE CONFIG — fyll i dina egna värden från Supabase-projektets Settings > API ==== */
-const SUPABASE_URL = 'https://jjbziqsjapyiihdrlnsw.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqYnppcXNqYXB5aWloZHJsbnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2ODkxMTgsImV4cCI6MjEwNDI2NTExOH0.MEzM2wN8eENlVBAsN-I6hhIYFnF53avdFacfbNwCBBw';
-const sb = (SUPABASE_URL.includes('DITT-PROJEKT') || !window.supabase)
-  ? null
-  : window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Supabase-klienten kommer nu från den delade doginary-supabase.js
+// (samma klient/session som index.html, logga.html och insikter.html
+// använder) istället för att Breeder Hub skapar sin egen — annars hade
+// två separata klientinstanser råkat dela samma localStorage-nyckel för
+// sessionen utan att veta om varandra.
+const sb = (window.DoginaryAuth && window.DoginaryAuth.client) || null;
 let cloudEnabled = !!sb;
 let DB = null;
 let KENNEL_ID = null;
 let DEMO_MODE = true;
 
-/* ---------------- AUTH ---------------- */
-let authMode = 'signup'; // or 'signin'
-const authGate = document.getElementById('authGate');
-const authForm = document.getElementById('authForm');
-const authMsg = document.getElementById('authMessage');
-const authSubmit = document.getElementById('authSubmit');
+/* ---------------- AUTH ----------------
+   Inloggning, registrering, lösenordsåterställning, betalvägg och
+   kontomeny sköts nu helt av den delade doginary-auth.js/-ui.css — samma
+   ruta som index.html/logga.html/insikter.html använder (se
+   <div id="doginaryAuthRoot"> i topbaren, och
+   window.DOGINARY_STAY_AFTER_SIGNUP i <head> som håller kvar en
+   nyregistrerad användare här istället för att skicka den till
+   logga.html). Breeder Hub lyssnar bara på två events från den modulen:
+     - 'doginary:auth'   → inloggning/utloggning (session finns/inte)
+     - 'doginary:access' → prenumerations-/provperiodsstatusen är klar
+   och laddar/stänger sin egen kenneldata utifrån dem — se längre ned. */
 
-function setAuthMode(mode){
-  authMode = mode;
-  document.getElementById('authTitle').textContent = mode==='signin' ? t('authTitleSignin') : t('authTitleSignup');
-  document.getElementById('authDesc').textContent = mode==='signin' ? t('authDescSignin') : t('authDescSignup');
-  authSubmit.textContent = mode==='signin' ? t('authSubmitSignin') : t('authSubmitSignup');
-  document.getElementById('authSwitchText').textContent = mode==='signin' ? t('authSwitchTextSignin') : t('authSwitchTextSignup');
-  document.getElementById('authSwitchBtn').textContent = mode==='signin' ? t('authSwitchBtnSignin') : t('authSwitchBtnSignup');
-  const trialBadge = document.getElementById('authTrialBadge');
-  if(trialBadge){
-    if(mode === 'signup'){ trialBadge.textContent = t('authTrialBadge'); trialBadge.style.display = ''; }
-    else { trialBadge.style.display = 'none'; }
-  }
-  const emailLabel = authForm.querySelector('label[for=""]') || authForm.querySelectorAll('label')[0];
-  const labels = authForm.querySelectorAll('label');
-  if (labels[0]) labels[0].textContent = t('authEmailLabel');
-  if (labels[1]) labels[1].textContent = t('authPasswordLabel');
-  authMsg.textContent = ''; authMsg.className = '';
-  const consentRow = document.getElementById('authConsentRow');
-  const consentCheckbox = document.getElementById('authConsentCheckbox');
-  if(consentRow) consentRow.hidden = (mode !== 'signup');
-  if(consentCheckbox) consentCheckbox.checked = false;
-  renderLegalLinks();
-}
-document.getElementById('authSwitchBtn').addEventListener('click', ()=> setAuthMode(authMode==='signin' ? 'signup' : 'signin'));
-document.getElementById('authCloseBtn').addEventListener('click', ()=> authGate.classList.remove('show'));
-
-authForm.addEventListener('submit', async e=>{
-  e.preventDefault();
-  const f = new FormData(authForm);
-  const email = f.get('email'), password = f.get('password');
-  authMsg.textContent = ''; authMsg.className = '';
-  if(authMode==='signup' && !document.getElementById('authConsentCheckbox')?.checked){
-    authMsg.textContent = t('authErrMustAgree');
-    authMsg.className = 'error consent-error';
-    return;
-  }
-  authSubmit.disabled = true;
-  try{
-    if(authMode==='signin'){
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if(error) throw error;
-      // onAuthStateChange tar hand om resten (döljer gate, laddar kenneln)
-    } else {
-      // Sparar villkorsversion + tidpunkt för samtycket i användarens
-      // auth-metadata (kräver ingen egen tabell och följer med kontot).
-      const { data, error } = await sb.auth.signUp({
-        email, password,
-        options: { data: { terms_accepted_version: TERMS_VERSION, terms_accepted_at: new Date().toISOString() } }
-      });
-      if(error) throw error;
-      if(!data.session){
-        authMsg.textContent = t('authSignupSuccess');
-        authMsg.className = 'success';
-      }
-    }
-  }catch(err){
-    authMsg.textContent = translateAuthError(err.message);
-    authMsg.className = 'error';
-  }finally{
-    authSubmit.disabled = false;
-  }
-});
-function translateAuthError(msg){
-  if(/invalid login credentials/i.test(msg)) return t('authErrInvalid');
-  if(/already registered/i.test(msg)) return t('authErrExists');
-  if(/password should be at least/i.test(msg)) return t('authErrPwLen');
-  return msg;
-}
-
-/* ---- Glömt lösenordet ---- */
-document.getElementById('authForgotBtn').addEventListener('click', async ()=>{
-  const btn = document.getElementById('authForgotBtn');
-  const email = (authForm.email.value || '').trim();
-  if(!email){
-    authMsg.textContent = t('authForgotNeedEmail');
-    authMsg.className = 'error';
-    return;
-  }
-  btn.disabled = true;
-  authMsg.textContent = ''; authMsg.className = '';
-  try{
-    const { error } = await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://doginary.com/reset-password.html'
-    });
-    if(error) throw error;
-    authMsg.textContent = t('authForgotSent', { email });
-    authMsg.className = 'success';
-  }catch(err){
-    authMsg.textContent = translateAuthError(err.message);
-    authMsg.className = 'error';
-  }finally{
-    btn.disabled = false;
-  }
-});
-
-/* ---- Nytt lösenord (efter klick på länken i återställningsmejlet) ----
-   Supabase ger besökaren en riktig session redan innan lösenordet är
-   bytt (event PASSWORD_RECOVERY i onAuthStateChange nedan). Vi visar
-   den här gaten istället för att släppa in dem direkt, så att kontot
-   faktiskt får ett nytt lösenord satt. */
-const passwordResetGate = document.getElementById('passwordResetGate');
-const passwordResetForm = document.getElementById('passwordResetForm');
-const passwordResetMsg = document.getElementById('passwordResetMessage');
-const passwordResetSubmitBtn = document.getElementById('passwordResetSubmit');
-
-function showPasswordResetGate(){
-  authGate.classList.remove('show');
-  passwordResetMsg.textContent = ''; passwordResetMsg.className = '';
-  passwordResetForm.reset();
-  passwordResetGate.classList.add('show');
-}
-function hidePasswordResetGate(){
-  passwordResetGate.classList.remove('show');
-}
-
-passwordResetForm.addEventListener('submit', async e=>{
-  e.preventDefault();
-  const f = new FormData(passwordResetForm);
-  const newPassword = f.get('newPassword');
-  passwordResetSubmitBtn.disabled = true;
-  passwordResetMsg.textContent = ''; passwordResetMsg.className = '';
-  try{
-    const { error } = await sb.auth.updateUser({ password: newPassword });
-    if(error) throw error;
-    passwordResetMsg.textContent = t('passwordResetSuccess');
-    passwordResetMsg.className = 'success';
-    // Sessionen finns redan (från återställningslänken) — en reload kör
-    // igenom det vanliga inloggade flödet (kennel + prenumerationskoll).
-    setTimeout(()=> location.reload(), 900);
-  }catch(err){
-    passwordResetMsg.textContent = translateAuthError(err.message);
-    passwordResetMsg.className = 'error';
-    passwordResetSubmitBtn.disabled = false;
-  }
-});
-
-/* ---- Kontoikon (topbar) + dropdown-meny ---- */
-const accountMenuWrap = document.getElementById('accountMenuWrap');
-const accountMenu = document.getElementById('accountMenu');
-const accountIconBtn = document.getElementById('accountIconBtn');
-const accountMenuMsg = document.getElementById('accountMenuMsg');
-let CURRENT_USER = null;
-let accountMenuOpen = false;
-
-function openAccountMenu(){
-  accountMenuOpen = true;
-  accountMenu.classList.add('show');
-  accountIconBtn.setAttribute('aria-expanded', 'true');
-}
-function closeAccountMenu(){
-  accountMenuOpen = false;
-  accountMenu.classList.remove('show');
-  accountIconBtn.setAttribute('aria-expanded', 'false');
-}
-accountIconBtn.addEventListener('click', (ev)=>{
-  ev.stopPropagation();
-  if(accountMenuOpen) closeAccountMenu(); else openAccountMenu();
-});
-document.addEventListener('click', (ev)=>{
-  if(accountMenuOpen && !accountMenuWrap.contains(ev.target)) closeAccountMenu();
-});
-document.addEventListener('keydown', (ev)=>{
-  if(ev.key === 'Escape' && accountMenuOpen) closeAccountMenu();
-});
-
-function showAccountMenuWrap(user){
-  CURRENT_USER = user;
-  document.getElementById('accountMenuEmail').textContent = user?.email || '';
-  accountMenuWrap.style.display = 'flex';
-}
-function hideAccountMenuWrap(){
-  CURRENT_USER = null;
-  closeAccountMenu();
-  accountMenuWrap.style.display = 'none';
-}
-
-/* "Manage subscription" öppnar Stripe Customer Portal via en Edge-
-   funktion (samma mönster som startCheckout() ovan) — funktionen slår
-   upp den inloggade användarens stripe_customer_id och skapar en
-   portal-session. Den här knappen är bara synlig när .app visas överhuvud-
-   taget, vilket (se onAuthStateChange) bara sker när prenumerationen
-   redan är aktiv, så inget extra villkor behövs för att visa/dölja den. */
-async function startPortalSession(){
-  const btn = document.getElementById('manageSubscriptionBtn');
-  if(!btn) return;
-  const originalLabel = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = t('accountPortalRedirecting');
-  accountMenuMsg.textContent = '';
-  try{
-    const { data, error } = await sb.functions.invoke('create-breeder-portal');
-    if(error) throw error;
-    if(!data?.url) throw new Error('No portal URL returned');
-    window.location.href = data.url;
-  }catch(err){
-    console.error('startPortalSession failed', err);
-    accountMenuMsg.textContent = t('accountPortalError');
-    btn.disabled = false;
-    btn.textContent = originalLabel;
-  }
-}
-document.getElementById('manageSubscriptionBtn').addEventListener('click', startPortalSession);
-
-async function handleLogout(){
-  closeAccountMenu();
-  if(cloudEnabled) await sb.auth.signOut();
-  location.reload();
+function handleLogout(){
+  if(cloudEnabled) window.DoginaryAuth.signOut();
 }
 document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-document.getElementById('accountMenuLogout').addEventListener('click', handleLogout);
 
 function openKennelNameForm(){
   openDrawer(`
@@ -1957,8 +1632,8 @@ async function bootApp(){
 
 // Visar klickbar exempeldata direkt när sidan öppnas, innan (eller om)
 // någon är inloggad. Inget sparas mot Supabase i det här läget — se
-// saveDB()/savePublicSnapshot() som tyst hoppar över nätverksanropet
-// så länge DEMO_MODE är true.
+// saveDB()/savePublicSnapshot() som tyst hoppar över nätverksanropet så
+// länge DEMO_MODE är true.
 function startDemo(){
   DEMO_MODE = true;
   KENNEL_ID = null;
@@ -1970,80 +1645,46 @@ function startDemo(){
   renderNav();
   goTo('dashboard');
 }
+
 if(cloudEnabled){
-  // wasAuthenticated håller reda på om vi någonsin sett en riktig
-  // inloggad session i den här fliken. Supabase-js kör en session-
-  // koll varje gång fliken/fönstret får fokus igen (visibilitychange).
-  // Om man t.ex. markerar text med musen och drar utanför
-  // webbläsarfönstret hinner fönstret tappa och återfå fokus, vilket
-  // kan trigga onAuthStateChange med session=null även fast man
-  // fortfarande är inloggad (en känd Supabase-egenhet). Utan skyddet
-  // nedan slängdes man då tillbaka till inloggningsrutan mitt i
-  // användningen. Vi litar därför bara blint på ett "utloggad"-läge om
-  // (a) vi aldrig varit inloggade i den här fliken än, eller
-  // (b) eventet uttryckligen är SIGNED_OUT. Alla andra fall med
-  // session=null dubbelkollas mot sb.auth.getSession() innan vi
-  // faktiskt loggar ut användaren och visar inloggningsrutan.
-  let wasAuthenticated = false;
-  sb.auth.onAuthStateChange(async (event, session)=>{
-    // Användaren kom hit via länken i återställningsmejlet: Supabase har
-    // redan gett en giltig session, men lösenordet är inte bytt än — visa
-    // "nytt lösenord"-gaten istället för att släppa rakt in i appen.
-    if(event === 'PASSWORD_RECOVERY'){
-      showPasswordResetGate();
+  // 'doginary:auth' säger bara om man är inloggad eller inte. Vid
+  // utloggning (eller om man aldrig loggat in) visar vi exempelkenneln —
+  // betalvägg/åtkomst sköts separat via 'doginary:access' nedan, eftersom
+  // den statusen läses klart en liten stund EFTER själva inloggningen.
+  document.addEventListener('doginary:auth', (e)=>{
+    if(!e.detail.session && !DEMO_MODE) startDemo();
+  });
+
+  // 'doginary:access' eldas varje gång prenumerations-/provperiods-
+  // statusen är (om-)beräknad — bara medan man är inloggad (se
+  // kommentaren i doginary-auth.js). Betalväggen visas/döljs redan
+  // automatiskt av den modulen; vi behöver bara veta OM vi får boota den
+  // riktiga kenneln eller ska stanna kvar på exempeldatan bakom väggen.
+  document.addEventListener('doginary:access', async (e)=>{
+    const session = e.detail.session;
+    if(!session) return;
+    if(!e.detail.hasAccess){
+      if(!DEMO_MODE) startDemo();
       return;
     }
-    if(session){
-      wasAuthenticated = true;
-      authGate.classList.remove('show');
-      hidePasswordResetGate();
-      try{
-        KENNEL_ID = await getOrCreateKennelId(session.user.id);
-        const hasActiveSubscription = await checkSubscriptionActive(session.user.id);
-        if(hasActiveSubscription){
-          hidePaywall();
-          showAccountMenuWrap(session.user);
-          await bootApp();
-        } else {
-          // Inget aktivt abonnemang: bootApp() anropas aldrig (ingen
-          // kenneldata laddas eller renderas) — visa paywallen istället.
-          hideAccountMenuWrap();
-          showPaywall();
-        }
-      }catch(e){
-        console.error(t('kennelLookupFail'), e);
-        authGate.classList.add('show');
-        authMsg.textContent = t('authLoadFail');
-        authMsg.className = 'error';
-      }
-    } else if(wasAuthenticated && event !== 'SIGNED_OUT'){
-      // Misstänkt falskt utloggnings-event (t.ex. efter att fönstret
-      // tappat och återfått fokus mitt i en textmarkering) — dubbelkolla
-      // med en riktig sessionsfråga innan vi kastar ut användaren.
-      const { data } = await sb.auth.getSession();
-      if(data?.session){
-        return; // Sessionen finns kvar — ignorera det falska eventet.
-      }
-      hideAccountMenuWrap();
-      hidePaywall();
-      setAuthMode('signin');
-      authGate.classList.add('show');
-    } else {
-      hideAccountMenuWrap();
-      hidePaywall();
-      setAuthMode('signup');
-      authGate.classList.add('show');
-      if(!DEMO_MODE) startDemo();
+    try{
+      KENNEL_ID = await getOrCreateKennelId(session.user.id);
+      await bootApp();
+    }catch(err){
+      console.error(t('kennelLookupFail'), err);
+      toast(t('authLoadFail'));
     }
   });
+
+  // Öppna registreringsrutan direkt för en utloggad förstagångsbesökare,
+  // ovanpå exempelkenneln — precis som tidigare (window.DoginaryAuthUI.ready
+  // eldar en gång med den allra första inloggningsstatusen). Redan
+  // inloggade besökare (session finns) får ingen ruta påtvingad.
+  window.DoginaryAuthUI.ready.then((session)=>{
+    if(!session) window.DoginaryAuthUI.open('signup');
+  });
 } else {
-  document.getElementById('authCard').innerHTML = `
-    <div class="auth-eyebrow">DOGINARY</div>
-    <div class="auth-title">${t('authNotConfiguredTitle')}</div>
-    <div id="authConfigNote">
-      ${t('authNotConfiguredNote')}
-    </div>
-  `;
+  toast(t('authNotConfiguredTitle'));
 }
 
 function seedData(){ return LANG === 'en' ? seedEn() : seedSv(); }
@@ -3976,11 +3617,10 @@ function openTitleForm(){
 /* ---------------- APP-START ----------------
    Körs sist i skriptet, efter att alla const/funktioner (getPageMeta,
    content, getNav m.fl.) är initierade. Visar direkt en klickbar
-   exempelkennel bakom det flytande inloggningskortet; riktig
-   inloggning/registrering (se AUTH-sektionen ovan) byter sedan ut
-   detta mot användarens egen (tomma) kennel via bootApp(). */
+   exempelkennel; om det redan finns en inloggad session med aktiv
+   åtkomst byter 'doginary:access'-lyssnaren (se AUTH-sektionen ovan)
+   omedelbart ut den mot användarens egen kennel via bootApp(). */
 startDemo();
-authGate.classList.add('show');
 
 </script>
 <script>

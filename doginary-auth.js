@@ -21,6 +21,17 @@
          // e.detail.session är null vid utloggning, annars Supabase-sessionen
        });
      Vid sidladdning eldas eventet alltid en gång när första statusen är känd.
+
+     Vill sidan istället veta EXAKT när den får visa sitt riktiga
+     (betalvägg-skyddade) innehåll — t.ex. Breeder Hub, som visar en
+     klickbar demo tills det är klart — lyssna på 'doginary:access'
+     istället, som eldas varje gång prenumerations-/provperiodsstatusen
+     är (om-)beräknad:
+       document.addEventListener('doginary:access', (e) => {
+         // e.detail.hasAccess: true/false, e.detail.session, e.detail.subscription
+       });
+     OBS: det eventet eldas bara när det finns en inloggad session — vid
+     utloggning används fortfarande bara 'doginary:auth' (session: null).
   5. Öppna rutan manuellt från valfri knapp (t.ex. en gammal "Logga in"-länk):
        someBtn.addEventListener('click', (ev) => {
          ev.preventDefault();
@@ -430,6 +441,14 @@
     if (currentSession && document.getElementById('doginaryAccountMenu')) {
       renderAccountChip();
     }
+    // Egen sida (t.ex. breeder-hub.html) vill ofta veta EXAKT när
+    // prenumerationsstatusen är klar — till skillnad från 'doginary:auth'
+    // (som bara säger om man är inloggad) säger det här om man faktiskt
+    // FÅR använda appen just nu. Eldas efter varje checkAccess()-anrop,
+    // inklusive den allra första efter sidladdning.
+    document.dispatchEvent(new CustomEvent('doginary:access', {
+      detail: { session: currentSession, hasAccess: hasAccess(sub), subscription: sub }
+    }));
   }
 
   // Läser den EN raden ur breeder_subscriptions (trial_ends_at + active,

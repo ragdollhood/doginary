@@ -2209,9 +2209,17 @@ function formatMoney(amount){
   }
 }
 function fmtDate(s){ if(!s) return '—'; const d = new Date(s+'T00:00:00'); if(isNaN(d)) return s; return d.toLocaleDateString(LOCALE[LANG],{day:'numeric',month:'short',year:'numeric'}); }
+/* Local YYYY-MM-DD, unlike d.toISOString().slice(0,10) which converts to UTC first
+   and so returns the wrong (previous) date for anyone in a positive UTC offset,
+   e.g. Sweden (CET/CEST) — a plain local midnight Date shifts back a day. */
+function toISODate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function todayISO(){ return toISODate(new Date()); }
 function ageFromDob(dob){
+  if(!dob) return '';
   const d = new Date(dob+'T00:00:00'); const now = new Date();
+  if(isNaN(d)) return '';
   let months = (now.getFullYear()-d.getFullYear())*12 + (now.getMonth()-d.getMonth());
+  if(now.getDate() < d.getDate()) months--;
   if(months < 1){ const days = Math.round((now-d)/86400000); return t('ageDays', {n:days}); }
   if(months < 24) return t('ageMonths', {n:months});
   return t('ageYears', {n:(months/12).toFixed(1).replace('.0','')});
@@ -2437,9 +2445,9 @@ function renderPage(page){
 function renderDashboard(){
   const active = DB.dogs.filter(d=>d.status==='adult'||d.status==='puppy').length;
   const retired = DB.dogs.filter(d=>d.status==='retired').length;
-  const littersThisYear = DB.litters.filter(l=> new Date(l.birthDate).getFullYear() === new Date().getFullYear()).length;
+  const littersThisYear = DB.litters.filter(l=> l.birthDate && new Date(l.birthDate+'T00:00:00').getFullYear() === new Date().getFullYear()).length;
   const puppiesSold = DB.litters.flatMap(l=>l.puppies).filter(p=>p.status==='sold').length;
-  const upcomingEvents = [...DB.events].filter(e=> new Date(e.date) >= stripTime(new Date())).sort((a,b)=> new Date(a.date)-new Date(b.date)).slice(0,6);
+  const upcomingEvents = [...DB.events].filter(e=> new Date(e.date+'T00:00:00') >= stripTime(new Date())).sort((a,b)=> new Date(a.date)-new Date(b.date)).slice(0,6);
   const dueHealth = DB.health.filter(h=>h.status==='due');
 
   content.innerHTML = `
@@ -2566,7 +2574,8 @@ function avgLitterSize(){
 function upcomingBirthdays(){
   const now = new Date();
   return DB.dogs.filter(d=>{
-    const dob = new Date(d.dob); const next = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+    if(!d.dob) return false;
+    const dob = new Date(d.dob+'T00:00:00'); const next = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
     if(next < stripTime(now)) next.setFullYear(now.getFullYear()+1);
     const days = (next-now)/86400000;
     return days <= 60 && (d.status==='adult'||d.status==='retired');
@@ -2801,7 +2810,7 @@ function openDogForm(existing){
     }
     const patch = {
       name:f.get('name'), regName:f.get('regName')||f.get('name'), callName:f.get('name'),
-      breed:f.get('breed'), sex:f.get('sex'), dob:f.get('dob')||new Date().toISOString().slice(0,10), color:f.get('color')||'',
+      breed:f.get('breed'), sex:f.get('sex'), dob:f.get('dob')||todayISO(), color:f.get('color')||'',
       chip:f.get('chip')||'', reg:f.get('reg')||'', status:f.get('status'), height:Number(f.get('height'))||0,
       price:f.get('price')?Math.max(0, Number(f.get('price'))||0):null,
       sire:f.get('sire')||'', dam:f.get('dam')||'',
@@ -3013,7 +3022,7 @@ function openBreedingForm(){
     e.preventDefault(); const f = new FormData(e.target);
     if(!f.get('dam') || !f.get('sire')) return;
     let due = '';
-    if(f.get('matingDate')){ const d = new Date(f.get('matingDate')+'T00:00:00'); d.setDate(d.getDate()+63); due = d.toISOString().slice(0,10); }
+    if(f.get('matingDate')){ const d = new Date(f.get('matingDate')+'T00:00:00'); d.setDate(d.getDate()+63); due = toISODate(d); }
     DB.breedings.unshift({id:uid('b'), dam:f.get('dam'), sire:f.get('sire'), matingDate:f.get('matingDate')||'', dueDate:due, confirmed:false, ultrasound:'', expectedCount:Number(f.get('expectedCount'))||0, notes:f.get('notes')||''});
     saveDB(); closeDrawer(); renderBreeding(); toast(t('toastBreedingAdded'));
   });
@@ -3062,7 +3071,7 @@ function openLitterForm(){
           <option value="">${t('unknownOption')}</option>
           ${sireOptions.map(x=>`<option value="${x.id}">${x.name}</option>`).join('')}
         </select></div>
-        <div class="field full"><label>${t('labelBorn')}</label><input required type="date" name="birthDate" value="${new Date().toISOString().slice(0,10)}"></div>
+        <div class="field full"><label>${t('labelBorn')}</label><input required type="date" name="birthDate" value="${todayISO()}"></div>
         <div class="field full" style="flex-direction:row; justify-content:flex-end; gap:8px; margin-top:8px;">
           <button type="button" class="btn" onclick="closeDrawer()">${t('cancel')}</button>
           <button type="submit" class="btn btn-primary">${t('saveLitter')}</button>
@@ -3119,7 +3128,7 @@ function openLitterDetail(id){
   document.querySelectorAll('.milestone-check').forEach(chk=>{
     chk.addEventListener('click', ()=>{
       const i = Number(chk.dataset.i); const m = l.milestones[i];
-      m.done = !m.done; m.date = m.done ? new Date().toISOString().slice(0,10) : '';
+      m.done = !m.done; m.date = m.done ? todayISO() : '';
       saveDB(); openLitterDetail(id);
     });
   });
@@ -3351,7 +3360,7 @@ function openBuyerDetail(id){
   document.getElementById('addLogBtn').addEventListener('click', ()=>{
     const val = document.getElementById('newLogNote').value.trim();
     if(!val) return;
-    b.log.push({date:new Date().toISOString().slice(0,10), note:val}); saveDB(); openBuyerDetail(id);
+    b.log.push({date:todayISO(), note:val}); saveDB(); openBuyerDetail(id);
   });
 }
 function openBuyerForm(existing){
@@ -3380,7 +3389,7 @@ function openBuyerForm(existing){
     if(isEdit){
       Object.assign(existing, vals); saveDB(); closeDrawer(); openBuyerDetail(existing.id); toast(t('toastBuyerAdded'));
     } else {
-      DB.buyers.unshift({id:uid('bu'), ...vals, log:[{date:new Date().toISOString().slice(0,10), note:t('prospectAddedLog')}]});
+      DB.buyers.unshift({id:uid('bu'), ...vals, log:[{date:todayISO(), note:t('prospectAddedLog')}]});
       saveDB(); closeDrawer(); renderBuyers(); toast(t('toastBuyerAdded'));
     }
   });
@@ -3418,7 +3427,7 @@ function drawCalendar(){
   for(let d=1; d<=daysInMonth; d++) cells.push({d, other:false});
   while(cells.length % 7 !== 0) cells.push({d:cells.length, other:true});
   const dows = [t('dowMon'),t('dowTue'),t('dowWed'),t('dowThu'),t('dowFri'),t('dowSat'),t('dowSun')];
-  const todayStr = new Date().toISOString().slice(0,10);
+  const todayStr = todayISO();
   document.getElementById('calGrid').innerHTML = dows.map(d=>`<div class="cal-dow">${d}</div>`).join('') +
     cells.map(c=>{
       const dateStr = !c.other ? `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(c.d).padStart(2,'0')}` : '';
@@ -3476,7 +3485,7 @@ function renderDocuments(){
   `;
   document.getElementById('docUpload').addEventListener('change', e=>{
     Array.from(e.target.files).forEach(file=>{
-      DB.documents.unshift({id:uid('doc'), name:file.name, type:t('docTypeOther'), date:new Date().toISOString().slice(0,10), relatedTo:'—'});
+      DB.documents.unshift({id:uid('doc'), name:file.name, type:t('docTypeOther'), date:todayISO(), relatedTo:'—'});
     });
     saveDB(); drawDocBody(); toast(t('toastDocsAdded'));
   });
@@ -3628,7 +3637,7 @@ function renderMore(){
   document.getElementById('addJournalBtn').addEventListener('click', ()=>{
     const val = document.getElementById('journalInput').value.trim();
     if(!val) return;
-    DB.journal.unshift({id:uid('j'), date:new Date().toISOString().slice(0,10), text:val});
+    DB.journal.unshift({id:uid('j'), date:todayISO(), text:val});
     saveDB(); document.getElementById('journalInput').value=''; drawJournal(); toast(t('toastNoteSaved'));
   });
   drawJournal();

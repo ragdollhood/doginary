@@ -323,6 +323,9 @@ tbody tr:hover{background:var(--surface-2);}
 .legal-footer-links a, .legal-footer-links button{font-family:inherit; font-size:11.5px; color:var(--ink-soft); background:none; border:none; padding:0; cursor:pointer; text-decoration:underline;}
 .legal-footer-links a:hover, .legal-footer-links button:hover{color:var(--honey-deep);}
 .legal-footer-links .dot{opacity:.5;}
+/* Sidebar is narrow, so its legal links stack vertically instead of
+   wrapping mid-row with a stray "·" separator left dangling on its own line. */
+#sidebarLegalLinks{flex-direction:column; align-items:flex-start; gap:5px;}
 #sidebarLegalLinks{color:#7E9088;}
 #sidebarLegalLinks a, #sidebarLegalLinks button{color:#9FB3A9;}
 #sidebarLegalLinks a:hover, #sidebarLegalLinks button:hover{color:#F3E4C6;}
@@ -1501,11 +1504,17 @@ function legalLinksHtml(){
     `<span class="dot">·</span><a href="dpa.html" target="_blank" rel="noopener">${t('dpaPageLabel')}</a>` +
     `<span class="dot">·</span><a href="mailto:doginary@gmail.com">${t('contactLinkLabel')}</a>`;
 }
+function sidebarLegalLinksHtml(){
+  return `<a href="terms.html" target="_blank" rel="noopener">${t('termsPageLabel')}</a>` +
+    `<a href="privacy.html" target="_blank" rel="noopener">${t('privacyPageLabel')}</a>` +
+    `<a href="dpa.html" target="_blank" rel="noopener">${t('dpaPageLabel')}</a>` +
+    `<a href="mailto:doginary@gmail.com">${t('contactLinkLabel')}</a>`;
+}
 function renderLegalLinks(){
   const a = document.getElementById('authLegalLinks');
   if(a) a.innerHTML = legalLinksHtml();
   const s = document.getElementById('sidebarLegalLinks');
-  if(s) s.innerHTML = legalLinksHtml();
+  if(s) s.innerHTML = sidebarLegalLinksHtml();
   const label = document.getElementById('authConsentLabel');
   if(label){
     label.innerHTML = t('authAgreeText', {

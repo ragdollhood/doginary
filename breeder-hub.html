@@ -114,18 +114,19 @@ a{color:inherit;}
   position:sticky; top:0; z-index:30; background:var(--bg); border-bottom:1px solid var(--line);
   display:flex; align-items:center; gap:14px; padding:14px 26px; backdrop-filter:blur(6px);
 }
-.menu-btn{display:none; background:none; border:1px solid var(--line); border-radius:var(--radius-s); padding:7px 9px; cursor:pointer; color:var(--ink);}
-.page-title{font-family:var(--font-display); font-size:22px; font-weight:500; flex:1;}
-.page-sub{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
-.topbar-actions{display:flex; align-items:center; gap:10px;}
+.menu-btn{display:none; background:none; border:1px solid var(--line); border-radius:var(--radius-s); padding:7px 9px; cursor:pointer; color:var(--ink); flex-shrink:0;}
+.topbar-title-wrap{min-width:0; flex:1;}
+.page-title{font-family:var(--font-display); font-size:22px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.page-sub{font-size:12.5px; color:var(--ink-soft); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.topbar-actions{display:flex; align-items:center; gap:10px; flex-shrink:0;}
 .icon-btn{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s);
-  width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink); flex-shrink:0;
 }
 .icon-btn:hover{border-color:var(--honey);}
 .lang-btn{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s);
-  width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; flex-shrink:0;
 }
 .lang-btn:hover{border-color:var(--honey);}
 .lang-btn .flag-icon{border-radius:2px; display:block;}
@@ -313,6 +314,7 @@ tbody tr:hover{background:var(--surface-2);}
 .auth-forgot-row button:hover{color:var(--honey-deep);}
 .auth-forgot-row button:disabled{opacity:.6; cursor:default;}
 .auth-consent-row{display:flex; align-items:flex-start; gap:8px; margin-top:14px;}
+.auth-consent-row[hidden]{display:none;}
 .auth-consent-row input[type="checkbox"]{width:16px; height:16px; margin-top:2px; flex-shrink:0; accent-color:var(--pine); cursor:pointer;}
 .auth-consent-row label{font-size:12px; font-weight:400; color:var(--ink-soft); margin-top:0; line-height:1.5; cursor:pointer;}
 .auth-consent-row label a{color:var(--honey-deep); text-decoration:underline;}
@@ -434,8 +436,10 @@ tbody tr:hover{background:var(--surface-2);}
 .ped-col{display:flex; flex-direction:column; justify-content:space-around; gap:10px; padding:0 10px; position:relative;}
 .ped-node{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s); padding:9px 12px;
-  min-width:150px; font-size:12px;
+  min-width:150px; font-size:12px; display:flex; align-items:center; gap:9px;
 }
+.ped-node .ped-avatar{width:34px; height:34px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--pine-tint); display:flex; align-items:center; justify-content:center; color:var(--pine); font-family:var(--font-display); font-weight:600; font-size:13px;}
+.ped-node .ped-avatar img{width:100%; height:100%; object-fit:cover;}
 .ped-node.self{border-color:var(--honey); background:var(--honey-tint); min-width:170px;}
 .ped-node .n{font-weight:700; font-size:13px;}
 .ped-node .m{color:var(--ink-soft); font-size:11px; margin-top:2px;}
@@ -481,8 +485,9 @@ tbody tr:hover{background:var(--surface-2);}
 
 .avatar-circle{
   width:40px; height:40px; border-radius:50%; background:var(--pine-tint); color:var(--pine); display:flex;
-  align-items:center; justify-content:center; font-family:var(--font-display); font-weight:600; font-size:15px; flex-shrink:0;
+  align-items:center; justify-content:center; font-family:var(--font-display); font-weight:600; font-size:15px; flex-shrink:0; overflow:hidden;
 }
+.avatar-circle img{width:100%; height:100%; object-fit:cover;}
 
 @media(max-width:980px){
   .sidebar{transform:translateX(-100%);}
@@ -492,6 +497,12 @@ tbody tr:hover{background:var(--surface-2);}
   .content{padding:18px 16px 60px;}
   .form-grid{grid-template-columns:1fr;}
   .two-col{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .topbar{padding:12px 14px; gap:8px;}
+  .topbar-actions{gap:6px;}
+  .icon-btn,.lang-btn{width:32px; height:32px;}
+  .page-title{font-size:18px;}
 }
 @media print{
   .sidebar,.topbar,.overlay,.btn,.crossnav,.crossnav-mobile-menu{display:none !important;}
@@ -637,7 +648,7 @@ tbody tr:hover{background:var(--surface-2);}
       <button class="menu-btn" id="menuBtn" aria-label="Meny">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
-      <div>
+      <div class="topbar-title-wrap">
         <div class="page-title" id="pageTitle">Översikt</div>
         <div class="page-sub" id="pageSub">Välkommen tillbaka</div>
       </div>
@@ -1934,11 +1945,15 @@ function seedData(){ return LANG === 'en' ? seedEn() : seedSv(); }
 
 function seedSv(){
   const dogs = [
-    {id:'d1', name:'Bella', regName:'Doginary\'s Northern Star', callName:'Bella', breed:'Golden Retriever', sex:'female', dob:'2021-03-14', color:'Gyllene', chip:'752098100234561', reg:'SKK SE12345/2021', status:'adult', weightLog:[{d:'2021-06-01',kg:8.2},{d:'2022-01-01',kg:24.5},{d:'2024-01-01',kg:29.1}], height:56, notes:'Lugnt temperament, utmärkt med valpar. Höftröntgen A, armbåge 0.', hips:'A', elbows:'0', eyes:'Ua (2024)', dna:'Klar (PRA, ICT)', sire:'d3', dam:'d4', titles:['SE UCH','SE VCH']},
-    {id:'d2', name:'Zeus', regName:'Nordheim\'s Zeus', callName:'Zeus', breed:'Golden Retriever', sex:'male', dob:'2020-07-02', color:'Ljust gyllene', chip:'752098100234562', reg:'SKK SE45210/2020', status:'adult', weightLog:[{d:'2023-01-01',kg:33.4}], height:60, notes:'Avelshane, mycket god exteriör.', hips:'A', elbows:'0', eyes:'Ua (2023)', dna:'Klar', titles:['SE UCH']},
-    {id:'d3', name:'Nova', regName:'Sunfield\'s Nova', callName:'Nova', breed:'Golden Retriever', sex:'female', dob:'2017-05-09', color:'Gyllene', chip:'752098100234559', reg:'SKK SE22190/2017', status:'retired', weightLog:[], height:55, notes:'Pensionerad avelstik, Bellas mamma.', hips:'B', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH','NORD UCH']},
-    {id:'d4', name:'Thor', regName:'Nordheim\'s Thor', callName:'Thor', breed:'Golden Retriever', sex:'male', dob:'2016-02-20', color:'Mörkt gyllene', chip:'752098100234500', reg:'SKK SE10021/2016', status:'deceased', weightLog:[], height:61, notes:'Bellas far, avled 2023.', hips:'A', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH']},
-    {id:'d5', name:'Freja', regName:'Doginary\'s Spring Freja', callName:'Freja', breed:'Golden Retriever', sex:'female', dob:'2025-05-02', color:'Gyllene', chip:'752098100234580', reg:'—', status:'puppy', weightLog:[{d:'2025-05-02',kg:0.45},{d:'2025-05-16',kg:1.3},{d:'2025-06-01',kg:2.6}], height:0, notes:'Från Bella x Zeus-kullen, reserverad.', hips:'', elbows:'', eyes:'', dna:'', titles:[]},
+    {id:'d1', name:'Bella', regName:'Doginary\'s Northern Star', callName:'Bella', breed:'Golden Retriever', sex:'female', dob:'2021-03-14', color:'Gyllene', chip:'752098100234561', reg:'SKK SE12345/2021', status:'adult', weightLog:[{d:'2021-06-01',kg:8.2},{d:'2022-01-01',kg:24.5},{d:'2024-01-01',kg:29.1}], height:56, notes:'Lugnt temperament, utmärkt med valpar. Höftröntgen A, armbåge 0.', hips:'A', elbows:'0', eyes:'Ua (2024)', dna:'Klar (PRA, ICT)', sire:'d4', dam:'d3', titles:['SE UCH','SE VCH'], photoUrl:'https://place.dog/500/500?id=101'},
+    {id:'d2', name:'Zeus', regName:'Nordheim\'s Zeus', callName:'Zeus', breed:'Golden Retriever', sex:'male', dob:'2020-07-02', color:'Ljust gyllene', chip:'752098100234562', reg:'SKK SE45210/2020', status:'adult', weightLog:[{d:'2023-01-01',kg:33.4}], height:60, notes:'Avelshane, mycket god exteriör. Extern hane — pedigree registrerad hos uppfödaren.', hips:'A', elbows:'0', eyes:'Ua (2023)', dna:'Klar', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=102'},
+    {id:'d3', name:'Nova', regName:'Sunfield\'s Nova', callName:'Nova', breed:'Golden Retriever', sex:'female', dob:'2017-05-09', color:'Gyllene', chip:'752098100234559', reg:'SKK SE22190/2017', status:'retired', weightLog:[], height:55, notes:'Pensionerad avelstik, Bellas mamma.', hips:'B', elbows:'0', eyes:'Ua', dna:'Klar', sire:'d9', dam:'d8', titles:['SE UCH','NORD UCH'], photoUrl:'https://place.dog/500/500?id=103'},
+    {id:'d4', name:'Thor', regName:'Nordheim\'s Thor', callName:'Thor', breed:'Golden Retriever', sex:'male', dob:'2016-02-20', color:'Mörkt gyllene', chip:'752098100234500', reg:'SKK SE10021/2016', status:'deceased', weightLog:[], height:61, notes:'Bellas far, avled 2023.', hips:'A', elbows:'0', eyes:'Ua', dna:'Klar', sire:'d7', dam:'d6', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=104'},
+    {id:'d5', name:'Freja', regName:'Doginary\'s Spring Freja', callName:'Freja', breed:'Golden Retriever', sex:'female', dob:'2025-05-02', color:'Gyllene', chip:'752098100234580', reg:'—', status:'puppy', weightLog:[{d:'2025-05-02',kg:0.45},{d:'2025-05-16',kg:1.3},{d:'2025-06-01',kg:2.6}], height:0, notes:'Från Bella x Zeus-kullen, reserverad.', hips:'', elbows:'', eyes:'', dna:'', sire:'d2', dam:'d1', titles:[], photoUrl:'https://place.dog/500/500?id=105'},
+    {id:'d6', name:'Ronja', regName:'Nordheim\'s Ronja', callName:'Ronja', breed:'Golden Retriever', sex:'female', dob:'2012-04-11', color:'Gyllene', chip:'752098100234010', reg:'SKK SE30011/2012', status:'deceased', weightLog:[], height:54, notes:'Thors mamma, mormorsmor till Bella.', hips:'A', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=106'},
+    {id:'d7', name:'Bruno', regName:'Nordheim\'s Bruno', callName:'Bruno', breed:'Golden Retriever', sex:'male', dob:'2011-09-23', color:'Mörkt gyllene', chip:'752098100234011', reg:'SKK SE21044/2011', status:'deceased', weightLog:[], height:62, notes:'Thors pappa.', hips:'A', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH','NORD UCH'], photoUrl:'https://place.dog/500/500?id=107'},
+    {id:'d8', name:'Saga', regName:'Sunfield\'s Saga', callName:'Saga', breed:'Golden Retriever', sex:'female', dob:'2013-01-30', color:'Ljust gyllene', chip:'752098100234012', reg:'SKK SE18820/2013', status:'deceased', weightLog:[], height:53, notes:'Novas mamma.', hips:'B', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=108'},
+    {id:'d9', name:'Aslan', regName:'Sunfield\'s Aslan', callName:'Aslan', breed:'Golden Retriever', sex:'male', dob:'2012-11-05', color:'Gyllene', chip:'752098100234013', reg:'SKK SE09912/2012', status:'deceased', weightLog:[], height:60, notes:'Novas pappa.', hips:'A', elbows:'0', eyes:'Ua', dna:'Klar', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=109'},
   ];
   const health = [
     {id:'h1', dogId:'d1', type:'Vaccination', date:'2025-08-01', due:'2026-08-01', detail:'Kombinationsvaccin DHPPi+L', status:'ok'},
@@ -2025,11 +2040,15 @@ function seedSv(){
 
 function seedEn(){
   const dogs = [
-    {id:'d1', name:'Bella', regName:'Doginary\'s Northern Star', callName:'Bella', breed:'Golden Retriever', sex:'female', dob:'2021-03-14', color:'Golden', chip:'752098100234561', reg:'SKK SE12345/2021', status:'adult', weightLog:[{d:'2021-06-01',kg:8.2},{d:'2022-01-01',kg:24.5},{d:'2024-01-01',kg:29.1}], height:56, notes:'Calm temperament, excellent with puppies. Hip score A, elbows 0.', hips:'A', elbows:'0', eyes:'Clear (2024)', dna:'Clear (PRA, ICT)', sire:'d3', dam:'d4', titles:['SE UCH','SE VCH']},
-    {id:'d2', name:'Zeus', regName:'Nordheim\'s Zeus', callName:'Zeus', breed:'Golden Retriever', sex:'male', dob:'2020-07-02', color:'Light golden', chip:'752098100234562', reg:'SKK SE45210/2020', status:'adult', weightLog:[{d:'2023-01-01',kg:33.4}], height:60, notes:'Stud dog, very good conformation.', hips:'A', elbows:'0', eyes:'Clear (2023)', dna:'Clear', titles:['SE UCH']},
-    {id:'d3', name:'Nova', regName:'Sunfield\'s Nova', callName:'Nova', breed:'Golden Retriever', sex:'female', dob:'2017-05-09', color:'Golden', chip:'752098100234559', reg:'SKK SE22190/2017', status:'retired', weightLog:[], height:55, notes:'Retired brood bitch, Bella\'s mother.', hips:'B', elbows:'0', eyes:'Clear', dna:'Clear', titles:['SE UCH','NORD UCH']},
-    {id:'d4', name:'Thor', regName:'Nordheim\'s Thor', callName:'Thor', breed:'Golden Retriever', sex:'male', dob:'2016-02-20', color:'Dark golden', chip:'752098100234500', reg:'SKK SE10021/2016', status:'deceased', weightLog:[], height:61, notes:'Bella\'s father, passed away in 2023.', hips:'A', elbows:'0', eyes:'Clear', dna:'Clear', titles:['SE UCH']},
-    {id:'d5', name:'Freja', regName:'Doginary\'s Spring Freja', callName:'Freja', breed:'Golden Retriever', sex:'female', dob:'2025-05-02', color:'Golden', chip:'752098100234580', reg:'—', status:'puppy', weightLog:[{d:'2025-05-02',kg:0.45},{d:'2025-05-16',kg:1.3},{d:'2025-06-01',kg:2.6}], height:0, notes:'From the Bella x Zeus litter, reserved.', hips:'', elbows:'', eyes:'', dna:'', titles:[]},
+    {id:'d1', name:'Bella', regName:'Doginary\'s Northern Star', callName:'Bella', breed:'Golden Retriever', sex:'female', dob:'2021-03-14', color:'Golden', chip:'752098100234561', reg:'SKK SE12345/2021', status:'adult', weightLog:[{d:'2021-06-01',kg:8.2},{d:'2022-01-01',kg:24.5},{d:'2024-01-01',kg:29.1}], height:56, notes:'Calm temperament, excellent with puppies. Hip score A, elbows 0.', hips:'A', elbows:'0', eyes:'Clear (2024)', dna:'Clear (PRA, ICT)', sire:'d4', dam:'d3', titles:['SE UCH','SE VCH'], photoUrl:'https://place.dog/500/500?id=101'},
+    {id:'d2', name:'Zeus', regName:'Nordheim\'s Zeus', callName:'Zeus', breed:'Golden Retriever', sex:'male', dob:'2020-07-02', color:'Light golden', chip:'752098100234562', reg:'SKK SE45210/2020', status:'adult', weightLog:[{d:'2023-01-01',kg:33.4}], height:60, notes:'Stud dog, very good conformation. External male — pedigree kept by his owner.', hips:'A', elbows:'0', eyes:'Clear (2023)', dna:'Clear', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=102'},
+    {id:'d3', name:'Nova', regName:'Sunfield\'s Nova', callName:'Nova', breed:'Golden Retriever', sex:'female', dob:'2017-05-09', color:'Golden', chip:'752098100234559', reg:'SKK SE22190/2017', status:'retired', weightLog:[], height:55, notes:'Retired brood bitch, Bella\'s mother.', hips:'B', elbows:'0', eyes:'Clear', dna:'Clear', sire:'d9', dam:'d8', titles:['SE UCH','NORD UCH'], photoUrl:'https://place.dog/500/500?id=103'},
+    {id:'d4', name:'Thor', regName:'Nordheim\'s Thor', callName:'Thor', breed:'Golden Retriever', sex:'male', dob:'2016-02-20', color:'Dark golden', chip:'752098100234500', reg:'SKK SE10021/2016', status:'deceased', weightLog:[], height:61, notes:'Bella\'s father, passed away in 2023.', hips:'A', elbows:'0', eyes:'Clear', dna:'Clear', sire:'d7', dam:'d6', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=104'},
+    {id:'d5', name:'Freja', regName:'Doginary\'s Spring Freja', callName:'Freja', breed:'Golden Retriever', sex:'female', dob:'2025-05-02', color:'Golden', chip:'752098100234580', reg:'—', status:'puppy', weightLog:[{d:'2025-05-02',kg:0.45},{d:'2025-05-16',kg:1.3},{d:'2025-06-01',kg:2.6}], height:0, notes:'From the Bella x Zeus litter, reserved.', hips:'', elbows:'', eyes:'', dna:'', sire:'d2', dam:'d1', titles:[], photoUrl:'https://place.dog/500/500?id=105'},
+    {id:'d6', name:'Ronja', regName:'Nordheim\'s Ronja', callName:'Ronja', breed:'Golden Retriever', sex:'female', dob:'2012-04-11', color:'Golden', chip:'752098100234010', reg:'SKK SE30011/2012', status:'deceased', weightLog:[], height:54, notes:'Thor\'s mother, Bella\'s great-grandmother.', hips:'A', elbows:'0', eyes:'Clear', dna:'Clear', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=106'},
+    {id:'d7', name:'Bruno', regName:'Nordheim\'s Bruno', callName:'Bruno', breed:'Golden Retriever', sex:'male', dob:'2011-09-23', color:'Dark golden', chip:'752098100234011', reg:'SKK SE21044/2011', status:'deceased', weightLog:[], height:62, notes:'Thor\'s father.', hips:'A', elbows:'0', eyes:'Clear', dna:'Clear', titles:['SE UCH','NORD UCH'], photoUrl:'https://place.dog/500/500?id=107'},
+    {id:'d8', name:'Saga', regName:'Sunfield\'s Saga', callName:'Saga', breed:'Golden Retriever', sex:'female', dob:'2013-01-30', color:'Light golden', chip:'752098100234012', reg:'SKK SE18820/2013', status:'deceased', weightLog:[], height:53, notes:'Nova\'s mother.', hips:'B', elbows:'0', eyes:'Clear', dna:'Clear', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=108'},
+    {id:'d9', name:'Aslan', regName:'Sunfield\'s Aslan', callName:'Aslan', breed:'Golden Retriever', sex:'male', dob:'2012-11-05', color:'Golden', chip:'752098100234013', reg:'SKK SE09912/2012', status:'deceased', weightLog:[], height:60, notes:'Nova\'s father.', hips:'A', elbows:'0', eyes:'Clear', dna:'Clear', titles:['SE UCH'], photoUrl:'https://place.dog/500/500?id=109'},
   ];
   const health = [
     {id:'h1', dogId:'d1', type:'Vaccination', date:'2025-08-01', due:'2026-08-01', detail:'Combination vaccine DHPPi+L', status:'ok'},
@@ -2447,7 +2466,7 @@ function renderDashboard(){
         <div class="card card-pad">
           ${dueHealth.length ? dueHealth.map(h=>{
             const dog = dogById(h.dogId);
-            return `<div class="milestone-row"><div class="avatar-circle">${(dog?dog.name:'?')[0]}</div>
+            return `<div class="milestone-row"><div class="avatar-circle">${dog && dog.photoUrl ? `<img src="${dog.photoUrl}" alt="${dog.name}">` : (dog?dog.name:'?')[0]}</div>
               <div style="flex:1"><div style="font-weight:600;font-size:13px;">${h.type} — ${dog?dog.name:t('unknownDog')}</div>
               <div style="font-size:12px;color:var(--ink-soft);">${t('dueOn',{date:fmtDate(h.due),detail:h.detail})}</div></div></div>`;
           }).join('') : `<div style="color:var(--ink-soft);font-size:13px;">${t('nothingUrgent')}</div>`}
@@ -2907,9 +2926,12 @@ function renderPedigree(){
   drawPedigree(DB.dogs[0].id);
 }
 function pedNode(dog, isSelf){
-  if(!dog) return `<div class="ped-node" style="opacity:.4;"><div class="n">${t('unknownDog')}</div><div class="m">${t('pedNoData')}</div></div>`;
-  return `<div class="ped-node ${isSelf?'self':''}"><div class="n">${dog.name}</div><div class="m">${dog.breed}</div>
-    <div class="scores">${dog.hips?`<span class="tag">HD ${dog.hips}</span>`:''}${dog.titles[0]?`<span class="tag">${dog.titles[0]}</span>`:''}</div></div>`;
+  if(!dog) return `<div class="ped-node" style="opacity:.4;"><div class="ped-avatar">?</div><div><div class="n">${t('unknownDog')}</div><div class="m">${t('pedNoData')}</div></div></div>`;
+  return `<div class="ped-node ${isSelf?'self':''}">
+    <div class="ped-avatar">${dog.photoUrl ? `<img src="${dog.photoUrl}" alt="${dog.name}">` : dog.name[0]}</div>
+    <div><div class="n">${dog.name}</div><div class="m">${dog.breed}</div>
+    <div class="scores">${dog.hips?`<span class="tag">HD ${dog.hips}</span>`:''}${dog.titles[0]?`<span class="tag">${dog.titles[0]}</span>`:''}</div></div>
+  </div>`;
 }
 function drawPedigree(id){
   const d = dogById(id);
@@ -2955,7 +2977,7 @@ function renderBreeding(){
       <div class="card card-pad">
         <div class="section-head" style="margin-top:0;"><h2>${t('heatTracking')}</h2></div>
         ${DB.dogs.filter(d=>d.sex==='female' && d.status!=='deceased').map(d=>`
-          <div class="milestone-row"><div class="avatar-circle">${d.name[0]}</div>
+          <div class="milestone-row"><div class="avatar-circle">${d.photoUrl ? `<img src="${d.photoUrl}" alt="${d.name}">` : d.name[0]}</div>
             <div style="flex:1"><div style="font-weight:600;font-size:13px;">${d.name}</div><div style="font-size:12px;color:var(--ink-soft);">${t('heatNotRecorded')}</div></div>
           </div>`).join('')}
       </div>

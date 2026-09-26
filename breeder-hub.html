@@ -1775,7 +1775,7 @@ document.getElementById('authForgotBtn').addEventListener('click', async ()=>{
   authMsg.textContent = ''; authMsg.className = '';
   try{
     const { error } = await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.href.split('#')[0].split('?')[0]
+      redirectTo: 'https://doginary.com/reset-password.html'
     });
     if(error) throw error;
     authMsg.textContent = t('authForgotSent', { email });

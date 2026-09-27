@@ -100,7 +100,7 @@
       passwordPlaceholder: 'Minst 6 tecken',
       forgot: 'Glömt lösenord?',
       trialBadge: '14 dagar gratis',
-      signupTitle: 'Allt din hund behöver. På ett och samma ställe.',
+      signupTitle: 'Allt din hund behöver.<br>På ett och samma ställe.',
       signupFeatures: [
         'Personliga insikter & rekommendationer',
         'Hälsa, vikt & välmående',
@@ -108,7 +108,7 @@
         'Personlig väderguide',
         'Kennel- och avelsverktyg'
       ],
-      signupDesc: 'Utforska Doginary innan du bestämmer dig. Inget kort behövs!',
+      signupDesc: 'Utforska Doginary innan du bestämmer dig.<br>Inget kort behövs!',
       signupSubmit: 'Skapa konto',
       signupToggle: 'Har du redan ett konto? Logga in',
       signinTitle: 'Logga in',
@@ -168,7 +168,7 @@
       passwordPlaceholder: 'At least 6 characters',
       forgot: 'Forgot your password?',
       trialBadge: '14 days free',
-      signupTitle: 'Everything your dog needs. In one place.',
+      signupTitle: 'Everything your dog needs.<br>In one place.',
       signupFeatures: [
         'Personalized insights & recommendations',
         'Health, weight & wellbeing tracking',
@@ -176,7 +176,7 @@
         'Personalized weather guidance',
         'Kennel & breeding tools'
       ],
-      signupDesc: 'Explore Doginary before you decide. No card needed!',
+      signupDesc: 'Explore Doginary before you decide.<br>No card needed!',
       signupSubmit: 'Create account',
       signupToggle: 'Already have an account? Log in',
       signinTitle: 'Log in',
@@ -365,7 +365,7 @@
     paywallEl.setAttribute('aria-labelledby', 'doginaryPaywallTitle');
     paywallEl.innerHTML =
       '<div id="doginaryPaywallCard">' +
-        '<p class="doginaryAuthEyebrow">Doginary</p>' +
+        '<p class="doginaryAuthEyebrow"><img src="assets/title-doginary.png" alt="Doginary" class="doginaryAuthLogo" style="height:20px;width:auto;display:inline-block"></p>' +
         '<h2 id="doginaryPaywallTitle"></h2>' +
         '<p id="doginaryPaywallDesc"></p>' +
         '<p id="doginaryPaywallMessage" role="alert"></p>' +
@@ -514,7 +514,7 @@
     modalEl.innerHTML =
       '<div id="doginaryAuthCard">' +
         '<button type="button" id="doginaryAuthClose">&times;</button>' +
-        '<p class="doginaryAuthEyebrow">Doginary</p>' +
+        '<p class="doginaryAuthEyebrow"><img src="assets/title-doginary.png" alt="Doginary" class="doginaryAuthLogo" style="height:20px;width:auto;display:inline-block"></p>' +
         '<h2 id="doginaryAuthTitle"></h2>' +
         '<ul id="doginaryAuthFeatureList" class="doginaryAuthFeatureList" style="display:none"></ul>' +
         '<p id="doginaryAuthTrialBadge" style="display:none"></p>' +
@@ -651,7 +651,7 @@
     passwordInput.setAttribute('placeholder', T('passwordPlaceholder'));
     forgotBtn.textContent = T('forgot');
     if (mode === 'signup') {
-      titleEl.textContent = T('signupTitle');
+      titleEl.innerHTML = T('signupTitle');
       if (featureListEl) {
         var pack = I18N[uiLang] || I18N.sv;
         var features = pack.signupFeatures || I18N.sv.signupFeatures || [];
@@ -662,7 +662,7 @@
       }
       trialBadgeEl.textContent = T('trialBadge');
       trialBadgeEl.style.display = '';
-      descEl.textContent = T('signupDesc');
+      descEl.innerHTML = T('signupDesc');
       submitBtn.textContent = T('signupSubmit');
       toggleBtn.textContent = T('signupToggle');
       if (consentRow) consentRow.hidden = false;

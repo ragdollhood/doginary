@@ -100,23 +100,23 @@ a{color:inherit;}
   display:flex; flex-direction:column; position:fixed; top:0; bottom:0; left:0;
   transition:transform .25s ease; z-index:40;
 }
-.sidebar-head{padding:22px 20px 14px; border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar-head{padding:16px 20px 10px; border-bottom:1px solid rgba(255,255,255,.08);}
 .wordmark{display:flex; align-items:center; gap:10px;}
-.wordmark img{height:28px; width:auto;}
+.wordmark img{height:24px; width:auto;}
 .wordmark-fallback{font-family:var(--font-display); font-style:italic; font-size:22px; color:#F3E4C6; font-weight:500;}
 .hub-tag{font-family:var(--font-body); font-size:11px; letter-spacing:.04em; color:#9FB3A9; margin-top:2px;}
-.nav{flex:1; padding:14px 10px; overflow-y:auto;}
-.nav-group-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:#7C9088; padding:14px 12px 6px;}
+.nav{flex:1; padding:8px 10px 4px; overflow-y:auto;}
+.nav-group-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:#7C9088; padding:10px 12px 4px;}
 .nav-item{
   display:flex; align-items:center; gap:11px; width:100%; border:none; background:transparent;
-  color:#D8E0D8; padding:9px 12px; border-radius:var(--radius-s); font-size:13.6px; text-align:left;
-  cursor:pointer; margin:1px 0; transition:background .12s ease, color .12s ease;
+  color:#D8E0D8; padding:7px 12px; border-radius:var(--radius-s); font-size:13.2px; text-align:left;
+  cursor:pointer; margin:0; transition:background .12s ease, color .12s ease;
 }
 .nav-item svg{flex-shrink:0; opacity:.85;}
 .nav-item:hover{background:rgba(255,255,255,.06);}
 .nav-item.active{background:#EDE7D9; color:var(--pine-deep); font-weight:600;}
 .nav-item.active svg{opacity:1;}
-.sidebar-foot{padding:14px 18px 20px; border-top:1px solid rgba(255,255,255,.08); font-size:12px; color:#8CA098;}
+.sidebar-foot{padding:10px 18px 14px; border-top:1px solid rgba(255,255,255,.08); font-size:12px; color:#8CA098;}
 .kennel-name{color:#EDE7D9; font-weight:600; font-size:13px;}
 
 .main{margin-left:250px; flex:1; min-width:0; display:flex; flex-direction:column;}
@@ -392,7 +392,7 @@ tbody tr:hover{background:var(--surface-2);}
 .legal-footer-links .dot{opacity:.5;}
 /* Sidebar is narrow, so its legal links stack vertically instead of
    wrapping mid-row with a stray "·" separator left dangling on its own line. */
-#sidebarLegalLinks{flex-direction:column; align-items:flex-start; gap:5px;}
+#sidebarLegalLinks{flex-direction:column; align-items:flex-start; gap:3px;}
 #sidebarLegalLinks{color:#7E9088;}
 #sidebarLegalLinks a, #sidebarLegalLinks button{color:#9FB3A9;}
 #sidebarLegalLinks a:hover, #sidebarLegalLinks button:hover{color:#F3E4C6;}
@@ -426,49 +426,6 @@ tbody tr:hover{background:var(--surface-2);}
 }
 #passwordResetSubmit:hover{background:#3A322A;}
 #passwordResetSubmit:disabled{opacity:.6; cursor:default;}
-
-/* paywall gate — visas för inloggade användare utan aktivt Stripe-
-   abonnemang. Till skillnad från #authGate blockerar denna resten av
-   sidan helt: .app (sidebar + topbar + content) döljs med display:none
-   så länge #paywallGate har klassen .show, och bootApp() — som laddar
-   den riktiga kenneldatan — anropas aldrig förrän abonnemanget är
-   aktivt. */
-#paywallGate{
-  position:fixed; inset:0; z-index:500; display:none;
-  align-items:center; justify-content:center; padding:24px;
-  background:
-    radial-gradient(1100px 560px at 50% -8%, var(--honey-tint), transparent 62%),
-    var(--bg);
-}
-#paywallGate.show{display:flex;}
-.paywall-card{
-  width:min(460px,100%); background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-l);
-  padding:38px 34px 30px; box-shadow:0 24px 60px rgba(0,0,0,.2), 0 2px 10px rgba(0,0,0,.08);
-  text-align:center;
-}
-.paywall-eyebrow{font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--honey-deep); margin:0 0 10px;}
-.paywall-title{font-family:var(--font-display); font-size:32px; font-weight:500; margin:0 0 8px; color:var(--ink);}
-.paywall-subtitle{font-size:14.5px; color:var(--ink-soft); margin:0 0 24px; line-height:1.5;}
-.paywall-features{background:var(--surface-2); border-radius:var(--radius-m); padding:18px 20px; margin:0 0 24px; text-align:left;}
-.paywall-features-label{font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 10px;}
-.paywall-feature-list{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:8px 14px;}
-.paywall-feature-list li{font-size:13.5px; color:var(--ink); display:flex; align-items:center; gap:7px;}
-.paywall-feature-list li::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--honey); flex-shrink:0;}
-.paywall-price-row{margin:0 0 4px;}
-.paywall-price{font-family:var(--font-display); font-size:38px; font-weight:500; color:var(--pine);}
-:root[data-theme="dark"] .paywall-price{color:var(--honey);}
-.paywall-price-period{font-family:var(--font-body); font-size:14px; font-weight:600; color:var(--ink-soft); margin-left:2px;}
-.paywall-cta-sub{font-size:12.5px; color:var(--ink-soft); margin:6px 0 22px;}
-.paywall-message{min-height:16px; font-size:12.5px; margin:0 0 10px; line-height:1.4;}
-.paywall-message.error{color:var(--danger);}
-.paywall-unlock-btn{width:100%; justify-content:center; font-size:15px; padding:13px;}
-.paywall-logout-link{
-  display:block; margin:16px auto 0; background:none; border:none; color:var(--ink-soft); font-size:12px;
-  text-decoration:underline; cursor:pointer; font-family:inherit;
-}
-@media(max-width:480px){
-  .paywall-feature-list{grid-template-columns:1fr;}
-}
 .drawer{
   width:min(560px,94vw); background:var(--bg); height:100%; overflow-y:auto; box-shadow:-14px 0 40px rgba(0,0,0,.2);
   animation:slideIn .2s ease;
@@ -505,8 +462,8 @@ tbody tr:hover{background:var(--surface-2);}
 .empty svg{width:34px;height:34px;margin-bottom:10px;opacity:.5;}
 
 /* pedigree tree */
-.pedigree-tree{display:flex; align-items:stretch; gap:0; overflow-x:auto; padding:10px 4px 20px;}
-.ped-col{display:flex; flex-direction:column; justify-content:space-around; gap:10px; padding:0 10px; position:relative;}
+.pedigree-tree{display:flex; flex-direction:column; align-items:center; gap:16px; overflow-x:auto; padding:10px 4px 20px;}
+.ped-col{display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; align-items:stretch; gap:12px; padding:0; position:relative; width:100%;}
 .ped-node{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s); padding:9px 12px;
   min-width:150px; font-size:12px; display:flex; align-items:center; gap:9px;
@@ -608,8 +565,6 @@ tbody tr:hover{background:var(--surface-2);}
 }
 @media(max-width:480px){
   .page-title{font-size:16px;}
-  .paywall-card{padding:26px 20px 22px;}
-  .paywall-title{font-size:26px;}
   .auth-card{padding:24px 18px 20px;}
 }
 @media print{
@@ -758,11 +713,11 @@ tbody tr:hover{background:var(--surface-2);}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </button>
       </div>
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px;">
         <span>Uppfödaröversikt</span>
         <button id="logoutBtn" style="background:none; border:none; color:#9FB3A9; cursor:pointer; font-size:12px; text-decoration:underline; padding:0;">Logga ut</button>
       </div>
-      <div class="legal-footer-links" id="sidebarLegalLinks" style="color:#7E9088; margin-top:10px;"></div>
+      <div class="legal-footer-links" id="sidebarLegalLinks" style="color:#7E9088; margin-top:6px;"></div>
     </div>
   </aside>
 

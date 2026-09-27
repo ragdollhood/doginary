@@ -100,6 +100,7 @@
       passwordPlaceholder: 'Minst 6 tecken',
       forgot: 'Glömt lösenord?',
       trialBadge: '14 dagar gratis',
+      priceLine: 'Sedan $4.99/månad. Avsluta när du vill.',
       signupTitle: 'Allt din hund behöver.<br>På ett och samma ställe.',
       signupFeatures: [
         'Personliga insikter & rekommendationer',
@@ -155,6 +156,7 @@
       portalError: 'Kunde inte öppna prenumerationshanteringen — försök igen.',
       paywallTitle: 'Din provperiod har gått ut',
       paywallDesc: 'Lås upp Doginary för att fortsätta logga dagbok och se insikter om din hund.',
+      paywallPrice: '$4.99/månad',
       paywallUnlock: 'Lås upp Doginary',
       paywallRedirecting: 'Öppnar betalning …',
       paywallError: 'Något gick fel — försök igen.',
@@ -168,6 +170,7 @@
       passwordPlaceholder: 'At least 6 characters',
       forgot: 'Forgot your password?',
       trialBadge: '14 days free',
+      priceLine: 'Then $4.99/month. Cancel anytime.',
       signupTitle: 'Everything your dog needs.<br>In one place.',
       signupFeatures: [
         'Personalized insights & recommendations',
@@ -223,6 +226,7 @@
       portalError: 'Could not open subscription management — please try again.',
       paywallTitle: 'Your trial has ended',
       paywallDesc: 'Unlock Doginary to keep logging your dog’s diary and seeing insights.',
+      paywallPrice: '$4.99/month',
       paywallUnlock: 'Unlock Doginary',
       paywallRedirecting: 'Redirecting to checkout …',
       paywallError: 'Something went wrong — please try again.',
@@ -354,7 +358,7 @@
   // osv) visas paywallen ändå, precis som i Breeder Hub — hellre en
   // legitim användare som får ladda om sidan än att ett fel av misstag
   // låser upp något som borde vara stängt.
-  var paywallEl, paywallTitleEl, paywallDescEl, paywallMessageEl, paywallUnlockBtn, paywallLogoutBtn;
+  var paywallEl, paywallTitleEl, paywallFeatureListEl, paywallPriceEl, paywallDescEl, paywallMessageEl, paywallUnlockBtn, paywallLogoutBtn;
 
   function buildPaywall() {
     if (document.getElementById('doginaryPaywallGate')) return;
@@ -367,6 +371,8 @@
       '<div id="doginaryPaywallCard">' +
         '<p class="doginaryAuthEyebrow"><img src="assets/title-doginary.png" alt="Doginary" class="doginaryAuthLogo"></p>' +
         '<h2 id="doginaryPaywallTitle"></h2>' +
+        '<ul id="doginaryPaywallFeatureList" class="doginaryAuthFeatureList"></ul>' +
+        '<p id="doginaryPaywallPrice"></p>' +
         '<p id="doginaryPaywallDesc"></p>' +
         '<p id="doginaryPaywallMessage" role="alert"></p>' +
         '<button type="button" id="doginaryPaywallUnlockBtn"></button>' +
@@ -375,6 +381,8 @@
     document.body.appendChild(paywallEl);
 
     paywallTitleEl = document.getElementById('doginaryPaywallTitle');
+    paywallFeatureListEl = document.getElementById('doginaryPaywallFeatureList');
+    paywallPriceEl = document.getElementById('doginaryPaywallPrice');
     paywallDescEl = document.getElementById('doginaryPaywallDesc');
     paywallMessageEl = document.getElementById('doginaryPaywallMessage');
     paywallUnlockBtn = document.getElementById('doginaryPaywallUnlockBtn');
@@ -391,6 +399,14 @@
   function applyPaywallTexts() {
     if (!paywallEl) return;
     paywallTitleEl.textContent = T('paywallTitle');
+    if (paywallFeatureListEl) {
+      var pack = I18N[uiLang] || I18N.sv;
+      var features = pack.signupFeatures || I18N.sv.signupFeatures || [];
+      paywallFeatureListEl.innerHTML = features.map(function (f) {
+        return '<li>' + escapeHtml(f) + '</li>';
+      }).join('');
+    }
+    if (paywallPriceEl) paywallPriceEl.textContent = T('paywallPrice');
     paywallDescEl.textContent = T('paywallDesc');
     paywallUnlockBtn.textContent = T('paywallUnlock');
     paywallLogoutBtn.textContent = T('paywallLogout');
@@ -497,7 +513,7 @@
   // ---------- Modal + kontoknapp: bygg DOM ----------
 
   var modalEl, formEl, emailInput, passwordInput, messageEl, submitBtn,
-      titleEl, descEl, featureListEl, trialBadgeEl, toggleBtn, forgotBtn, closeBtn,
+      titleEl, descEl, featureListEl, trialBadgeEl, priceLineEl, toggleBtn, forgotBtn, closeBtn,
       consentRow, consentCheckbox, consentLabel;
   var mode = 'signup'; // 'signup' | 'signin'
 
@@ -518,6 +534,7 @@
         '<h2 id="doginaryAuthTitle"></h2>' +
         '<ul id="doginaryAuthFeatureList" class="doginaryAuthFeatureList" style="display:none"></ul>' +
         '<p id="doginaryAuthTrialBadge" style="display:none"></p>' +
+        '<p id="doginaryAuthPriceLine" style="display:none"></p>' +
         '<p id="doginaryAuthDesc"></p>' +
         '<form id="doginaryAuthForm" novalidate>' +
           '<label for="doginaryAuthEmail" id="doginaryAuthEmailLabel"></label>' +
@@ -544,6 +561,7 @@
     titleEl = document.getElementById('doginaryAuthTitle');
     featureListEl = document.getElementById('doginaryAuthFeatureList');
     trialBadgeEl = document.getElementById('doginaryAuthTrialBadge');
+    priceLineEl = document.getElementById('doginaryAuthPriceLine');
     descEl = document.getElementById('doginaryAuthDesc');
     toggleBtn = document.getElementById('doginaryAuthToggle');
     forgotBtn = document.getElementById('doginaryAuthForgot');
@@ -662,6 +680,10 @@
       }
       trialBadgeEl.textContent = T('trialBadge');
       trialBadgeEl.style.display = '';
+      if (priceLineEl) {
+        priceLineEl.textContent = T('priceLine');
+        priceLineEl.style.display = '';
+      }
       descEl.innerHTML = T('signupDesc');
       submitBtn.textContent = T('signupSubmit');
       toggleBtn.textContent = T('signupToggle');
@@ -676,6 +698,7 @@
       titleEl.textContent = T('signinTitle');
       if (featureListEl) featureListEl.style.display = 'none';
       trialBadgeEl.style.display = 'none';
+      if (priceLineEl) priceLineEl.style.display = 'none';
       descEl.textContent = T('signinDesc');
       submitBtn.textContent = T('signinSubmit');
       toggleBtn.textContent = T('signinToggle');

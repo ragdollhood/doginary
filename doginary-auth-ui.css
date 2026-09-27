@@ -64,6 +64,9 @@
   border:1px solid rgba(75,107,62,.25); border-radius:20px;
   padding:5px 12px; margin:0 0 10px;
 }
+#doginaryAuthPriceLine{
+  font-size:12.5px; line-height:1.4; color:var(--ink-soft,#6E6455); margin:0 0 12px;
+}
 #doginaryAuthDesc{ font-size:13.5px; line-height:1.45; color:var(--ink-soft,#6E6455); margin:0 0 14px; }
 
 #doginaryAuthForm{ display:flex; flex-direction:column; gap:4px; }
@@ -254,7 +257,14 @@
 
 #doginaryPaywallTitle{
   font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:23px;
-  margin:0 0 8px; color:var(--ink,#2B241C);
+  margin:0 0 12px; color:var(--ink,#2B241C);
+}
+#doginaryPaywallCard .doginaryAuthFeatureList{ text-align:left; }
+#doginaryPaywallPrice{
+  display:inline-block; font-size:14px; font-weight:600; letter-spacing:.01em;
+  color:var(--ink,#2B241C); background:var(--surface-2,#F1ECDF);
+  border:1px solid var(--hair,#DCD3BF); border-radius:20px;
+  padding:5px 14px; margin:0 0 14px;
 }
 #doginaryPaywallDesc{ font-size:14.5px; line-height:1.55; color:var(--ink-soft,#6E6455); margin:0 0 22px; }
 

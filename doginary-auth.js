@@ -158,6 +158,7 @@
       paywallDesc: 'Lås upp Doginary för att fortsätta logga dagbok och se insikter om din hund.',
       paywallPrice: '$4.99/månad',
       paywallCancelNote: 'Avsluta när du vill!',
+      secureCheckoutNote: 'Säker betalning med Stripe',
       paywallUnlock: 'Lås upp Doginary',
       paywallRedirecting: 'Öppnar betalning …',
       paywallError: 'Något gick fel — försök igen.',
@@ -229,6 +230,7 @@
       paywallDesc: 'Unlock Doginary to keep logging your dog’s diary and seeing insights.',
       paywallPrice: '$4.99/month',
       paywallCancelNote: 'Cancel anytime!',
+      secureCheckoutNote: 'Secure checkout with Stripe',
       paywallUnlock: 'Unlock Doginary',
       paywallRedirecting: 'Redirecting to checkout …',
       paywallError: 'Something went wrong — please try again.',
@@ -360,7 +362,7 @@
   // osv) visas paywallen ändå, precis som i Breeder Hub — hellre en
   // legitim användare som får ladda om sidan än att ett fel av misstag
   // låser upp något som borde vara stängt.
-  var paywallEl, paywallTitleEl, paywallFeatureListEl, paywallPriceEl, paywallCancelNoteEl, paywallDescEl, paywallMessageEl, paywallUnlockBtn, paywallLogoutBtn;
+  var paywallEl, paywallTitleEl, paywallFeatureListEl, paywallPriceEl, paywallCancelNoteEl, paywallDescEl, paywallMessageEl, paywallUnlockBtn, paywallSecureTextEl, paywallLogoutBtn;
 
   function buildPaywall() {
     if (document.getElementById('doginaryPaywallGate')) return;
@@ -379,6 +381,7 @@
         '<p id="doginaryPaywallDesc"></p>' +
         '<p id="doginaryPaywallMessage" role="alert"></p>' +
         '<button type="button" id="doginaryPaywallUnlockBtn"></button>' +
+        '<p id="doginaryPaywallSecureNote">' + ICON_LOCK + '<span id="doginaryPaywallSecureText"></span></p>' +
         '<button type="button" id="doginaryPaywallLogoutBtn"></button>' +
       '</div>';
     document.body.appendChild(paywallEl);
@@ -390,6 +393,7 @@
     paywallDescEl = document.getElementById('doginaryPaywallDesc');
     paywallMessageEl = document.getElementById('doginaryPaywallMessage');
     paywallUnlockBtn = document.getElementById('doginaryPaywallUnlockBtn');
+    paywallSecureTextEl = document.getElementById('doginaryPaywallSecureText');
     paywallLogoutBtn = document.getElementById('doginaryPaywallLogoutBtn');
 
     paywallUnlockBtn.addEventListener('click', startPaywallCheckout);
@@ -414,6 +418,7 @@
     if (paywallCancelNoteEl) paywallCancelNoteEl.textContent = T('paywallCancelNote');
     paywallDescEl.textContent = T('paywallDesc');
     paywallUnlockBtn.textContent = T('paywallUnlock');
+    if (paywallSecureTextEl) paywallSecureTextEl.textContent = T('secureCheckoutNote');
     paywallLogoutBtn.textContent = T('paywallLogout');
   }
 
@@ -738,6 +743,7 @@
   // ---------- Liten kontoikon + meny (för header/crossnav) ----------
 
   var ICON_PERSON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
+  var ICON_LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 
   var menuEl = null;
   var menuOpen = false;

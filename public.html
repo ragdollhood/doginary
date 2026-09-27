@@ -49,38 +49,42 @@ a{color:inherit;}
 
 .wrap{max-width:1080px; margin:0 auto; padding:0 20px 60px;}
 
-.hero{
-  background:var(--pine-deep); color:#EDE7D9; padding:20px 20px 40px; margin-bottom:36px;
-}
-.hero-topbar{
-  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-  max-width:1080px; margin:0 auto 26px; padding:0 20px;
-}
-.hero-logo{display:flex; align-items:center; text-decoration:none; flex-shrink:0;}
-.hero-logo img{height:24px; width:auto; display:block;}
-.hero-logo-fallback{font-family:var(--font-display); font-style:italic; font-weight:500; font-size:18px; color:#F3E4C6;}
-.hero-controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
 .hero-select{
-  color-scheme:dark;
-  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.22); color:#EDE7D9;
-  border-radius:20px; padding:6px 12px; font-size:12px; font-family:inherit; font-weight:500; cursor:pointer;
+  color-scheme:light;
+  background:var(--surface); border:1px solid var(--line); color:var(--ink);
+  border-radius:20px; padding:7px 14px; font-size:12px; font-family:inherit; font-weight:600; cursor:pointer;
 }
 .hero-select:hover{border-color:var(--honey);}
 .hero-select:focus{outline:none; border-color:var(--honey);}
-.unit-toggle{display:flex; border:1px solid rgba(255,255,255,.22); border-radius:20px; overflow:hidden;}
-.unit-toggle button{background:transparent; border:none; color:#EDE7D9; font-size:12px; padding:6px 13px; cursor:pointer; font-family:inherit; font-weight:500;}
-.unit-toggle button.active{background:rgba(255,255,255,.18);}
-.lang-toggle{display:flex; align-items:center; gap:2px; border:1px solid rgba(255,255,255,.22); border-radius:20px; overflow:hidden; padding:3px 5px;}
+.unit-toggle{display:flex; border:1px solid var(--line); border-radius:20px; overflow:hidden; background:var(--surface);}
+.unit-toggle button{background:transparent; border:none; color:var(--ink-soft); font-size:12px; padding:7px 14px; cursor:pointer; font-family:inherit; font-weight:600;}
+.unit-toggle button.active{background:var(--pine); color:#fff;}
+.lang-toggle{display:flex; align-items:center; gap:2px; border:1px solid var(--line); border-radius:20px; overflow:hidden; padding:3px 5px; background:var(--surface-2); flex-shrink:0;}
 .lang-flag-btn{background:transparent; border:none; line-height:1; padding:4px 5px; border-radius:14px; cursor:pointer; opacity:.55; transition:opacity .15s, background .15s; display:flex; align-items:center;}
 .lang-flag-btn:hover{opacity:1;}
-.lang-flag-btn.active{background:rgba(255,255,255,.18); opacity:1;}
+.lang-flag-btn.active{background:var(--pine-tint); opacity:1;}
 .lang-flag-btn svg{display:block; border-radius:2px;}
 
-.hero-inner{max-width:1080px; margin:0 auto; padding:0 20px; text-align:center;}
-.hero-eyebrow{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:#9FB3A9; margin-bottom:10px;}
-.hero-title{font-family:var(--font-display); font-weight:500; font-style:italic; font-size:clamp(28px,5vw,42px); margin:0;}
-.hero-sub{font-size:13.5px; color:#B7C4BC; margin-top:10px;}
-.hero-price{font-size:13px; color:#E4C892; margin-top:10px;}
+/* ============ KENNEL HEADER (replaces the old dark hero) ============ */
+.kennel-header{background:var(--bg); padding:28px 20px 32px; margin-bottom:36px; border-bottom:1px solid var(--line);}
+.kennel-header-inner{
+  max-width:1080px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;
+  gap:24px; flex-wrap:wrap;
+}
+.kennel-header-text{flex:1; min-width:220px;}
+.kennel-header-card{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-l);
+  padding:16px 20px; display:flex; flex-direction:column; align-items:flex-end; gap:10px;
+  box-shadow:var(--shadow); flex-shrink:0;
+}
+.hero-eyebrow{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--honey-deep); margin-bottom:8px; font-weight:600;}
+.hero-title{font-family:var(--font-display); font-weight:500; font-style:italic; font-size:clamp(26px,4.5vw,38px); margin:0; color:var(--ink);}
+.hero-sub{font-size:13.5px; color:var(--ink-soft); margin-top:8px;}
+.hero-price{font-size:13px; color:var(--honey-deep); font-weight:600; margin-top:8px;}
+@media (max-width:600px){
+  .kennel-header-inner{flex-direction:column; align-items:stretch;}
+  .kennel-header-card{align-items:flex-start; width:100%;}
+}
 
 .filter-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:22px;}
 .chip{
@@ -124,16 +128,11 @@ a{color:inherit;}
 .legal-footer-links a:hover{color:var(--honey-deep);}
 .legal-footer-links .dot{opacity:.5;}
 
-@media (max-width:480px){
-  .hero-topbar{justify-content:center;}
-  .hero-controls{justify-content:center; width:100%;}
-}
-
 /* ============ CROSSNAV (Doginary top bar shared across pages) ============ */
 .crossnav{height:76px;padding:0 max(20px,5vw);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .crossnav-home{display:inline-flex;align-items:center;gap:8px;color:var(--pine);text-decoration:none;font-size:13px;font-weight:600}
 .crossnav-logo{height:34px;width:auto;display:block;border-radius:8px}
-.crossnav-right{display:flex;align-items:center;gap:15px}
+.crossnav-right{display:flex;align-items:center;gap:15px;flex-wrap:nowrap}
 .crossnav-links{display:flex;align-items:center;gap:15px}
 .crossnav-links a{font-size:13px;color:var(--pine);text-decoration:none}
 .crossnav-links a:hover{text-decoration:underline}
@@ -163,7 +162,7 @@ a{color:inherit;}
   <button type="button" id="crossnavMenuBtn" class="crossnav-menu-btn" aria-label="Meny" aria-expanded="false" aria-controls="crossnavMobileMenu">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
-  <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary-blue.png" alt="Doginary" class="crossnav-logo"></a>
+  <a href="index.html" class="crossnav-home"><img src="assets/title-doginary.png" alt="Doginary" class="crossnav-logo"></a>
   <div class="crossnav-right">
     <div class="crossnav-links">
       <a href="index.html" id="crossnavWeather">Väder</a>
@@ -172,6 +171,11 @@ a{color:inherit;}
       <a href="insikter.html" id="crossnavInsights">Insikter</a>
       <a href="guidelines.html" id="crossnavGuidelines">Riktlinjer</a>
       <a href="breeder-hub.html" id="crossnavBreederHub">Kennel-hub</a>
+    </div>
+    <div id="doginaryAuthRoot"></div>
+    <div class="lang-toggle" id="langToggle" role="group">
+      <button type="button" class="lang-flag-btn" data-lang="sv" aria-label="Svenska" title="Svenska"><svg viewBox="0 0 16 10" width="22" height="14" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
+      <button type="button" class="lang-flag-btn" data-lang="en" aria-label="English" title="English"><svg viewBox="0 0 60 30" width="22" height="14" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#pub-uk-clip)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="pub-uk-clip"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
     </div>
   </div>
 </nav>
@@ -207,29 +211,21 @@ a{color:inherit;}
 })();
 </script>
 
-<div class="hero">
-  <div class="hero-topbar">
-    <a class="hero-logo" href="https://doginary.com" target="_blank" rel="noopener">
-      <img src="assets/title-doginary-blue.png" alt="Doginary" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-      <span class="hero-logo-fallback" style="display:none;">Doginary</span>
-    </a>
-    <div class="hero-controls">
-      <div class="lang-toggle" id="langToggle" role="group">
-        <button type="button" class="lang-flag-btn" data-lang="sv" aria-label="Svenska" title="Svenska"><svg viewBox="0 0 16 10" width="22" height="14" aria-hidden="true"><rect width="16" height="10" fill="#006aa7"/><rect x="5" width="2" height="10" fill="#fecc00"/><rect y="4" width="16" height="2" fill="#fecc00"/></svg></button>
-        <button type="button" class="lang-flag-btn" data-lang="en" aria-label="English" title="English"><svg viewBox="0 0 60 30" width="22" height="14" aria-hidden="true"><path d="M0,0 v30 h60 v-30z" fill="#00247d"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#pub-uk-clip)" stroke="#cf142b" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#cf142b" stroke-width="6"/><clipPath id="pub-uk-clip"><path d="M0,0 v30 h60 v-30z"/></clipPath></svg></button>
-      </div>
+<div class="kennel-header">
+  <div class="kennel-header-inner">
+    <div class="kennel-header-text">
+      <div class="hero-eyebrow">KENNEL</div>
+      <h1 class="hero-title" id="kennelTitle">…</h1>
+      <p class="hero-sub" id="kennelSub"></p>
+      <p class="hero-price" id="heroPrice" hidden></p>
+    </div>
+    <div class="kennel-header-card">
       <select id="currencySelect" class="hero-select" hidden></select>
       <div class="unit-toggle" id="unitToggle">
         <button type="button" data-u="metric">cm/kg</button>
         <button type="button" data-u="imperial">in/lb</button>
       </div>
     </div>
-  </div>
-  <div class="hero-inner">
-    <div class="hero-eyebrow">KENNEL</div>
-    <h1 class="hero-title" id="kennelTitle">…</h1>
-    <p class="hero-sub" id="kennelSub"></p>
-    <p class="hero-price" id="heroPrice" hidden></p>
   </div>
 </div>
 
@@ -539,7 +535,7 @@ function applyLangTexts(){
   document.getElementById('langToggle').setAttribute('aria-label', t('langAria'));
   document.getElementById('currencySelect').setAttribute('aria-label', t('currencyAria'));
   document.getElementById('unitToggle').setAttribute('aria-label', t('unitsAria'));
-  const logo = document.querySelector('.hero-logo');
+  const logo = document.querySelector('.crossnav-home');
   if(logo) logo.setAttribute('aria-label', t('doginaryAria'));
   if(pub){
     document.getElementById('kennelSub').textContent = t('kennelDefaultSub');
@@ -597,5 +593,7 @@ async function init(){
 }
 init();
 </script>
+<script src="doginary-supabase.js"></script>
+<script src="doginary-auth.js"></script>
 </body>
 </html>

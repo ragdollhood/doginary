@@ -99,9 +99,16 @@
       passwordLabel: 'Lösenord',
       passwordPlaceholder: 'Minst 6 tecken',
       forgot: 'Glömt lösenord?',
-      trialBadge: '14 dagar fritt att testa — inget kort behövs',
-      signupTitle: 'Skapa konto',
-      signupDesc: 'Skapa ett konto med mejl och lösenord, så sparas din hunds dagbok och syncar mellan dina enheter. Du får 14 dagars fri provperiod direkt vid registrering.',
+      trialBadge: 'Starta din 14 dagars provperiod',
+      signupTitle: 'Din hunds liv. Organiserat.',
+      signupFeatures: [
+        'Personliga insikter om din hund',
+        'Hälsa, vikt & välmående',
+        'Dagliga rutiner på ett ställe',
+        'Väderguide för säkrare promenader',
+        'Kennel- och avelsverktyg'
+      ],
+      signupDesc: 'Skapa ett konto för att spara och synka din hunds information säkert.',
       signupSubmit: 'Skapa konto',
       signupToggle: 'Har du redan ett konto? Logga in',
       signinTitle: 'Logga in',
@@ -160,9 +167,16 @@
       passwordLabel: 'Password',
       passwordPlaceholder: 'At least 6 characters',
       forgot: 'Forgot your password?',
-      trialBadge: '14 days free to try — no card needed',
-      signupTitle: 'Create account',
-      signupDesc: 'Create an account with your email and a password, and your dog’s diary is saved and synced across your devices. You get a 14-day free trial as soon as you sign up.',
+      trialBadge: 'Start your 14-day free trial',
+      signupTitle: 'Your dog’s life. Organized.',
+      signupFeatures: [
+        'Personal insights for your dog',
+        'Health, weight & wellbeing tracking',
+        'Daily routines in one place',
+        'Weather guidance for safer walks',
+        'Kennel & breeding tools'
+      ],
+      signupDesc: 'Create an account to securely save and sync your dog’s information.',
       signupSubmit: 'Create account',
       signupToggle: 'Already have an account? Log in',
       signinTitle: 'Log in',
@@ -483,7 +497,7 @@
   // ---------- Modal + kontoknapp: bygg DOM ----------
 
   var modalEl, formEl, emailInput, passwordInput, messageEl, submitBtn,
-      titleEl, descEl, trialBadgeEl, toggleBtn, forgotBtn, closeBtn,
+      titleEl, descEl, featureListEl, trialBadgeEl, toggleBtn, forgotBtn, closeBtn,
       consentRow, consentCheckbox, consentLabel;
   var mode = 'signup'; // 'signup' | 'signin'
 
@@ -502,6 +516,7 @@
         '<button type="button" id="doginaryAuthClose">&times;</button>' +
         '<p class="doginaryAuthEyebrow">Doginary</p>' +
         '<h2 id="doginaryAuthTitle"></h2>' +
+        '<ul id="doginaryAuthFeatureList" class="doginaryAuthFeatureList" style="display:none"></ul>' +
         '<p id="doginaryAuthTrialBadge" style="display:none"></p>' +
         '<p id="doginaryAuthDesc"></p>' +
         '<form id="doginaryAuthForm" novalidate>' +
@@ -527,6 +542,7 @@
     messageEl = document.getElementById('doginaryAuthMessage');
     submitBtn = document.getElementById('doginaryAuthSubmit');
     titleEl = document.getElementById('doginaryAuthTitle');
+    featureListEl = document.getElementById('doginaryAuthFeatureList');
     trialBadgeEl = document.getElementById('doginaryAuthTrialBadge');
     descEl = document.getElementById('doginaryAuthDesc');
     toggleBtn = document.getElementById('doginaryAuthToggle');
@@ -636,6 +652,14 @@
     forgotBtn.textContent = T('forgot');
     if (mode === 'signup') {
       titleEl.textContent = T('signupTitle');
+      if (featureListEl) {
+        var pack = I18N[uiLang] || I18N.sv;
+        var features = pack.signupFeatures || I18N.sv.signupFeatures || [];
+        featureListEl.innerHTML = features.map(function (f) {
+          return '<li>' + escapeHtml(f) + '</li>';
+        }).join('');
+        featureListEl.style.display = '';
+      }
       trialBadgeEl.textContent = T('trialBadge');
       trialBadgeEl.style.display = '';
       descEl.textContent = T('signupDesc');
@@ -650,6 +674,7 @@
       }
     } else {
       titleEl.textContent = T('signinTitle');
+      if (featureListEl) featureListEl.style.display = 'none';
       trialBadgeEl.style.display = 'none';
       descEl.textContent = T('signinDesc');
       submitBtn.textContent = T('signinSubmit');

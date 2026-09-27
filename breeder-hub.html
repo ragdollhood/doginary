@@ -464,6 +464,8 @@ tbody tr:hover{background:var(--surface-2);}
 /* pedigree tree */
 .pedigree-tree{display:flex; flex-direction:column; align-items:center; gap:16px; overflow-x:auto; padding:10px 4px 20px;}
 .ped-col{display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; align-items:stretch; gap:12px; padding:0; position:relative; width:100%;}
+.ped-node-wrap{display:flex; flex-direction:column; align-items:center; gap:4px;}
+.ped-role{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);}
 .ped-node{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-s); padding:9px 12px;
   min-width:150px; font-size:12px; display:flex; align-items:center; gap:9px;
@@ -562,6 +564,7 @@ tbody tr:hover{background:var(--surface-2);}
   .pedigree-tree{padding:8px 2px 16px;}
   .ped-node{min-width:128px; padding:7px 9px;}
   .ped-node.self{min-width:140px;}
+  .ped-role{font-size:9.5px;}
 }
 @media(max-width:480px){
   .page-title{font-size:16px;}
@@ -992,6 +995,8 @@ const I18N = {
 
     noDogsRegisteredYet: 'Inga hundar registrerade än. Lägg till din första hund under Hundregister för att se en stamtavla här.',
     pedNoData: 'Ingen data',
+    pedFatherLabel: 'Far',
+    pedMotherLabel: 'Mor',
     pedFootnote: 'Visar far/mor och två generationer bakåt. Lägg till fler anor via hundens profil (Far/Mor-fält) för en djupare stamtavla.',
 
     newBreedingPlan: 'Ny parningsplan', confirmedPregnancy: 'Bekräftad dräktighet', planned: 'Planerad',
@@ -1304,6 +1309,8 @@ const I18N = {
 
     noDogsRegisteredYet: 'No dogs registered yet. Add your first dog under Dog register to see a pedigree here.',
     pedNoData: 'No data',
+    pedFatherLabel: 'Father',
+    pedMotherLabel: 'Mother',
     pedFootnote: "Shows sire/dam and two generations back. Add more ancestors via the dog's profile (Sire/Dam fields) for a deeper pedigree.",
 
     newBreedingPlan: 'New mating plan', confirmedPregnancy: 'Confirmed pregnancy', planned: 'Planned',
@@ -2783,15 +2790,16 @@ function renderPedigree(){
   document.getElementById('pedSelect').addEventListener('change', e=> drawPedigree(e.target.value));
   drawPedigree(DB.dogs[0].id);
 }
-function pedNode(dog, isSelf){
-  if(!dog) return `<div class="ped-node" style="opacity:.4;"><div class="ped-avatar">?</div><div><div class="n">${t('unknownDog')}</div><div class="m">${t('pedNoData')}</div></div></div>`;
+function pedNode(dog, isSelf, roleLabel){
+  const role = roleLabel ? `<div class="ped-role">${roleLabel}</div>` : '';
+  if(!dog) return `<div class="ped-node-wrap">${role}<div class="ped-node" style="opacity:.4;"><div class="ped-avatar">?</div><div><div class="n">${t('unknownDog')}</div><div class="m">${t('pedNoData')}</div></div></div></div>`;
   // Varje ruta med en riktig hund går att klicka på för att öppna dess
   // fullständiga profil (hälsa, vikt, anteckningar m.m.) — även huvudhunden.
-  return `<div class="ped-node ${isSelf?'self':''} clickable" data-open-dog="${dog.id}" title="${t('viewProfile')}">
+  return `<div class="ped-node-wrap">${role}<div class="ped-node ${isSelf?'self':''} clickable" data-open-dog="${dog.id}" title="${t('viewProfile')}">
     <div class="ped-avatar">${dog.photoUrl ? `<img src="${dog.photoUrl}" alt="${dog.name}">` : dog.name[0]}</div>
     <div><div class="n">${dog.name}</div><div class="m">${dog.breed}</div>
     <div class="scores">${dog.hips?`<span class="tag">HD ${dog.hips}</span>`:''}${dog.titles[0]?`<span class="tag">${dog.titles[0]}</span>`:''}</div></div>
-  </div>`;
+  </div></div>`;
 }
 function drawPedigree(id){
   const d = dogById(id);
@@ -2804,7 +2812,7 @@ function drawPedigree(id){
   document.getElementById('pedTree').innerHTML = `
     <div class="pedigree-tree">
       <div class="ped-col">${pedNode(d, true)}</div>
-      <div class="ped-col">${pedNode(sire)}${pedNode(dam)}</div>
+      <div class="ped-col">${pedNode(sire, false, t('pedFatherLabel'))}${pedNode(dam, false, t('pedMotherLabel'))}</div>
       <div class="ped-col">${pedNode(sireSire)}${pedNode(sireDam)}${pedNode(damSire)}${pedNode(damDam)}</div>
     </div>
     <div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">${t('pedFootnote')}</div>

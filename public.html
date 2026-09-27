@@ -29,16 +29,12 @@
   --line:#2A322C; --line-soft:#232B26;
   --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#121815; --surface:#1A211D; --surface-2:#212823;
-    --ink:#ECE7DA; --ink-soft:#A7B0A9;
-    --pine:#8FBBAE; --pine-deep:#0D1613; --pine-tint:#1C2925;
-    --honey:#DCAE68; --honey-deep:#EAC48A; --honey-tint:#2A2418;
-    --line:#2A322C; --line-soft:#232B26;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
-  }
-}
+/* Den här publika kennelsidan har ingen egen temaknapp, så vi växlar
+   inte automatiskt till mörkt läge efter besökarens enhetsinställning
+   (prefers-color-scheme) — annars kan sidan se helt olika ut på en
+   dators ljusa läge jämfört med en mobil i mörkt läge. Headern m.m.
+   ska alltid visas i det krämfärgade varumärkesläget. data-theme="dark"
+   ovan finns kvar om ett tema någon gång kopplas in manuellt. */
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{

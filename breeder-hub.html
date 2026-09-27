@@ -640,12 +640,19 @@ tbody tr:hover{background:var(--surface-2);}
 .crossnav-mobile-menu a:last-child{border-bottom:none}
 .crossnav-mobile-menu a[aria-current="page"]{color:var(--honey-deep);font-weight:700}
 @media(max-width:900px){
-  .crossnav{position:relative}
+  .crossnav{position:relative; gap:8px;}
   .crossnav-menu-btn{display:inline-flex}
-  .crossnav-home{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+  .crossnav-home{flex-shrink:0;}
   .crossnav-home span[aria-hidden]{display:none}
+  .crossnav-logo{height:26px;}
   .crossnav-links{display:none}
-  .crossnav-right{margin-left:auto}
+  .crossnav-right{margin-left:auto; gap:10px;}
+  .lang-switch{margin-left:8px;}
+}
+@media(max-width:420px){
+  .crossnav{padding:0 12px;}
+  .crossnav-logo{height:22px;}
+  .lang-switch .lang-btn{width:32px; height:32px;}
 }
 </style>
 <script type="application/ld+json">

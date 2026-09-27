@@ -128,9 +128,84 @@ a{color:inherit;}
   .hero-topbar{justify-content:center;}
   .hero-controls{justify-content:center; width:100%;}
 }
+
+/* ============ CROSSNAV (Doginary top bar shared across pages) ============ */
+.crossnav{height:76px;padding:0 max(20px,5vw);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.crossnav-home{display:inline-flex;align-items:center;gap:8px;color:var(--pine);text-decoration:none;font-size:13px;font-weight:600}
+.crossnav-logo{height:34px;width:auto;display:block;border-radius:8px}
+.crossnav-right{display:flex;align-items:center;gap:15px}
+.crossnav-links{display:flex;align-items:center;gap:15px}
+.crossnav-links a{font-size:13px;color:var(--pine);text-decoration:none}
+.crossnav-links a:hover{text-decoration:underline}
+.crossnav-links a[aria-current="page"]{color:var(--honey-deep);font-weight:700}
+.crossnav-menu-btn{display:none;width:36px;height:36px;padding:0;flex-shrink:0;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.crossnav-menu-btn svg{width:19px;height:19px;display:block}
+.crossnav-menu-btn:hover{background:var(--line)}
+.crossnav-menu-btn[aria-expanded="true"]{background:var(--pine);border-color:var(--pine);color:var(--surface)}
+.crossnav-mobile-menu{display:none;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--line);padding:4px max(20px,5vw) 10px}
+.crossnav-mobile-menu.show{display:flex}
+.crossnav-mobile-menu a{padding:12px 2px;font-size:14.5px;color:var(--pine);text-decoration:none;border-bottom:1px solid var(--line)}
+.crossnav-mobile-menu a:last-child{border-bottom:none}
+.crossnav-mobile-menu a[aria-current="page"]{color:var(--honey-deep);font-weight:700}
+@media(max-width:900px){
+  .crossnav{position:relative}
+  .crossnav-menu-btn{display:inline-flex}
+  .crossnav-home{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+  .crossnav-home span[aria-hidden]{display:none}
+  .crossnav-links{display:none}
+  .crossnav-right{margin-left:auto}
+}
 </style>
 </head>
 <body>
+
+<nav class="crossnav" aria-label="Doginary">
+  <button type="button" id="crossnavMenuBtn" class="crossnav-menu-btn" aria-label="Meny" aria-expanded="false" aria-controls="crossnavMobileMenu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <a href="index.html" class="crossnav-home"><span aria-hidden="true">←</span> <img src="assets/title-doginary-blue.png" alt="Doginary" class="crossnav-logo"></a>
+  <div class="crossnav-right">
+    <div class="crossnav-links">
+      <a href="index.html" id="crossnavWeather">Väder</a>
+      <a href="logga.html" id="crossnavDiary">Dagbok</a>
+      <a href="health.html" id="crossnavHealth">Hälsocenter</a>
+      <a href="insikter.html" id="crossnavInsights">Insikter</a>
+      <a href="guidelines.html" id="crossnavGuidelines">Riktlinjer</a>
+      <a href="breeder-hub.html" id="crossnavBreederHub">Kennel-hub</a>
+    </div>
+  </div>
+</nav>
+<div id="crossnavMobileMenu" class="crossnav-mobile-menu">
+  <a href="index.html" id="crossnavWeatherM">Väder</a>
+  <a href="logga.html" id="crossnavDiaryM">Dagbok</a>
+  <a href="health.html" id="crossnavHealthM">Hälsocenter</a>
+  <a href="insikter.html" id="crossnavInsightsM">Insikter</a>
+  <a href="guidelines.html" id="crossnavGuidelinesM">Riktlinjer</a>
+  <a href="breeder-hub.html" id="crossnavBreederHubM">Kennel-hub</a>
+</div>
+<script>
+(function(){
+  var btn = document.getElementById('crossnavMenuBtn');
+  var menu = document.getElementById('crossnavMobileMenu');
+  if(!btn || !menu) return;
+  btn.addEventListener('click', function(){
+    var open = menu.classList.toggle('show');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  menu.addEventListener('click', function(e){
+    if(e.target.tagName === 'A'){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('click', function(e){
+    if(menu.classList.contains('show') && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+      menu.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+</script>
 
 <div class="hero">
   <div class="hero-topbar">
@@ -201,6 +276,7 @@ const I18N = {
     langAria:'Språk', currencyAria:'Valuta', unitsAria:'Måttenhet', doginaryAria:'Till doginary.com',
     contactTitle:'Kontakt',
     termsPageLabel:'Användarvillkor', privacyPageLabel:'Integritetspolicy', dpaPageLabel:'Personuppgiftsbiträdesavtal', contactLinkLabel:'Kontakt',
+    crossnavWeather:'Väder', crossnavDiary:'Dagbok', crossnavHealth:'Hälsocenter', crossnavInsights:'Insikter', crossnavGuidelines:'Riktlinjer', crossnavBreederHub:'Kennel-hub',
   },
   en: {
     loadingTitle:'Loading…', loadingDogs:'Loading dogs…',
@@ -220,6 +296,7 @@ const I18N = {
     langAria:'Language', currencyAria:'Currency', unitsAria:'Units', doginaryAria:'Go to doginary.com',
     contactTitle:'Contact',
     termsPageLabel:'Terms & Conditions', privacyPageLabel:'Privacy Policy', dpaPageLabel:'Data Processing Agreement', contactLinkLabel:'Contact',
+    crossnavWeather:'Weather', crossnavDiary:'Diary', crossnavHealth:'Health center', crossnavInsights:'Insights', crossnavGuidelines:'Guidelines', crossnavBreederHub:'Breeder Hub',
   }
 };
 function t(key, vars){
@@ -438,6 +515,20 @@ function bindControlsOnce(){
 function applyLangTexts(){
   document.documentElement.lang = LANG;
   document.getElementById('footerText').textContent = t('footerText');
+  ['', 'M'].forEach(function(suffix){
+    var w = document.getElementById('crossnavWeather' + suffix);
+    var d = document.getElementById('crossnavDiary' + suffix);
+    var h = document.getElementById('crossnavHealth' + suffix);
+    var i = document.getElementById('crossnavInsights' + suffix);
+    var g = document.getElementById('crossnavGuidelines' + suffix);
+    var b = document.getElementById('crossnavBreederHub' + suffix);
+    if (w) w.textContent = t('crossnavWeather');
+    if (d) d.textContent = t('crossnavDiary');
+    if (h) h.textContent = t('crossnavHealth');
+    if (i) i.textContent = t('crossnavInsights');
+    if (g) g.textContent = t('crossnavGuidelines');
+    if (b) b.textContent = t('crossnavBreederHub');
+  });
   const legal = document.getElementById('legalFooterLinks');
   if(legal){
     legal.innerHTML = `<a href="terms.html" target="_blank" rel="noopener">${t('termsPageLabel')}</a>` +

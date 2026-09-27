@@ -157,6 +157,7 @@
       paywallTitle: 'Din provperiod har gått ut',
       paywallDesc: 'Lås upp Doginary för att fortsätta logga dagbok och se insikter om din hund.',
       paywallPrice: '$4.99/månad',
+      paywallCancelNote: 'Avsluta när du vill!',
       paywallUnlock: 'Lås upp Doginary',
       paywallRedirecting: 'Öppnar betalning …',
       paywallError: 'Något gick fel — försök igen.',
@@ -227,6 +228,7 @@
       paywallTitle: 'Your trial has ended',
       paywallDesc: 'Unlock Doginary to keep logging your dog’s diary and seeing insights.',
       paywallPrice: '$4.99/month',
+      paywallCancelNote: 'Cancel anytime!',
       paywallUnlock: 'Unlock Doginary',
       paywallRedirecting: 'Redirecting to checkout …',
       paywallError: 'Something went wrong — please try again.',
@@ -358,7 +360,7 @@
   // osv) visas paywallen ändå, precis som i Breeder Hub — hellre en
   // legitim användare som får ladda om sidan än att ett fel av misstag
   // låser upp något som borde vara stängt.
-  var paywallEl, paywallTitleEl, paywallFeatureListEl, paywallPriceEl, paywallDescEl, paywallMessageEl, paywallUnlockBtn, paywallLogoutBtn;
+  var paywallEl, paywallTitleEl, paywallFeatureListEl, paywallPriceEl, paywallCancelNoteEl, paywallDescEl, paywallMessageEl, paywallUnlockBtn, paywallLogoutBtn;
 
   function buildPaywall() {
     if (document.getElementById('doginaryPaywallGate')) return;
@@ -373,6 +375,7 @@
         '<h2 id="doginaryPaywallTitle"></h2>' +
         '<ul id="doginaryPaywallFeatureList" class="doginaryAuthFeatureList"></ul>' +
         '<p id="doginaryPaywallPrice"></p>' +
+        '<p id="doginaryPaywallCancelNote"></p>' +
         '<p id="doginaryPaywallDesc"></p>' +
         '<p id="doginaryPaywallMessage" role="alert"></p>' +
         '<button type="button" id="doginaryPaywallUnlockBtn"></button>' +
@@ -383,6 +386,7 @@
     paywallTitleEl = document.getElementById('doginaryPaywallTitle');
     paywallFeatureListEl = document.getElementById('doginaryPaywallFeatureList');
     paywallPriceEl = document.getElementById('doginaryPaywallPrice');
+    paywallCancelNoteEl = document.getElementById('doginaryPaywallCancelNote');
     paywallDescEl = document.getElementById('doginaryPaywallDesc');
     paywallMessageEl = document.getElementById('doginaryPaywallMessage');
     paywallUnlockBtn = document.getElementById('doginaryPaywallUnlockBtn');
@@ -407,6 +411,7 @@
       }).join('');
     }
     if (paywallPriceEl) paywallPriceEl.textContent = T('paywallPrice');
+    if (paywallCancelNoteEl) paywallCancelNoteEl.textContent = T('paywallCancelNote');
     paywallDescEl.textContent = T('paywallDesc');
     paywallUnlockBtn.textContent = T('paywallUnlock');
     paywallLogoutBtn.textContent = T('paywallLogout');

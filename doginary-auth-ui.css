@@ -17,9 +17,9 @@
 #doginaryAuthModal.show{ opacity:1; pointer-events:auto; }
 
 #doginaryAuthCard{
-  position:relative; width:min(380px,100%); max-height:88vh; overflow-y:auto; overflow-x:hidden;
+  position:relative; width:min(380px,100%); max-height:92vh; overflow-y:auto; overflow-x:hidden;
   background:var(--surface,#F8F5EC); border:1px solid var(--hair,#DCD3BF);
-  border-radius:var(--radius-lg,22px); padding:30px 24px 26px;
+  border-radius:var(--radius-lg,22px); padding:24px 24px 20px;
   box-shadow:0 24px 60px rgba(0,0,0,.28);
   transform:translateY(10px) scale(.98); transition:transform .2s ease;
   font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
@@ -36,19 +36,22 @@
 #doginaryAuthClose:hover{ background:rgba(0,0,0,.06); color:var(--ink,#2B241C); }
 
 .doginaryAuthEyebrow{
-  margin:0 0 2px; font-size:12.5px; letter-spacing:.04em; color:var(--ink-soft,#6E6455);
+  margin:0 0 6px; text-align:center;
+}
+.doginaryAuthLogo{
+  height:34px; width:auto; display:inline-block;
 }
 #doginaryAuthTitle{
-  font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:23px; line-height:1.25;
-  margin:0 0 14px; color:var(--ink,#2B241C);
+  font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:22px; line-height:1.22;
+  margin:0 0 10px; color:var(--ink,#2B241C);
 }
 .doginaryAuthFeatureList{
-  list-style:none; margin:0 0 16px; padding:14px 16px;
+  list-style:none; margin:0 0 12px; padding:12px 14px;
   background:var(--surface-2,#F1ECDF); border-radius:14px;
-  display:flex; flex-direction:column; gap:8px;
+  display:flex; flex-direction:column; gap:6px;
 }
 .doginaryAuthFeatureList li{
-  position:relative; padding-left:24px; font-size:13.5px; line-height:1.4;
+  position:relative; padding-left:24px; font-size:13px; line-height:1.35;
   color:var(--ink,#2B241C);
 }
 .doginaryAuthFeatureList li::before{
@@ -59,24 +62,24 @@
   display:inline-block; font-size:12.5px; font-weight:600; letter-spacing:.01em;
   color:var(--reward,#4B6B3E); background:rgba(75,107,62,.12);
   border:1px solid rgba(75,107,62,.25); border-radius:20px;
-  padding:5px 12px; margin:0 0 12px;
+  padding:5px 12px; margin:0 0 10px;
 }
-#doginaryAuthDesc{ font-size:14px; line-height:1.5; color:var(--ink-soft,#6E6455); margin:0 0 18px; }
+#doginaryAuthDesc{ font-size:13.5px; line-height:1.45; color:var(--ink-soft,#6E6455); margin:0 0 14px; }
 
-#doginaryAuthForm{ display:flex; flex-direction:column; gap:6px; }
+#doginaryAuthForm{ display:flex; flex-direction:column; gap:4px; }
 #doginaryAuthForm label{
   font-size:12px; letter-spacing:.04em; text-transform:uppercase;
-  color:var(--ink-soft,#6E6455); margin-top:10px;
+  color:var(--ink-soft,#6E6455); margin-top:8px;
 }
 #doginaryAuthForm input{
   box-sizing:border-box; width:100%; font-family:inherit; font-size:15px;
   color:var(--ink,#2B241C); background:var(--surface-2,#F1ECDF);
-  border:1px solid var(--hair,#DCD3BF); border-radius:10px; padding:11px 12px;
+  border:1px solid var(--hair,#DCD3BF); border-radius:10px; padding:10px 12px;
   outline:none; transition:border-color .15s ease;
 }
 #doginaryAuthForm input:focus{ border-color:var(--teal,#33505A); }
 
-#doginaryAuthForm .auth-consent-row{ display:flex; align-items:flex-start; gap:8px; margin-top:14px; width:100%; max-width:100%; }
+#doginaryAuthForm .auth-consent-row{ display:flex; align-items:flex-start; gap:8px; margin-top:10px; width:100%; max-width:100%; }
 #doginaryAuthForm .auth-consent-row[hidden]{ display:none; }
 #doginaryAuthForm .auth-consent-row input[type="checkbox"]{
   width:16px; height:16px; margin-top:2px; flex:0 0 16px;
@@ -96,19 +99,19 @@
   color:var(--teal,#33505A); text-decoration:underline;
   overflow-wrap:break-word; word-break:break-word;
 }
-#doginaryAuthMessage{ min-height:16px; font-size:12.5px; margin:10px 0 0; line-height:1.4; }
+#doginaryAuthMessage{ min-height:14px; font-size:12.5px; margin:8px 0 0; line-height:1.4; }
 #doginaryAuthMessage.error{ color:var(--warn,#9C3B2C); }
 #doginaryAuthMessage.success{ color:var(--reward,#4B6B3E); }
 
 #doginaryAuthSubmit{
-  margin-top:16px; width:100%; font-family:inherit; font-size:15px; font-weight:500;
+  margin-top:12px; width:100%; font-family:inherit; font-size:15px; font-weight:500;
   color:var(--surface,#F8F5EC); background:var(--ink,#2B241C); border:none;
   border-radius:30px; padding:12px; cursor:pointer; transition:background .15s ease;
 }
 #doginaryAuthSubmit:hover{ background:#3A322A; }
 #doginaryAuthSubmit:disabled{ opacity:.6; cursor:default; }
 
-.doginaryAuthSwitch{ margin:10px 0 0; text-align:center; }
+.doginaryAuthSwitch{ margin:8px 0 0; text-align:center; }
 .doginaryAuthSwitch button{
   font-family:inherit; font-size:13px; color:var(--teal,#33505A);
   background:none; border:none; padding:0; cursor:pointer;

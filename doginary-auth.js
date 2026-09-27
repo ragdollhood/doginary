@@ -365,7 +365,7 @@
     paywallEl.setAttribute('aria-labelledby', 'doginaryPaywallTitle');
     paywallEl.innerHTML =
       '<div id="doginaryPaywallCard">' +
-        '<p class="doginaryAuthEyebrow"><img src="assets/title-doginary.png" alt="Doginary" class="doginaryAuthLogo" style="height:20px;width:auto;display:inline-block"></p>' +
+        '<p class="doginaryAuthEyebrow"><img src="assets/title-doginary.png" alt="Doginary" class="doginaryAuthLogo"></p>' +
         '<h2 id="doginaryPaywallTitle"></h2>' +
         '<p id="doginaryPaywallDesc"></p>' +
         '<p id="doginaryPaywallMessage" role="alert"></p>' +
@@ -514,7 +514,7 @@
     modalEl.innerHTML =
       '<div id="doginaryAuthCard">' +
         '<button type="button" id="doginaryAuthClose">&times;</button>' +
-        '<p class="doginaryAuthEyebrow"><img src="assets/title-doginary.png" alt="Doginary" class="doginaryAuthLogo" style="height:20px;width:auto;display:inline-block"></p>' +
+        '<p class="doginaryAuthEyebrow"><img src="assets/title-doginary.png" alt="Doginary" class="doginaryAuthLogo"></p>' +
         '<h2 id="doginaryAuthTitle"></h2>' +
         '<ul id="doginaryAuthFeatureList" class="doginaryAuthFeatureList" style="display:none"></ul>' +
         '<p id="doginaryAuthTrialBadge" style="display:none"></p>' +

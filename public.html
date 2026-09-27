@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="doginary-auth-ui.css">
 <style>
 :root{
   --bg:#FAF6EF; --surface:#FFFFFF; --surface-2:#F3EEE3;
@@ -59,11 +60,14 @@ a{color:inherit;}
 .unit-toggle{display:flex; border:1px solid var(--line); border-radius:20px; overflow:hidden; background:var(--surface);}
 .unit-toggle button{background:transparent; border:none; color:var(--ink-soft); font-size:12px; padding:7px 14px; cursor:pointer; font-family:inherit; font-weight:600;}
 .unit-toggle button.active{background:var(--pine); color:#fff;}
-.lang-toggle{display:flex; align-items:center; gap:2px; border:1px solid var(--line); border-radius:20px; overflow:hidden; padding:3px 5px; background:var(--surface-2); flex-shrink:0;}
-.lang-flag-btn{background:transparent; border:none; line-height:1; padding:4px 5px; border-radius:14px; cursor:pointer; opacity:.55; transition:opacity .15s, background .15s; display:flex; align-items:center;}
-.lang-flag-btn:hover{opacity:1;}
-.lang-flag-btn.active{background:var(--pine-tint); opacity:1;}
-.lang-flag-btn svg{display:block; border-radius:2px;}
+.lang-toggle{display:flex; align-items:center; flex-shrink:0;}
+.lang-flag-btn{
+  width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center;
+  border-radius:10px; border:1px solid var(--line); background:var(--surface-2); cursor:pointer;
+}
+.lang-flag-btn:hover{background:var(--line);}
+.lang-flag-btn[hidden]{display:none;}
+.lang-flag-btn svg{display:block; border-radius:3px;}
 
 /* ============ KENNEL HEADER (replaces the old dark hero) ============ */
 .kennel-header{background:var(--bg); padding:28px 20px 32px; margin-bottom:36px; border-bottom:1px solid var(--line);}
@@ -472,7 +476,7 @@ function syncUnitButtons(){
   document.querySelectorAll('#unitToggle button').forEach(b=> b.classList.toggle('active', b.dataset.u===UNITS));
 }
 function syncLangButtons(){
-  document.querySelectorAll('.lang-flag-btn').forEach(b=> b.classList.toggle('active', b.dataset.lang===LANG));
+  document.querySelectorAll('.lang-flag-btn').forEach(b=> b.hidden = (b.dataset.lang===LANG));
 }
 function syncControlsUI(){
   syncLangButtons();

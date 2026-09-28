@@ -105,10 +105,12 @@ th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:upperc
       <li>Information du frivilligt matar in i Breeder Hub, inklusive uppgifter om köpare och intressenter som du själv väljer att registrera</li>
       <li>Supportkommunikation mellan dig och oss</li>
       <li>Teknisk information som krävs för att tillhandahålla och skydda Tjänsten (t.ex. loggar, säkerhetshändelser)</li>
+      <li>Enkel besöksstatistik i Breeder Hub: ett slumpmässigt besökar-ID som lagras i din webbläsare, vilken sida som besöks och land (fastställs utifrån IP-adressen via en extern tjänst, se avsnitt 3). IP-adressen ingår inte i den statistik vi sparar.</li>
+      <li>Data som lagras lokalt i din webbläsare, t.ex. inloggningssession, språkval och färgtema</li>
     </ul>
     <p>Breeder Hub kan alltså innehålla personuppgifter om valpköpare och spekulanter som du som kennelägare själv väljer att lägga in. För dessa uppgifter är <strong>du</strong> personuppgiftsansvarig, och Doginary behandlar dem som personuppgiftsbiträde på ditt uppdrag.</p>
     <p>Doginary är personuppgiftsansvarig för uppgifter om ditt konto, din prenumeration, supportkommunikation och teknisk information som behövs för att driva och skydda Tjänsten. Doginary äger inte de köpar- och intressentuppgifter du registrerar och använder dem inte för egna ändamål.</p>
-    <p><strong>Registrera inte känsliga personuppgifter</strong> om köpare eller intressenter i Breeder Hub, såsom hälsouppgifter, personnummer, ekonomiska uppgifter eller andra särskilda kategorier av personuppgifter. Kundregistret i Breeder Hub är avsett endast för namn, e-post, telefonnummer, vilken hund/valp personen är intresserad av samt status i köpprocessen.</p>
+    <p><strong>Registrera inte känsliga personuppgifter</strong> om köpare eller intressenter i Breeder Hub, såsom hälsouppgifter, personnummer eller andra nationella identifieringsnummer, ekonomiska uppgifter eller andra särskilda kategorier av personuppgifter. Kundregistret i Breeder Hub är avsett för sådana uppgifter som behövs för att hantera intresse för och köp av valpar, till exempel namn, kontaktuppgifter, land/ort, boende, aktivitetsnivå, tidigare hundinnehav, valppreferenser, status i köpprocessen och anteckningar om kontakten (se <a href="dpa.html">Personuppgiftsbiträdesavtalet</a>, avsnitt 5).</p>
 
     <h2>2. Ändamål och rättslig grund</h2>
     <table>
@@ -116,6 +118,7 @@ th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:upperc
       <tr><td>Tillhandahålla och drifta Tjänsten (konto, kennelregister, publik kennelsida)</td><td>Fullgörande av avtal</td></tr>
       <tr><td>Hantera prenumeration och betalning</td><td>Fullgörande av avtal</td></tr>
       <tr><td>Säkerhet, felsökning och förhindra missbruk</td><td>Berättigat intresse</td></tr>
+      <tr><td>Enkel besöksstatistik</td><td>Berättigat intresse</td></tr>
       <tr><td>Support och kommunikation med dig</td><td>Fullgörande av avtal / berättigat intresse</td></tr>
       <tr><td>Uppfylla bokförings- och andra rättsliga krav</td><td>Rättslig förpliktelse</td></tr>
       <tr><td>Nyhetsutskick, om du aktivt valt detta</td><td>Samtycke</td></tr>
@@ -128,16 +131,16 @@ th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:upperc
     <ul>
       <li><strong>Supabase</strong> — används för backend, databas, autentisering och fillagring.</li>
       <li><strong>Stripe</strong> — används för hantering av prenumerationer och betalningar. Doginary lagrar inte dina fullständiga kortuppgifter; dessa hanteras direkt av Stripe.</li>
-      <li><strong>GitHub</strong> — används för utveckling och teknisk infrastruktur.</li>
+      <li><strong>Tekniska tjänster som anropas vid besök</strong> — Google Fonts (typsnitt) och jsDelivr (biblioteksfiler) laddas från respektive leverantör, och ipapi.co används för att fastställa land i besöksstatistiken. Dessa leverantörer får därvid din IP-adress och tekniska webbläsaruppgifter.</li>
     </ul>
-    <p>Dessa leverantörer behandlar uppgifter på våra vägnar i enlighet med sina egna säkerhets- och sekretessrutiner samt tillämpliga dataskyddsavtal.</p>
+    <p>Supabase behandlar uppgifter på våra vägnar. Övriga leverantörer behandlar uppgifter enligt sina egna villkor, säkerhets- och sekretessrutiner samt tillämpliga dataskyddsavtal.</p>
     <p>Vid en ägarförändring kan uppgifter även lämnas till en förvärvare eller efterträdande verksamhetsutövare, endast enligt avsnitt 9.</p>
 
     <h2>4. Internationella överföringar</h2>
     <p>Våra leverantörer kan behandla data i eller överföra data till länder utanför EU/EES. I sådana fall vidtar vi lämpliga skyddsåtgärder, t.ex. EU-kommissionens standardavtalsklausuler, i enlighet med tillämplig dataskyddslagstiftning.</p>
 
     <h2>5. Lagring</h2>
-    <p>Vi sparar uppgifter så länge ditt konto är aktivt och därefter under den period som är nödvändig för att uppfylla de ändamål som beskrivs ovan, inklusive eventuella rättsliga eller bokföringsmässiga krav. Du kan när som helst exportera eller radera din kennelinformation, och du kan begära att ditt konto avslutas.</p>
+    <p>Vi sparar uppgifter så länge ditt konto är aktivt och därefter under den period som är nödvändig för att uppfylla de ändamål som beskrivs ovan, inklusive eventuella rättsliga eller bokföringsmässiga krav. Du kan exportera din kennelinformation och radera poster i Breeder Hub, och du kan begära att ditt konto avslutas och dina uppgifter raderas.</p>
 
     <h2>6. Säkerhet</h2>
     <p>Vi vidtar lämpliga tekniska och organisatoriska åtgärder för att skydda dina uppgifter, bland annat kryptering under överföring och åtkomstbegränsningar. Ingen tjänst kan dock garantera fullständig säkerhet, och du ansvarar själv för att skydda dina inloggningsuppgifter.</p>
@@ -188,10 +191,12 @@ th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:upperc
       <li>Information you voluntarily enter into Breeder Hub, including information about buyers and prospects that you choose to record</li>
       <li>Support communications between you and us</li>
       <li>Technical information necessary to provide and secure the Service (e.g. logs, security events)</li>
+      <li>Simple visit statistics in Breeder Hub: a random visitor ID stored in your browser, which page is visited, and country (determined from the IP address via an external service, see Section 3). The IP address is not part of the statistics we store.</li>
+      <li>Data stored locally in your browser, e.g. login session, language choice and colour theme</li>
     </ul>
     <p>Breeder Hub can therefore contain personal data about puppy buyers and prospects that you, as the kennel owner, choose to enter. For that data, <strong>you</strong> are the data controller, and Doginary processes it as a data processor on your behalf.</p>
     <p>Doginary is the data controller for information about your account, your subscription, support communications and technical information needed to operate and secure the Service. Doginary does not own the buyer and prospect data you record and does not use it for its own purposes.</p>
-    <p><strong>Do not enter sensitive personal information</strong> about buyers or prospects in Breeder Hub, such as health information, identification numbers, financial details or other special-category personal data. The customer records in Breeder Hub are intended only for name, email, phone number, which dog/puppy the person is interested in, and their status in the purchase process.</p>
+    <p><strong>Do not enter sensitive personal information</strong> about buyers or prospects in Breeder Hub, such as health information, personnummer or other national identification numbers, financial details or other special-category personal data. The customer records in Breeder Hub are intended for the information needed to handle interest in and purchase of puppies, for example name, contact details, country/location, housing, activity level, previous dog ownership, puppy preferences, status in the purchase process and notes about the contact (see the <a href="dpa.html">Data Processing Agreement</a>, Section 5).</p>
 
     <h2>2. Purposes and legal bases</h2>
     <table>
@@ -199,6 +204,7 @@ th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:upperc
       <tr><td>Providing and operating the Service (account, kennel records, public kennel page)</td><td>Performance of a contract</td></tr>
       <tr><td>Managing subscriptions and payments</td><td>Performance of a contract</td></tr>
       <tr><td>Security, troubleshooting and preventing misuse</td><td>Legitimate interest</td></tr>
+      <tr><td>Simple visit statistics</td><td>Legitimate interest</td></tr>
       <tr><td>Support and communication with you</td><td>Performance of a contract / legitimate interest</td></tr>
       <tr><td>Meeting accounting and other legal requirements</td><td>Legal obligation</td></tr>
       <tr><td>Newsletters, if you have actively opted in</td><td>Consent</td></tr>
@@ -211,16 +217,16 @@ th{color:var(--ink-soft); font-weight:600; font-size:12px; text-transform:upperc
     <ul>
       <li><strong>Supabase</strong> — used for backend, database, authentication and file storage functionality.</li>
       <li><strong>Stripe</strong> — used for subscription and payment processing. Doginary does not store your full card details; these are handled directly by Stripe.</li>
-      <li><strong>GitHub</strong> — used for development and technical infrastructure.</li>
+      <li><strong>Technical services called on visit</strong> — Google Fonts (typefaces) and jsDelivr (library files) are loaded from the respective provider, and ipapi.co is used to determine country for the visit statistics. These providers thereby receive your IP address and technical browser information.</li>
     </ul>
-    <p>These providers process data on our behalf in accordance with their own security and confidentiality practices and applicable data-processing agreements.</p>
+    <p>Supabase processes data on our behalf. The other providers process data under their own terms, security and confidentiality practices and applicable data-processing agreements.</p>
     <p>In the event of a change of ownership, data may also be disclosed to an acquirer or successor operator, only in accordance with Section 9.</p>
 
     <h2>4. International transfers</h2>
     <p>Our providers may process or transfer data to countries outside the EU/EEA. Where this occurs, we implement appropriate safeguards, such as the European Commission's Standard Contractual Clauses, in accordance with applicable data protection law.</p>
 
     <h2>5. Retention</h2>
-    <p>We retain data for as long as your account is active, and thereafter for as long as necessary to fulfil the purposes described above, including any legal or accounting requirements. You can export or delete your kennel information at any time, and you can request that your account be closed.</p>
+    <p>We retain data for as long as your account is active, and thereafter for as long as necessary to fulfil the purposes described above, including any legal or accounting requirements. You can export your kennel information and delete records in Breeder Hub, and you can request that your account be closed and your data deleted.</p>
 
     <h2>6. Security</h2>
     <p>We take appropriate technical and organizational measures to protect your data, including encryption in transit and access restrictions. However, no service can guarantee complete security, and you are responsible for protecting your own login credentials.</p>

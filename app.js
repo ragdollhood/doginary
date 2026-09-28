@@ -177,8 +177,8 @@ const STR = {
     donateBannerText: 'Doginary is free for every dog owner to use. If it helps you plan safer, happier walks, consider <b>chipping in $2.99</b> to help keep the site running. Thank you kindly!',
     donateBannerBtn: "Support Doginary — $2.99",
     donateImageAriaLabel: "Support Doginary with a $2.99 donation",
-    donateImageAlt: "Support Doginary — donate $2.99 to help keep it free",
-    donateImageNote: "Doginary stays free thanks to small contributions like this — every little bit helps.",
+    donateImageAlt: "Support Doginary — donate $2.99",
+    donateImageNote: "Doginary stays partially free thanks to small contributions like this — every little bit helps.",
     sourcesDonateLine: 'Doginary runs on open data and a lot of spare time. If you\'d like to help keep it free and ad-light, you can <a class="donate-inline" href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener">donate $2.99</a> — thank you! 🐾',
     aboutKicker: "ABOUT DOGINARY",
     aboutHeading: "Smarter dog walking decisions, one forecast at a time",
@@ -299,7 +299,7 @@ const STR = {
   },
   sv: {
     pageTitle: "Doginary — Väder för hundpromenader, komfortindex & hundvård",
-    metaDescription: "Se dagens hundkomfortindex, hitta bästa promenadtiden och få väderbaserade skötselråd för din hund — baserat på öppna prognosdata från SMHI. Gratis, ingen app krävs.",
+    metaDescription: "Se dagens hundkomfortindex, hitta bästa promenadtiden och få väderbaserade skötselråd för din hund — baserat på öppna prognosdata från SMHI.",
     skipLink: "Hoppa till innehållet",
     navAriaLabel: "Huvudmeny",
     navForecast: "Idag",
@@ -326,8 +326,8 @@ const STR = {
     profileSummaryPrefix: "Anpassat för",
     profileFirstLoginPrompt: "Inloggad! Fyll i din hunds uppgifter nedan för att anpassa allt.",
     profileSavedTitle: "🐶 Din hundprofil är klar!",
-    profileSavedText: "Vi har sparat profilen på den här enheten. Skapa ett gratis konto för att spara profilen permanent och få tillgång till loggbok, historik och insikter på alla dina enheter.",
-    profileSavedCreateAccountBtn: "Skapa gratis konto",
+    profileSavedText: "Vi har sparat profilen på den här enheten. Skapa ett konto för att spara profilen permanent och få tillgång till loggbok, historik och insikter på alla dina enheter.",
+    profileSavedCreateAccountBtn: "Skapa konto",
     profileSavedContinueBtn: "Fortsätt utan konto",
     profileSavedCloseAria: "Stäng",
     profileAccountCreatedConfirm: "Kontot är skapat — din hundprofil är nu sparad permanent och följer med till alla dina enheter.",
@@ -398,12 +398,12 @@ const STR = {
     footerTerms: "Villkor",
     footerContactLabel: "Kontakt",
     footerCopyright: "© 2026 Malin Larsson (Doginary)",
-    donateBannerText: 'Doginary är gratis att använda för alla hundägare. Om det hjälper dig planera säkrare, gladare promenader får du gärna <b>bidra med 2,99 dollar</b> för att hjälpa till att hålla sidan igång. Tack så mycket!',
+    donateBannerText: 'Bidra gärna med 2,99 dollar för att hjälpa till att hålla sidan igång. Tack så mycket!',
     donateBannerBtn: "Stötta Doginary — 2,99 dollar",
     donateImageAriaLabel: "Stötta Doginary med en donation på 2,99 dollar",
-    donateImageAlt: "Stötta Doginary — donera 2,99 dollar för att hjälpa till att hålla den gratis",
-    donateImageNote: "Doginary hålls gratis tack vare små bidrag som det här — varje liten summa hjälper.",
-    sourcesDonateLine: 'Doginary drivs med öppna data och massor av fritid. Om du vill hjälpa till att hålla den gratis och lätt på annonser kan du <a class="donate-inline" href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener">donera 2,99 dollar</a> — tack! 🐾',
+    donateImageAlt: "Stötta Doginary — donera 2,99 dollar.",
+    donateImageNote: "Doginary finns till tack vare små bidrag som det här — varje liten summa hjälper.",
+    sourcesDonateLine: 'Doginary drivs med öppna data och massor av fritid. Om du vill hjälpa till att hålla den aktiv så kan du <a class="donate-inline" href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener">donera 2,99 dollar</a> — tack! 🐾',
     aboutKicker: "OM DOGINARY",
     aboutHeading: "Smartare promenadbeslut, en prognos i taget",
     aboutText: "DOGINARY omvandlar öppna väderdata från SMHI till komfortbaserade prognoser för gladare promenader — ett hundkomfortindex, ett bästa promenadfönster, pälsvårdstips och en enkel logg, allt byggt kring vad din hund faktiskt behöver innan ni går ut.",
@@ -1207,7 +1207,7 @@ const COMFORT_TEXT = {
    inget konto krävs för att spara. Ett klick på "Spara profil" sparar
    alltid direkt i den här webbläsarens localStorage (saveDogProfile
    nedan), och en bekräftelsemodal (#profileSavedModal i index.html)
-   erbjuder därefter valfritt att skapa ett gratis konto.
+   erbjuder därefter valfritt att skapa ett konto.
 
    Är man REDAN inloggad sparas profilen istället direkt på det
    inloggade Doginary-kontot (samma konto som "Logga en dag"/"Insikter"
@@ -1215,7 +1215,7 @@ const COMFORT_TEXT = {
    FÖRE denna fil, se <script>-taggarna i index.html), och modalen visas
    aldrig (inget skäl att be om konto man redan har).
 
-   Väljer man "Skapa gratis konto" i modalen öppnas appens delade
+   Väljer man "Skapa konto" i modalen öppnas appens delade
    inloggnings-/registreringsruta (DoginaryAuthUI.open('signup')). Så
    fort inloggningen/registreringen lyckas migreras den lokalt sparade
    gästprofilen automatiskt upp till kontot EN gång (om kontot inte
@@ -1957,11 +1957,11 @@ profileSavedContinueBtn?.addEventListener('click', () => {
 
 // Sätts till true precis innan vi öppnar den delade signup-rutan från
 // modalen, så att handleFreshLogin (nedan) vet att just den här
-// inloggningen kom från "Skapa gratis konto" och ska bekräftas extra
+// inloggningen kom från "Skapa konto" och ska bekräftas extra
 // tydligt när den lokala profilen migrerats upp till kontot.
 let pendingAccountCreationConfirm = false;
 
-// "Skapa gratis konto": återanvänder appens delade inloggnings-/
+// "Skapa konto": återanvänder appens delade inloggnings-/
 // registreringsruta (samma som "Logga in" i menyn) istället för ett
 // eget formulär här. Migreringen av den lokala profilen till det nya
 // kontot sköts automatiskt av syncDogProfileWithAccount() nedan så
@@ -2028,7 +2028,7 @@ dogProfileClearBtn?.addEventListener('click', async () => {
 // `authReady`/`wasLoggedIn` används för att skilja på två helt olika
 // lägen när ett doginary:auth-event kommer in:
 //  1. En riktig, färsk inloggning/registrering som sker medan sidan
-//     redan är öppen (t.ex. via kontoknappen, eller via "Skapa gratis
+//     redan är öppen (t.ex. via kontoknappen, eller via "Skapa
 //     konto" i bekräftelsemodalen ovan) — DÅ vill vi antingen bekräfta
 //     att den lokala profilen migrerats upp, eller — om ingen profil
 //     alls fanns — scrolla fram och fokusera formuläret så man direkt
@@ -2040,7 +2040,7 @@ let authReady = false;
 let wasLoggedIn = false;
 
 async function handleFreshLogin(session) {
-  // Färsk inloggning som kom från "Skapa gratis konto" i
+  // Färsk inloggning som kom från "Skapa konto" i
   // bekräftelsemodalen: den lokala gästprofilen har redan migrerats upp
   // till kontot av syncDogProfileWithAccount() (som alltid körs innan
   // handleFreshLogin, se doginary:auth-lyssnaren nedan) — visa bara en

@@ -75,7 +75,7 @@ let lang = (() => {
 const STR = {
   en: {
     pageTitle: "Doginary — Dog Walk Weather, Comfort Index & Daily Dog Care",
-    metaDescription: "Check today's Dog Comfort Index, find the best walk window and get weather-based dog care tips — powered by open SMHI forecast data. Free, no app required.",
+    metaDescription: "Check today's Dog Comfort Index, find the best walk window and get weather-based dog care tips — powered by open SMHI forecast data. No app required.",
     skipLink: "Skip to content",
     navAriaLabel: "Main menu",
     navForecast: "Today",
@@ -102,8 +102,8 @@ const STR = {
     profileSummaryPrefix: "Personalized for",
     profileFirstLoginPrompt: "You're in! Add your dog's details below to personalize everything.",
     profileSavedTitle: "🐶 Your dog's profile is ready!",
-    profileSavedText: "We've saved the profile on this device. Create a free account to save it permanently and get access to log, history and insights on all your devices.",
-    profileSavedCreateAccountBtn: "Create free account",
+    profileSavedText: "We've saved the profile on this device. Create an account to save it permanently and get access to log, history and insights on all your devices.",
+    profileSavedCreateAccountBtn: "Create an account",
     profileSavedContinueBtn: "Continue without an account",
     profileSavedCloseAria: "Close",
     profileAccountCreatedConfirm: "Account created — your dog's profile is now saved permanently and follows you across devices.",
@@ -174,12 +174,12 @@ const STR = {
     footerTerms: "Terms & Conditions",
     footerContactLabel: "Contact",
     footerCopyright: "© 2026 Malin Larsson (Doginary)",
-    donateBannerText: 'Doginary is free for every dog owner to use. If it helps you plan safer, happier walks, consider <b>chipping in $2.99</b> to help keep the site running. Thank you kindly!',
+    donateBannerText: 'If Doginary helps you plan safer, happier walks, consider <b>chipping in $2.99</b> to help keep the site running. Thank you kindly!',
     donateBannerBtn: "Support Doginary — $2.99",
     donateImageAriaLabel: "Support Doginary with a $2.99 donation",
     donateImageAlt: "Support Doginary — donate $2.99",
-    donateImageNote: "Doginary stays partially free thanks to small contributions like this — every little bit helps.",
-    sourcesDonateLine: 'Doginary runs on open data and a lot of spare time. If you\'d like to help keep it free and ad-light, you can <a class="donate-inline" href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener">donate $2.99</a> — thank you! 🐾',
+    donateImageNote: "Doginary exists thanks to small contributions like this — every little bit helps.",
+    sourcesDonateLine: 'Doginary runs on open data and a lot of spare time. If you\'d like to, you can <a class="donate-inline" href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener">donate $2.99</a> — thank you! 🐾',
     aboutKicker: "ABOUT DOGINARY",
     aboutHeading: "Smarter dog walking decisions, one forecast at a time",
     aboutText: "DOGINARY turns open SMHI weather data into comfort-based forecasts for happier walks — a Dog Comfort Index, a best walk window, coat-care tips and a simple log, all built around what your dog actually needs before you head out the door.",
@@ -1803,7 +1803,7 @@ function renderDaily(weatherData, unit) {
       ${hint}
     </article>`;
   }).join('') + `<a class="day donate-day-card" href="https://buy.stripe.com/3cI5kv3VydZqaZ25pw0kE05" target="_blank" rel="noopener" aria-label="Support Doginary with a $2.99 donation" data-i18n-aria-label="donateImageAriaLabel">
-      <img src="assets/donate.jpg" alt="Support Doginary — donate $2.99 to help keep it free" loading="lazy" decoding="async" data-i18n-alt="donateImageAlt">
+      <img src="assets/donate.jpg" alt="Support Doginary — donate $2.99 to help keep it running" loading="lazy" decoding="async" data-i18n-alt="donateImageAlt">
     </a>`;
 }
 

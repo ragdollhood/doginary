@@ -3,28 +3,28 @@
   <url>
     <loc>https://doginary.com/</loc>
     <lastmod>2026-09-16</lastmod>
-<changefreq>monthly/changefreq>
+<changefreq>monthly</changefreq>
 <priority>1.0</priority>
   </url>
 
       <url>
     <loc>https://doginary.com/breeder-hub</loc>
     <lastmod>2026-09-25</lastmod>
-<changefreq>weekly/changefreq>
+<changefreq>weekly</changefreq>
 <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://doginary.com/health</loc>
      <lastmod>2026-09-16</lastmod>
-<changefreq>monthly/changefreq>
+<changefreq>monthly</changefreq>
 <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://doginary.com/guidelines</loc>
     <lastmod>2026-09-16</lastmod>
-<changefreq>monthly/changefreq>
+<changefreq>monthly</changefreq>
 <priority>0.8</priority>
   </url>
 
@@ -32,14 +32,14 @@
   <url>
     <loc>https://doginary.com/logga</loc>
     <lastmod>2026-09-16</lastmod>
-<changefreq>monthly/changefreq>
+<changefreq>monthly</changefreq>
 <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://doginary.com/insikter</loc>
   <lastmod>2026-09-16</lastmod>
-<changefreq>monthly/changefreq>
+<changefreq>monthly</changefreq>
 <priority>0.8</priority>
   </url>
   

@@ -571,8 +571,54 @@ tbody tr:hover{background:var(--surface-2);}
   .auth-card{padding:24px 18px 20px;}
 }
 @media print{
-  .sidebar,.topbar,.overlay,.btn,.crossnav,.crossnav-mobile-menu{display:none !important;}
+  .sidebar,.topbar,.overlay,.btn,.crossnav,.crossnav-mobile-menu,.bh-landing{display:none !important;}
   .main{margin-left:0;}
+}
+
+/* ============================================================
+   LANDING / MARKETING (SEO) — statiskt innehåll som alltid finns
+   i sidan för utloggade besökare (även Googles sökrobot), istället
+   för att en registreringsruta täcker sidan direkt vid sidladdning.
+   Se #bhLanding i <body> och renderLanding() längre ned i skriptet.
+   ============================================================ */
+html{scroll-behavior:smooth;}
+.bh-landing{padding:46px max(20px,4vw) 6px; max-width:1180px; margin:0 auto; width:100%;}
+.bh-landing-hero{max-width:740px; margin:0 auto 50px; text-align:center;}
+.bh-landing-kicker{font-size:12px; letter-spacing:.14em; font-weight:700; color:var(--honey-deep); text-transform:uppercase; margin:0 0 14px;}
+.bh-landing-hero h1{font-family:var(--font-display); font-weight:500; font-size:clamp(27px,4.2vw,42px); line-height:1.16; margin:0 0 18px; color:var(--ink);}
+.bh-landing-lead{font-size:16px; line-height:1.6; color:var(--ink-soft); margin:0 0 22px;}
+.bh-landing-pricebadge{display:inline-block; font-size:12.5px; font-weight:600; color:var(--pine); background:var(--pine-tint); border-radius:999px; padding:6px 14px; margin:0 0 22px;}
+.bh-landing-cta-row{display:flex; flex-wrap:wrap; gap:8px 18px; justify-content:center; align-items:center; margin-bottom:10px;}
+.bh-landing-cta{font-family:inherit; font-size:15.5px; font-weight:600; color:#fff; background:var(--pine); border:none; border-radius:999px; padding:14px 28px; cursor:pointer; box-shadow:0 14px 30px rgba(34,64,58,.22); transition:transform .15s ease, box-shadow .15s ease, background .15s ease;}
+.bh-landing-cta:hover{background:var(--pine-deep); transform:translateY(-1px); box-shadow:0 18px 36px rgba(34,64,58,.3);}
+.bh-landing-signin{font-family:inherit; font-size:14px; font-weight:600; color:var(--pine); background:none; border:none; cursor:pointer; text-decoration:underline; text-underline-offset:3px; padding:8px 4px;}
+.bh-landing-note{font-size:12.5px; color:var(--ink-soft); margin:0 0 4px;}
+.bh-landing-demolink{display:inline-block; margin-top:14px; font-size:13px; color:var(--pine); text-decoration:none; font-weight:600;}
+.bh-landing-demolink:hover{text-decoration:underline;}
+
+.bh-landing-features{margin-bottom:52px;}
+.bh-landing-features h2,.bh-landing-who h2,.bh-landing-faq h2{font-family:var(--font-display); font-weight:500; font-size:25px; text-align:center; margin:0 0 28px; color:var(--ink);}
+.bh-feature-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(225px,1fr)); gap:16px;}
+.bh-feature-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-l); padding:19px 19px 17px; box-shadow:var(--shadow);}
+.bh-feature-card h3{font-family:var(--font-display); font-weight:500; font-size:16px; margin:0 0 8px; color:var(--ink);}
+.bh-feature-card p{font-size:13.3px; line-height:1.55; color:var(--ink-soft); margin:0;}
+
+.bh-landing-who{max-width:700px; margin:0 auto 52px; text-align:center;}
+.bh-landing-who p{font-size:14.5px; line-height:1.6; color:var(--ink-soft); margin:0;}
+
+.bh-landing-faq{max-width:740px; margin:0 auto 8px;}
+.bh-faq-item{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-m); padding:2px 20px; margin-bottom:10px;}
+.bh-faq-item summary{cursor:pointer; list-style:none; font-weight:600; font-size:14.3px; padding:14px 30px 14px 0; position:relative; color:var(--ink);}
+.bh-faq-item summary::-webkit-details-marker{display:none;}
+.bh-faq-item summary::after{content:"+"; position:absolute; right:2px; top:11px; font-size:19px; color:var(--honey-deep); transition:transform .15s ease;}
+.bh-faq-item[open] summary::after{transform:rotate(45deg);}
+.bh-faq-item p{font-size:13.3px; line-height:1.6; color:var(--ink-soft); margin:0 0 16px;}
+
+.bh-landing-divider{border:none; border-top:1px solid var(--line); margin:0 0 40px;}
+@media(max-width:640px){
+  .bh-landing{padding:34px 14px 4px;}
+  .bh-landing-hero{margin-bottom:38px;}
+  .bh-landing-features,.bh-landing-who{margin-bottom:40px;}
 }
 
 /* ============ CROSSNAV (Doginary top bar shared across pages) ============ */
@@ -640,6 +686,94 @@ tbody tr:hover{background:var(--surface-2);}
     "url": "https://doginary.com/"
   },
   "featureList": ["Hundregister", "Hälsojournal", "Pedigree", "Valpmatchning", "Köpar-CRM", "Kalender"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Vad är Breeder Hub?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Breeder Hub är Doginarys verktyg för hunduppfödare. Det samlar hundregister, hälsojournal, stamtavlor, parningsplanering, kullar, valpmatchning, köpar-CRM, kalender och dokument i ett gränssnitt, så att du slipper hålla reda på samma information i flera olika kalkylark och pärmar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kan jag testa Breeder Hub utan att skapa konto?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. Den här sidan visar hela verktyget fyllt med exempeldata, markerat som exempel i menyn, så att du kan klicka runt i varje del innan du bestämmer dig för att skapa ett konto."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vad kostar Breeder Hub?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "De första 14 dagarna är helt gratis, utan krav på kreditkort. Efter provperioden kostar Breeder Hub 4,99 dollar per månad, och du kan avsluta prenumerationen när du vill utan bindningstid."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Behöver jag ange kortuppgifter för att skapa konto?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nej. Du skapar konto med bara e-post och lösenord, och provperioden på 14 dagar startar automatiskt. Kortuppgifter behövs först om du väljer att fortsätta efter provperioden."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Fungerar Breeder Hub för flera hundraser samtidigt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. Hundregistret är inte begränsat till en enda ras. Du lägger till varje hund för sig med sin egen ras, och kan driva en kennel med flera raser i samma konto."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Hur fungerar valpmatchningen?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Varje valp i en kull kan få en enkel temperamentsbedömning: energi, självförtroende, social förmåga och lärvillighet. Under valpmatchning ser du sedan alla lediga valpar bredvid din lista över väntande köpare, och kan koppla ihop rätt valp med rätt köpare direkt i listan."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kan valpspekulanter se information om lediga valpar utan att logga in?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. Under offentlig sida kan du dela en publik länk som visar kennelnamn, dina hundar och lediga valpar för vem som helst, utan inloggning. Känsligare uppgifter som köparlistan, dokument, journalanteckningar och parningsplaner visas aldrig där."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Är min kenneldata privat och säker?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. All din privata kenneldata, till exempel köpare, dokument, journal och parningsplaner, är kopplad till ditt inloggade konto och visas aldrig på den offentliga sidan."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kan jag exportera min data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja. När du är inloggad kan du exportera all din kenneldata som en samlad PDF-fil direkt från verktygets exportknapp."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Fungerar Breeder Hub på mobilen?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ja, gränssnittet är responsivt och fungerar lika bra på mobil och surfplatta som på dator."
+      }
+    }
+  ]
 }
 </script>
 </head>
@@ -726,7 +860,72 @@ tbody tr:hover{background:var(--surface-2);}
 
   <!-- MAIN -->
   <div class="main">
-    <div class="topbar">
+
+    <!-- ============================================================
+         LANDING / MARKETING (SEO) — statisk text som alltid renderas,
+         även innan doginary-auth.js hunnit avgöra om besökaren är
+         inloggad. Döljs automatiskt av bootApp() när en riktig,
+         inloggad kennel laddas (se DEMO_MODE-logiken längre ned) —
+         Googles sökrobot (som aldrig är inloggad) ser den alltid.
+         Svensk text nedan är fallback/standardspråk; renderLanding()
+         skriver över den med t() på samma sätt som resten av sidan om
+         besökaren har engelska som språkval. ============================================================ -->
+    <section class="bh-landing" id="bhLanding" aria-labelledby="bhLandingTitle">
+
+      <div class="bh-landing-hero">
+        <p class="bh-landing-kicker" id="bhKicker">KENNELHANTERING FÖR HUNDUPPFÖDARE</p>
+        <h1 id="bhLandingTitle">Breeder Hub — allt du behöver för att driva din kennel, samlat på ett ställe</h1>
+        <p class="bh-landing-lead" id="bhLead">Hundregister, hälsojournal, parningsplanering, kullar, valpmatchning och köpar-CRM i ett och samma verktyg — byggt för dig som föder upp hund, oavsett om du har en enda tik eller driver en aktiv kennel med flera kullar om året. Testa hela verktyget direkt nedan med exempeldata, helt utan att skapa konto.</p>
+        <span class="bh-landing-pricebadge" id="bhPriceBadge">14 dagar gratis, sedan $4.99/månad</span>
+        <div class="bh-landing-cta-row">
+          <button type="button" class="bh-landing-cta" id="bhCtaBtn" onclick="window.DoginaryAuthUI &amp;&amp; window.DoginaryAuthUI.open('signup')">Skapa konto — prova gratis i 14 dagar</button>
+          <button type="button" class="bh-landing-signin" id="bhSigninBtn" onclick="window.DoginaryAuthUI &amp;&amp; window.DoginaryAuthUI.open('signin')">Har du redan ett konto? Logga in</button>
+        </div>
+        <p class="bh-landing-note" id="bhNote">Inget kreditkort krävs för att komma igång.</p>
+        <br>
+        <a href="#bhDemoAnchor" class="bh-landing-demolink" id="bhDemoLink">↓ Utforska det interaktiva demot nedan</a>
+      </div>
+
+      <div class="bh-landing-features">
+        <h2 id="bhFeaturesTitle">Allt en uppfödare behöver, på ett ställe</h2>
+        <div class="bh-feature-grid" id="bhFeatureGrid">
+          <div class="bh-feature-card"><h3 id="bhFeat1Title">Hundregister</h3><p id="bhFeat1Desc">Håll koll på varje hund i kenneln — avelsdjur, valpar och pensionärer — med foto, ras, kön, mankhöjd, vikt, HD/ED-resultat, ögonlysning, DNA-resultat, registreringsnummer och meriter samlat på ett kort.</p></div>
+          <div class="bh-feature-card"><h3 id="bhFeat2Title">Stamtavlor</h3><p id="bhFeat2Desc">Se varje hunds anor tre generationer bakåt, byggt automatiskt utifrån de föräldradjur du kopplat i hundregistret — ingen manuell ifyllning av stamtavlan behövs.</p></div>
+          <div class="bh-feature-card"><h3 id="bhFeat3Title">Hälsojournal</h3><p id="bhFeat3Desc">Logga vaccinationer, veterinärbesök, mediciner och andra hälsohändelser per hund, med tydlig översikt över vad som är på gång och vad som behöver åtgärdas.</p></div>
+          <div class="bh-feature-card"><h3 id="bhFeat4Title">Parningar &amp; avelsplanering</h3><p id="bhFeat4Desc">Planera parningar, räkna ut beräknat valpningsdatum utifrån parningsdagen och håll koll på löp per tik — allt bredvid resten av avelsarbetet.</p></div>
+          <div class="bh-feature-card"><h3 id="bhFeat5Title">Kullar</h3><p id="bhFeat5Desc">Registrera kullar med varje valps namn, kön, färg, födelsevikt och status, följ viktiga milstolpar under uppväxten och bedöm temperament inför valpmatchningen.</p></div>
+          <div class="bh-feature-card"><h3 id="bhFeat6Title">Valpmatchning</h3><p id="bhFeat6Desc">Matcha lediga valpar mot väntande köpare utifrån temperamentsbedömningar (energi, självförtroende, social förmåga, lärvillighet) i en tydlig lista.</p></div>
+          <div class="bh-feature-card"><h3 id="bhFeat7Title">Köpar-CRM</h3><p id="bhFeat7Desc">Håll ordning på hela köparlistan — från första intresseanmälan till godkänd, reserverad och såld — med en kommunikationslogg för varje kontakt.</p></div>
+          <div class="bh-feature-card"><h3 id="bhFeat8Title">Kalender, dokument &amp; offentlig sida</h3><p id="bhFeat8Desc">Se alla viktiga datum i en delad kalender, samla kontrakt och dokument på ett ställe, och dela en offentlig sida med lediga valpar — utan att köpare behöver logga in.</p></div>
+        </div>
+      </div>
+
+      <div class="bh-landing-who">
+        <h2 id="bhWhoTitle">För uppfödare i alla storlekar</h2>
+        <p id="bhWhoText">Oavsett om du föder upp en enstaka kull ibland eller driver en kennel med flera raser och flera kullar per år är Breeder Hub byggt för att växa med dig. Gränssnittet finns på svenska och engelska, fungerar lika bra på mobilen som på datorn, och du kan exportera all din kenneldata som PDF när du vill ha en kopia.</p>
+      </div>
+
+      <hr class="bh-landing-divider">
+
+      <div class="bh-landing-faq">
+        <h2 id="bhFaqTitle">Vanliga frågor</h2>
+        <div id="bhFaqList">
+          <details class="bh-faq-item"><summary id="bhFaqQ1">Vad är Breeder Hub?</summary><p id="bhFaqA1">Breeder Hub är Doginarys verktyg för hunduppfödare. Det samlar hundregister, hälsojournal, stamtavlor, parningsplanering, kullar, valpmatchning, köpar-CRM, kalender och dokument i ett gränssnitt, så att du slipper hålla reda på samma information i flera olika kalkylark och pärmar.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ2">Kan jag testa Breeder Hub utan att skapa konto?</summary><p id="bhFaqA2">Ja. Den här sidan visar hela verktyget fyllt med exempeldata, markerat som exempel i menyn, så att du kan klicka runt i varje del innan du bestämmer dig för att skapa ett konto.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ3">Vad kostar Breeder Hub?</summary><p id="bhFaqA3">De första 14 dagarna är helt gratis, utan krav på kreditkort. Efter provperioden kostar Breeder Hub $4.99/månad, och du kan avsluta prenumerationen när du vill utan bindningstid.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ4">Behöver jag ange kortuppgifter för att skapa konto?</summary><p id="bhFaqA4">Nej. Du skapar konto med bara e-post och lösenord, och provperioden på 14 dagar startar automatiskt. Kortuppgifter behövs först om du väljer att fortsätta efter provperioden.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ5">Fungerar Breeder Hub för flera hundraser samtidigt?</summary><p id="bhFaqA5">Ja. Hundregistret är inte begränsat till en enda ras. Du lägger till varje hund för sig med sin egen ras, och kan driva en kennel med flera raser i samma konto.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ6">Hur fungerar valpmatchningen?</summary><p id="bhFaqA6">Varje valp i en kull kan få en enkel temperamentsbedömning: energi, självförtroende, social förmåga och lärvillighet. Under valpmatchning ser du sedan alla lediga valpar bredvid din lista över väntande köpare, och kan koppla ihop rätt valp med rätt köpare direkt i listan.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ7">Kan valpspekulanter se information om lediga valpar utan att logga in?</summary><p id="bhFaqA7">Ja. Under offentlig sida kan du dela en publik länk som visar kennelnamn, dina hundar och lediga valpar för vem som helst, utan inloggning. Känsligare uppgifter som köparlistan, dokument, journalanteckningar och parningsplaner visas aldrig där.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ8">Är min kenneldata privat och säker?</summary><p id="bhFaqA8">Ja. All din privata kenneldata, till exempel köpare, dokument, journal och parningsplaner, är kopplad till ditt inloggade konto och visas aldrig på den offentliga sidan.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ9">Kan jag exportera min data?</summary><p id="bhFaqA9">Ja. När du är inloggad kan du exportera all din kenneldata som en samlad PDF-fil direkt från verktygets exportknapp.</p></details>
+          <details class="bh-faq-item"><summary id="bhFaqQ10">Fungerar Breeder Hub på mobilen?</summary><p id="bhFaqA10">Ja, gränssnittet är responsivt och fungerar lika bra på mobil och surfplatta som på dator.</p></details>
+        </div>
+      </div>
+
+    </section>
+
+    <div class="topbar" id="bhDemoAnchor">
       <button class="menu-btn" id="menuBtn" aria-label="Meny">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
@@ -1103,6 +1302,56 @@ const I18N = {
     exColRole: 'Roll', exColPhone: 'Telefon',
     exHousingLine: 'Boende: {housing} &nbsp;·&nbsp; Aktivitetsnivå: {activity} &nbsp;·&nbsp; Tidigare hund: {prevDog}',
     exWishLine: 'Önskemål: {preferred}', exLinkedPuppy: 'Intresserad av: {name}',
+
+    // ---- Landing/marknadsföring + FAQ (#bhLanding) ----
+    bhKicker: 'KENNELHANTERING FÖR HUNDUPPFÖDARE',
+    bhLandingTitle: 'Breeder Hub — allt du behöver för att driva din kennel, samlat på ett ställe',
+    bhLead: 'Hundregister, hälsojournal, parningsplanering, kullar, valpmatchning och köpar-CRM i ett och samma verktyg — byggt för dig som föder upp hund, oavsett om du har en enda tik eller driver en aktiv kennel med flera kullar om året. Testa hela verktyget direkt nedan med exempeldata, helt utan att skapa konto.',
+    bhPriceBadge: '14 dagar gratis, sedan $4.99/månad',
+    bhCtaBtn: 'Skapa konto — prova gratis i 14 dagar',
+    bhSigninBtn: 'Har du redan ett konto? Logga in',
+    bhNote: 'Inget kreditkort krävs för att komma igång.',
+    bhDemoLink: '↓ Utforska det interaktiva demot nedan',
+    bhFeaturesTitle: 'Allt en uppfödare behöver, på ett ställe',
+    bhFeat1Title: 'Hundregister',
+    bhFeat1Desc: 'Håll koll på varje hund i kenneln — avelsdjur, valpar och pensionärer — med foto, ras, kön, mankhöjd, vikt, HD/ED-resultat, ögonlysning, DNA-resultat, registreringsnummer och meriter samlat på ett kort.',
+    bhFeat2Title: 'Stamtavlor',
+    bhFeat2Desc: 'Se varje hunds anor tre generationer bakåt, byggt automatiskt utifrån de föräldradjur du kopplat i hundregistret — ingen manuell ifyllning av stamtavlan behövs.',
+    bhFeat3Title: 'Hälsojournal',
+    bhFeat3Desc: 'Logga vaccinationer, veterinärbesök, mediciner och andra hälsohändelser per hund, med tydlig översikt över vad som är på gång och vad som behöver åtgärdas.',
+    bhFeat4Title: 'Parningar & avelsplanering',
+    bhFeat4Desc: 'Planera parningar, räkna ut beräknat valpningsdatum utifrån parningsdagen och håll koll på löp per tik — allt bredvid resten av avelsarbetet.',
+    bhFeat5Title: 'Kullar',
+    bhFeat5Desc: 'Registrera kullar med varje valps namn, kön, färg, födelsevikt och status, följ viktiga milstolpar under uppväxten och bedöm temperament inför valpmatchningen.',
+    bhFeat6Title: 'Valpmatchning',
+    bhFeat6Desc: 'Matcha lediga valpar mot väntande köpare utifrån temperamentsbedömningar (energi, självförtroende, social förmåga, lärvillighet) i en tydlig lista.',
+    bhFeat7Title: 'Köpar-CRM',
+    bhFeat7Desc: 'Håll ordning på hela köparlistan — från första intresseanmälan till godkänd, reserverad och såld — med en kommunikationslogg för varje kontakt.',
+    bhFeat8Title: 'Kalender, dokument & offentlig sida',
+    bhFeat8Desc: 'Se alla viktiga datum i en delad kalender, samla kontrakt och dokument på ett ställe, och dela en offentlig sida med lediga valpar — utan att köpare behöver logga in.',
+    bhWhoTitle: 'För uppfödare i alla storlekar',
+    bhWhoText: 'Oavsett om du föder upp en enstaka kull ibland eller driver en kennel med flera raser och flera kullar per år är Breeder Hub byggt för att växa med dig. Gränssnittet finns på svenska och engelska, fungerar lika bra på mobilen som på datorn, och du kan exportera all din kenneldata som PDF när du vill ha en kopia.',
+    bhFaqTitle: 'Vanliga frågor',
+    bhFaqQ1: 'Vad är Breeder Hub?',
+    bhFaqA1: 'Breeder Hub är Doginarys verktyg för hunduppfödare. Det samlar hundregister, hälsojournal, stamtavlor, parningsplanering, kullar, valpmatchning, köpar-CRM, kalender och dokument i ett gränssnitt, så att du slipper hålla reda på samma information i flera olika kalkylark och pärmar.',
+    bhFaqQ2: 'Kan jag testa Breeder Hub utan att skapa konto?',
+    bhFaqA2: 'Ja. Den här sidan visar hela verktyget fyllt med exempeldata, markerat som exempel i menyn, så att du kan klicka runt i varje del innan du bestämmer dig för att skapa ett konto.',
+    bhFaqQ3: 'Vad kostar Breeder Hub?',
+    bhFaqA3: 'De första 14 dagarna är helt gratis, utan krav på kreditkort. Efter provperioden kostar Breeder Hub $4.99/månad, och du kan avsluta prenumerationen när du vill utan bindningstid.',
+    bhFaqQ4: 'Behöver jag ange kortuppgifter för att skapa konto?',
+    bhFaqA4: 'Nej. Du skapar konto med bara e-post och lösenord, och provperioden på 14 dagar startar automatiskt. Kortuppgifter behövs först om du väljer att fortsätta efter provperioden.',
+    bhFaqQ5: 'Fungerar Breeder Hub för flera hundraser samtidigt?',
+    bhFaqA5: 'Ja. Hundregistret är inte begränsat till en enda ras. Du lägger till varje hund för sig med sin egen ras, och kan driva en kennel med flera raser i samma konto.',
+    bhFaqQ6: 'Hur fungerar valpmatchningen?',
+    bhFaqA6: 'Varje valp i en kull kan få en enkel temperamentsbedömning: energi, självförtroende, social förmåga och lärvillighet. Under valpmatchning ser du sedan alla lediga valpar bredvid din lista över väntande köpare, och kan koppla ihop rätt valp med rätt köpare direkt i listan.',
+    bhFaqQ7: 'Kan valpspekulanter se information om lediga valpar utan att logga in?',
+    bhFaqA7: 'Ja. Under offentlig sida kan du dela en publik länk som visar kennelnamn, dina hundar och lediga valpar för vem som helst, utan inloggning. Känsligare uppgifter som köparlistan, dokument, journalanteckningar och parningsplaner visas aldrig där.',
+    bhFaqQ8: 'Är min kenneldata privat och säker?',
+    bhFaqA8: 'Ja. All din privata kenneldata, till exempel köpare, dokument, journal och parningsplaner, är kopplad till ditt inloggade konto och visas aldrig på den offentliga sidan.',
+    bhFaqQ9: 'Kan jag exportera min data?',
+    bhFaqA9: 'Ja. När du är inloggad kan du exportera all din kenneldata som en samlad PDF-fil direkt från verktygets exportknapp.',
+    bhFaqQ10: 'Fungerar Breeder Hub på mobilen?',
+    bhFaqA10: 'Ja, gränssnittet är responsivt och fungerar lika bra på mobil och surfplatta som på dator.',
   },
   en: {
     hubOverviewLabel: 'Breeder overview',
@@ -1417,6 +1666,56 @@ const I18N = {
     exColRole: 'Role', exColPhone: 'Phone',
     exHousingLine: 'Housing: {housing} &nbsp;·&nbsp; Activity level: {activity} &nbsp;·&nbsp; Previous dog: {prevDog}',
     exWishLine: 'Preferences: {preferred}', exLinkedPuppy: 'Interested in: {name}',
+
+    // ---- Landing/marketing + FAQ (#bhLanding) ----
+    bhKicker: 'KENNEL MANAGEMENT FOR DOG BREEDERS',
+    bhLandingTitle: 'Breeder Hub — everything you need to run your kennel, all in one place',
+    bhLead: 'A dog register, health records, breeding plans, litters, puppy matching and buyer CRM in one tool — built for anyone who breeds dogs, whether you have a single female or run an active kennel with several litters a year. Try the whole tool right below with sample data, no account needed.',
+    bhPriceBadge: '14 days free, then $4.99/month',
+    bhCtaBtn: 'Create account — try free for 14 days',
+    bhSigninBtn: 'Already have an account? Log in',
+    bhNote: 'No credit card required to get started.',
+    bhDemoLink: '↓ Explore the interactive demo below',
+    bhFeaturesTitle: 'Everything a breeder needs, in one place',
+    bhFeat1Title: 'Dog register',
+    bhFeat1Desc: 'Keep track of every dog in your kennel — breeding stock, puppies and retirees — with photo, breed, sex, height, weight, hip/elbow scores, eye test results, DNA results, registration number and titles, all on one card.',
+    bhFeat2Title: 'Pedigrees',
+    bhFeat2Desc: 'See each dog\'s ancestry three generations back, built automatically from the sire and dam you\'ve linked in the dog register — no need to fill in the pedigree by hand.',
+    bhFeat3Title: 'Health records',
+    bhFeat3Desc: 'Log vaccinations, vet visits, medication and other health events per dog, with a clear overview of what\'s coming up and what needs attention.',
+    bhFeat4Title: 'Matings & breeding plans',
+    bhFeat4Desc: 'Plan matings, calculate the expected whelping date from the mating day, and keep track of each female\'s heat cycles — right alongside the rest of your breeding work.',
+    bhFeat5Title: 'Litters',
+    bhFeat5Desc: 'Register litters with each puppy\'s name, sex, colour, birth weight and status, track key developmental milestones, and assess temperament ahead of puppy matching.',
+    bhFeat6Title: 'Puppy matching',
+    bhFeat6Desc: 'Match available puppies with waiting buyers based on temperament assessments (energy, confidence, sociability, trainability) in a clear list.',
+    bhFeat7Title: 'Buyer CRM',
+    bhFeat7Desc: 'Keep the whole buyer list organised — from first inquiry through approved, reserved and sold — with a communication log for every contact.',
+    bhFeat8Title: 'Calendar, documents & a public page',
+    bhFeat8Desc: 'See every important date in one shared calendar, keep contracts and documents in one place, and share a public page with available puppies — no login required for buyers.',
+    bhWhoTitle: 'For breeders of every size',
+    bhWhoText: 'Whether you breed the occasional litter or run a kennel with several breeds and multiple litters a year, Breeder Hub is built to grow with you. The interface is available in Swedish and English, works just as well on mobile as on desktop, and you can export all of your kennel data as a PDF whenever you want a copy.',
+    bhFaqTitle: 'Frequently asked questions',
+    bhFaqQ1: 'What is Breeder Hub?',
+    bhFaqA1: 'Breeder Hub is Doginary\'s tool for dog breeders. It brings together a dog register, health records, pedigrees, breeding plans, litters, puppy matching, buyer CRM, a calendar and documents in one interface, so you don\'t have to keep the same information in several different spreadsheets and binders.',
+    bhFaqQ2: 'Can I try Breeder Hub without creating an account?',
+    bhFaqA2: 'Yes. This page shows the whole tool filled with sample data, marked as a demo in the menu, so you can click around every part before deciding whether to create an account.',
+    bhFaqQ3: 'What does Breeder Hub cost?',
+    bhFaqA3: 'The first 14 days are completely free, with no credit card required. After the trial, Breeder Hub costs $4.99/month, and you can cancel any time — there\'s no commitment.',
+    bhFaqQ4: 'Do I need to enter card details to create an account?',
+    bhFaqA4: 'No. You create an account with just an email and password, and the 14-day trial starts automatically. Card details are only needed if you choose to continue after the trial.',
+    bhFaqQ5: 'Does Breeder Hub work for several dog breeds at once?',
+    bhFaqA5: 'Yes. The dog register isn\'t limited to a single breed. You add each dog individually with its own breed, and can run a kennel with several breeds under the same account.',
+    bhFaqQ6: 'How does puppy matching work?',
+    bhFaqA6: 'Each puppy in a litter can get a simple temperament assessment: energy, confidence, sociability and trainability. Under puppy matching you then see every available puppy next to your list of waiting buyers, and can pair the right puppy with the right buyer directly in the list.',
+    bhFaqQ7: 'Can prospective buyers see available puppies without logging in?',
+    bhFaqA7: 'Yes. Under public page you can share a public link showing your kennel name, your dogs and available puppies to anyone, without logging in. More sensitive information such as your buyer list, documents, journal notes and mating plans is never shown there.',
+    bhFaqQ8: 'Is my kennel data private and secure?',
+    bhFaqA8: 'Yes. All your private kennel data, such as buyers, documents, journal and mating plans, is tied to your logged-in account and is never shown on the public page.',
+    bhFaqQ9: 'Can I export my data?',
+    bhFaqA9: 'Yes. Once logged in, you can export all of your kennel data as a single PDF directly from the tool\'s export button.',
+    bhFaqQ10: 'Does Breeder Hub work on mobile?',
+    bhFaqA10: 'Yes, the interface is responsive and works just as well on mobile and tablet as on desktop.',
   }
 };
 
@@ -1487,6 +1786,30 @@ function applyChrome() {
   const prSubmit = document.getElementById('passwordResetSubmit');
   if (prSubmit) prSubmit.textContent = t('passwordResetSubmit');
   renderLegalLinks();
+  renderLanding();
+}
+
+/* ---- Landing/marknadsföring (#bhLanding) ----
+   Skriver över den svenska fallback-texten i HTML-markupen med t() på
+   samma sätt som resten av sidan, så rutan följer språkvalet
+   (langBtnSv/langBtnEn) precis som allt annat. Körs från applyChrome(),
+   dvs. både vid första sidladdningen och varje gång språket byts. */
+function renderLanding(){
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  set('bhKicker', t('bhKicker'));
+  set('bhLandingTitle', t('bhLandingTitle'));
+  set('bhLead', t('bhLead'));
+  set('bhPriceBadge', t('bhPriceBadge'));
+  set('bhCtaBtn', t('bhCtaBtn'));
+  set('bhSigninBtn', t('bhSigninBtn'));
+  set('bhNote', t('bhNote'));
+  set('bhDemoLink', t('bhDemoLink'));
+  set('bhFeaturesTitle', t('bhFeaturesTitle'));
+  for(let i=1;i<=8;i++){ set('bhFeat'+i+'Title', t('bhFeat'+i+'Title')); set('bhFeat'+i+'Desc', t('bhFeat'+i+'Desc')); }
+  set('bhWhoTitle', t('bhWhoTitle'));
+  set('bhWhoText', t('bhWhoText'));
+  set('bhFaqTitle', t('bhFaqTitle'));
+  for(let i=1;i<=10;i++){ set('bhFaqQ'+i, t('bhFaqQ'+i)); set('bhFaqA'+i, t('bhFaqA'+i)); }
 }
 
 /* ---- Legal (Terms & Privacy) länkar + samtyckesrad ----
@@ -1659,6 +1982,11 @@ async function bootApp(){
   content.innerHTML = `<div class="empty">${t('loadingKennel')}</div>`;
   DEMO_MODE = false;
   document.getElementById('demoBadge').style.display = 'none';
+  // Inloggade, betalande (eller på provperiod) användare ska landa direkt
+  // på sin egen kennel utan säljtext/FAQ ovanför — den delen är till för
+  // utloggade förstagångsbesökare (och Googles sökrobot), se startDemo().
+  const landingEl = document.getElementById('bhLanding');
+  if(landingEl) landingEl.style.display = 'none';
   DB = await loadDB();
   document.getElementById('kennelNameText').textContent = DB.kennelName;
   dashboardSubOverride = {key:'pmDashboardSubWelcome', vars:{name: DB.kennelName}};
@@ -1675,6 +2003,8 @@ function startDemo(){
   DB = seedData();
   document.getElementById('kennelNameText').textContent = DB.kennelName;
   document.getElementById('demoBadge').style.display = 'inline-block';
+  const landingEl = document.getElementById('bhLanding');
+  if(landingEl) landingEl.style.display = '';
   applyChrome();
   dashboardSubOverride = {key:'pmDashboardSubDemo'};
   renderNav();
@@ -1711,13 +2041,16 @@ if(cloudEnabled){
     }
   });
 
-  // Öppna registreringsrutan direkt för en utloggad förstagångsbesökare,
-  // ovanpå exempelkenneln — precis som tidigare (window.DoginaryAuthUI.ready
-  // eldar en gång med den allra första inloggningsstatusen). Redan
-  // inloggade besökare (session finns) får ingen ruta påtvingad.
-  window.DoginaryAuthUI.ready.then((session)=>{
-    if(!session) window.DoginaryAuthUI.open('signup');
-  });
+  // OBS (SEO): Vi öppnar INTE längre registreringsrutan automatiskt för
+  // en utloggad förstagångsbesökare. En ruta som täcker sidans innehåll
+  // direkt vid sidladdning räknas av Google som en "intrusive
+  // interstitial" och kan sänka sidans ranking i sökresultat — oavsett
+  // hur mycket riktigt innehåll (exempelkenneln, texten och FAQ:n i
+  // #bhLanding) som ligger under den. Besökaren möts nu istället av det
+  // innehållet direkt, med en tydlig "Skapa konto"-knapp
+  // (#bhCtaBtn, se #bhLanding i HTML-koden) som öppnar samma ruta via
+  // window.DoginaryAuthUI.open('signup') — ett knapptryck räknas inte
+  // som en interstitial, bara en ruta som visas oombedd vid sidladdning.
 } else {
   toast(t('authNotConfiguredTitle'));
 }
